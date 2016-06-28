@@ -18,18 +18,18 @@ USER=$3
 CMD=$4
 SUB=$5
 
-ARTIFACT_ID=$6
+ARTIFACT=$6
 VERSION=$7
-DEPLOY_TYPE=$8
-DEPLOY_PATH=$9
+TYPE=$8
+PATH=$9
 
 if [ "${USER}" == "" ]; then
   usage
   exit 1
 fi
 
-PARAM="${CMD} ${SUB} ${DEPLOY_TYPE} ${ARTIFACT_ID} ${VERSION} ${DEPLOY_PATH}"
+PARAM="${CMD} ${SUB} ${ARTIFACT} ${VERSION} ${TYPE} ${PATH}"
 
-ssh ${USER}@${HOST} -p ${PORT} 'bash -s' < ./toast.sh ${PARAM}
+ssh ${USER}@${HOST} -p ${PORT} 'bash -s' < toast ${PARAM}
 
 exit $?
