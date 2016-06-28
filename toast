@@ -45,6 +45,12 @@ if [ ! -d /usr/bin ]; then
   SUDO="sudo"
 fi
 
+TEMP_DIR="/tmp/deploy"
+
+if [ ! -d "${TEMP_DIR}" ]; then
+    mkdir "${TEMP_DIR}"
+fi
+
 ############################################################
 
 function usage() {
@@ -52,7 +58,13 @@ function usage() {
 }
 
 function update() {
-    sudo sh -c "rm -rf /usr/bin/toast; curl -sL https://raw.githubusercontent.com/nalbam-ya/toaster/master/toast > /usr/bin/toast; chmod 755 /usr/bin/toast"
+    URL="https://raw.githubusercontent.com/nalbam-ya/toaster/master/toast"
+
+    wget -q -N -P "${TEMP_DIR}" "${URL}"
+
+    chmod 755 "${TEMP_DIR}/toast"
+
+    sudo cp -rf "${TEMP_DIR}/toast" /usr/bin/toast
 }
 
 function login() {
@@ -252,12 +264,6 @@ function version_remove() {
 }
 
 function deploy() {
-    TEMP_DIR="/tmp/deploy"
-
-    if [ ! -d "${TEMP_DIR}" ]; then
-        mkdir "${TEMP_DIR}"
-    fi
-
     if [ "${SUB}" == "project" ]; then
         deploy_project
     fi
