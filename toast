@@ -64,7 +64,7 @@ function update() {
 
     chmod 755 "${TEMP_DIR}/toast"
 
-    sudo cp -rf "${TEMP_DIR}/toast" /usr/bin/toast
+    ${SUDO} cp -rf "${TEMP_DIR}/toast" /usr/bin/toast
 }
 
 function login() {
