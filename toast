@@ -209,15 +209,16 @@ function version() {
         exit 1
     fi
 
-    THIS_VERSION=${ARR_VERSION[0]}
-
-    #echo "THIS_VERSION : ${THIS_VERSION}"
+    ARTIFACT_ID=${ARR_GROUP[0]}
+    VERSION=${ARR_VERSION[0]}
 
     if [ "${SUB}" == "next" ]; then
         version_next
     fi
 
-    version_save
+    if [ "${SUB}" == "save" ]; then
+        version_save
+    fi
 }
 
 function version_next() {
@@ -228,7 +229,7 @@ function version_next() {
 
     NEXT_VERSION="${ARR[0]}"
 
-    echo "NEXT_VERSION : ${NEXT_VERSION}"
+    echo "${NEXT_VERSION}"
 
     VER1="<version>[\.0-9a-zA-Z]\+<\/version>"
     VER2="<version>${NEXT_VERSION}<\/version>"
@@ -243,7 +244,7 @@ function version_next() {
         exit 1
     fi
 
-    THIS_VERSION=NEXT_VERSION
+    VERSION=NEXT_VERSION
 }
 
 function version_save() {
