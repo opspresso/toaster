@@ -1,4 +1,8 @@
 #!/bin/bash
 
+<<<<<<< HEAD
 curl -sL https://raw.githubusercontent.com/yanolja/toaster/master/toast > /usr/bin/toast
 chmod 755 /usr/bin/toast
+=======
+sudo sh -c "curl -sL https://raw.githubusercontent.com/yanolja/toaster/master/toast > /usr/bin/toast; chmod 755 /usr/bin/toast"
+>>>>>>> 2a4a6ba3e569a40d5fbf99e7a9203bc2191ac23a
