@@ -12,7 +12,11 @@ REPO_PASS="password"
 
 PHASE="dev"
 FLEET="fleet"
-NAME="name"
+NAME=""
+
+if [ "${NAME}" == "" ]; then
+    NAME=`hostname`
+fi
 
 HOST="127.0.0.1"
 PORT="22"
