@@ -1,4 +1,4 @@
 #!/bin/bash
 
-curl -sL https://raw.githubusercontent.com/nalbam-ya/toaster/master/toast > /usr/bin/toast
-chmod 755 /usr/bin/toast
+sudo curl -sL https://raw.githubusercontent.com/nalbam-ya/toaster/master/toast > /usr/bin/toast
+sudo chmod 755 /usr/bin/toast
