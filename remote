@@ -1,0 +1,35 @@
+#!/bin/bash
+
+############################################################
+
+function usage() {
+  echo "Usage: $0 {host} {port} {username}"
+}
+
+############################################################
+
+BASEDIR=$(dirname $0)
+cd ${BASEDIR}
+
+HOST=$1
+PORT=$2
+USER=$3
+
+CMD=$4
+SUB=$5
+
+ARTIFACT_ID=$6
+VERSION=$7
+DEPLOY_TYPE=$8
+DEPLOY_PATH=$9
+
+if [ "${USER}" == "" ]; then
+  usage
+  exit 1
+fi
+
+PARAM="${CMD} ${SUB} ${DEPLOY_TYPE} ${ARTIFACT_ID} ${VERSION} ${DEPLOY_PATH}"
+
+ssh ${USER}@${HOST} -p ${PORT} 'bash -s' < ./toast.sh ${PARAM}
+
+exit $?
