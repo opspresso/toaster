@@ -4,19 +4,20 @@ TOKEN=""
 
 DOMAIN="toast.yanolja.com"
 
-REPO_USER="admin"
-REPO_PASS="dishfwkDAV"
+LOGIN_URL="https://member.yanolja.com/ywt/loginToken"
 
-GROUP="dev"
+REPO_PATH="http://toast.yanolja.com/uploads/com/yanolja"
+REPO_USER="admin"
+REPO_PASS="password"
+
+PHASE="dev"
 FLEET="fleet"
 NAME="name"
 
-HOST="0.0.0.0"
+HOST="127.0.0.1"
 PORT="22"
 
 USER="yanolja"
-
-SSH_KEY=""
 
 CONFIG="${HOME}/.toast"
 
@@ -33,6 +34,12 @@ DEPLOY_TYPE=$5
 DEPLOY_PATH=$6
 
 HAS_WAR=FALSE
+
+SUDO=""
+
+if [ ! -d /usr/bin ]; then
+  SUDO="sudo"
+fi
 
 ############################################################
 
@@ -53,9 +60,7 @@ function login() {
         exit 1
     fi
 
-    URL="https://member.yanolja.com/ywt/loginToken"
-
-    RES=`curl --data "id=${YAJA_ID}&passwd=${YAJA_PW}" ${URL}`
+    RES=`curl --data "id=${YAJA_ID}&passwd=${YAJA_PW}" ${LOGIN_URL}`
     ARR=(${RES})
 
     TOKEN="${ARR[0]}"
@@ -66,8 +71,8 @@ function config() {
         login
     else
         echo "Do you want yanolja login? [yes/no] [default:no]"
-        read LOGIN
-        if [ "${LOGIN}" == "yes" ]; then
+        read LOGIN_YN
+        if [ "${LOGIN_YN}" == "yes" ]; then
             login
         fi
     fi
@@ -78,10 +83,10 @@ function config() {
         DOMAIN=${READ_DOMAIN}
     fi
 
-    echo "Please input server group. [default:${GROUP}]"
-    read READ_GROUP
-    if [ "${READ_GROUP}" != "" ]; then
-        GROUP=${READ_GROUP}
+    echo "Please input server phase. [default:${PHASE}]"
+    read READ_PHASE
+    if [ "${READ_PHASE}" != "" ]; then
+        PHASE=${READ_PHASE}
     fi
 
     echo "Please input server fleet. [default:${FLEET}]"
@@ -108,19 +113,18 @@ function config() {
         PORT=${READ_PORT}
     fi
 
-    echo "Please input server username. [default:${USER}]"
+    echo "Please input server user. [default:${USER}]"
     read READ_USER
     if [ "${READ_USER}" != "" ]; then
         USER=${READ_USER}
     fi
 
     TOAST_URL="http://${DOMAIN}"
-    REPO_PATH="http://toast.yanolja.com/uploads/com/yanolja"
 
     ID_RSA="${HOME}/.ssh/id_rsa.pub"
 
     if [ ! -f "${ID_RSA}" ]; then
-        ssh-keygen -t rsa -C "${NAME}@${GROUP}.yanolja.com"
+        ssh-keygen -t rsa -C "${NAME}@${PHASE}.yanolja.com"
     fi
 
     SSH_KEY=`cat ${ID_RSA}`
@@ -131,7 +135,7 @@ function config() {
     echo "REPO_PATH=${REPO_PATH}" >> ${CONFIG}
     echo "REPO_USER=${REPO_USER}" >> ${CONFIG}
     echo "REPO_PASS=${REPO_PASS}" >> ${CONFIG}
-    echo "GROUP=${GROUP}" >> ${CONFIG}
+    echo "PHASE=${PHASE}" >> ${CONFIG}
     echo "FLEET=${FLEET}" >> ${CONFIG}
     echo "NAME=${NAME}" >> ${CONFIG}
     echo "HOST=${HOST}" >> ${CONFIG}
@@ -143,14 +147,20 @@ function config() {
 
     URL="${TOAST_URL}/server/config"
 
-    RES=`curl --data "token=${TOKEN}&group=${GROUP}&fleet=${FLEET}&name=${NAME}&host=${HOST}&port=${PORT}&user=${USER}&key=${SSH_KEY}" ${URL}`
+    RES=`curl --data "token=${TOKEN}&group=${PHASE}&fleet=${FLEET}&name=${NAME}&host=${HOST}&port=${PORT}&user=${USER}&key=${SSH_KEY}" ${URL}`
 }
 
 function init() {
-    sudo mkdir /data
-    sudo mkdir /data/site
-    sudo mkdir /data/logs
+    make_dir "/data"
+    make_dir "/data/site"
+    make_dir "/data/logs"
+}
 
+function make_dir() {
+    if [ ! -d $1 ] && [ ! -f $1 ]; then
+        ${SUDO} mkdir $1
+        ${SUDO} chown ${USER}.${USER} $1
+    fi
 }
 
 function version() {

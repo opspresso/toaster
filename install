@@ -2,7 +2,7 @@
 
 SUDO=""
 
-if [[ ! -d /usr/bin ]]; then
+if [ ! -d /usr/bin ]; then
   SUDO="sudo"
 fi
 
