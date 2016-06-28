@@ -48,11 +48,11 @@ fi
 ############################################################
 
 function usage() {
-    echo "Usage: $0 {config|version|deploy}"
+    echo "Usage: $0 {config|version|deploy|update}"
 }
 
 function update() {
-    sudo sh -c "curl -sL https://raw.githubusercontent.com/nalbam-ya/toaster/master/toast > /usr/bin/toast; chmod 755 /usr/bin/toast"
+    sudo sh -c "rm -rf /usr/bin/toast; curl -sL https://raw.githubusercontent.com/nalbam-ya/toaster/master/toast > /usr/bin/toast; chmod 755 /usr/bin/toast"
 }
 
 function login() {
