@@ -2,8 +2,6 @@
 
 ################################################################################
 
-SELF_URL="http://toast.yanolja.com/toaster/toast"
-
 TOAST_URL="http://toast.yanolja.com"
 
 LOGIN_URL="https://member.yanolja.com/ywt/loginToken"
