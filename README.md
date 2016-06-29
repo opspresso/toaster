@@ -1,7 +1,5 @@
 # toaster
 
-#### install
-
 ```
 sudo yum install -y git
 
