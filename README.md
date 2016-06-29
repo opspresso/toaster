@@ -12,6 +12,7 @@ git clone https://github.com/nalbam-ya/toaster.git
  Usage: toast {self|config|update|init|version|deploy}
 
  Usage: toast self
+ Usage: toast self update
 
  Usage: toast config
  Usage: toast config info
