@@ -521,6 +521,8 @@ deploy_vhost() {
 
         DEST_FILE="${CONF_DIR}/vhost-${VNM}.conf"
 
+        echo "--> ${DEST_FILE}"
+
         ${SUDO} cp ${TEMPLATE} ${DEST_FILE}
 
         sed "s/VDIR/$VNM/g" ${DEST_FILE} > ${TEMP_FILE} && ${SUDO} mv ${TEMP_FILE} ${DEST_FILE}
