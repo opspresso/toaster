@@ -22,6 +22,7 @@ CONFIG="${HOME}/.toast"
 
 if [ ! -f "${CONFIG}" ]; then
     cp "${SHELL_DIR}/package/toast.txt" ${CONFIG}
+    chmod 644 ${CONFIG}
 fi
 
 if [ -f "${CONFIG}" ]; then
