@@ -5,16 +5,16 @@ sudo yum install -y git
 
 git clone https://github.com/yanolja/toaster.git
 
-./toaster/toast
+./toaster/toast auto
 ```
 
 ```
- Usage: toast {self|config|update|init|version|deploy}
+ Usage: toast {auto|config|update|init|version|deploy}
 
- Usage: toast self
- Usage: toast self update
+ Usage: toast auto
 
  Usage: toast config
+ Usage: toast config auto
  Usage: toast config info
 
  Usage: toast update
@@ -23,6 +23,7 @@ git clone https://github.com/yanolja/toaster.git
  Usage: toast init master
  Usage: toast init slave
  Usage: toast init web
+ Usage: toast init tomcat
  Usage: toast init db
 
  Usage: toast version
