@@ -192,11 +192,13 @@ self_info() {
 }
 
 self_update() {
-    wget -q -N -P "${TEMP_DIR}" "${SELF_URL}"
+    cd "${SHELL_DIR}"
 
-    chmod 755 "${TEMP_DIR}/toast"
+    git pull
 
-    ${SUDO} cp -rf "${TEMP_DIR}/toast" /usr/bin/toast
+    #wget -q -N -P "${TEMP_DIR}" "${SELF_URL}"
+    #chmod 755 "${TEMP_DIR}/toast"
+    #${SUDO} cp -rf "${TEMP_DIR}/toast" /usr/bin/toast
 }
 
 login() {
