@@ -497,8 +497,8 @@ deploy_vhost() {
     ${SUDO} rm -rf ${CONF_DIR}/localhost*
     ${SUDO} rm -rf ${CONF_DIR}/vhost*
 
-    #${SUDO} cp "${SHELL_DIR}/vhost/localhost.conf" "${CONF_DIR}/"
-    #${SUDO} chmod 644 "${CONF_DIR}/localhost.conf"
+    ${SUDO} cp "${SHELL_DIR}/vhost/localhost.conf" "${CONF_DIR}/"
+    ${SUDO} chmod 644 "${CONF_DIR}/localhost.conf"
 
     TEMP_FILE="/tmp/toast-vhost.tmp.$$"
 
