@@ -9,6 +9,6 @@ FLEET=dev
 NAME=
 HOST=
 PORT=
-USER=yanolja
+USER=
 TOKEN=
 SNO=
