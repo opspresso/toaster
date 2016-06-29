@@ -1,0 +1,12 @@
+# yanolja toast config
+TOAST_URL=http://toast.yanolja.com
+REPO_PATH=http://toast.yanolja.com/uploads/com/yanolja
+REPO_USER=
+REPO_PASS=
+PHASE=
+FLEET=
+NAME=
+HOST=127.0.0.1
+PORT=22
+USER=
+TOKEN=

@@ -1,33 +1,37 @@
-#!/usr/bin/env bash
+#!/bin/bash
 
-TOKEN=""
+################################################################################
 
-DOMAIN="toast.yanolja.com"
+SELF_URL="http://toast.yanolja.com/toaster/toast"
+
+TOAST_URL="http://toast.yanolja.com"
 
 LOGIN_URL="https://member.yanolja.com/ywt/loginToken"
 
 REPO_PATH="http://toast.yanolja.com/uploads/com/yanolja"
-REPO_USER="admin"
-REPO_PASS="password"
+REPO_USER=""
+REPO_PASS=""
 
 PHASE="dev"
-FLEET="fleet"
-NAME=""
+FLEET="dev"
+NAME=`hostname`
 
-if [ "${NAME}" == "" ]; then
-    NAME=`hostname`
-fi
+SNO=""
 
 HOST="127.0.0.1"
 PORT="22"
 
 USER="yanolja"
 
+TOKEN=""
+
 CONFIG="${HOME}/.toast"
 
 if [ -f "${CONFIG}" ]; then
   . ${CONFIG}
 fi
+
+################################################################################
 
 CMD=$1
 SUB=$2
@@ -41,9 +45,11 @@ HAS_WAR=FALSE
 
 SUDO=""
 
-if [ ! -d /usr/bin ]; then
-  SUDO="sudo"
+if [ ${HOME} != "/root" ]; then
+    SUDO="sudo"
 fi
+
+SHELL_DIR=$(dirname $0)
 
 TEMP_DIR="/tmp/deploy"
 
@@ -51,23 +57,149 @@ if [ ! -d "${TEMP_DIR}" ]; then
     mkdir "${TEMP_DIR}"
 fi
 
-############################################################
+################################################################################
 
-function usage() {
-    echo "Usage: $0 {config|version|deploy|update}"
+toast() {
+    case ${CMD} in
+        self)
+            self
+            ;;
+        config)
+            config
+            ;;
+        init)
+            init
+            ;;
+        version)
+            version
+            ;;
+        deploy)
+            deploy
+            ;;
+        *)
+            usage
+    esac
 }
 
-function update() {
-    URL="https://raw.githubusercontent.com/nalbam-ya/toaster/master/toast"
+usage() {
+    echo_bar
+    echo " Usage: toast {self|config|init|version|deploy}"
+    echo_bar
+    echo_
+    echo " Usage: toast self"
+    echo " Usage: toast self update"
+    echo_
+    echo " Usage: toast config"
+    echo " Usage: toast config info"
+    echo_
+    echo " Usage: toast init"
+    echo " Usage: toast init update"
+    echo " Usage: toast init master"
+    echo " Usage: toast init slave"
+    echo " Usage: toast init web"
+    echo " Usage: toast init db"
+    echo_
+    echo " Usage: toast version"
+    echo " Usage: toast version next"
+    echo " Usage: toast version save"
+    echo_
+    echo " Usage: toast deploy"
+    echo " Usage: toast deploy vhost"
+    echo " Usage: toast deploy server"
+    echo " Usage: toast deploy project"
+    echo_
+    echo_bar
+}
 
-    wget -q -N -P "${TEMP_DIR}" "${URL}"
+self() {
+    self_info
+
+    case ${SUB} in
+        update)
+            self_update
+            ;;
+    esac
+}
+
+config() {
+    case ${SUB} in
+        info|echo|show)
+            config_info
+            ;;
+        *)
+            config_read
+    esac
+}
+
+init() {
+    init_default
+
+    case ${SUB} in
+        update)
+            init_update
+            ;;
+        master)
+            init_master
+            ;;
+        slave)
+            init_slave
+            ;;
+        web|apache|php)
+            init_web
+            ;;
+        db|mysql)
+            init_db
+            ;;
+    esac
+}
+
+version() {
+    version_parse
+
+    case ${SUB} in
+        next)
+            version_next
+            ;;
+        save)
+            version_save
+            ;;
+    esac
+}
+
+deploy() {
+    case ${SUB} in
+        vhost)
+            deploy_vhost
+            ;;
+        project)
+            deploy_project
+            ;;
+        server)
+            deploy_server
+            ;;
+    esac
+}
+
+################################################################################
+
+self_info() {
+    echo_bar
+
+    echo "PATH : $0"
+    echo "HOME : ${HOME}"
+
+    echo_bar
+}
+
+self_update() {
+    wget -q -N -P "${TEMP_DIR}" "${SELF_URL}"
 
     chmod 755 "${TEMP_DIR}/toast"
 
     ${SUDO} cp -rf "${TEMP_DIR}/toast" /usr/bin/toast
 }
 
-function login() {
+login() {
     echo "Please input yanolja id."
     read YAJA_ID
     if [ "${YAJA_ID}" == "" ]; then
@@ -80,13 +212,15 @@ function login() {
         exit 1
     fi
 
+    echo "yanolja login..."
+
     RES=`curl --data "id=${YAJA_ID}&passwd=${YAJA_PW}" ${LOGIN_URL}`
     ARR=(${RES})
 
     TOKEN="${ARR[0]}"
 }
 
-function config() {
+config_read() {
     if [ "${TOKEN}" == "" ]; then
         login
     else
@@ -97,10 +231,10 @@ function config() {
         fi
     fi
 
-    echo "Please input toast domain. [default:${DOMAIN}]"
-    read READ_DOMAIN
-    if [ "${READ_DOMAIN}" != "" ]; then
-        DOMAIN=${READ_DOMAIN}
+    echo "Please input toast url. [default:${TOAST_URL}]"
+    read READ_TOAST_URL
+    if [ "${READ_TOAST_URL}" != "" ]; then
+        TOAST_URL=${READ_TOAST_URL}
     fi
 
     echo "Please input server phase. [default:${PHASE}]"
@@ -139,18 +273,7 @@ function config() {
         USER=${READ_USER}
     fi
 
-    TOAST_URL="http://${DOMAIN}"
-
-    ID_RSA="${HOME}/.ssh/id_rsa.pub"
-
-    if [ ! -f "${ID_RSA}" ]; then
-        ssh-keygen -t rsa -C "${NAME}@${PHASE}.yanolja.com"
-    fi
-
-    SSH_KEY=`cat ${ID_RSA}`
-
     echo "# yanolja toast config" > ${CONFIG}
-    echo "DOMAIN=${DOMAIN}" >> ${CONFIG}
     echo "TOAST_URL=${TOAST_URL}" >> ${CONFIG}
     echo "REPO_PATH=${REPO_PATH}" >> ${CONFIG}
     echo "REPO_USER=${REPO_USER}" >> ${CONFIG}
@@ -163,29 +286,116 @@ function config() {
     echo "USER=${USER}" >> ${CONFIG}
     echo "TOKEN=${TOKEN}" >> ${CONFIG}
 
-    #cat ${CONFIG}
-
-    URL="${TOAST_URL}/server/config"
-
-    RES=`curl --data "token=${TOKEN}&group=${PHASE}&fleet=${FLEET}&name=${NAME}&host=${HOST}&port=${PORT}&user=${USER}&key=${SSH_KEY}" ${URL}`
+    config_save
 }
 
-function init() {
+config_info() {
+    if [ ! -f "${CONFIG}" ]; then
+        echo "Not exist file. [${CONFIG}]"
+        exit 1
+    fi
+
+    echo_bar
+    cat ${CONFIG}
+    echo_bar
+}
+
+config_save() {
+    echo "server save..."
+
+    URL="${TOAST_URL}/server/config"
+    RES=`curl --data "token=${TOKEN}&group=${PHASE}&fleet=${FLEET}&name=${NAME}&host=${HOST}&port=${PORT}&user=${USER}" ${URL}`
+    ARR=(${RES})
+
+    if [ "${ARR[0]}" != "OK" ]; then
+        echo "Server Error."
+        exit 1
+    fi
+
+    echo "SNO=${ARR[1]}" >> ${CONFIG}
+
+    echo "${ARR[0]} ${ARR[1]}"
+}
+
+init_default() {
+    if [ ! -f "/etc/localtime" ]; then
+        ${SUDO} ln -sf /usr/share/zoneinfo/Asia/Seoul /etc/localtime
+    fi
+
+    if [ ! -f "/usr/bin/git" ]; then
+        ${SUDO} yum install -y git
+    fi
+
+    if [ ! -f "/usr/bin/vim" ]; then
+        ${SUDO} yum install -y vim
+    fi
+
+    make_dir "${HOME}/.ssh"
+
     make_dir "/data"
-    make_dir "/data/site"
     make_dir "/data/logs"
 }
 
-function make_dir() {
-    if [ ! -d $1 ] && [ ! -f $1 ]; then
-        ${SUDO} mkdir $1
-        ${SUDO} chown ${USER}.${USER} $1
+init_update() {
+    ${SUDO} yum update -y
+}
+
+init_master() {
+    KEYS="${HOME}/.ssh/authorized_keys"
+
+    if [ ! -f "${KEYS}" ]; then
+        cat ${SHELL_DIR}/ssh/id_rsa.pub > ${KEYS}
+        chmod 700 ${KEYS}
+    else
+        IS_KEY="false"
+
+        while read line
+        do
+            VAL=(${line})
+
+            if [ "${VAL[2]}" == "toast@yanolja.in" ]; then
+                IS_KEY="true"
+            fi
+        done < ${KEYS}
+
+        if [ "${IS_KEY}" == "false" ]; then
+            cat ${SHELL_DIR}/ssh/id_rsa.pub >> ${KEYS}
+        fi
     fi
 }
 
-function version() {
+init_slave() {
+    ID_RSA="${HOME}/.ssh/id_rsa.pub"
+
+    if [ ! -f "${ID_RSA}" ]; then
+        #ssh-keygen -t rsa -C "toast@$yanolja.in"
+
+        cp -rf ${SHELL_DIR}/ssh/id_rsa ${HOME}/.ssh/id_rsa
+        cp -rf ${SHELL_DIR}/ssh/id_rsa.pub ${HOME}/.ssh/id_rsa.pub
+
+        chmod 600 ${HOME}/.ssh/id_rsa
+        chmod 644 ${HOME}/.ssh/id_rsa.pub
+    fi
+}
+
+init_web() {
+    ${SUDO} yum install -y httpd24 php56 php56-mysqlnd php56-mcrypt
+
+    ${SUDO} service httpd start
+    ${SUDO} chkconfig httpd on
+
+    make_dir "/data/site"
+}
+
+init_db() {
+    ${SUDO} yum install -y mysql55-server
+
+    ${SUDO} service mysqld start
+    ${SUDO} chkconfig mysqld on
+}
+
+version_parse() {
     DEST_FILE="./pom.xml"
-    TEMP_FILE="/tmp/out.tmp.$$"
 
     if [ ! -f "${DEST_FILE}" ]; then
         echo "Not exist file. [${DEST_FILE}]"
@@ -196,10 +406,6 @@ function version() {
     ARR_ARTIFACT=($(cat ${DEST_FILE} | grep -oP '(?<=artifactId>)[^<]+'))
     ARR_VERSION=($(cat ${DEST_FILE} | grep -oP '(?<=version>)[^<]+'))
 
-    echo "groupId=${ARR_GROUP[0]}"
-    echo "artifactId=${ARR_ARTIFACT[0]}"
-    echo "version=${ARR_VERSION[0]}"
-
     if [ "${ARR_GROUP[0]}" == "" ]; then
         echo "groupId does not exist. [${ARR_GROUP[0]}]"
         exit 1
@@ -209,30 +415,34 @@ function version() {
         exit 1
     fi
 
+    echo "groupId=${ARR_GROUP[0]}"
+    echo "artifactId=${ARR_ARTIFACT[0]}"
+    echo "version=${ARR_VERSION[0]}"
+
     ARTIFACT_ID=${ARR_GROUP[0]}
     VERSION=${ARR_VERSION[0]}
-
-    if [ "${SUB}" == "next" ]; then
-        version_next
-    fi
-
-    if [ "${SUB}" == "save" ]; then
-        version_save
-    fi
 }
 
-function version_next() {
-    URL="${TOAST_URL}/version/latest/${ARTIFACT_ID}"
+version_next() {
+    echo "version get..."
 
+    URL="${TOAST_URL}/version/latest/${ARTIFACT_ID}"
     RES=`curl --data "token=${TOKEN}" ${URL}`
     ARR=(${RES})
 
-    NEXT_VERSION="${ARR[0]}"
+    if [ "${ARR[0]}" != "OK" ]; then
+        echo "Server Error."
+        exit 1
+    fi
+
+    NEXT_VERSION="${ARR[1]}"
 
     echo "${NEXT_VERSION}"
 
     VER1="<version>[\.0-9a-zA-Z]\+<\/version>"
     VER2="<version>${NEXT_VERSION}<\/version>"
+
+    TEMP_FILE="/tmp/toast-pom.tmp.$$"
 
     if [ -f ${DEST_FILE} -a -r ${DEST_FILE} ]; then
         sed "s/$VER1/$VER2/;10q;" "${DEST_FILE}" > ${TEMP_FILE}
@@ -247,38 +457,86 @@ function version_next() {
     VERSION=NEXT_VERSION
 }
 
-function version_save() {
+version_save() {
+    echo "version save..."
+
     #aws s3 sync ~/.m2/repository/com/yanolja/${ARTIFACT_ID}/ s3://repo.yanolja.com/release/com/yanolja/${ARTIFACT_ID}/
 
     URL="${TOAST_URL}/version/build/${ARTIFACT_ID}/${VERSION}"
-
     RES=`curl --data "token=${TOKEN}" ${URL}`
     ARR=(${RES})
 
-    echo "${ARR[0]}"
+    if [ "${ARR[0]}" != "OK" ]; then
+        echo "Server Error."
+        exit 1
+    fi
+
+    echo "${ARR[1]}"
 }
 
-function version_remove() {
-    rm -rf ~/.m2/repository/com/yanolja/${ARTIFACT_ID}/${VERSION}
-
+version_remove() {
     #aws s3 rm s3://repo.yanolja.com/release/com/yanolja/${ARTIFACT_ID}/${VERSION} --recursive
+
+    rm -rf ~/.m2/repository/com/yanolja/${ARTIFACT_ID}/${VERSION}
 }
 
-function deploy() {
-    if [ "${SUB}" == "project" ]; then
-        deploy_project
+deploy_vhost() {
+    CONF_DIR="/etc/httpd/conf.d"
+
+    if [ ! -d "${CONF_DIR}" ]; then
+        echo "Need web server init. [toast init web]"
+        exit 1
     fi
-    if [ "${SUB}" == "server" ]; then
-        deploy_server
-    fi
+
+    ${SUDO} service httpd stop
+
+    ${SUDO} rm -rf ${CONF_DIR}/localhost*
+    ${SUDO} rm -rf ${CONF_DIR}/vhost*
+
+    ${SUDO} cp "${SHELL_DIR}/vhost/localhost.conf" "${CONF_DIR}/"
+    ${SUDO} chmod 644 "${CONF_DIR}/localhost.conf"
+
+    TEMP_FILE="/tmp/toast-vhost.tmp.$$"
+
+    TEMPLATE="${SHELL_DIR}/vhost/vhost-temp.conf"
+
+    echo "download vhost..."
+
+    TARGET_FILE="${TEMP_DIR}/${NAME}"
+    ${SUDO} rm -rf "${TARGET_FILE}"
+
+    URL="${TOAST_URL}/target/vhost/${PHASE}/${NAME}"
+    wget -q -N -P "${TEMP_DIR}" "${URL}"
+
+    while read line
+    do
+        TARGET=(${line})
+
+        VNM="${TARGET[0]}"
+        DOM="${TARGET[1]}"
+
+        make_dir "/data/site/${VNM}"
+
+        DEST_FILE="${CONF_DIR}/vhost-${VNM}.conf"
+
+        ${SUDO} cp ${TEMPLATE} ${DEST_FILE}
+
+        sed "s/VDIR/$VNM/g" ${DEST_FILE} > ${TEMP_FILE} && ${SUDO} mv ${TEMP_FILE} ${DEST_FILE}
+        sed "s/VDOM/$DOM/g" ${DEST_FILE} > ${TEMP_FILE} && ${SUDO} mv ${TEMP_FILE} ${DEST_FILE}
+
+        ${SUDO} chmod 644 "${DEST_FILE}"
+    done < ${TARGET_FILE}
+
+    ${SUDO} service httpd start
 }
 
-function deploy_project() {
+deploy_project() {
     # "deploy project yanolja.deploy 0.0.0 php /data/site/deploy"
 
     PACKAGING="${DEPLOY_TYPE}"
     if [ "${PACKAGING}" == "php" ]; then
         PACKAGING="war"
+        DEPLOY_PATH="/data/site/${ARTIFACT_ID}"
     fi
 
     FILENAME="${ARTIFACT_ID}-${VERSION}.${PACKAGING}"
@@ -286,14 +544,12 @@ function deploy_project() {
 
     UNZIP_DIR="${TEMP_DIR}/${ARTIFACT_ID}"
 
-    # download
     echo "download..."
 
     download
 
     tomcat_stop
 
-    # placement
     echo "placement..."
 
     placement
@@ -301,16 +557,17 @@ function deploy_project() {
     tomcat_start
 }
 
-function deploy_server() {
+deploy_server() {
     # "deploy server"
 
-    URL="${TOAST_URL}/target/server/${GROUP}/${NAME}"
-
-    wget -q -N -P "${TEMP_DIR}" "${URL}"
+    echo "download target..."
 
     TARGET_FILE="${TEMP_DIR}/${NAME}"
+    ${SUDO} rm -rf "${TARGET_FILE}"
 
-    # download
+    URL="${TOAST_URL}/target/server/${PHASE}/${NAME}"
+    wget -q -N -P "${TEMP_DIR}" "${URL}"
+
     echo "download..."
 
     while read line
@@ -324,7 +581,6 @@ function deploy_server() {
 
     tomcat_stop
 
-    # placement
     echo "placement..."
 
     while read line
@@ -339,7 +595,7 @@ function deploy_server() {
     tomcat_start
 }
 
-function deploy_value() {
+deploy_value() {
     ARTIFACT_ID="${TARGET[0]}"
     VERSION="${TARGET[1]}"
     DEPLOY_TYPE="${TARGET[2]}"
@@ -349,9 +605,7 @@ function deploy_value() {
     PACKAGING="${DEPLOY_TYPE}"
     if [ "${PACKAGING}" == "php" ]; then
         PACKAGING="war"
-    fi
-    if [ "${PACKAGING}" == "bin" ]; then
-        PACKAGING="zip"
+        DEPLOY_PATH="/data/site/${ARTIFACT_ID}"
     fi
 
     FILENAME="${ARTIFACT_ID}-${VERSION}.${PACKAGING}"
@@ -360,7 +614,7 @@ function deploy_value() {
     UNZIP_DIR="${TEMP_DIR}/${RANDOM}"
 }
 
-function download() {
+download() {
     SOURCE="${REPO_PATH}/${ARTIFACT_ID}/${VERSION}/${FILENAME}"
 
     echo "--> from : ${SOURCE}"
@@ -370,7 +624,11 @@ function download() {
         rm -rf "${FILEPATH}"
     fi
 
-    wget -q --user ${REPO_USER} --password ${REPO_PASS} -N -P "${TEMP_DIR}" "${SOURCE}"
+    if [ "${REPO_USER}" == "" ] || [ "${REPO_PASS}" == "" ]; then
+        wget -q -N -P "${TEMP_DIR}" "${SOURCE}"
+    else
+        wget -q --user "${REPO_USER}" --password "${REPO_PASS}" -N -P "${TEMP_DIR}" "${SOURCE}"
+    fi
 
     if [ ! -f "${FILEPATH}" ]; then
         echo "deploy file does not exist. [${FILEPATH}]"
@@ -381,6 +639,7 @@ function download() {
     if [ "${DEPLOY_TYPE}" == "war" ]; then
         HAS_WAR="TRUE"
     fi
+
     # php unzip
     if [ "${DEPLOY_TYPE}" == "php" ]; then
         if [ -d "${UNZIP_DIR}" ] || [ -f "${UNZIP_DIR}" ]; then
@@ -396,10 +655,28 @@ function download() {
     fi
 }
 
-function placement() {
+placement() {
   if [ "${DEPLOY_PATH}" == "" ]; then
       echo "empty deploy path. [${DEPLOY_PATH}]"
       exit 1
+  fi
+
+  echo "--> ${DEPLOY_PATH}"
+
+  # php
+  if [ "${DEPLOY_TYPE}" == "php" ]; then
+    rm -rf "${DEPLOY_PATH}.backup"
+
+    if [ -d "${DEPLOY_PATH}" ] || [ -f "${DEPLOY_PATH}" ]; then
+        mv "${DEPLOY_PATH}" "${DEPLOY_PATH}.backup"
+    fi
+
+    if [ -d "${DEPLOY_PATH}" ] || [ -f "${DEPLOY_PATH}" ]; then
+      echo "deploy dir can not copy. [${DEPLOY_PATH}]"
+      exit 1
+    fi
+
+    mv "${UNZIP_DIR}" "${DEPLOY_PATH}"
   fi
 
   # war
@@ -416,6 +693,7 @@ function placement() {
 
     cp -rf "${FILEPATH}" "${DEST_WAR}"
   fi
+
   # jar
   if [ "${DEPLOY_TYPE}" == "jar" ]; then
     DEST_WAR="${DEPLOY_PATH}/${ARTIFACT_ID}.${PACKAGING}"
@@ -433,50 +711,16 @@ function placement() {
 
     process_start
   fi
-  # php
-  if [ "${DEPLOY_TYPE}" == "php" ]; then
-    echo "--> ${DEPLOY_PATH}"
-
-    rm -rf "${DEPLOY_PATH}.backup"
-
-    if [ -d "${DEPLOY_PATH}" ] || [ -f "${DEPLOY_PATH}" ]; then
-        mv "${DEPLOY_PATH}" "${DEPLOY_PATH}.backup"
-    fi
-
-    if [ -d "${DEPLOY_PATH}" ] || [ -f "${DEPLOY_PATH}" ]; then
-      echo "deploy dir can not copy. [${DEPLOY_PATH}]"
-      exit 1
-    fi
-
-    mv "${UNZIP_DIR}" "${DEPLOY_PATH}"
-  fi
 }
 
-function process_stop() {
-    PID=`ps -ef | grep [${ARTIFACT_ID:0:1}]${ARTIFACT_ID:1} | awk '{print $2}'`
-    if [ "${PID}" != "" ]; then
-      kill -9 ${PID}
-      echo "killed ${PID}"
-    fi
-}
-
-function process_start() {
-    java -jar ${DEPLOY_PATH}/${ARTIFACT_ID}.${PACKAGING} >> /dev/null &
-
-    PID=`ps -ef | grep [${ARTIFACT_ID:0:1}]${ARTIFACT_ID:1} | awk '{print $2}'`
-    if [ "${PID}" != "" ]; then
-      echo "start up ${PID}"
-    fi
-}
-
-function tomcat_stop() {
+tomcat_stop() {
     if [ "${HAS_WAR}" == "TRUE" ]; then
       echo "tomcat stop..."
       /usr/local/tomcat8/bin/shutdown.sh
     fi
 }
 
-function tomcat_start() {
+tomcat_start() {
     if [ "${HAS_WAR}" == "TRUE" ]; then
       status=`ps -ef | grep catalina | grep java | grep -v grep | wc -l | awk '{print $1}'`
       count=0
@@ -499,28 +743,41 @@ function tomcat_start() {
     fi
 }
 
-############################################################
+process_stop() {
+    PID=`ps -ef | grep "[${ARTIFACT_ID:0:1}]""${ARTIFACT_ID:1}" | awk '{print $2}'`
+    if [ "${PID}" != "" ]; then
+      kill -9 ${PID}
+      echo "killed ${PID}"
+    fi
+}
 
-case "${CMD}" in
-    update)
-        update
-        ;;
-    config)
-        config
-        ;;
-    init)
-        init
-        ;;
-    version)
-        version
-        ;;
-    deploy)
-        deploy
-        ;;
-    *)
-        usage
-        exit 1
-esac
+process_start() {
+    java -jar ${DEPLOY_PATH}/${ARTIFACT_ID}.${PACKAGING} >> /dev/null &
+
+    PID=`ps -ef | grep "[${ARTIFACT_ID:0:1}]""${ARTIFACT_ID:1}" | awk '{print $2}'`
+    if [ "${PID}" != "" ]; then
+      echo "start up ${PID}"
+    fi
+}
+
+make_dir() {
+    if [ ! -d $1 ] && [ ! -f $1 ]; then
+        ${SUDO} mkdir $1
+        ${SUDO} chown ${USER}.${USER} $1
+    fi
+}
+
+echo_bar() {
+    echo "================================================================================"
+}
+
+echo_() {
+    echo ""
+}
+
+################################################################################
+
+toast
 
 # done
 echo "done."
