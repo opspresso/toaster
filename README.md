@@ -24,7 +24,7 @@ git clone https://github.com/yanolja/toaster.git
  Usage: toast init slave
  Usage: toast init web
  Usage: toast init tomcat
- Usage: toast init db
+ Usage: toast init mysql
 
  Usage: toast version
  Usage: toast version next

@@ -108,7 +108,7 @@ usage() {
     echo " Usage: toast init slave"
     echo " Usage: toast init web"
     echo " Usage: toast init tomcat"
-    echo " Usage: toast init db"
+    echo " Usage: toast init mysql"
     echo_
     echo " Usage: toast version"
     echo " Usage: toast version next"
@@ -178,7 +178,7 @@ init() {
             init_tomcat8
             ;;
         db|mysql)
-            init_mysql55
+            init_mysql56
             ;;
     esac
 }
@@ -452,8 +452,8 @@ init_tomcat8() {
     ${SUDO} chkconfig tomcat8 on
 }
 
-init_mysql55() {
-    ${SUDO} yum install -y mysql55-server
+init_mysql56() {
+    ${SUDO} yum install -y mysql56-server
 
     ${SUDO} service mysqld restart
     ${SUDO} chkconfig mysqld on
