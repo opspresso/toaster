@@ -335,6 +335,13 @@ config_save() {
         exit 1
     fi
 
+    if [ "${ARR[1]}" != "" ]; then
+        SNO="${ARR[1]}"
+    fi
+    if [ "${ARR[2]}" != "" ]; then
+        HOST="${ARR[2]}"
+    fi
+
     echo "# yanolja toast config" > ${CONFIG}
     echo "LOGIN_URL=${LOGIN_URL}" >> ${CONFIG}
     echo "TOAST_URL=${TOAST_URL}" >> ${CONFIG}
@@ -344,16 +351,11 @@ config_save() {
     echo "PHASE=${PHASE}" >> ${CONFIG}
     echo "FLEET=${FLEET}" >> ${CONFIG}
     echo "NAME=${NAME}" >> ${CONFIG}
-
-    if [ "${ARR[2]}" != "" ]; then
-        HOST="${ARR[2]}"
-    fi
-
     echo "HOST=${HOST}" >> ${CONFIG}
     echo "PORT=${PORT}" >> ${CONFIG}
     echo "USER=${USER}" >> ${CONFIG}
     echo "TOKEN=${TOKEN}" >> ${CONFIG}
-    echo "SNO=${ARR[1]}" >> ${CONFIG}
+    echo "SNO=${SNO}" >> ${CONFIG}
 
     echo "${RES}"
 }
