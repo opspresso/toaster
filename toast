@@ -69,6 +69,9 @@ toast() {
         config)
             config
             ;;
+        update)
+            init_update
+            ;;
         init)
             init
             ;;
@@ -89,7 +92,7 @@ toast() {
 
 usage() {
     echo_bar
-    echo " Usage: toast {self|config|init|version|deploy}"
+    echo " Usage: toast {self|config|update|init|version|deploy}"
     echo_bar
     echo_
     echo " Usage: toast self"
@@ -97,8 +100,9 @@ usage() {
     echo " Usage: toast config"
     echo " Usage: toast config info"
     echo_
+    echo " Usage: toast update"
+    echo_
     echo " Usage: toast init"
-    echo " Usage: toast init update"
     echo " Usage: toast init master"
     echo " Usage: toast init slave"
     echo " Usage: toast init web"
@@ -136,13 +140,14 @@ config() {
     esac
 }
 
+update() {
+    ${SUDO} yum update -y
+}
+
 init() {
     init_default
 
     case ${SUB} in
-        update)
-            init_update
-            ;;
         master)
             init_master
             ;;
@@ -337,10 +342,6 @@ init_default() {
 
     make_dir "/data"
     make_dir "/data/logs"
-}
-
-init_update() {
-    ${SUDO} yum update -y
 }
 
 init_master() {
