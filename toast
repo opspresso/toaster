@@ -2,31 +2,30 @@
 
 ################################################################################
 
-TOAST_URL="http://toast.yanolja.com"
-
 LOGIN_URL="https://member.yanolja.com/ywt/loginToken"
-
+TOAST_URL="http://toast.yanolja.com"
 REPO_PATH="http://toast.yanolja.com/uploads/com/yanolja"
-REPO_USER=""
-REPO_PASS=""
-
+REPO_USER=
+REPO_PASS=
 PHASE="dev"
 FLEET="dev"
-NAME=`hostname`
+NAME=
+HOST=
+PORT=
+USER=
+TOKEN=
+SNO=
 
-SNO=""
-
-HOST="127.0.0.1"
-PORT="22"
-
-USER="yanolja"
-
-TOKEN=""
+SHELL_DIR=$(dirname $0)
 
 CONFIG="${HOME}/.toast"
 
+if [ ! -f "${CONFIG}" ]; then
+    cp "${SHELL_DIR}/package/toast.txt" ${CONFIG}
+fi
+
 if [ -f "${CONFIG}" ]; then
-  . ${CONFIG}
+    . ${CONFIG}
 fi
 
 ################################################################################
@@ -47,8 +46,6 @@ if [ ${HOME} != "/root" ]; then
     SUDO="sudo"
 fi
 
-SHELL_DIR=$(dirname $0)
-
 TEMP_DIR="/tmp/deploy"
 
 if [ ! -d "${TEMP_DIR}" ]; then
@@ -61,8 +58,8 @@ toast() {
     #self_update
 
     case ${CMD} in
-        self)
-            self
+        auto)
+            auto
             ;;
         config)
             config
@@ -90,13 +87,13 @@ toast() {
 
 usage() {
     echo_bar
-    echo " Usage: toast {self|config|update|init|version|deploy}"
+    echo " Usage: toast {auto|config|update|init|version|deploy}"
     echo_bar
     echo_
-    echo " Usage: toast self"
-    echo " Usage: toast self update"
+    echo " Usage: toast auto"
     echo_
     echo " Usage: toast config"
+    echo " Usage: toast config auto"
     echo " Usage: toast config info"
     echo_
     echo " Usage: toast update"
@@ -105,6 +102,7 @@ usage() {
     echo " Usage: toast init master"
     echo " Usage: toast init slave"
     echo " Usage: toast init web"
+    echo " Usage: toast init tomcat"
     echo " Usage: toast init db"
     echo_
     echo " Usage: toast version"
@@ -119,30 +117,44 @@ usage() {
     echo_bar
 }
 
-self() {
-    self_info
+auto() {
+    self_update
 
-    case ${SUB} in
-        update)
-            self_update
-            ;;
-    esac
+    init_default
+    init_slave
+
+    #update_yum
+
+    config_auto
+    config_save
 }
 
 config() {
+    init_default
+
+    if [ "$1" != "" ]; then
+        SUB="$1"
+    fi
+
     case ${SUB} in
         info|echo|show)
             config_info
             ;;
+        auto)
+            config_auto
+            config_save
+            ;;
         *)
             config_read
+            config_save
     esac
 }
 
 update() {
+    self_info
     self_update
 
-    ${SUDO} yum update -y
+    update_yum
 }
 
 init() {
@@ -156,10 +168,13 @@ init() {
             init_slave
             ;;
         web|apache|php)
-            init_web
+            init_php56
+            ;;
+        tomcat|java)
+            init_tomcat8
             ;;
         db|mysql)
-            init_db
+            init_mysql55
             ;;
     esac
 }
@@ -229,6 +244,20 @@ login() {
     TOKEN="${ARR[0]}"
 }
 
+config_auto() {
+    if [ "${NAME}" == "" ]; then
+        NAME=`hostname`
+    fi
+
+    if [ "${PORT}" == "" ]; then
+        PORT=`nmap localhost | grep ssh | awk '{print $1}' | cut -d'/' -f1`
+    fi
+
+    if [ "${USER}" == "" ]; then
+        USER=`whoami`
+    fi
+}
+
 config_read() {
     if [ "${TOKEN}" == "" ]; then
         login
@@ -281,21 +310,6 @@ config_read() {
     if [ "${READ_USER}" != "" ]; then
         USER=${READ_USER}
     fi
-
-    echo "# yanolja toast config" > ${CONFIG}
-    echo "TOAST_URL=${TOAST_URL}" >> ${CONFIG}
-    echo "REPO_PATH=${REPO_PATH}" >> ${CONFIG}
-    echo "REPO_USER=${REPO_USER}" >> ${CONFIG}
-    echo "REPO_PASS=${REPO_PASS}" >> ${CONFIG}
-    echo "PHASE=${PHASE}" >> ${CONFIG}
-    echo "FLEET=${FLEET}" >> ${CONFIG}
-    echo "NAME=${NAME}" >> ${CONFIG}
-    echo "HOST=${HOST}" >> ${CONFIG}
-    echo "PORT=${PORT}" >> ${CONFIG}
-    echo "USER=${USER}" >> ${CONFIG}
-    echo "TOKEN=${TOKEN}" >> ${CONFIG}
-
-    config_save
 }
 
 config_info() {
@@ -310,10 +324,24 @@ config_info() {
 }
 
 config_save() {
+    echo "# yanolja toast config" > ${CONFIG}
+    echo "LOGIN_URL=${LOGIN_URL}" >> ${CONFIG}
+    echo "TOAST_URL=${TOAST_URL}" >> ${CONFIG}
+    echo "REPO_PATH=${REPO_PATH}" >> ${CONFIG}
+    echo "REPO_USER=${REPO_USER}" >> ${CONFIG}
+    echo "REPO_PASS=${REPO_PASS}" >> ${CONFIG}
+    echo "PHASE=${PHASE}" >> ${CONFIG}
+    echo "FLEET=${FLEET}" >> ${CONFIG}
+    echo "NAME=${NAME}" >> ${CONFIG}
+    echo "HOST=${HOST}" >> ${CONFIG}
+    echo "PORT=${PORT}" >> ${CONFIG}
+    echo "USER=${USER}" >> ${CONFIG}
+    echo "TOKEN=${TOKEN}" >> ${CONFIG}
+
     echo "server save..."
 
     URL="${TOAST_URL}/server/config"
-    RES=`curl --data "token=${TOKEN}&group=${PHASE}&fleet=${FLEET}&name=${NAME}&host=${HOST}&port=${PORT}&user=${USER}" ${URL}`
+    RES=`curl --data "token=${TOKEN}&no=${SNO}&group=${PHASE}&fleet=${FLEET}&name=${NAME}&host=${HOST}&port=${PORT}&user=${USER}" ${URL}`
     ARR=(${RES})
 
     if [ "${ARR[0]}" != "OK" ]; then
@@ -326,10 +354,13 @@ config_save() {
     echo "${ARR[0]} ${ARR[1]}"
 }
 
+update_yum() {
+    ${SUDO} yum update -y
+}
+
 init_default() {
-    if [ ! -f "/etc/localtime" ]; then
-        ${SUDO} ln -sf /usr/share/zoneinfo/Asia/Seoul /etc/localtime
-    fi
+    ${SUDO} rm -rf /etc/localtime
+    ${SUDO} ln -sf /usr/share/zoneinfo/Asia/Seoul /etc/localtime
 
     if [ ! -f "/usr/bin/git" ]; then
         ${SUDO} yum install -y git
@@ -339,11 +370,15 @@ init_default() {
         ${SUDO} yum install -y vim
     fi
 
-    if [ "${SUDO}" != "" ]; then
-        cp -rf ${SHELL_DIR}/package/bashrc.txt ${HOME}/.bashrc
+    if [ ! -f "/usr/bin/nmap" ]; then
+        ${SUDO} yum install -y nmap
     fi
 
-    ${SUDO} cp -rf ${SHELL_DIR}/package/hosts.txt /etc/hosts
+    if [ "${SUDO}" != "" ]; then
+        sed "s/PHASE/$PHASE/g" "${SHELL_DIR}/package/bashrc.txt" > "${HOME}/.bashrc"
+    fi
+
+    ${SUDO} cp -rf "${SHELL_DIR}/package/hosts.txt" "/etc/hosts"
 
     make_dir "${HOME}/.ssh"
 
@@ -352,11 +387,11 @@ init_default() {
 }
 
 init_master() {
-    KEYS="${HOME}/.ssh/authorized_keys"
+    AUTH_KEYS="${HOME}/.ssh/authorized_keys"
 
-    if [ ! -f "${KEYS}" ]; then
-        cat ${SHELL_DIR}/ssh/id_rsa.pub > ${KEYS}
-        chmod 700 ${KEYS}
+    if [ ! -f "${AUTH_KEYS}" ]; then
+        cat ${SHELL_DIR}/ssh/id_rsa.pub > ${AUTH_KEYS}
+        chmod 700 ${AUTH_KEYS}
     else
         IS_KEY="false"
 
@@ -367,10 +402,10 @@ init_master() {
             if [ "${VAL[2]}" == "toast@yanolja.in" ]; then
                 IS_KEY="true"
             fi
-        done < ${KEYS}
+        done < ${AUTH_KEYS}
 
         if [ "${IS_KEY}" == "false" ]; then
-            cat ${SHELL_DIR}/ssh/id_rsa.pub >> ${KEYS}
+            cat ${SHELL_DIR}/ssh/id_rsa.pub >> ${AUTH_KEYS}
         fi
     fi
 }
@@ -389,7 +424,7 @@ init_slave() {
     fi
 }
 
-init_web() {
+init_php56() {
     ${SUDO} yum install -y httpd24 php56 php56-mysqlnd php56-mcrypt php56-gd php56-mbstring
 
     ${SUDO} service httpd start
@@ -398,7 +433,14 @@ init_web() {
     make_dir "/data/site"
 }
 
-init_db() {
+init_tomcat8() {
+    ${SUDO} yum install -y tomcat8
+
+    ${SUDO} service tomcat8 start
+    ${SUDO} chkconfig tomcat8 on
+}
+
+init_mysql55() {
     ${SUDO} yum install -y mysql55-server
 
     ${SUDO} service mysqld start

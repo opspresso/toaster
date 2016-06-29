@@ -1,12 +1,14 @@
 # yanolja toast config
+LOGIN_URL=https://member.yanolja.com/ywt/loginToken
 TOAST_URL=http://toast.yanolja.com
 REPO_PATH=http://toast.yanolja.com/uploads/com/yanolja
 REPO_USER=
 REPO_PASS=
-PHASE=
-FLEET=
+PHASE=dev
+FLEET=dev
 NAME=
-HOST=127.0.0.1
-PORT=22
+HOST=
+PORT=
 USER=
 TOKEN=
+SNO=
