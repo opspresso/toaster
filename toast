@@ -2,13 +2,13 @@
 
 ################################################################################
 
-LOGIN_URL="https://member.yanolja.com/ywt/loginToken"
-TOAST_URL="http://toast.yanolja.com"
-REPO_PATH="http://toast.yanolja.com/uploads/com/yanolja"
+LOGIN_URL=
+TOAST_URL=
+REPO_PATH=
 REPO_USER=
 REPO_PASS=
-PHASE="dev"
-FLEET="dev"
+PHASE=
+FLEET=
 NAME=
 HOST=
 PORT=
@@ -42,7 +42,7 @@ HAS_WAR=FALSE
 
 SUDO=""
 
-if [ ${HOME} != "/root" ]; then
+if [ "${HOME}" != "/root" ]; then
     SUDO="sudo"
 fi
 
@@ -118,36 +118,31 @@ usage() {
 }
 
 auto() {
-    self_update
+    update
 
-    init_default
-    init_slave
+    init "slave"
 
-    #update_yum
-
-    config_auto
-    config_save
+    config "auto"
 }
 
 config() {
-    init_default
-
     if [ "$1" != "" ]; then
         SUB="$1"
     fi
 
     case ${SUB} in
-        info|echo|show)
-            config_info
-            ;;
         auto)
             config_auto
             config_save
+            ;;
+        info|echo|show)
             ;;
         *)
             config_read
             config_save
     esac
+
+    config_info
 }
 
 update() {
@@ -159,6 +154,10 @@ update() {
 
 init() {
     init_default
+
+    if [ "$1" != "" ]; then
+        SUB="$1"
+    fi
 
     case ${SUB} in
         master)
