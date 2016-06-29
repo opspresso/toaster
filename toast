@@ -60,6 +60,8 @@ fi
 ################################################################################
 
 toast() {
+    self_update
+
     case ${CMD} in
         self)
             self
@@ -79,6 +81,10 @@ toast() {
         *)
             usage
     esac
+
+    if [ ! -f "${CONFIG}" ]; then
+        config
+    fi
 }
 
 usage() {
@@ -87,7 +93,6 @@ usage() {
     echo_bar
     echo_
     echo " Usage: toast self"
-    echo " Usage: toast self update"
     echo_
     echo " Usage: toast config"
     echo " Usage: toast config info"
@@ -192,13 +197,9 @@ self_info() {
 }
 
 self_update() {
-    cd "${SHELL_DIR}"
-
+    pushd "${SHELL_DIR}"
     git pull
-
-    #wget -q -N -P "${TEMP_DIR}" "${SELF_URL}"
-    #chmod 755 "${TEMP_DIR}/toast"
-    #${SUDO} cp -rf "${TEMP_DIR}/toast" /usr/bin/toast
+    popd
 }
 
 login() {
