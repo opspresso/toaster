@@ -42,7 +42,7 @@ HAS_WAR=FALSE
 
 SUDO=""
 
-if [ ${HOME} != "/root" ]; then
+if [ "${HOME}" != "/root" ]; then
     SUDO="sudo"
 fi
 
