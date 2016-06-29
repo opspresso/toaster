@@ -437,6 +437,8 @@ init_slave() {
 init_php56() {
     ${SUDO} yum install -y httpd24 php56 php56-mysqlnd php56-mcrypt php56-gd php56-mbstring
 
+    init_php_open_tag
+
     ${SUDO} service httpd restart
     ${SUDO} chkconfig httpd on
 
