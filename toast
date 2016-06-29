@@ -324,6 +324,24 @@ config_info() {
 }
 
 config_save() {
+    echo "server save..."
+
+    URL="${TOAST_URL}/server/config"
+    RES=`curl --data "token=${TOKEN}&no=${SNO}&group=${PHASE}&fleet=${FLEET}&name=${NAME}&host=${HOST}&port=${PORT}&user=${USER}" ${URL}`
+    ARR=(${RES})
+
+    if [ "${ARR[0]}" != "OK" ]; then
+        echo "Server Error. [${RES}]"
+        exit 1
+    fi
+
+    if [ "${ARR[1]}" != "" ]; then
+        SNO="${ARR[1]}"
+    fi
+    if [ "${ARR[2]}" != "" ]; then
+        HOST="${ARR[2]}"
+    fi
+
     echo "# yanolja toast config" > ${CONFIG}
     echo "LOGIN_URL=${LOGIN_URL}" >> ${CONFIG}
     echo "TOAST_URL=${TOAST_URL}" >> ${CONFIG}
@@ -337,21 +355,9 @@ config_save() {
     echo "PORT=${PORT}" >> ${CONFIG}
     echo "USER=${USER}" >> ${CONFIG}
     echo "TOKEN=${TOKEN}" >> ${CONFIG}
+    echo "SNO=${SNO}" >> ${CONFIG}
 
-    echo "server save..."
-
-    URL="${TOAST_URL}/server/config"
-    RES=`curl --data "token=${TOKEN}&no=${SNO}&group=${PHASE}&fleet=${FLEET}&name=${NAME}&host=${HOST}&port=${PORT}&user=${USER}" ${URL}`
-    ARR=(${RES})
-
-    if [ "${ARR[0]}" != "OK" ]; then
-        echo "Server Error."
-        exit 1
-    fi
-
-    echo "SNO=${ARR[1]}" >> ${CONFIG}
-
-    echo "${ARR[0]} ${ARR[1]}"
+    echo "${RES}"
 }
 
 update_yum() {
@@ -484,7 +490,7 @@ version_next() {
     ARR=(${RES})
 
     if [ "${ARR[0]}" != "OK" ]; then
-        echo "Server Error."
+        echo "Server Error. [${RES}]"
         exit 1
     fi
 
@@ -520,7 +526,7 @@ version_save() {
     ARR=(${RES})
 
     if [ "${ARR[0]}" != "OK" ]; then
-        echo "Server Error."
+        echo "Server Error. [${RES}]"
         exit 1
     fi
 
