@@ -1,6 +1,6 @@
 # yanolja toast config
 LOGIN_URL=https://member.yanolja.com/ywt/loginToken
-TOAST_URL=http://toast.yanolja.com
+TOAST_URL=http://deploy.yanolja.com
 REPO_PATH=http://toast.yanolja.com/uploads/com/yanolja
 REPO_USER=
 REPO_PASS=
