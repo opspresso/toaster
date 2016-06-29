@@ -60,7 +60,7 @@ fi
 ################################################################################
 
 toast() {
-    self_update
+    #self_update
 
     case ${CMD} in
         self)
@@ -141,6 +141,8 @@ config() {
 }
 
 update() {
+    self_update
+
     ${SUDO} yum update -y
 }
 
