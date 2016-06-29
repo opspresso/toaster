@@ -96,6 +96,7 @@ usage() {
     echo_bar
     echo_
     echo " Usage: toast self"
+    echo " Usage: toast self update"
     echo_
     echo " Usage: toast config"
     echo " Usage: toast config info"
@@ -385,7 +386,7 @@ init_slave() {
 }
 
 init_web() {
-    ${SUDO} yum install -y httpd24 php56 php56-mysqlnd php56-mcrypt
+    ${SUDO} yum install -y httpd24 php56 php56-mysqlnd php56-mcrypt php56-gd php56-mbstring
 
     ${SUDO} service httpd start
     ${SUDO} chkconfig httpd on
