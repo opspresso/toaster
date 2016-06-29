@@ -6,7 +6,6 @@ sudo yum install -y git
 git clone https://github.com/nalbam-ya/toaster.git
 
 ./toaster/toast
-
 ```
 
 ```
@@ -33,5 +32,4 @@ git clone https://github.com/nalbam-ya/toaster.git
  Usage: toast deploy vhost
  Usage: toast deploy server
  Usage: toast deploy project
-
 ```
