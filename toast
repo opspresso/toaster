@@ -341,7 +341,10 @@ init_default() {
         ${SUDO} yum install -y vim
     fi
 
-    ${SUDO} cp -rf ${SHELL_DIR}/package/bashrc.txt ${HOME}/.bashrc
+    if [ "${SUDO}" != "" ]; then
+        cp -rf ${SHELL_DIR}/package/bashrc.txt ${HOME}/.bashrc
+    fi
+
     ${SUDO} cp -rf ${SHELL_DIR}/package/hosts.txt /etc/hosts
 
     make_dir "${HOME}/.ssh"
