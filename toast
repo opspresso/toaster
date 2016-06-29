@@ -2,13 +2,13 @@
 
 ################################################################################
 
-LOGIN_URL="https://member.yanolja.com/ywt/loginToken"
-TOAST_URL="http://toast.yanolja.com"
-REPO_PATH="http://toast.yanolja.com/uploads/com/yanolja"
+LOGIN_URL=
+TOAST_URL=
+REPO_PATH=
 REPO_USER=
 REPO_PASS=
-PHASE="dev"
-FLEET="dev"
+PHASE=
+FLEET=
 NAME=
 HOST=
 PORT=
