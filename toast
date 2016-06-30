@@ -99,6 +99,7 @@ usage() {
     echo_
     echo " Usage: toast config"
     echo " Usage: toast config auto"
+    echo " Usage: toast config save"
     echo " Usage: toast config info"
     echo_
     echo " Usage: toast update"
@@ -138,6 +139,9 @@ config() {
     case ${SUB} in
         auto)
             config_auto
+            config_save
+            ;;
+        save)
             config_save
             ;;
         info|echo|show)
