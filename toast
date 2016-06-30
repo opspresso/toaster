@@ -119,7 +119,7 @@ usage() {
     echo_
     echo " Usage: toast deploy"
     echo " Usage: toast deploy vhost"
-    echo " Usage: toast deploy server"
+    echo " Usage: toast deploy fleet"
     echo " Usage: toast deploy project"
     echo_
     echo_bar
@@ -222,7 +222,7 @@ deploy() {
             deploy_project
             ;;
         server)
-            deploy_server
+            deploy_fleet
             ;;
     esac
 }
@@ -625,10 +625,10 @@ deploy_vhost() {
 
     echo "download vhost..."
 
-    TARGET_FILE="${TEMP_DIR}/${NAME}"
+    TARGET_FILE="${TEMP_DIR}/${FLEET}"
     ${SUDO} rm -rf "${TARGET_FILE}"
 
-    URL="${TOAST_URL}/target/vhost/${PHASE}/${NAME}"
+    URL="${TOAST_URL}/target/vhost/${FLEET}"
     wget -q -N -P "${TEMP_DIR}" "${URL}"
 
     while read line
@@ -645,7 +645,7 @@ deploy_vhost() {
 
         ${SUDO} cp ${TEMPLATE} ${DEST_FILE}
 
-        sed "s/VDOM/$DOM/g" ${DEST_FILE} > ${TEMP_FILE} && ${SUDO} mv ${TEMP_FILE} ${DEST_FILE}
+        sed "s/DOM/$DOM/g" ${DEST_FILE} > ${TEMP_FILE} && ${SUDO} mv ${TEMP_FILE} ${DEST_FILE}
 
         ${SUDO} chmod 644 "${DEST_FILE}"
     done < ${TARGET_FILE}
@@ -686,8 +686,8 @@ deploy_project() {
     tomcat_start
 }
 
-deploy_server() {
-    # "deploy server"
+deploy_fleet() {
+    # "deploy fleet"
 
     echo "download target..."
 
