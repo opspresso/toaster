@@ -337,7 +337,7 @@ config_save() {
     echo "server save..."
 
     URL="${TOAST_URL}/server/config"
-    RES=`curl --data "token=${TOKEN}&no=${SNO}&group=${PHASE}&fleet=${FLEET}&name=${NAME}&host=${HOST}&port=${PORT}&user=${USER}" ${URL}`
+    RES=`curl --data "token=${TOKEN}&no=${SNO}&phase=${PHASE}&fleet=${FLEET}&name=${NAME}&host=${HOST}&port=${PORT}&user=${USER}" ${URL}`
     ARR=(${RES})
 
     if [ "${ARR[0]}" != "OK" ]; then
