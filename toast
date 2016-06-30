@@ -108,6 +108,7 @@ usage() {
     echo " Usage: toast init master"
     echo " Usage: toast init slave"
     echo " Usage: toast init web"
+    echo " Usage: toast init java"
     echo " Usage: toast init tomcat"
     echo " Usage: toast init mysql"
     echo_
@@ -178,7 +179,11 @@ init() {
         web|apache|php)
             init_php56
             ;;
-        tomcat|java)
+        java)
+            init_java18
+            ;;
+        tomcat)
+            init_java18
             init_tomcat8
             ;;
         db|mysql)
@@ -453,6 +458,13 @@ init_php56() {
     ${SUDO} chkconfig httpd on
 
     make_dir "/data/site"
+}
+
+init_java18() {
+    ${SUDO} yum install -y java-1.8.0-openjdk
+    ${SUDO} yum remove -y java-1.7.0-openjdk
+
+    make_dir "/data/app"
 }
 
 init_tomcat8() {
