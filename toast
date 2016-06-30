@@ -118,6 +118,7 @@ usage() {
     echo " Usage: toast version save"
     echo_
     echo " Usage: toast deploy"
+    echo " Usage: toast deploy auto"
     echo " Usage: toast deploy vhost"
     echo " Usage: toast deploy fleet"
     echo " Usage: toast deploy project"
@@ -135,6 +136,8 @@ auto() {
     config_auto
     config_save
     config_info
+
+    deploy_auto
 }
 
 update() {
@@ -158,10 +161,7 @@ init() {
         slave)
             init_slave
             ;;
-        auto)
-            init_auto
-            ;;
-        web|apache|php)
+        web)
             init_php56
             ;;
         java)
@@ -171,9 +171,11 @@ init() {
             init_java18
             init_tomcat8
             ;;
-        db|mysql)
+        mysql)
             init_mysql56
             ;;
+        *)
+            init_auto
     esac
 }
 
@@ -224,6 +226,8 @@ deploy() {
         server)
             deploy_fleet
             ;;
+        *)
+            deploy_auto
     esac
 }
 
@@ -462,7 +466,7 @@ init_auto() {
     ARR=(${INIT})
 
     for i in "${ARR[@]}"; do
-        if [ "$i" == "web" ] || [ "$i" == "php" ]; then
+        if [ "$i" == "web" ]; then
             init_php56
         fi
         if [ "$i" == "java" ]; then
@@ -603,6 +607,16 @@ version_remove() {
     #aws s3 rm s3://repo.yanolja.com/release/com/yanolja/${ARTIFACT_ID}/${VERSION} --recursive
 
     rm -rf ~/.m2/repository/com/yanolja/${ARTIFACT_ID}/${VERSION}
+}
+
+deploy_auto() {
+    ARR=(${INIT})
+
+    for i in "${ARR[@]}"; do
+        if [ "$i" == "web" ]; then
+            deploy_vhost
+        fi
+    done
 }
 
 deploy_vhost() {
