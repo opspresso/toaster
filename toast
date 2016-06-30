@@ -370,19 +370,19 @@ config_save() {
     fi
 
     echo "# yanolja toast config" > ${CONFIG}
-    echo "LOGIN_URL=${LOGIN_URL}" >> ${CONFIG}
-    echo "TOAST_URL=${TOAST_URL}" >> ${CONFIG}
-    echo "REPO_PATH=${REPO_PATH}" >> ${CONFIG}
-    echo "REPO_USER=${REPO_USER}" >> ${CONFIG}
-    echo "REPO_PASS=${REPO_PASS}" >> ${CONFIG}
-    echo "PHASE=${PHASE}" >> ${CONFIG}
-    echo "FLEET=${FLEET}" >> ${CONFIG}
-    echo "NAME=${NAME}" >> ${CONFIG}
-    echo "HOST=${HOST}" >> ${CONFIG}
-    echo "PORT=${PORT}" >> ${CONFIG}
-    echo "USER=${USER}" >> ${CONFIG}
-    echo "INIT=${INIT}" >> ${CONFIG}
-    echo "TOKEN=${TOKEN}" >> ${CONFIG}
+    echo "LOGIN_URL=\"${LOGIN_URL}\"" >> ${CONFIG}
+    echo "TOAST_URL=\"${TOAST_URL}\"" >> ${CONFIG}
+    echo "REPO_PATH=\"${REPO_PATH}\"" >> ${CONFIG}
+    echo "REPO_USER=\"${REPO_USER}\"" >> ${CONFIG}
+    echo "REPO_PASS=\"${REPO_PASS}\"" >> ${CONFIG}
+    echo "PHASE=\"${PHASE}\"" >> ${CONFIG}
+    echo "FLEET=\"${FLEET}\"" >> ${CONFIG}
+    echo "NAME=\"${NAME}\"" >> ${CONFIG}
+    echo "HOST=\"${HOST}\"" >> ${CONFIG}
+    echo "PORT=\"${PORT}\"" >> ${CONFIG}
+    echo "USER=\"${USER}\"" >> ${CONFIG}
+    echo "INIT=\"${INIT}\"" >> ${CONFIG}
+    echo "TOKEN=\"${TOKEN}\"" >> ${CONFIG}
     echo "SNO=${SNO}" >> ${CONFIG}
 
     echo "${RES}"
