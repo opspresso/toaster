@@ -99,6 +99,7 @@ usage() {
     echo_
     echo " Usage: toast config"
     echo " Usage: toast config auto"
+    echo " Usage: toast config save"
     echo " Usage: toast config info"
     echo_
     echo " Usage: toast update"
@@ -138,6 +139,9 @@ config() {
     case ${SUB} in
         auto)
             config_auto
+            config_save
+            ;;
+        save)
             config_save
             ;;
         info|echo|show)
@@ -337,7 +341,7 @@ config_save() {
     echo "server save..."
 
     URL="${TOAST_URL}/server/config"
-    RES=`curl --data "token=${TOKEN}&no=${SNO}&group=${PHASE}&fleet=${FLEET}&name=${NAME}&host=${HOST}&port=${PORT}&user=${USER}" ${URL}`
+    RES=`curl --data "token=${TOKEN}&no=${SNO}&phase=${PHASE}&fleet=${FLEET}&name=${NAME}&host=${HOST}&port=${PORT}&user=${USER}" ${URL}`
     ARR=(${RES})
 
     if [ "${ARR[0]}" != "OK" ]; then
@@ -503,7 +507,7 @@ version_parse() {
     echo "artifactId=${ARR_ARTIFACT[0]}"
     echo "version=${ARR_VERSION[0]}"
 
-    ARTIFACT_ID=${ARR_GROUP[0]}
+    ARTIFACT_ID=${ARR_ARTIFACT[0]}
     VERSION=${ARR_VERSION[0]}
 }
 
