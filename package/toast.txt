@@ -2,14 +2,7 @@
 LOGIN_URL=https://member.yanolja.com/ywt/loginToken
 TOAST_URL=http://deploy.yanolja.com
 REPO_PATH=http://toast.yanolja.com/uploads/com/yanolja
-REPO_USER=
-REPO_PASS=
 PHASE=dev
 FLEET=dev-demo
-NAME=
-HOST=
-PORT=
-USER=
 INIT="web java"
 TOKEN=eyJtbm8iOjMxMjEyNzQ2LCJkaXYiOiJpX3lhamEiLCJhdG8iOmZhbHNlLCJleHAiOiIyMDE2MDYyNyJ9.b8f511a1628eaccaee8ff95cde8516b89d9905043dc14ec736bc0eb2f9622b39
-SNO=

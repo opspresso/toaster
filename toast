@@ -37,8 +37,8 @@ SUB=$2
 
 ARTIFACT_ID=$3
 VERSION=$4
-DEPLOY_TYPE=$5
-DEPLOY_PATH=$6
+TYPE=$5
+DOMAIN=$6
 
 HAS_WAR=FALSE
 
@@ -635,18 +635,16 @@ deploy_vhost() {
     do
         TARGET=(${line})
 
-        VNM="${TARGET[0]}"
-        DOM="${TARGET[1]}"
+        DOM="${TARGET[0]}"
 
-        make_dir "/data/site/${VNM}"
+        make_dir "/data/site/${DOM}"
 
-        DEST_FILE="${CONF_DIR}/vhost-${VNM}.conf"
+        DEST_FILE="${CONF_DIR}/vhost-${DOM}.conf"
 
         echo "--> ${DEST_FILE}"
 
         ${SUDO} cp ${TEMPLATE} ${DEST_FILE}
 
-        sed "s/VDIR/$VNM/g" ${DEST_FILE} > ${TEMP_FILE} && ${SUDO} mv ${TEMP_FILE} ${DEST_FILE}
         sed "s/VDOM/$DOM/g" ${DEST_FILE} > ${TEMP_FILE} && ${SUDO} mv ${TEMP_FILE} ${DEST_FILE}
 
         ${SUDO} chmod 644 "${DEST_FILE}"
@@ -656,12 +654,18 @@ deploy_vhost() {
 }
 
 deploy_project() {
-    # "deploy project yanolja.deploy 0.0.0 php /data/site/deploy"
+    # "deploy project yanolja.deploy 0.0.0 php deploy.yanolja.com"
 
-    PACKAGING="${DEPLOY_TYPE}"
+    PACKAGING="${TYPE}"
+    if [ "${PACKAGING}" == "war" ]; then
+        DEPLOY_PATH="${WEBAPP_DIR}"
+    fi
+    if [ "${PACKAGING}" == "jar" ]; then
+        DEPLOY_PATH="/data/app/${ARTIFACT_ID}"
+    fi
     if [ "${PACKAGING}" == "php" ]; then
         PACKAGING="war"
-        DEPLOY_PATH="/data/site/${ARTIFACT_ID}"
+        DEPLOY_PATH="/data/site/${DOMAIN}"
     fi
 
     FILENAME="${ARTIFACT_ID}-${VERSION}.${PACKAGING}"
@@ -690,7 +694,7 @@ deploy_server() {
     TARGET_FILE="${TEMP_DIR}/${NAME}"
     ${SUDO} rm -rf "${TARGET_FILE}"
 
-    URL="${TOAST_URL}/target/server/${PHASE}/${NAME}"
+    URL="${TOAST_URL}/target/fleet/${FLEET}"
     wget -q -N -P "${TEMP_DIR}" "${URL}"
 
     echo "download..."
@@ -721,16 +725,22 @@ deploy_server() {
 }
 
 deploy_value() {
-    ARTIFACT_ID="${TARGET[0]}"
-    VERSION="${TARGET[1]}"
-    DEPLOY_TYPE="${TARGET[2]}"
-    DEPLOY_PATH="${TARGET[3]}"
-    RANDOM="${TARGET[4]}"
+    RANDOM="${TARGET[0]}"
+    ARTIFACT_ID="${TARGET[1]}"
+    VERSION="${TARGET[2]}"
+    TYPE="${TARGET[3]}"
+    DOMAIN="${TARGET[4]}"
 
-    PACKAGING="${DEPLOY_TYPE}"
+    PACKAGING="${TYPE}"
+    if [ "${PACKAGING}" == "war" ]; then
+        DEPLOY_PATH="${WEBAPP_DIR}"
+    fi
+    if [ "${PACKAGING}" == "jar" ]; then
+        DEPLOY_PATH="/data/app/${ARTIFACT_ID}"
+    fi
     if [ "${PACKAGING}" == "php" ]; then
         PACKAGING="war"
-        DEPLOY_PATH="/data/site/${ARTIFACT_ID}"
+        DEPLOY_PATH="/data/site/${DOMAIN}"
     fi
 
     FILENAME="${ARTIFACT_ID}-${VERSION}.${PACKAGING}"
@@ -761,12 +771,12 @@ download() {
     fi
 
     # war (for tomcat stop/start)
-    if [ "${DEPLOY_TYPE}" == "war" ]; then
+    if [ "${TYPE}" == "war" ]; then
         HAS_WAR="TRUE"
     fi
 
     # php unzip
-    if [ "${DEPLOY_TYPE}" == "php" ]; then
+    if [ "${TYPE}" == "php" ]; then
         if [ -d "${UNZIP_DIR}" ] || [ -f "${UNZIP_DIR}" ]; then
             rm -rf "${UNZIP_DIR}"
         fi
@@ -789,7 +799,7 @@ placement() {
   echo "--> ${DEPLOY_PATH}"
 
   # php
-  if [ "${DEPLOY_TYPE}" == "php" ]; then
+  if [ "${TYPE}" == "php" ]; then
     rm -rf "${DEPLOY_PATH}.backup"
 
     if [ -d "${DEPLOY_PATH}" ] || [ -f "${DEPLOY_PATH}" ]; then
@@ -805,7 +815,7 @@ placement() {
   fi
 
   # war
-  if [ "${DEPLOY_TYPE}" == "war" ]; then
+  if [ "${TYPE}" == "war" ]; then
     DEST_WAR="${DEPLOY_PATH}/${ARTIFACT_ID}.${PACKAGING}"
 
     rm -rf "${DEPLOY_PATH}/${ARTIFACT_ID}"
@@ -820,7 +830,7 @@ placement() {
   fi
 
   # jar
-  if [ "${DEPLOY_TYPE}" == "jar" ]; then
+  if [ "${TYPE}" == "jar" ]; then
     DEST_WAR="${DEPLOY_PATH}/${ARTIFACT_ID}.${PACKAGING}"
 
     process_stop
