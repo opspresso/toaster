@@ -13,6 +13,7 @@ NAME=
 HOST=
 PORT=
 USER=
+INIT=
 TOKEN=
 SNO=
 
@@ -66,14 +67,14 @@ toast() {
         auto)
             auto
             ;;
-        config)
-            config
-            ;;
         update)
             update
             ;;
         init)
             init
+            ;;
+        config)
+            config
             ;;
         version)
             version
@@ -97,11 +98,6 @@ usage() {
     echo_
     echo " Usage: toast auto"
     echo_
-    echo " Usage: toast config"
-    echo " Usage: toast config auto"
-    echo " Usage: toast config save"
-    echo " Usage: toast config info"
-    echo_
     echo " Usage: toast update"
     echo_
     echo " Usage: toast init"
@@ -111,6 +107,11 @@ usage() {
     echo " Usage: toast init java"
     echo " Usage: toast init tomcat"
     echo " Usage: toast init mysql"
+    echo_
+    echo " Usage: toast config"
+    echo " Usage: toast config auto"
+    echo " Usage: toast config save"
+    echo " Usage: toast config info"
     echo_
     echo " Usage: toast version"
     echo " Usage: toast version next"
@@ -127,31 +128,12 @@ usage() {
 auto() {
     update
 
-    init "slave"
+    init_default
+    init_slave
+    init_auto
 
-    config "auto"
-}
-
-config() {
-    if [ "$1" != "" ]; then
-        SUB="$1"
-    fi
-
-    case ${SUB} in
-        auto)
-            config_auto
-            config_save
-            ;;
-        save)
-            config_save
-            ;;
-        info|echo|show)
-            ;;
-        *)
-            config_read
-            config_save
-    esac
-
+    config_auto
+    config_save
     config_info
 }
 
@@ -176,6 +158,9 @@ init() {
         slave)
             init_slave
             ;;
+        auto)
+            init_auto
+            ;;
         web|apache|php)
             init_php56
             ;;
@@ -190,6 +175,29 @@ init() {
             init_mysql56
             ;;
     esac
+}
+
+config() {
+    if [ "$1" != "" ]; then
+        SUB="$1"
+    fi
+
+    case ${SUB} in
+        auto)
+            config_auto
+            config_save
+            ;;
+        save)
+            config_save
+            ;;
+        info|echo|show)
+            ;;
+        *)
+            config_read
+            config_save
+    esac
+
+    config_info
 }
 
 version() {
@@ -373,6 +381,7 @@ config_save() {
     echo "HOST=${HOST}" >> ${CONFIG}
     echo "PORT=${PORT}" >> ${CONFIG}
     echo "USER=${USER}" >> ${CONFIG}
+    echo "INIT=${INIT}" >> ${CONFIG}
     echo "TOKEN=${TOKEN}" >> ${CONFIG}
     echo "SNO=${SNO}" >> ${CONFIG}
 
@@ -447,6 +456,22 @@ init_slave() {
         chmod 600 ${HOME}/.ssh/id_rsa
         chmod 644 ${HOME}/.ssh/id_rsa.pub
     fi
+}
+
+init_auto() {
+    ARR=(${INIT})
+
+    for i in "${ARR[@]}"; do
+        if [ "$i" == "web" ] || [ "$i" == "php" ]; then
+            init_php56
+        fi
+        if [ "$i" == "java" ]; then
+            init_java18
+        fi
+        if [ "$i" == "tomcat" ]; then
+            init_tomcat8
+        fi
+    done
 }
 
 init_php56() {
