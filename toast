@@ -279,6 +279,12 @@ config_read() {
         TOAST_URL=${READ_TOAST_URL}
     fi
 
+    echo "Please input repository path. [default:${REPO_PATH}]"
+    read READ_REPO_PATH
+    if [ "${READ_REPO_PATH}" != "" ]; then
+        REPO_PATH=${READ_REPO_PATH}
+    fi
+
     echo "Please input server phase. [default:${PHASE}]"
     read READ_PHASE
     if [ "${READ_PHASE}" != "" ]; then
