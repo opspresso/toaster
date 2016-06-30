@@ -503,7 +503,7 @@ version_parse() {
     echo "artifactId=${ARR_ARTIFACT[0]}"
     echo "version=${ARR_VERSION[0]}"
 
-    ARTIFACT_ID=${ARR_GROUP[0]}
+    ARTIFACT_ID=${ARR_ARTIFACT[0]}
     VERSION=${ARR_VERSION[0]}
 }
 
