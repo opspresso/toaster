@@ -466,13 +466,13 @@ init_auto() {
     ARR=(${INIT})
 
     for i in "${ARR[@]}"; do
-        if [ "$i" == "web" ]; then
+        if [ "$i" == "web" ] || [ "$i" == "php" ]; then
             init_php56
         fi
-        if [ "$i" == "java" ]; then
+        if [ "$i" == "java" ] || [ "$i" == "jar" ]; then
             init_java18
         fi
-        if [ "$i" == "tomcat" ]; then
+        if [ "$i" == "tomcat" ] || [ "$i" == "war" ]; then
             init_tomcat8
         fi
     done
@@ -613,7 +613,7 @@ deploy_auto() {
     ARR=(${INIT})
 
     for i in "${ARR[@]}"; do
-        if [ "$i" == "web" ]; then
+        if [ "$i" == "web" ] || [ "$i" == "php" ]; then
             deploy_vhost
         fi
     done
