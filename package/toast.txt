@@ -4,5 +4,4 @@ TOAST_URL=http://deploy.yanolja.com
 REPO_PATH=http://toast.yanolja.com/uploads/com/yanolja
 PHASE=dev
 FLEET=dev-demo
-INIT="web java"
 TOKEN=eyJtbm8iOjMxMjEyNzQ2LCJkaXYiOiJpX3lhamEiLCJhdG8iOmZhbHNlLCJleHAiOiIyMDE2MDYyNyJ9.b8f511a1628eaccaee8ff95cde8516b89d9905043dc14ec736bc0eb2f9622b39
