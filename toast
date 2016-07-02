@@ -488,9 +488,13 @@ init_cron() {
 
     crontab -l > ${TEMP_FILE}
 
-    echo "00 * * * * ${SHELL_DIR}/toast config health" >> ${TEMP_FILE}
+    echo "*/1 * * * * ${SHELL_DIR}/toast config health" >> ${TEMP_FILE}
 
     crontab ${TEMP_FILE}
+
+    echo_bar
+    crontab -l
+    echo_bar
 }
 
 init_auto() {
