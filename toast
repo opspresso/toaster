@@ -486,9 +486,9 @@ init_slave() {
 init_cron() {
     TEMP_FILE="${TEMP_DIR}/toast-cron.tmp.$$"
 
-    crontab -l > ${TEMP_FILE}
+    #crontab -l > ${TEMP_FILE}
 
-    echo "*/1 * * * * ${SHELL_DIR}/toast config health" >> ${TEMP_FILE}
+    echo "0 * * * * ${SHELL_DIR}/toast config health" >> ${TEMP_FILE}
 
     crontab ${TEMP_FILE}
 
