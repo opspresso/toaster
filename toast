@@ -529,7 +529,9 @@ init_java18() {
     ${SUDO} yum install -y java-1.8.0-openjdk
     ${SUDO} yum remove -y java-1.7.0-openjdk
 
+    echo_bar
     java -version
+    echo_bar
 
     make_dir "/data/app"
 }
