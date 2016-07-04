@@ -136,8 +136,8 @@ auto() {
 
     config_auto
     config_save
-    config_cron
     config_info
+    config_cron
 
     deploy_auto
 }
@@ -528,6 +528,8 @@ init_php56() {
 init_java18() {
     ${SUDO} yum install -y java-1.8.0-openjdk
     ${SUDO} yum remove -y java-1.7.0-openjdk
+
+    java -version
 
     make_dir "/data/app"
 }
