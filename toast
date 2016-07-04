@@ -136,6 +136,7 @@ auto() {
 
     config_auto
     config_save
+    config_cron
     config_info
 
     deploy_auto
@@ -161,9 +162,6 @@ init() {
             ;;
         slave)
             init_slave
-            ;;
-        cron)
-            init_cron
             ;;
         web)
             init_php56
@@ -198,6 +196,9 @@ config() {
             ;;
         health)
             config_health
+            ;;
+        cron)
+            config_cron
             ;;
         info|echo|show)
             ;;
@@ -361,20 +362,6 @@ config_info() {
     echo_bar
 }
 
-config_health() {
-    if [ "${SNO}" == "" ]; then
-        echo "Not configured server. [${SNO}]"
-        exit 1
-    fi
-
-    echo "server health..."
-
-    URL="${TOAST_URL}/server/health/${SNO}"
-    RES=`curl ${URL}`
-
-    echo "${RES}"
-}
-
 config_save() {
     echo "server save..."
 
@@ -411,6 +398,34 @@ config_save() {
     echo "SNO=${SNO}" >> ${CONFIG}
 
     echo "${RES}"
+}
+
+config_health() {
+    if [ "${SNO}" == "" ]; then
+        echo "Not configured server. [${SNO}]"
+        exit 1
+    fi
+
+    echo "server health..."
+
+    URL="${TOAST_URL}/server/health/${SNO}"
+    RES=`curl ${URL}`
+
+    echo "${RES}"
+}
+
+config_cron() {
+    TEMP_FILE="${TEMP_DIR}/toast-cron.tmp.$$"
+
+    #crontab -l > ${TEMP_FILE}
+
+    echo "*/1 * * * * ${SHELL_DIR}/toast config health" >> ${TEMP_FILE}
+
+    crontab ${TEMP_FILE}
+
+    echo_bar
+    crontab -l
+    echo_bar
 }
 
 update_yum() {
@@ -481,20 +496,6 @@ init_slave() {
         chmod 600 ${HOME}/.ssh/id_rsa
         chmod 644 ${HOME}/.ssh/id_rsa.pub
     fi
-}
-
-init_cron() {
-    TEMP_FILE="${TEMP_DIR}/toast-cron.tmp.$$"
-
-    #crontab -l > ${TEMP_FILE}
-
-    echo "*/1 * * * * ${SHELL_DIR}/toast config health" >> ${TEMP_FILE}
-
-    crontab ${TEMP_FILE}
-
-    echo_bar
-    crontab -l
-    echo_bar
 }
 
 init_auto() {
