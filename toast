@@ -136,8 +136,8 @@ auto() {
 
     config_auto
     config_save
-    config_cron
     config_info
+    config_cron
 
     deploy_auto
 }
