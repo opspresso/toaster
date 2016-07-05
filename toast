@@ -430,7 +430,7 @@ config_cron() {
 
     #crontab -l > ${TEMP_FILE}
 
-    echo "*/1 * * * * ${SHELL_DIR}/toast config health > /dev/null 2>&1" >> ${TEMP_FILE}
+    echo "* * * * * ${SHELL_DIR}/toast config health > /dev/null 2>&1" >> ${TEMP_FILE}
 
     crontab ${TEMP_FILE}
 
