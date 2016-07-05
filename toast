@@ -549,11 +549,21 @@ init_tomcat8() {
     #${SUDO} service tomcat8 restart
     #${SUDO} chkconfig tomcat8 on
 
+    if [ -d "${APPS_DIR}/apache-tomcat-${TOMCAT_VER}" ]; then
+        rm -rf "${APPS_DIR}/apache-tomcat-${TOMCAT_VER}"
+    fi
+
+    if [ -d "${APPS_DIR}/tomcat8" ]; then
+        rm -rf "${APPS_DIR}/tomcat8"
+    fi
+
     wget -q -N -P "${APPS_DIR}" "${TOMCAT_URL}"
 
-    unzip -q "${APPS_DIR}/apache-tomcat-${TOMCAT_VER}.zip" -d "tomcat8"
+    unzip -q "${APPS_DIR}/apache-tomcat-${TOMCAT_VER}.zip"
 
-    
+    ln -s "${APPS_DIR}/apache-tomcat-${TOMCAT_VER}" "tomcat8"
+
+    rm -rf "${APPS_DIR}/tomcat8/webapp/*"
 }
 
 init_mysql56() {
