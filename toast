@@ -64,7 +64,7 @@ HTTPD_CONF_DIR="/etc/httpd/conf.d"
 TOMCAT_VER="8.0.36"
 TOMCAT_URL="http://mirror.apache-kr.org/tomcat/tomcat-8/v${TOMCAT_VER}/bin/apache-tomcat-${TOMCAT_VER}.zip"
 TOMCAT_DIR="${APPS_DIR}/tomcat8"
-WEBAPP_DIR="${TOMCAT_DIR}/webapp"
+WEBAPP_DIR="${TOMCAT_DIR}/webapps"
 
 ################################################################################
 
@@ -241,6 +241,9 @@ deploy() {
             ;;
         server)
             deploy_fleet
+            ;;
+        jenkins)
+            deploy_jenkins
             ;;
         *)
             deploy_auto
@@ -821,6 +824,36 @@ deploy_value() {
     FILEPATH="${TEMP_DIR}/${FILENAME}"
 
     UNZIP_DIR="${TEMP_DIR}/${RANDOM}"
+}
+
+deploy_jenkins() {
+    # "deploy jenkins"
+
+    ARTIFACT_ID="jenkins"
+    VERSION=""
+    TYPE="war"
+
+    PACKAGING="${TYPE}"
+    DEPLOY_PATH="${WEBAPP_DIR}"
+
+    FILENAME="${ARTIFACT_ID}.${PACKAGING}"
+    FILEPATH="${TEMP_DIR}/${FILENAME}"
+
+    HAS_WAR="TRUE"
+
+    echo "download..."
+
+    SOURCE="http://mirrors.jenkins-ci.org/war/latest/jenkins.war"
+
+    wget -q -N -P "${TEMP_DIR}" "${SOURCE}"
+
+    tomcat_stop
+
+    echo "placement..."
+
+    placement
+
+    tomcat_start
 }
 
 download() {
