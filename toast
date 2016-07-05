@@ -555,7 +555,7 @@ init_tomcat8() {
 
     wget -q -N -P "${APPS_DIR}" "${TOMCAT_URL}"
 
-    unzip -q "${APPS_DIR}/apache-tomcat-${TOMCAT_VER}.zip"
+    unzip -q "${APPS_DIR}/apache-tomcat-${TOMCAT_VER}.zip" -d "${APPS_DIR}"
 
     ln -s "${APPS_DIR}/apache-tomcat-${TOMCAT_VER}" "${TOMCAT_DIR}"
 
