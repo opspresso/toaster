@@ -430,7 +430,7 @@ config_cron() {
 
     #crontab -l > ${TEMP_FILE}
 
-    echo "*/1 * * * * ${SHELL_DIR}/toast config health" >> ${TEMP_FILE}
+    echo "*/1 * * * * ${SHELL_DIR}/toast config health > /dev/null 2>&1" >> ${TEMP_FILE}
 
     crontab ${TEMP_FILE}
 
@@ -894,6 +894,8 @@ download() {
         fi
 
         unzip -q "${FILEPATH}" -d "${UNZIP_DIR}"
+
+        chmod 777 "${UNZIP_DIR}/application/logs"
     fi
 }
 
