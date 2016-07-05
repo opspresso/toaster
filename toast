@@ -559,7 +559,8 @@ init_tomcat8() {
 
     ln -s "${APPS_DIR}/apache-tomcat-${TOMCAT_VER}" "${TOMCAT_DIR}"
 
-    rm -rf "${WEBAPP_DIR}/*"
+    chmod 755 ${TOMCAT_DIR}/bin/*.sh
+    rm -rf ${WEBAPP_DIR}/*
 }
 
 init_mysql56() {
@@ -924,8 +925,7 @@ placement() {
 tomcat_stop() {
     if [ "${HAS_WAR}" == "TRUE" ]; then
       echo "tomcat stop..."
-      #/usr/local/tomcat8/bin/shutdown.sh
-      ${SUDO} service tomcat8 stop
+      /data/apps/tomcat8/bin/shutdown.sh
     fi
 }
 
@@ -948,8 +948,7 @@ tomcat_start() {
         count=`expr ${count} + 1`
       done
       echo "tomcat start..."
-      #/usr/local/tomcat8/bin/startup.sh
-      ${SUDO} service tomcat8 start
+      /data/apps/tomcat8/bin/startup.sh
     fi
 }
 
