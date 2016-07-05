@@ -56,14 +56,15 @@ fi
 
 ################################################################################
 
+SITE_DIR="/data/site"
+APPS_DIR="/data/apps"
+
 HTTPD_CONF_DIR="/etc/httpd/conf.d"
 
 TOMCAT_VER="8.0.36"
 TOMCAT_URL="http://mirror.apache-kr.org/tomcat/tomcat-8/v${TOMCAT_VER}/bin/apache-tomcat-${TOMCAT_VER}.zip"
-
-APPS_DIR="/data/apps"
-
-WEBAPP_DIR="/data/apps/tomcat8"
+TOMCAT_DIR="${APPS_DIR}/tomcat8"
+WEBAPP_DIR="${TOMCAT_DIR}/webapp"
 
 ################################################################################
 
@@ -529,7 +530,7 @@ init_php56() {
     ${SUDO} service httpd restart
     ${SUDO} chkconfig httpd on
 
-    make_dir "/data/site"
+    make_dir "${SITE_DIR}"
 }
 
 init_java18() {
@@ -540,30 +541,25 @@ init_java18() {
     java -version
     echo_bar
 
-    make_dir "/data/app"
+    make_dir "${APPS_DIR}"
 }
 
 init_tomcat8() {
-    #${SUDO} yum install -y tomcat8
-
-    #${SUDO} service tomcat8 restart
-    #${SUDO} chkconfig tomcat8 on
-
     if [ -d "${APPS_DIR}/apache-tomcat-${TOMCAT_VER}" ]; then
         rm -rf "${APPS_DIR}/apache-tomcat-${TOMCAT_VER}"
     fi
 
-    if [ -d "${APPS_DIR}/tomcat8" ]; then
-        rm -rf "${APPS_DIR}/tomcat8"
+    if [ -d "${TOMCAT_DIR}" ]; then
+        rm -rf "${TOMCAT_DIR}"
     fi
 
     wget -q -N -P "${APPS_DIR}" "${TOMCAT_URL}"
 
     unzip -q "${APPS_DIR}/apache-tomcat-${TOMCAT_VER}.zip"
 
-    ln -s "${APPS_DIR}/apache-tomcat-${TOMCAT_VER}" "tomcat8"
+    ln -s "${APPS_DIR}/apache-tomcat-${TOMCAT_VER}" "${TOMCAT_DIR}"
 
-    rm -rf "${APPS_DIR}/tomcat8/webapp/*"
+    rm -rf "${WEBAPP_DIR}/*"
 }
 
 init_mysql56() {
@@ -714,7 +710,7 @@ deploy_vhost() {
 
         DOM="${TARGET[0]}"
 
-        make_dir "/data/site/${DOM}"
+        make_dir "${SITE_DIR}/${DOM}"
 
         DEST_FILE="${HTTPD_CONF_DIR}/vhost-${DOM}.conf"
 
@@ -738,11 +734,11 @@ deploy_project() {
         DEPLOY_PATH="${WEBAPP_DIR}"
     fi
     if [ "${PACKAGING}" == "jar" ]; then
-        DEPLOY_PATH="/data/app/${ARTIFACT_ID}"
+        DEPLOY_PATH="${APPS_DIR}/${ARTIFACT_ID}"
     fi
     if [ "${PACKAGING}" == "php" ]; then
         PACKAGING="war"
-        DEPLOY_PATH="/data/site/${DOMAIN}"
+        DEPLOY_PATH="${SITE_DIR}/${DOMAIN}"
     fi
 
     FILENAME="${ARTIFACT_ID}-${VERSION}.${PACKAGING}"
@@ -813,11 +809,11 @@ deploy_value() {
         DEPLOY_PATH="${WEBAPP_DIR}"
     fi
     if [ "${PACKAGING}" == "jar" ]; then
-        DEPLOY_PATH="/data/app/${ARTIFACT_ID}"
+        DEPLOY_PATH="${APPS_DIR}/${ARTIFACT_ID}"
     fi
     if [ "${PACKAGING}" == "php" ]; then
         PACKAGING="war"
-        DEPLOY_PATH="/data/site/${DOMAIN}"
+        DEPLOY_PATH="${SITE_DIR}/${DOMAIN}"
     fi
 
     FILENAME="${ARTIFACT_ID}-${VERSION}.${PACKAGING}"
