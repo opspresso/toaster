@@ -56,14 +56,15 @@ fi
 
 ################################################################################
 
+SITE_DIR="/data/site"
+APPS_DIR="/data/apps"
+
 HTTPD_CONF_DIR="/etc/httpd/conf.d"
 
 TOMCAT_VER="8.0.36"
 TOMCAT_URL="http://mirror.apache-kr.org/tomcat/tomcat-8/v${TOMCAT_VER}/bin/apache-tomcat-${TOMCAT_VER}.zip"
-
-APPS_DIR="/data/apps"
-
-WEBAPP_DIR="/data/apps/tomcat8"
+TOMCAT_DIR="${APPS_DIR}/tomcat8"
+WEBAPP_DIR="${TOMCAT_DIR}/webapps"
 
 ################################################################################
 
@@ -240,6 +241,9 @@ deploy() {
             ;;
         server)
             deploy_fleet
+            ;;
+        jenkins)
+            deploy_jenkins
             ;;
         *)
             deploy_auto
@@ -426,7 +430,7 @@ config_cron() {
 
     #crontab -l > ${TEMP_FILE}
 
-    echo "*/1 * * * * ${SHELL_DIR}/toast config health" >> ${TEMP_FILE}
+    echo "*/1 * * * * ${SHELL_DIR}/toast config health > /dev/null 2>&1" >> ${TEMP_FILE}
 
     crontab ${TEMP_FILE}
 
@@ -529,7 +533,7 @@ init_php56() {
     ${SUDO} service httpd restart
     ${SUDO} chkconfig httpd on
 
-    make_dir "/data/site"
+    make_dir "${SITE_DIR}"
 }
 
 init_java18() {
@@ -540,20 +544,26 @@ init_java18() {
     java -version
     echo_bar
 
-    make_dir "/data/app"
+    make_dir "${APPS_DIR}"
 }
 
 init_tomcat8() {
-    #${SUDO} yum install -y tomcat8
+    if [ -d "${APPS_DIR}/apache-tomcat-${TOMCAT_VER}" ]; then
+        rm -rf "${APPS_DIR}/apache-tomcat-${TOMCAT_VER}"
+    fi
 
-    #${SUDO} service tomcat8 restart
-    #${SUDO} chkconfig tomcat8 on
+    if [ -d "${TOMCAT_DIR}" ]; then
+        rm -rf "${TOMCAT_DIR}"
+    fi
 
     wget -q -N -P "${APPS_DIR}" "${TOMCAT_URL}"
 
-    unzip -q "${APPS_DIR}/apache-tomcat-${TOMCAT_VER}.zip" -d "tomcat8"
+    unzip -q "${APPS_DIR}/apache-tomcat-${TOMCAT_VER}.zip" -d "${APPS_DIR}"
 
-    
+    ln -s "${APPS_DIR}/apache-tomcat-${TOMCAT_VER}" "${TOMCAT_DIR}"
+
+    chmod 755 ${TOMCAT_DIR}/bin/*.sh
+    rm -rf ${WEBAPP_DIR}/*
 }
 
 init_mysql56() {
@@ -704,7 +714,7 @@ deploy_vhost() {
 
         DOM="${TARGET[0]}"
 
-        make_dir "/data/site/${DOM}"
+        make_dir "${SITE_DIR}/${DOM}"
 
         DEST_FILE="${HTTPD_CONF_DIR}/vhost-${DOM}.conf"
 
@@ -728,11 +738,11 @@ deploy_project() {
         DEPLOY_PATH="${WEBAPP_DIR}"
     fi
     if [ "${PACKAGING}" == "jar" ]; then
-        DEPLOY_PATH="/data/app/${ARTIFACT_ID}"
+        DEPLOY_PATH="${APPS_DIR}/${ARTIFACT_ID}"
     fi
     if [ "${PACKAGING}" == "php" ]; then
         PACKAGING="war"
-        DEPLOY_PATH="/data/site/${DOMAIN}"
+        DEPLOY_PATH="${SITE_DIR}/${DOMAIN}"
     fi
 
     FILENAME="${ARTIFACT_ID}-${VERSION}.${PACKAGING}"
@@ -803,17 +813,47 @@ deploy_value() {
         DEPLOY_PATH="${WEBAPP_DIR}"
     fi
     if [ "${PACKAGING}" == "jar" ]; then
-        DEPLOY_PATH="/data/app/${ARTIFACT_ID}"
+        DEPLOY_PATH="${APPS_DIR}/${ARTIFACT_ID}"
     fi
     if [ "${PACKAGING}" == "php" ]; then
         PACKAGING="war"
-        DEPLOY_PATH="/data/site/${DOMAIN}"
+        DEPLOY_PATH="${SITE_DIR}/${DOMAIN}"
     fi
 
     FILENAME="${ARTIFACT_ID}-${VERSION}.${PACKAGING}"
     FILEPATH="${TEMP_DIR}/${FILENAME}"
 
     UNZIP_DIR="${TEMP_DIR}/${RANDOM}"
+}
+
+deploy_jenkins() {
+    # "deploy jenkins"
+
+    ARTIFACT_ID="jenkins"
+    VERSION=""
+    TYPE="war"
+
+    PACKAGING="${TYPE}"
+    DEPLOY_PATH="${WEBAPP_DIR}"
+
+    FILENAME="${ARTIFACT_ID}.${PACKAGING}"
+    FILEPATH="${TEMP_DIR}/${FILENAME}"
+
+    HAS_WAR="TRUE"
+
+    echo "download..."
+
+    SOURCE="http://mirrors.jenkins-ci.org/war/latest/jenkins.war"
+
+    wget -q -N -P "${TEMP_DIR}" "${SOURCE}"
+
+    tomcat_stop
+
+    echo "placement..."
+
+    placement
+
+    tomcat_start
 }
 
 download() {
@@ -854,6 +894,8 @@ download() {
         fi
 
         unzip -q "${FILEPATH}" -d "${UNZIP_DIR}"
+
+        chmod 777 "${UNZIP_DIR}/application/logs"
     fi
 }
 
@@ -918,8 +960,7 @@ placement() {
 tomcat_stop() {
     if [ "${HAS_WAR}" == "TRUE" ]; then
       echo "tomcat stop..."
-      #/usr/local/tomcat8/bin/shutdown.sh
-      ${SUDO} service tomcat8 stop
+      /data/apps/tomcat8/bin/shutdown.sh
     fi
 }
 
@@ -942,8 +983,7 @@ tomcat_start() {
         count=`expr ${count} + 1`
       done
       echo "tomcat start..."
-      #/usr/local/tomcat8/bin/startup.sh
-      ${SUDO} service tomcat8 start
+      /data/apps/tomcat8/bin/startup.sh
     fi
 }
 
