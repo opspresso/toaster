@@ -54,9 +54,16 @@ if [ ! -d "${TEMP_DIR}" ]; then
     mkdir "${TEMP_DIR}"
 fi
 
-CONF_DIR="/etc/httpd/conf.d"
+################################################################################
 
-WEBAPP_DIR="/usr/share/tomcat8/webapps"
+HTTPD_CONF_DIR="/etc/httpd/conf.d"
+
+TOMCAT_VER="8.0.36"
+TOMCAT_URL="http://mirror.apache-kr.org/tomcat/tomcat-8/v${TOMCAT_VER}/bin/apache-tomcat-${TOMCAT_VER}.zip"
+
+APPS_DIR="/data/apps"
+
+WEBAPP_DIR="/data/apps/tomcat8"
 
 ################################################################################
 
@@ -537,10 +544,16 @@ init_java18() {
 }
 
 init_tomcat8() {
-    ${SUDO} yum install -y tomcat8
+    #${SUDO} yum install -y tomcat8
 
-    ${SUDO} service tomcat8 restart
-    ${SUDO} chkconfig tomcat8 on
+    #${SUDO} service tomcat8 restart
+    #${SUDO} chkconfig tomcat8 on
+
+    wget -q -N -P "${APPS_DIR}" "${TOMCAT_URL}"
+
+    unzip -q "${APPS_DIR}/apache-tomcat-${TOMCAT_VER}.zip" -d "tomcat8"
+
+    
 }
 
 init_mysql56() {
@@ -660,18 +673,18 @@ deploy_auto() {
 }
 
 deploy_vhost() {
-    if [ ! -d "${CONF_DIR}" ]; then
+    if [ ! -d "${HTTPD_CONF_DIR}" ]; then
         echo "Need web server init. [toast init web]"
         exit 1
     fi
 
     ${SUDO} service httpd stop
 
-    ${SUDO} rm -rf ${CONF_DIR}/localhost*
-    ${SUDO} rm -rf ${CONF_DIR}/vhost*
+    ${SUDO} rm -rf ${HTTPD_CONF_DIR}/localhost*
+    ${SUDO} rm -rf ${HTTPD_CONF_DIR}/vhost*
 
-    ${SUDO} cp "${SHELL_DIR}/vhost/localhost.conf" "${CONF_DIR}/"
-    ${SUDO} chmod 644 "${CONF_DIR}/localhost.conf"
+    ${SUDO} cp "${SHELL_DIR}/vhost/localhost.conf" "${HTTPD_CONF_DIR}/"
+    ${SUDO} chmod 644 "${HTTPD_CONF_DIR}/localhost.conf"
 
     TEMP_FILE="${TEMP_DIR}/toast-vhost.tmp.$$"
 
@@ -693,7 +706,7 @@ deploy_vhost() {
 
         make_dir "/data/site/${DOM}"
 
-        DEST_FILE="${CONF_DIR}/vhost-${DOM}.conf"
+        DEST_FILE="${HTTPD_CONF_DIR}/vhost-${DOM}.conf"
 
         echo "--> ${DEST_FILE}"
 
@@ -954,8 +967,9 @@ process_start() {
 make_dir() {
     if [ ! -d $1 ] && [ ! -f $1 ]; then
         ${SUDO} mkdir $1
-        ${SUDO} chown ${USER}.${USER} $1
     fi
+
+    ${SUDO} chown ${USER}.${USER} $1
 }
 
 echo_bar() {
