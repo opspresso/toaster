@@ -567,7 +567,7 @@ init_tomcat8() {
 }
 
 init_mysql56() {
-    ${SUDO} yum install -y mysql56-server
+    ${SUDO} yum install -y mysql55-server
 
     ${SUDO} service mysqld restart
     ${SUDO} chkconfig mysqld on
