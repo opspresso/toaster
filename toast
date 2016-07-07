@@ -463,7 +463,7 @@ init_default() {
         sed "s/PHASE/$PHASE/g" "${SHELL_DIR}/package/bashrc.txt" > "${HOME}/.bashrc"
     fi
 
-    ${SUDO} cp -rf "${SHELL_DIR}/package/hosts.txt" "/etc/hosts"
+    ${SUDO} cp -rf "${SHELL_DIR}/package/${PHASE}/hosts.txt" "/etc/hosts"
 
     make_dir "${HOME}/.ssh"
 
