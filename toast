@@ -729,7 +729,7 @@ deploy_vhost() {
     TARGET_FILE="${TEMP_DIR}/${FLEET}"
     ${SUDO} rm -rf "${TARGET_FILE}"
 
-    URL="${TOAST_URL}/target/vhost/${FLEET}"
+    URL="${TOAST_URL}/target/vhost/${PHASE}/${FLEET}"
     wget -q -N -P "${TEMP_DIR}" "${URL}"
 
     while read line
@@ -795,7 +795,7 @@ deploy_fleet() {
     TARGET_FILE="${TEMP_DIR}/${NAME}"
     ${SUDO} rm -rf "${TARGET_FILE}"
 
-    URL="${TOAST_URL}/target/fleet/${FLEET}"
+    URL="${TOAST_URL}/target/fleet/${PHASE}/${FLEET}"
     wget -q -N -P "${TEMP_DIR}" "${URL}"
 
     echo "download..."
