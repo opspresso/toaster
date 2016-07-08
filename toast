@@ -111,6 +111,12 @@ usage() {
     echo_
     echo " Usage: toast update"
     echo_
+    echo " Usage: toast config"
+    echo " Usage: toast config auto"
+    echo " Usage: toast config save"
+    echo " Usage: toast config health"
+    echo " Usage: toast config info"
+    echo_
     echo " Usage: toast init"
     echo " Usage: toast init master"
     echo " Usage: toast init slave"
@@ -118,12 +124,6 @@ usage() {
     echo " Usage: toast init java"
     echo " Usage: toast init tomcat"
     echo " Usage: toast init mysql"
-    echo_
-    echo " Usage: toast config"
-    echo " Usage: toast config auto"
-    echo " Usage: toast config save"
-    echo " Usage: toast config health"
-    echo " Usage: toast config info"
     echo_
     echo " Usage: toast version"
     echo " Usage: toast version next"
@@ -139,16 +139,15 @@ usage() {
 }
 
 auto() {
-    update
-
-    init_default
-    init_slave
-    init_auto
+    prepare_toast
 
     config_auto
     config_save
     config_info
     config_cron
+
+    init_slave
+    init_auto
 
     deploy_auto
 }
@@ -161,8 +160,6 @@ update() {
 }
 
 init() {
-    init_default
-
     if [ "$1" != "" ]; then
         SUB="$1"
     fi
@@ -257,10 +254,8 @@ deploy() {
 
 self_info() {
     echo_bar
-
     echo "PATH : $0"
     echo "HOME : ${HOME}"
-
     echo_bar
 }
 
@@ -411,6 +406,8 @@ config_save() {
     echo "TOKEN=\"${TOKEN}\"" >> ${CONFIG}
     echo "SNO=${SNO}" >> ${CONFIG}
 
+    chmod 644 ${CONFIG}
+
     echo "${RES}"
 }
 
@@ -446,7 +443,7 @@ update_yum() {
     ${SUDO} yum update -y
 }
 
-init_default() {
+prepare_toast() {
     ${SUDO} rm -rf /etc/localtime
     ${SUDO} ln -sf /usr/share/zoneinfo/Asia/Seoul /etc/localtime
 
