@@ -61,13 +61,13 @@ APPS_DIR="/data/apps"
 
 HTTPD_CONF_DIR="/etc/httpd/conf.d"
 
+JDK_RPM="jdk-8u91-linux-x64.rpm"
+JDK_URL="http://download.oracle.com/otn-pub/java/jdk/8u91-b14/${JDK_RPM}"
+
 TOMCAT_VER="8.0.36"
 TOMCAT_URL="http://mirror.apache-kr.org/tomcat/tomcat-8/v${TOMCAT_VER}/bin/apache-tomcat-${TOMCAT_VER}.zip"
 TOMCAT_DIR="${APPS_DIR}/tomcat8"
 WEBAPP_DIR="${TOMCAT_DIR}/webapps"
-
-ORACLE_JDK_RPM="jdk-8u91-linux-x64.rpm"
-ORACLE_JDK_URL="http://download.oracle.com/otn-pub/java/jdk/8u91-b14/${ORACLE_JDK_RPM}"
 
 ################################################################################
 
@@ -555,24 +555,13 @@ init_php70() {
 }
 
 init_java8() {
-    ${SUDO} yum install -y java-1.8.0-openjdk
-    ${SUDO} yum remove -y java-1.7.0-openjdk
-
-    echo_bar
-    java -version
-    echo_bar
-
-    make_dir "${APPS_DIR}"
-}
-
-init_java8_oracle() {
     COOKIE="Cookie: gpw_e24=http%3A%2F%2Fwww.oracle.com%2F; oraclelicense=accept-securebackup-cookie"
 
-    wget --no-cookies --no-check-certificate --header ${COOKIE} ${ORACLE_JDK_URL}
+    wget --no-cookies --no-check-certificate --header ${COOKIE} ${JDK_URL}
 
-    ${SUDO} yum localinstall ${ORACLE_JDK_RPM}
+    ${SUDO} yum localinstall -y ${JDK_RPM}
 
-    em -rf ${ORACLE_JDK_RPM}
+    rm -rf ${JDK_RPM}
 
     echo_bar
     java -version
