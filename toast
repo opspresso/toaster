@@ -111,19 +111,20 @@ usage() {
     echo_
     echo " Usage: toast update"
     echo_
-    echo " Usage: toast init"
-    echo " Usage: toast init master"
-    echo " Usage: toast init slave"
-    echo " Usage: toast init web"
-    echo " Usage: toast init java"
-    echo " Usage: toast init tomcat"
-    echo " Usage: toast init mysql"
-    echo_
     echo " Usage: toast config"
     echo " Usage: toast config auto"
     echo " Usage: toast config save"
     echo " Usage: toast config health"
     echo " Usage: toast config info"
+    echo_
+    echo " Usage: toast init"
+    echo " Usage: toast init master"
+    echo " Usage: toast init slave"
+    echo " Usage: toast init php5"
+    echo " Usage: toast init php7"
+    echo " Usage: toast init java"
+    echo " Usage: toast init tomcat"
+    echo " Usage: toast init mysql"
     echo_
     echo " Usage: toast version"
     echo " Usage: toast version next"
@@ -139,16 +140,15 @@ usage() {
 }
 
 auto() {
-    update
-
-    init_default
-    init_slave
-    init_auto
+    prepare
 
     config_auto
     config_save
     config_info
     config_cron
+
+    init_slave
+    init_auto
 
     deploy_auto
 }
@@ -161,8 +161,6 @@ update() {
 }
 
 init() {
-    init_default
-
     if [ "$1" != "" ]; then
         SUB="$1"
     fi
@@ -174,13 +172,13 @@ init() {
         slave)
             init_slave
             ;;
-        web)
+        php5)
             init_php56
             ;;
-        java)
-            init_java8
+        php7)
+            init_php70
             ;;
-        tomcat)
+        java|tomcat)
             init_java8
             init_tomcat8
             ;;
@@ -257,10 +255,8 @@ deploy() {
 
 self_info() {
     echo_bar
-
     echo "PATH : $0"
     echo "HOME : ${HOME}"
-
     echo_bar
 }
 
@@ -268,6 +264,34 @@ self_update() {
     pushd "${SHELL_DIR}"
     git pull
     popd
+}
+
+prepare() {
+    ${SUDO} rm -rf /etc/localtime
+    ${SUDO} ln -sf /usr/share/zoneinfo/Asia/Seoul /etc/localtime
+
+    if [ ! -f "/usr/bin/git" ]; then
+        ${SUDO} yum install -y git
+    fi
+
+    if [ ! -f "/usr/bin/vim" ]; then
+        ${SUDO} yum install -y vim
+    fi
+
+    if [ ! -f "/usr/bin/nmap" ]; then
+        ${SUDO} yum install -y nmap
+    fi
+
+    if [ "${SUDO}" != "" ]; then
+        sed "s/PHASE/$PHASE/g" "${SHELL_DIR}/package/bashrc.txt" > "${HOME}/.bashrc"
+    fi
+
+    ${SUDO} cp -rf "${SHELL_DIR}/package/${PHASE}/hosts.txt" "/etc/hosts"
+
+    make_dir "${HOME}/.ssh"
+
+    make_dir "/data"
+    make_dir "/data/logs"
 }
 
 login() {
@@ -411,6 +435,8 @@ config_save() {
     echo "TOKEN=\"${TOKEN}\"" >> ${CONFIG}
     echo "SNO=${SNO}" >> ${CONFIG}
 
+    chmod 644 ${CONFIG}
+
     echo "${RES}"
 }
 
@@ -444,34 +470,6 @@ config_cron() {
 
 update_yum() {
     ${SUDO} yum update -y
-}
-
-init_default() {
-    ${SUDO} rm -rf /etc/localtime
-    ${SUDO} ln -sf /usr/share/zoneinfo/Asia/Seoul /etc/localtime
-
-    if [ ! -f "/usr/bin/git" ]; then
-        ${SUDO} yum install -y git
-    fi
-
-    if [ ! -f "/usr/bin/vim" ]; then
-        ${SUDO} yum install -y vim
-    fi
-
-    if [ ! -f "/usr/bin/nmap" ]; then
-        ${SUDO} yum install -y nmap
-    fi
-
-    if [ "${SUDO}" != "" ]; then
-        sed "s/PHASE/$PHASE/g" "${SHELL_DIR}/package/bashrc.txt" > "${HOME}/.bashrc"
-    fi
-
-    ${SUDO} cp -rf "${SHELL_DIR}/package/${PHASE}/hosts.txt" "/etc/hosts"
-
-    make_dir "${HOME}/.ssh"
-
-    make_dir "/data"
-    make_dir "/data/logs"
 }
 
 init_master() {
@@ -516,13 +514,14 @@ init_auto() {
     ARR=(${INIT})
 
     for i in "${ARR[@]}"; do
-        if [ "$i" == "web" ] || [ "$i" == "php" ]; then
+        if [ "$i" == "php5" ]; then
             init_php56
         fi
-        if [ "$i" == "java" ] || [ "$i" == "jar" ]; then
-            init_java8
+        if [ "$i" == "php7" ]; then
+            init_php70
         fi
-        if [ "$i" == "tomcat" ] || [ "$i" == "war" ]; then
+        if [ "$i" == "java" ] || [ "$i" == "tomcat" ]; then
+            init_java8
             init_tomcat8
         fi
     done
@@ -699,10 +698,12 @@ deploy_auto() {
     ARR=(${INIT})
 
     for i in "${ARR[@]}"; do
-        if [ "$i" == "web" ] || [ "$i" == "php" ]; then
+        if [ "$i" == "php5" ] || [ "$i" == "php7" ]; then
             deploy_vhost
         fi
     done
+
+    deploy_fleet
 }
 
 deploy_vhost() {
@@ -728,7 +729,7 @@ deploy_vhost() {
     TARGET_FILE="${TEMP_DIR}/${FLEET}"
     ${SUDO} rm -rf "${TARGET_FILE}"
 
-    URL="${TOAST_URL}/target/vhost/${FLEET}"
+    URL="${TOAST_URL}/target/vhost/${PHASE}/${FLEET}"
     wget -q -N -P "${TEMP_DIR}" "${URL}"
 
     while read line
@@ -794,7 +795,7 @@ deploy_fleet() {
     TARGET_FILE="${TEMP_DIR}/${NAME}"
     ${SUDO} rm -rf "${TARGET_FILE}"
 
-    URL="${TOAST_URL}/target/fleet/${FLEET}"
+    URL="${TOAST_URL}/target/fleet/${PHASE}/${FLEET}"
     wget -q -N -P "${TEMP_DIR}" "${URL}"
 
     echo "download..."

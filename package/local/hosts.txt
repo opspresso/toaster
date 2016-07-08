@@ -1,3 +1,4 @@
 127.0.0.1   localhost localhost.localdomain
 
 52.78.49.211   deploy.yanolja.com
+52.78.49.211   local.deploy.yanolja.com
