@@ -66,6 +66,9 @@ TOMCAT_URL="http://mirror.apache-kr.org/tomcat/tomcat-8/v${TOMCAT_VER}/bin/apach
 TOMCAT_DIR="${APPS_DIR}/tomcat8"
 WEBAPP_DIR="${TOMCAT_DIR}/webapps"
 
+ORACLE_JDK_RPM="jdk-8u91-linux-x64.rpm"
+ORACLE_JDK_URL="http://download.oracle.com/otn-pub/java/jdk/8u91-b14/${ORACLE_JDK_RPM}"
+
 ################################################################################
 
 toast() {
@@ -175,10 +178,10 @@ init() {
             init_php56
             ;;
         java)
-            init_java18
+            init_java8
             ;;
         tomcat)
-            init_java18
+            init_java8
             init_tomcat8
             ;;
         mysql)
@@ -517,7 +520,7 @@ init_auto() {
             init_php56
         fi
         if [ "$i" == "java" ] || [ "$i" == "jar" ]; then
-            init_java18
+            init_java8
         fi
         if [ "$i" == "tomcat" ] || [ "$i" == "war" ]; then
             init_tomcat8
@@ -534,11 +537,42 @@ init_php56() {
     ${SUDO} chkconfig httpd on
 
     make_dir "${SITE_DIR}"
+    make_dir "${SITE_DIR}/files" 777
+    make_dir "${SITE_DIR}/upload" 777
 }
 
-init_java18() {
+init_php70() {
+    ${SUDO} yum install -y httpd24 php70 php70-mysqlnd php70-mcrypt php70-gd php70-mbstring
+
+    init_php_open_tag
+
+    ${SUDO} service httpd restart
+    ${SUDO} chkconfig httpd on
+
+    make_dir "${SITE_DIR}"
+    make_dir "${SITE_DIR}/files" 777
+    make_dir "${SITE_DIR}/upload" 777
+}
+
+init_java8() {
     ${SUDO} yum install -y java-1.8.0-openjdk
     ${SUDO} yum remove -y java-1.7.0-openjdk
+
+    echo_bar
+    java -version
+    echo_bar
+
+    make_dir "${APPS_DIR}"
+}
+
+init_java8_oracle() {
+    COOKIE="Cookie: gpw_e24=http%3A%2F%2Fwww.oracle.com%2F; oraclelicense=accept-securebackup-cookie"
+
+    wget --no-cookies --no-check-certificate --header ${COOKIE} ${ORACLE_JDK_URL}
+
+    ${SUDO} yum localinstall ${ORACLE_JDK_RPM}
+
+    em -rf ${ORACLE_JDK_RPM}
 
     echo_bar
     java -version
@@ -1010,6 +1044,10 @@ make_dir() {
     fi
 
     ${SUDO} chown ${USER}.${USER} $1
+
+    if [ "$2" != "" ]; then
+        chmod $2 $1
+    fi
 }
 
 echo_bar() {
