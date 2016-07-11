@@ -879,7 +879,7 @@ deploy_jenkins() {
 
     wget -q -N -P "${TEMP_DIR}" "${SOURCE}"
 
-    mv -rf "${TEMP_DIR}/jenkins.war" "${TEMP_DIR}/ROOT.war"
+    cp -rf "${TEMP_DIR}/jenkins.war" "${TEMP_DIR}/ROOT.war"
 
     HAS_WAR="TRUE"
 
