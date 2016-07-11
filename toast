@@ -529,6 +529,10 @@ init_auto() {
     RES=`curl --data "token=${TOKEN}" ${URL}`
     ARR=(${RES})
 
+    echo_bar
+    echo "${RES}"
+    echo_bar
+
     for i in "${ARR[@]}"; do
         case "$i" in
             php5)
