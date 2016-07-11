@@ -594,12 +594,12 @@ init_java8() {
 init_tomcat8() {
     make_dir "${APPS_DIR}"
 
-    if [ -d "${APPS_DIR}/apache-tomcat-${TOMCAT_VER}" ]; then
-        rm -rf "${APPS_DIR}/apache-tomcat-${TOMCAT_VER}"
+    if [ -f "${TOMCAT_DIR}" ] || [ -d "${TOMCAT_DIR}" ]; then
+        rm -rf "${TOMCAT_DIR}"
     fi
 
-    if [ -d "${TOMCAT_DIR}" ]; then
-        rm -rf "${TOMCAT_DIR}"
+    if [ -d "${APPS_DIR}/apache-tomcat-${TOMCAT_VER}" ]; then
+        rm -rf "${APPS_DIR}/apache-tomcat-${TOMCAT_VER}"
     fi
 
     wget -q -N -P "${APPS_DIR}" "${TOMCAT_URL}"
@@ -609,6 +609,7 @@ init_tomcat8() {
     ln -s "${APPS_DIR}/apache-tomcat-${TOMCAT_VER}" "${TOMCAT_DIR}"
 
     chmod 755 ${TOMCAT_DIR}/bin/*.sh
+
     rm -rf ${WEBAPP_DIR}/*
 }
 
