@@ -13,7 +13,6 @@ NAME=
 HOST=
 PORT=
 USER=
-INIT=
 TOKEN=
 SNO=
 
@@ -81,11 +80,11 @@ toast() {
         update)
             update
             ;;
-        init)
-            init
-            ;;
         config)
             config
+            ;;
+        init)
+            init
             ;;
         version)
             version
@@ -150,7 +149,8 @@ auto() {
     init_slave
     init_auto
 
-    deploy_auto
+    deploy_vhost
+    deploy_fleet
 }
 
 update() {
@@ -247,7 +247,8 @@ deploy() {
             deploy_jenkins
             ;;
         *)
-            deploy_auto
+            deploy_vhost
+            deploy_fleet
     esac
 }
 
@@ -286,9 +287,7 @@ prepare() {
         sed "s/PHASE/$PHASE/g" "${SHELL_DIR}/package/bashrc.txt" > "${HOME}/.bashrc"
     fi
 
-    ${SUDO} cp -rf "${SHELL_DIR}/package/${PHASE}/hosts.txt" "/etc/hosts"
-
-    make_dir "${HOME}/.ssh"
+    ${SUDO} cp -rf "${SHELL_DIR}/package/phase/${PHASE}/hosts.txt" "/etc/hosts"
 
     make_dir "/data"
     make_dir "/data/logs"
@@ -431,7 +430,6 @@ config_save() {
     echo "HOST=\"${HOST}\"" >> ${CONFIG}
     echo "PORT=\"${PORT}\"" >> ${CONFIG}
     echo "USER=\"${USER}\"" >> ${CONFIG}
-    echo "INIT=\"${INIT}\"" >> ${CONFIG}
     echo "TOKEN=\"${TOKEN}\"" >> ${CONFIG}
     echo "SNO=${SNO}" >> ${CONFIG}
 
@@ -473,10 +471,13 @@ update_yum() {
 }
 
 init_master() {
+    make_dir "${HOME}/.aws"
+    make_dir "${HOME}/.ssh"
+
     AUTH_KEYS="${HOME}/.ssh/authorized_keys"
 
     if [ ! -f "${AUTH_KEYS}" ]; then
-        cat ${SHELL_DIR}/ssh/id_rsa.pub > ${AUTH_KEYS}
+        cat ${SHELL_DIR}/package/ssh/id_rsa.pub > ${AUTH_KEYS}
         chmod 700 ${AUTH_KEYS}
     else
         IS_KEY="false"
@@ -491,39 +492,58 @@ init_master() {
         done < ${AUTH_KEYS}
 
         if [ "${IS_KEY}" == "false" ]; then
-            cat ${SHELL_DIR}/ssh/id_rsa.pub >> ${AUTH_KEYS}
+            cat ${SHELL_DIR}/package/ssh/id_rsa.pub >> ${AUTH_KEYS}
         fi
     fi
 }
 
 init_slave() {
+    make_dir "${HOME}/.aws"
+    make_dir "${HOME}/.ssh"
+
     ID_RSA="${HOME}/.ssh/id_rsa.pub"
 
     if [ ! -f "${ID_RSA}" ]; then
         #ssh-keygen -t rsa -C "toast@$yanolja.in"
 
-        cp -rf ${SHELL_DIR}/ssh/id_rsa ${HOME}/.ssh/id_rsa
-        cp -rf ${SHELL_DIR}/ssh/id_rsa.pub ${HOME}/.ssh/id_rsa.pub
+        cp -rf ${SHELL_DIR}/package/ssh/id_rsa ${HOME}/.ssh/id_rsa
+        cp -rf ${SHELL_DIR}/package/ssh/id_rsa.pub ${HOME}/.ssh/id_rsa.pub
 
         chmod 600 ${HOME}/.ssh/id_rsa
         chmod 644 ${HOME}/.ssh/id_rsa.pub
     fi
+
+    AWS_CONFIG="${HOME}/.aws/config"
+
+    if [ ! -f "${AWS_CONFIG}" ]; then
+        cp -rf ${SHELL_DIR}/package/aws/config.txt ${HOME}/.aws/config
+        cp -rf ${SHELL_DIR}/package/aws/credentials.txt ${HOME}/.aws/credentials
+
+        chmod 600 ${HOME}/.aws/config
+        chmod 600 ${HOME}/.aws/credentials
+    fi
 }
 
 init_auto() {
-    ARR=(${INIT})
+    URL="${TOAST_URL}/fleet/apps/${PHASE}/${FLEET}"
+    RES=`curl --data "token=${TOKEN}" ${URL}`
+    ARR=(${RES})
 
     for i in "${ARR[@]}"; do
-        if [ "$i" == "php5" ]; then
-            init_php56
-        fi
-        if [ "$i" == "php7" ]; then
-            init_php70
-        fi
-        if [ "$i" == "java" ] || [ "$i" == "tomcat" ]; then
-            init_java8
-            init_tomcat8
-        fi
+        case "$i" in
+            php5)
+                init_php56
+                ;;
+            php7)
+                init_php70
+                ;;
+            java|java8)
+                init_java8
+                ;;
+            tomcat|tomcat8)
+                init_tomcat8
+                ;;
+        esac
     done
 }
 
@@ -694,21 +714,9 @@ version_remove() {
     rm -rf ~/.m2/repository/com/yanolja/${ARTIFACT_ID}/${VERSION}
 }
 
-deploy_auto() {
-    ARR=(${INIT})
-
-    for i in "${ARR[@]}"; do
-        if [ "$i" == "php5" ] || [ "$i" == "php7" ]; then
-            deploy_vhost
-        fi
-    done
-
-    deploy_fleet
-}
-
 deploy_vhost() {
     if [ ! -d "${HTTPD_CONF_DIR}" ]; then
-        echo "Need web server init. [toast init web]"
+        echo "Need web server init. [toast init php5|php7]"
         exit 1
     fi
 
@@ -717,12 +725,12 @@ deploy_vhost() {
     ${SUDO} rm -rf ${HTTPD_CONF_DIR}/localhost*
     ${SUDO} rm -rf ${HTTPD_CONF_DIR}/vhost*
 
-    ${SUDO} cp "${SHELL_DIR}/vhost/localhost.conf" "${HTTPD_CONF_DIR}/"
+    ${SUDO} cp "${SHELL_DIR}/package/vhost/localhost.conf" "${HTTPD_CONF_DIR}/"
     ${SUDO} chmod 644 "${HTTPD_CONF_DIR}/localhost.conf"
 
     TEMP_FILE="${TEMP_DIR}/toast-vhost.tmp.$$"
 
-    TEMPLATE="${SHELL_DIR}/vhost/vhost-temp.conf"
+    TEMPLATE="${SHELL_DIR}/package/vhost/vhost-temp.conf"
 
     echo "download vhost..."
 
@@ -1025,6 +1033,14 @@ process_start() {
     PID=`ps -ef | grep "[${ARTIFACT_ID:0:1}]""${ARTIFACT_ID:1}" | awk '{print $2}'`
     if [ "${PID}" != "" ]; then
       echo "start up ${PID}"
+    fi
+}
+
+copy() {
+    ${SUDO} cp -rf $1 $2
+
+    if [ "$3" != "" ]; then
+        chmod $3 $2
     fi
 }
 

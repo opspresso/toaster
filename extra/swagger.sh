@@ -1,7 +1,7 @@
 #!/bin/bash
 
-PHP="/usr/local/php/bin/php"
-SWAGGER="/data/swagger-php-master/bin/swagger"
+PHP="/usr/bin/php"
+SWAGGER="~/.composer/vendor/bin/swagger"
 
 PROJECT=$1
 WORK="/var/lib/jenkins/jobs/${PROJECT}/workspace"
