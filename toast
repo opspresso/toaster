@@ -585,11 +585,11 @@ init_java8() {
     echo_bar
     java -version
     echo_bar
-
-    make_dir "${APPS_DIR}"
 }
 
 init_tomcat8() {
+    make_dir "${APPS_DIR}"
+
     if [ -d "${APPS_DIR}/apache-tomcat-${TOMCAT_VER}" ]; then
         rm -rf "${APPS_DIR}/apache-tomcat-${TOMCAT_VER}"
     fi
@@ -800,7 +800,7 @@ deploy_fleet() {
 
     echo "download target..."
 
-    TARGET_FILE="${TEMP_DIR}/${NAME}"
+    TARGET_FILE="${TEMP_DIR}/${FLEET}"
     ${SUDO} rm -rf "${TARGET_FILE}"
 
     URL="${TOAST_URL}/target/fleet/${PHASE}/${FLEET}"
