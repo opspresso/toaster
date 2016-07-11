@@ -92,6 +92,9 @@ toast() {
         deploy)
             deploy
             ;;
+        log)
+            log
+            ;;
         *)
             usage
     esac
@@ -251,6 +254,14 @@ deploy() {
         *)
             deploy_vhost
             deploy_fleet
+    esac
+}
+
+log() {
+    case ${SUB} in
+        tomcat)
+            log_tomcat
+            ;;
     esac
 }
 
@@ -890,6 +901,10 @@ deploy_jenkins() {
     placement
 
     tomcat_start
+}
+
+log_tomcat() {
+    tail -f -n 500 "${TOMCAT_DIR}/logs/catalina.out"
 }
 
 download() {
