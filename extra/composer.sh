@@ -1,6 +1,6 @@
 #!/bin/bash
 
-PHP="/usr/local/php/bin/php"
+PHP="/usr/bin/php"
 COMPOSER="/usr/local/bin/composer"
 
 PROJECT=$1
