@@ -572,6 +572,8 @@ init_php56() {
     make_dir "${SITE_DIR}"
     make_dir "${SITE_DIR}/files" 777
     make_dir "${SITE_DIR}/upload" 777
+
+    ${SUDO} cp "${SHELL_DIR}/package/health.txt" "/var/www/html/health.html"
 }
 
 init_php70() {
@@ -584,6 +586,8 @@ init_php70() {
     make_dir "${SITE_DIR}"
     make_dir "${SITE_DIR}/files" 777
     make_dir "${SITE_DIR}/upload" 777
+
+    ${SUDO} cp "${SHELL_DIR}/package/health.txt" "/var/www/html/health.html"
 }
 
 init_java8() {
@@ -956,7 +960,9 @@ download() {
 
         unzip -q "${FILEPATH}" -d "${UNZIP_DIR}"
 
-        chmod 777 "${UNZIP_DIR}/application/logs"
+        if [ -d "${UNZIP_DIR}/application/logs" ]; then
+            chmod 777 "${UNZIP_DIR}/application/logs"
+        fi
     fi
 }
 
