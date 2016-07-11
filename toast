@@ -529,10 +529,6 @@ init_auto() {
     RES=`curl --data "token=${TOKEN}" ${URL}`
     ARR=(${RES})
 
-    echo_bar
-    echo "${RES}"
-    echo_bar
-
     for i in "${ARR[@]}"; do
         case "$i" in
             php5)
@@ -584,7 +580,7 @@ init_java8() {
 
     ${SUDO} yum localinstall -y ${JDK_RPM}
 
-    rm -rf ${JDK_RPM}
+    #rm -rf ${JDK_RPM}
 
     echo_bar
     java -version
