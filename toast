@@ -554,7 +554,6 @@ init_php56() {
 
     init_php_open_tag
 
-    ${SUDO} service httpd restart
     ${SUDO} chkconfig httpd on
 
     make_dir "${SITE_DIR}"
@@ -567,7 +566,6 @@ init_php70() {
 
     init_php_open_tag
 
-    ${SUDO} service httpd restart
     ${SUDO} chkconfig httpd on
 
     make_dir "${SITE_DIR}"
@@ -616,7 +614,6 @@ init_tomcat8() {
 init_mysql56() {
     ${SUDO} yum install -y mysql55-server
 
-    ${SUDO} service mysqld restart
     ${SUDO} chkconfig mysqld on
 }
 
