@@ -262,6 +262,8 @@ log() {
         tomcat)
             log_tomcat
             ;;
+        *)
+            log_webapp
     esac
 }
 
@@ -905,6 +907,12 @@ deploy_jenkins() {
 
 log_tomcat() {
     tail -f -n 500 "${TOMCAT_DIR}/logs/catalina.out"
+}
+
+log_webapp() {
+    TODAY=`date +%Y-%m-%d`
+
+    tail -f -n 500 "${SITE_DIR}/${SUB}/application/logs/log-${TODAY}.php"
 }
 
 download() {
