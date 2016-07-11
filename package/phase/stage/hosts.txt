@@ -2,3 +2,5 @@
 
 52.78.49.211   deploy.yanolja.com
 52.78.49.211   stage.deploy.yanolja.com
+
+52.78.49.211   toast.yanolja.com

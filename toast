@@ -141,6 +141,8 @@ usage() {
 auto() {
     prepare
 
+    update
+
     config_auto
     config_save
     config_info
@@ -552,7 +554,6 @@ init_php56() {
 
     init_php_open_tag
 
-    ${SUDO} service httpd restart
     ${SUDO} chkconfig httpd on
 
     make_dir "${SITE_DIR}"
@@ -565,7 +566,6 @@ init_php70() {
 
     init_php_open_tag
 
-    ${SUDO} service httpd restart
     ${SUDO} chkconfig httpd on
 
     make_dir "${SITE_DIR}"
@@ -574,28 +574,30 @@ init_php70() {
 }
 
 init_java8() {
-    COOKIE="Cookie: gpw_e24=http%3A%2F%2Fwww.oracle.com%2F; oraclelicense=accept-securebackup-cookie"
+    if [ ! -f "${JDK_RPM}" ]; then
+        COOKIE="Cookie: gpw_e24=http%3A%2F%2Fwww.oracle.com%2F; oraclelicense=accept-securebackup-cookie"
 
-    wget --no-cookies --no-check-certificate --header "${COOKIE}" ${JDK_URL}
+        wget --no-cookies --no-check-certificate --header "${COOKIE}" ${JDK_URL}
 
-    ${SUDO} yum localinstall -y ${JDK_RPM}
+        ${SUDO} yum localinstall -y ${JDK_RPM}
 
-    rm -rf ${JDK_RPM}
+        #rm -rf ${JDK_RPM}
+    fi
 
     echo_bar
     java -version
     echo_bar
-
-    make_dir "${APPS_DIR}"
 }
 
 init_tomcat8() {
-    if [ -d "${APPS_DIR}/apache-tomcat-${TOMCAT_VER}" ]; then
-        rm -rf "${APPS_DIR}/apache-tomcat-${TOMCAT_VER}"
+    make_dir "${APPS_DIR}"
+
+    if [ -f "${TOMCAT_DIR}" ] || [ -d "${TOMCAT_DIR}" ]; then
+        rm -rf "${TOMCAT_DIR}"
     fi
 
-    if [ -d "${TOMCAT_DIR}" ]; then
-        rm -rf "${TOMCAT_DIR}"
+    if [ -d "${APPS_DIR}/apache-tomcat-${TOMCAT_VER}" ]; then
+        rm -rf "${APPS_DIR}/apache-tomcat-${TOMCAT_VER}"
     fi
 
     wget -q -N -P "${APPS_DIR}" "${TOMCAT_URL}"
@@ -605,13 +607,13 @@ init_tomcat8() {
     ln -s "${APPS_DIR}/apache-tomcat-${TOMCAT_VER}" "${TOMCAT_DIR}"
 
     chmod 755 ${TOMCAT_DIR}/bin/*.sh
+
     rm -rf ${WEBAPP_DIR}/*
 }
 
 init_mysql56() {
     ${SUDO} yum install -y mysql55-server
 
-    ${SUDO} service mysqld restart
     ${SUDO} chkconfig mysqld on
 }
 
@@ -800,7 +802,7 @@ deploy_fleet() {
 
     echo "download target..."
 
-    TARGET_FILE="${TEMP_DIR}/${NAME}"
+    TARGET_FILE="${TEMP_DIR}/${FLEET}"
     ${SUDO} rm -rf "${TARGET_FILE}"
 
     URL="${TOAST_URL}/target/fleet/${PHASE}/${FLEET}"
@@ -889,6 +891,8 @@ deploy_jenkins() {
 }
 
 download() {
+    #aws s3 sync ${TEMP_DIR}/${ARTIFACT_ID}/ s3://repo.yanolja.com/release/com/yanolja/${ARTIFACT_ID}/
+
     SOURCE="${REPO_PATH}/${ARTIFACT_ID}/${VERSION}/${FILENAME}"
 
     echo "--> from : ${SOURCE}"
