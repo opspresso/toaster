@@ -891,6 +891,8 @@ deploy_jenkins() {
 }
 
 download() {
+    #aws s3 sync ${TEMP_DIR}/${ARTIFACT_ID}/ s3://repo.yanolja.com/release/com/yanolja/${ARTIFACT_ID}/
+
     SOURCE="${REPO_PATH}/${ARTIFACT_ID}/${VERSION}/${FILENAME}"
 
     echo "--> from : ${SOURCE}"
