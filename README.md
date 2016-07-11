@@ -23,3 +23,7 @@ runuser -l ec2-user -c 'echo "FLEET=dev-demo" >> ~/.toast'
 
 runuser -l ec2-user -c '~/toaster/toast auto'
 ```
+
+```
+cat /var/log/cloud-init-output.log
+```

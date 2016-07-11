@@ -576,11 +576,11 @@ init_php70() {
 init_java8() {
     COOKIE="Cookie: gpw_e24=http%3A%2F%2Fwww.oracle.com%2F; oraclelicense=accept-securebackup-cookie"
 
-    wget --no-cookies --no-check-certificate --header ${COOKIE} ${JDK_URL}
+    wget --no-cookies --no-check-certificate --header ${COOKIE} -q -N -P ${TEMP_DIR} ${JDK_URL}
 
-    ${SUDO} yum localinstall -y ${JDK_RPM}
+    ${SUDO} yum localinstall -y ${TEMP_DIR}/${JDK_RPM}
 
-    #rm -rf ${JDK_RPM}
+    #rm -rf ${TEMP_DIR}/${JDK_RPM}
 
     echo_bar
     java -version
