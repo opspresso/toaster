@@ -92,6 +92,9 @@ toast() {
         deploy)
             deploy
             ;;
+        log)
+            log
+            ;;
         *)
             usage
     esac
@@ -251,6 +254,16 @@ deploy() {
         *)
             deploy_vhost
             deploy_fleet
+    esac
+}
+
+log() {
+    case ${SUB} in
+        tomcat)
+            log_tomcat
+            ;;
+        *)
+            log_webapp
     esac
 }
 
@@ -577,7 +590,7 @@ init_java8() {
     if [ ! -f "${JDK_RPM}" ]; then
         COOKIE="Cookie: gpw_e24=http%3A%2F%2Fwww.oracle.com%2F; oraclelicense=accept-securebackup-cookie"
 
-        wget --no-cookies --no-check-certificate --header "${COOKIE}" ${JDK_URL}
+        wget -q --no-cookies --no-check-certificate --header "${COOKIE}" ${JDK_URL}
 
         ${SUDO} yum localinstall -y ${JDK_RPM}
 
@@ -863,7 +876,7 @@ deploy_value() {
 deploy_jenkins() {
     # "deploy jenkins"
 
-    ARTIFACT_ID="jenkins"
+    ARTIFACT_ID="ROOT"
     VERSION=""
     TYPE="war"
 
@@ -873,13 +886,15 @@ deploy_jenkins() {
     FILENAME="${ARTIFACT_ID}.${PACKAGING}"
     FILEPATH="${TEMP_DIR}/${FILENAME}"
 
-    HAS_WAR="TRUE"
-
     echo "download..."
 
     SOURCE="http://mirrors.jenkins-ci.org/war/latest/jenkins.war"
 
     wget -q -N -P "${TEMP_DIR}" "${SOURCE}"
+
+    cp -rf "${TEMP_DIR}/jenkins.war" "${TEMP_DIR}/ROOT.war"
+
+    HAS_WAR="TRUE"
 
     tomcat_stop
 
@@ -888,6 +903,16 @@ deploy_jenkins() {
     placement
 
     tomcat_start
+}
+
+log_tomcat() {
+    tail -f -n 500 "${TOMCAT_DIR}/logs/catalina.out"
+}
+
+log_webapp() {
+    TODAY=`date +%Y-%m-%d`
+
+    tail -f -n 500 "${SITE_DIR}/${SUB}/application/logs/log-${TODAY}.php"
 }
 
 download() {
