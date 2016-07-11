@@ -4,7 +4,7 @@ PHP="/usr/bin/php"
 COMPOSER="/usr/local/bin/composer"
 
 PROJECT=$1
-WORK="/var/lib/jenkins/jobs/${PROJECT}/workspace"
+WORK="~/.jenkins/workspace/${PROJECT}"
 TARGET="${WORK}/src/main/webapp"
 VENDOR="${TARGET}/vendor"
 

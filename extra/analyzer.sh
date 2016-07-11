@@ -4,7 +4,7 @@ PHP="/usr/bin/php"
 PHPMD="~/.composer/vendor/bin/phpmd"
 
 PROJECT=$1
-WORK="/var/lib/jenkins/jobs/${PROJECT}/workspace"
+WORK="~/.jenkins/workspace/${PROJECT}"
 
 CONFIG="cleancode,codesize,controversial,design,naming,unusedcode"
 

@@ -956,7 +956,9 @@ download() {
 
         unzip -q "${FILEPATH}" -d "${UNZIP_DIR}"
 
-        chmod 777 "${UNZIP_DIR}/application/logs"
+        if [ -d "${UNZIP_DIR}/application/logs" ]; then
+            chmod 777 "${UNZIP_DIR}/application/logs"
+        fi
     fi
 }
 
