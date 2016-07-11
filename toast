@@ -863,7 +863,7 @@ deploy_value() {
 deploy_jenkins() {
     # "deploy jenkins"
 
-    ARTIFACT_ID="jenkins"
+    ARTIFACT_ID="ROOT"
     VERSION=""
     TYPE="war"
 
@@ -873,13 +873,15 @@ deploy_jenkins() {
     FILENAME="${ARTIFACT_ID}.${PACKAGING}"
     FILEPATH="${TEMP_DIR}/${FILENAME}"
 
-    HAS_WAR="TRUE"
-
     echo "download..."
 
     SOURCE="http://mirrors.jenkins-ci.org/war/latest/jenkins.war"
 
     wget -q -N -P "${TEMP_DIR}" "${SOURCE}"
+
+    mv -rf "${TEMP_DIR}/jenkins.war" "${TEMP_DIR}/ROOT.war"
+
+    HAS_WAR="TRUE"
 
     tomcat_stop
 
