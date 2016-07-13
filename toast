@@ -294,6 +294,8 @@ prepare() {
     ${SUDO} rm -rf /etc/localtime
     ${SUDO} ln -sf /usr/share/zoneinfo/Asia/Seoul /etc/localtime
 
+    ${SUDO} yum-config-manager --enable epel
+
     if [ ! -f "/usr/bin/git" ]; then
         ${SUDO} yum install -y git
     fi
@@ -609,13 +611,13 @@ init_php70() {
 
 init_java8() {
     if [ ! -f "${JDK_RPM}" ]; then
+        echo "download ${JDK_RPM}..."
+
         COOKIE="Cookie: gpw_e24=http%3A%2F%2Fwww.oracle.com%2F; oraclelicense=accept-securebackup-cookie"
 
         wget -q --no-cookies --no-check-certificate --header "${COOKIE}" ${JDK_URL}
 
         ${SUDO} yum localinstall -y ${JDK_RPM}
-
-        #rm -rf ${JDK_RPM}
     fi
 
     echo_bar
@@ -634,9 +636,15 @@ init_tomcat8() {
         rm -rf "${APPS_DIR}/apache-tomcat-${TOMCAT_VER}"
     fi
 
-    wget -q -N -P "${APPS_DIR}" "${TOMCAT_URL}"
+    TOMCAT_FILE="apache-tomcat-${TOMCAT_VER}.zip"
 
-    unzip -q "${APPS_DIR}/apache-tomcat-${TOMCAT_VER}.zip" -d "${APPS_DIR}"
+    if [ ! -f "${TOMCAT_FILE}" ]; then
+        echo "download ${TOMCAT_FILE}..."
+
+        wget -q -N -P "${APPS_DIR}" "${TOMCAT_URL}"
+    fi
+
+    unzip -q "${APPS_DIR}/${TOMCAT_FILE}" -d "${APPS_DIR}"
 
     ln -s "${APPS_DIR}/apache-tomcat-${TOMCAT_VER}" "${TOMCAT_DIR}"
 
