@@ -127,6 +127,8 @@ usage() {
     echo " Usage: toast init java"
     echo " Usage: toast init tomcat"
     echo " Usage: toast init mysql"
+    echo " Usage: toast init redis"
+    echo " Usage: toast init rabbitmq"
     echo_
     echo " Usage: toast version"
     echo " Usage: toast version next"
@@ -189,6 +191,12 @@ init() {
             ;;
         mysql)
             init_mysql56
+            ;;
+        redis)
+            init_redis
+            ;;
+        rabbitmq)
+            init_rabbitmq
             ;;
         *)
             init_auto
@@ -558,6 +566,15 @@ init_auto() {
             tomcat|tomcat8)
                 init_tomcat8
                 ;;
+            mysql|mysql56)
+                init_mysql56
+                ;;
+            redis)
+                init_redis
+                ;;
+            rabbitmq)
+                init_rabbitmq
+                ;;
         esac
     done
 }
@@ -632,6 +649,22 @@ init_mysql56() {
     ${SUDO} yum install -y mysql55-server
 
     ${SUDO} chkconfig mysqld on
+}
+
+init_redis() {
+    ${SUDO} yum install -y redis
+
+    ${SUDO} chkconfig redis on
+
+    ${SUDO} service redis restart
+}
+
+init_rabbitmq() {
+    ${SUDO} yum install -y rabbitmq-server
+
+    ${SUDO} chkconfig rabbitmq-server on
+
+    ${SUDO} service rabbitmq-server restart
 }
 
 init_php_open_tag() {
