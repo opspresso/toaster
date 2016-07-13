@@ -943,7 +943,7 @@ deploy_jenkins() {
     FILENAME="${ARTIFACT_ID}.${PACKAGING}"
     FILEPATH="${TEMP_DIR}/${FILENAME}"
 
-    echo "download..."
+    echo "download jenkins..."
 
     SOURCE="http://mirrors.jenkins-ci.org/war/latest/jenkins.war"
 
@@ -955,7 +955,7 @@ deploy_jenkins() {
 
     tomcat_stop
 
-    echo "placement..."
+    echo "placement jenkins..."
 
     placement
 
