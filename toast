@@ -619,17 +619,22 @@ init_java8() {
 
         ${SUDO} yum localinstall -y ${JDK_RPM}
 
-        JAVA_PATH=`which java`
+        JAVA_PATH=$(dirname $(dirname $(readlink -f $(which java))))
 
-        touch ~/.bash_profile
-        echo "" >> ~/.bash_profile
-        echo "export JAVA_HOME=${JAVA_PATH}" >> ~/.bash_profile
-        source ~/.bash_profile
+        BASH_PROFILE="${HOME}/.bash_profile"
+        touch "${BASH_PROFILE}"
+        echo "" >> "${BASH_PROFILE}"
+        echo "export JAVA_HOME=${JAVA_PATH}" >> "${BASH_PROFILE}"
+        source "${BASH_PROFILE}"
     fi
 
     echo_bar
     java -version
     echo_bar
+}
+
+function join {
+    local IFS="$1"; shift; echo "$*";
 }
 
 init_tomcat8() {
