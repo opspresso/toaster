@@ -618,6 +618,13 @@ init_java8() {
         wget -q --no-cookies --no-check-certificate --header "${COOKIE}" ${JDK_URL}
 
         ${SUDO} yum localinstall -y ${JDK_RPM}
+
+        JAVA_PATH=`which java`
+
+        touch ~/.bash_profile
+        echo "" >> ~/.bash_profile
+        echo "export JAVA_HOME=${JAVA_PATH}" >> ~/.bash_profile
+        source ~/.bash_profile
     fi
 
     echo_bar
