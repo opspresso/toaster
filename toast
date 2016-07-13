@@ -1079,39 +1079,43 @@ placement() {
 
 tomcat_stop() {
     if [ "${HAS_WAR}" == "TRUE" ]; then
-      echo "tomcat stop..."
-      /data/apps/tomcat8/bin/shutdown.sh
+        status=`ps -ef | grep catalina | grep java | grep -v grep | wc -l | awk '{print $1}'`
+        if [ ${status} -ge 1 ]; then
+            echo "tomcat stop..."
+            ${TOMCAT_DIR}/bin/shutdown.sh
+        fi
     fi
 }
 
 tomcat_start() {
     if [ "${HAS_WAR}" == "TRUE" ]; then
-      status=`ps -ef | grep catalina | grep java | grep -v grep | wc -l | awk '{print $1}'`
-      count=0
-      while [ ${status} -ge 1 ]; do
-        echo "sleep..."
-        sleep 3
-
-        if [ ${count} -ge 5 ]; then
-          pid=`ps -ef | grep catalina | grep java | grep -v grep | awk '{print $2}'`
-          kill -9 ${pid}
-          echo "tomcat (${pid}) was killed."
-        fi
-
-        sleep 2
         status=`ps -ef | grep catalina | grep java | grep -v grep | wc -l | awk '{print $1}'`
-        count=`expr ${count} + 1`
-      done
-      echo "tomcat start..."
-      /data/apps/tomcat8/bin/startup.sh
+        count=0
+        while [ ${status} -ge 1 ]; do
+            echo "sleep..."
+            sleep 3
+
+            if [ ${count} -ge 5 ]; then
+                pid=`ps -ef | grep catalina | grep java | grep -v grep | awk '{print $2}'`
+                kill -9 ${pid}
+                echo "tomcat (${pid}) was killed."
+            fi
+
+            sleep 2
+            status=`ps -ef | grep catalina | grep java | grep -v grep | wc -l | awk '{print $1}'`
+            count=`expr ${count} + 1`
+        done
+
+        echo "tomcat start..."
+        ${TOMCAT_DIR}/bin/startup.sh
     fi
 }
 
 process_stop() {
     PID=`ps -ef | grep "[${ARTIFACT_ID:0:1}]""${ARTIFACT_ID:1}" | awk '{print $2}'`
     if [ "${PID}" != "" ]; then
-      kill -9 ${PID}
-      echo "killed ${PID}"
+        kill -9 ${PID}
+        echo "killed ${PID}"
     fi
 }
 
@@ -1120,7 +1124,7 @@ process_start() {
 
     PID=`ps -ef | grep "[${ARTIFACT_ID:0:1}]""${ARTIFACT_ID:1}" | awk '{print $2}'`
     if [ "${PID}" != "" ]; then
-      echo "start up ${PID}"
+        echo "start up ${PID}"
     fi
 }
 
