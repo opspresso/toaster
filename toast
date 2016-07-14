@@ -930,7 +930,7 @@ deploy_value() {
         DEPLOY_PATH="${WEBAPP_DIR}"
     fi
     if [ "${PACKAGING}" == "jar" ]; then
-        DEPLOY_PATH="${APPS_DIR}/${ARTIFACT_ID}"
+        DEPLOY_PATH="${APPS_DIR}"
     fi
     if [ "${PACKAGING}" == "php" ]; then
         PACKAGING="war"
