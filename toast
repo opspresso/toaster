@@ -308,11 +308,18 @@ prepare() {
         ${SUDO} yum install -y nmap
     fi
 
+    make_dir "${HOME}/.aws"
+    make_dir "${HOME}/.ssh"
+
+    ${SUDO} cp -rf "${SHELL_DIR}/package/phase/${PHASE}/hosts.txt" "/etc/hosts"
+
     if [ "${SUDO}" != "" ]; then
         sed "s/PHASE/$PHASE/g" "${SHELL_DIR}/package/bashrc.txt" > "${HOME}/.bashrc"
     fi
 
-    ${SUDO} cp -rf "${SHELL_DIR}/package/phase/${PHASE}/hosts.txt" "/etc/hosts"
+    if [ ! -f "${HOME}/.ssh/config" ]; then
+        ${SUDO} cp -rf "${SHELL_DIR}/ssh/phase/ssh_config" "${HOME}/.ssh/config"
+    fi
 
     make_dir "/data"
     make_dir "/data/logs"
@@ -496,9 +503,6 @@ update_yum() {
 }
 
 init_master() {
-    make_dir "${HOME}/.aws"
-    make_dir "${HOME}/.ssh"
-
     AUTH_KEYS="${HOME}/.ssh/authorized_keys"
 
     if [ ! -f "${AUTH_KEYS}" ]; then
@@ -523,9 +527,6 @@ init_master() {
 }
 
 init_slave() {
-    make_dir "${HOME}/.aws"
-    make_dir "${HOME}/.ssh"
-
     ID_RSA="${HOME}/.ssh/id_rsa.pub"
 
     if [ ! -f "${ID_RSA}" ]; then
