@@ -308,6 +308,7 @@ prepare() {
         ${SUDO} yum install -y nmap
     fi
 
+    make_dir "${HOME}/.m2"
     make_dir "${HOME}/.aws"
     make_dir "${HOME}/.ssh"
 
@@ -315,6 +316,16 @@ prepare() {
 
     if [ "${SUDO}" != "" ]; then
         sed "s/PHASE/$PHASE/g" "${SHELL_DIR}/package/bashrc.txt" > "${HOME}/.bashrc"
+    fi
+
+    if [ ! -f "${HOME}/.m2/settings.xml" ]; then
+        SETTINGS="${HOME}/.m2/settings.xml"
+        TEMP_FILE="${TEMP_DIR}/settings.tmp.$$"
+
+        ${SUDO} cp -rf "${SHELL_DIR}/repo/settings.xml" "${SETTINGS}"
+
+        sed "s/REPO_USER/$REPO_USER/g" ${SETTINGS} > ${TEMP_FILE} && mv ${TEMP_FILE} ${SETTINGS}
+        sed "s/REPO_PASS/$REPO_PASS/g" ${SETTINGS} > ${TEMP_FILE} && mv ${TEMP_FILE} ${SETTINGS}
     fi
 
     if [ ! -f "${HOME}/.ssh/config" ]; then
