@@ -1111,7 +1111,7 @@ tomcat_start() {
             if [ ${count} -ge 5 ]; then
                 pid=`ps -ef | grep catalina | grep java | grep -v grep | awk '{print $2}'`
                 kill -9 ${pid}
-                echo "tomcat (${pid}) was killed."
+                echo "tomcat [${pid}] was killed."
             fi
 
             sleep 2
@@ -1128,7 +1128,7 @@ process_stop() {
     PID=`ps -ef | grep "[${ARTIFACT_ID:0:1}]""${ARTIFACT_ID:1}" | awk '{print $2}'`
     if [ "${PID}" != "" ]; then
         kill -9 ${PID}
-        echo "killed ${PID}"
+        echo "killed [${PID}]"
     fi
 }
 
@@ -1137,7 +1137,7 @@ process_start() {
 
     PID=`ps -ef | grep "[${ARTIFACT_ID:0:1}]""${ARTIFACT_ID:1}" | awk '{print $2}'`
     if [ "${PID}" != "" ]; then
-        echo "start up ${PID}"
+        echo "start up [${PID}]"
     fi
 }
 
