@@ -318,7 +318,7 @@ prepare() {
     fi
 
     if [ ! -f "${HOME}/.ssh/config" ]; then
-        ${SUDO} cp -rf "${SHELL_DIR}/ssh/phase/ssh_config" "${HOME}/.ssh/config"
+        ${SUDO} cp -rf "${SHELL_DIR}/ssh/ssh_config" "${HOME}/.ssh/config"
     fi
 
     make_dir "/data"
