@@ -156,8 +156,8 @@ auto() {
     init_slave
     init_auto
 
-    deploy_vhost
     deploy_fleet
+    deploy_vhost
 }
 
 update() {
