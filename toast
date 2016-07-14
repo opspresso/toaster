@@ -1079,9 +1079,6 @@ placement() {
 
     rm -rf "${DEST_WAR}"
 
-    echo "FILEPATH ${FILEPATH}"
-    echo "DEST_WAR ${DEST_WAR}"
-
     if [ -d "${DEST_WAR}" ] || [ -f "${DEST_WAR}" ]; then
       echo "deploy file can not copy. [${DEST_WAR}]"
       exit 1
