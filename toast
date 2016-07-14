@@ -1130,9 +1130,9 @@ tomcat_start() {
 process_stop() {
     echo "${ARTIFACT_ID:0:1}"
     echo "${ARTIFACT_ID:1}"
-    ps -ef | grep "[${ARTIFACT_ID:0:1}]""${ARTIFACT_ID:1}"
+    ps -ef | grep "[${ARTIFACT_ID:0:1}]""${ARTIFACT_ID:1}" | grep "-jar"
 
-    PID=`ps -ef | grep "[${ARTIFACT_ID:0:1}]""${ARTIFACT_ID:1}" | awk '{print $2}'`
+    PID=`ps -ef | grep "[${ARTIFACT_ID:0:1}]""${ARTIFACT_ID:1}" | grep "-jar" | awk '{print $2}'`
     if [ "${PID}" != "" ]; then
         kill -9 ${PID}
         echo "killed (${PID})"
