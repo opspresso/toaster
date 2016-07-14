@@ -322,7 +322,7 @@ prepare() {
         SETTINGS="${HOME}/.m2/settings.xml"
         TEMP_FILE="${TEMP_DIR}/settings.tmp.$$"
 
-        ${SUDO} cp -rf "${SHELL_DIR}/repo/settings.xml" "${SETTINGS}"
+        ${SUDO} cp -rf "${SHELL_DIR}/package/m2/settings.xml" "${SETTINGS}"
 
         sed "s/REPO_USER/$REPO_USER/g" ${SETTINGS} > ${TEMP_FILE} && mv ${TEMP_FILE} ${SETTINGS}
         sed "s/REPO_PASS/$REPO_PASS/g" ${SETTINGS} > ${TEMP_FILE} && mv ${TEMP_FILE} ${SETTINGS}
