@@ -640,17 +640,13 @@ init_java8() {
         echo "export JAVA_HOME=${JAVA_PATH}" >> "${BASH_PROFILE}"
         source "${BASH_PROFILE}"
 
-        ${SUDO} cp -rf "${SHELL_DIR}/package/jce/local_policy.jar.bin" "local_policy.jar"
-        ${SUDO} cp -rf "${SHELL_DIR}/package/jce/US_export_policy.jar.bin" "US_export_policy.jar"
+        ${SUDO} cp -rf "${SHELL_DIR}/package/jce8/local_policy.jar.bin" "${JAVA_PATH}/lib/security/local_policy.jar"
+        ${SUDO} cp -rf "${SHELL_DIR}/package/jce8/US_export_policy.jar.bin" "${JAVA_PATH}/lib/security/US_export_policy.jar"
     fi
 
     echo_bar
     java -version
     echo_bar
-}
-
-function join {
-    local IFS="$1"; shift; echo "$*";
 }
 
 init_tomcat8() {
