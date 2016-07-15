@@ -21,7 +21,7 @@ SHELL_DIR=$(dirname $0)
 CONFIG="${HOME}/.toast"
 
 if [ ! -f "${CONFIG}" ]; then
-    cp "${SHELL_DIR}/package/toast.txt" ${CONFIG}
+    cp -rf "${SHELL_DIR}/package/toast.txt" ${CONFIG}
     chmod 644 ${CONFIG}
 fi
 
@@ -605,7 +605,7 @@ init_php56() {
     make_dir "${SITE_DIR}/files" 777
     make_dir "${SITE_DIR}/upload" 777
 
-    ${SUDO} cp "${SHELL_DIR}/package/health.txt" "/var/www/html/health.html"
+    ${SUDO} cp -rf "${SHELL_DIR}/package/health.txt" "/var/www/html/health.html"
 }
 
 init_php70() {
@@ -619,7 +619,7 @@ init_php70() {
     make_dir "${SITE_DIR}/files" 777
     make_dir "${SITE_DIR}/upload" 777
 
-    ${SUDO} cp "${SHELL_DIR}/package/health.txt" "/var/www/html/health.html"
+    ${SUDO} cp -rf "${SHELL_DIR}/package/health.txt" "/var/www/html/health.html"
 }
 
 init_java8() {
@@ -639,6 +639,9 @@ init_java8() {
         echo "" >> "${BASH_PROFILE}"
         echo "export JAVA_HOME=${JAVA_PATH}" >> "${BASH_PROFILE}"
         source "${BASH_PROFILE}"
+
+        ${SUDO} cp -rf "${SHELL_DIR}/package/jce/local_policy.jar.bin" "local_policy.jar"
+        ${SUDO} cp -rf "${SHELL_DIR}/package/jce/US_export_policy.jar.bin" "US_export_policy.jar"
     fi
 
     echo_bar
@@ -810,7 +813,7 @@ deploy_vhost() {
     ${SUDO} rm -rf ${HTTPD_CONF_DIR}/localhost*
     ${SUDO} rm -rf ${HTTPD_CONF_DIR}/vhost*
 
-    ${SUDO} cp "${SHELL_DIR}/package/vhost/localhost.conf" "${HTTPD_CONF_DIR}/"
+    ${SUDO} cp -rf "${SHELL_DIR}/package/vhost/localhost.conf" "${HTTPD_CONF_DIR}/"
     ${SUDO} chmod 644 "${HTTPD_CONF_DIR}/localhost.conf"
 
     TEMP_FILE="${TEMP_DIR}/toast-vhost.tmp.$$"
@@ -837,7 +840,7 @@ deploy_vhost() {
 
         echo "--> ${DEST_FILE}"
 
-        ${SUDO} cp ${TEMPLATE} ${DEST_FILE}
+        ${SUDO} cp -rf ${TEMPLATE} ${DEST_FILE}
 
         sed "s/DOM/$DOM/g" ${DEST_FILE} > ${TEMP_FILE} && ${SUDO} mv -f ${TEMP_FILE} ${DEST_FILE}
 
