@@ -256,9 +256,6 @@ deploy() {
         server)
             deploy_fleet
             ;;
-        jenkins)
-            deploy_jenkins
-            ;;
         *)
             deploy_vhost
             deploy_fleet
@@ -940,38 +937,6 @@ deploy_value() {
     FILEPATH="${TEMP_DIR}/${FILENAME}"
 
     UNZIP_DIR="${TEMP_DIR}/${RANDOM}"
-}
-
-deploy_jenkins() {
-    # "deploy jenkins"
-
-    ARTIFACT_ID="ROOT"
-    VERSION=""
-    TYPE="war"
-
-    PACKAGING="${TYPE}"
-    DEPLOY_PATH="${WEBAPP_DIR}"
-
-    FILENAME="${ARTIFACT_ID}.${PACKAGING}"
-    FILEPATH="${TEMP_DIR}/${FILENAME}"
-
-    echo "download jenkins..."
-
-    SOURCE="http://mirrors.jenkins-ci.org/war/latest/jenkins.war"
-
-    wget -q -N -P "${TEMP_DIR}" "${SOURCE}"
-
-    cp -rf "${TEMP_DIR}/jenkins.war" "${TEMP_DIR}/ROOT.war"
-
-    HAS_WAR="TRUE"
-
-    tomcat_stop
-
-    echo "placement jenkins..."
-
-    placement
-
-    tomcat_start
 }
 
 log_tomcat() {
