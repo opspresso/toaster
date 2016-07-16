@@ -312,17 +312,24 @@ prepare() {
     ${SUDO} cp -rf "${SHELL_DIR}/package/phase/${PHASE}/hosts.txt" "/etc/hosts"
 
     if [ "${SUDO}" != "" ]; then
-        sed "s/PHASE/$PHASE/g" "${SHELL_DIR}/package/bashrc.txt" > "${HOME}/.bashrc"
+        TARGET_FILE="${HOME}/.bashrc"
+        TEMP_FILE="${TEMP_DIR}/bashrc.tmp.$$"
+
+        ${SUDO} cp -rf "${SHELL_DIR}/package/bashrc.txt" "${TARGET_FILE}"
+
+        sed "s/PHASE/$PHASE/g" ${TARGET_FILE} > ${TEMP_FILE} && mv -f ${TEMP_FILE} ${TARGET_FILE}
+        sed "s/REPO_USER/$REPO_USER/g" ${TARGET_FILE} > ${TEMP_FILE} && mv -f ${TEMP_FILE} ${TARGET_FILE}
+        sed "s/REPO_PASS/$REPO_PASS/g" ${TARGET_FILE} > ${TEMP_FILE} && mv -f ${TEMP_FILE} ${TARGET_FILE}
     fi
 
     if [ ! -f "${HOME}/.m2/settings.xml" ]; then
-        SETTINGS="${HOME}/.m2/settings.xml"
+        TARGET_FILE="${HOME}/.m2/settings.xml"
         TEMP_FILE="${TEMP_DIR}/settings.tmp.$$"
 
-        ${SUDO} cp -rf "${SHELL_DIR}/package/m2/settings.xml" "${SETTINGS}"
+        ${SUDO} cp -rf "${SHELL_DIR}/package/m2/settings.xml" "${TARGET_FILE}"
 
-        sed "s/REPO_USER/$REPO_USER/g" ${SETTINGS} > ${TEMP_FILE} && mv -f ${TEMP_FILE} ${SETTINGS}
-        sed "s/REPO_PASS/$REPO_PASS/g" ${SETTINGS} > ${TEMP_FILE} && mv -f ${TEMP_FILE} ${SETTINGS}
+        sed "s/REPO_USER/$REPO_USER/g" ${TARGET_FILE} > ${TEMP_FILE} && mv -f ${TEMP_FILE} ${TARGET_FILE}
+        sed "s/REPO_PASS/$REPO_PASS/g" ${TARGET_FILE} > ${TEMP_FILE} && mv -f ${TEMP_FILE} ${TARGET_FILE}
     fi
 
     if [ ! -f "${HOME}/.ssh/config" ]; then

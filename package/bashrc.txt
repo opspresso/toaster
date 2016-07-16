@@ -17,4 +17,8 @@ alias toast="~/toaster/toast"
 alias yell="~/nalbam-shell/shell/yell.sh"
 
 export CATALINA_OPTS="-Dproject.profile=PHASE"
+
 export PROFILE="PHASE"
+
+export USERNAME="REPO_USER"
+export PASSWORD="REPO_PASS"
