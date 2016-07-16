@@ -316,6 +316,7 @@ prepare() {
         TEMP_FILE="${TEMP_DIR}/bashrc.tmp.$$"
 
         ${SUDO} cp -rf "${SHELL_DIR}/package/bashrc.txt" "${TARGET_FILE}"
+        ${SUDO} chmod 644 "${TARGET_FILE}"
 
         sed "s/PHASE/$PHASE/g" ${TARGET_FILE} > ${TEMP_FILE} && mv -f ${TEMP_FILE} ${TARGET_FILE}
         sed "s/REPO_USER/$REPO_USER/g" ${TARGET_FILE} > ${TEMP_FILE} && mv -f ${TEMP_FILE} ${TARGET_FILE}
@@ -329,6 +330,7 @@ prepare() {
         TEMP_FILE="${TEMP_DIR}/settings.tmp.$$"
 
         ${SUDO} cp -rf "${SHELL_DIR}/package/m2/settings.xml" "${TARGET_FILE}"
+        ${SUDO} chmod 644 "${TARGET_FILE}"
 
         sed "s/REPO_USER/$REPO_USER/g" ${TARGET_FILE} > ${TEMP_FILE} && mv -f ${TEMP_FILE} ${TARGET_FILE}
         sed "s/REPO_PASS/$REPO_PASS/g" ${TARGET_FILE} > ${TEMP_FILE} && mv -f ${TEMP_FILE} ${TARGET_FILE}
@@ -1130,7 +1132,7 @@ make_dir() {
     ${SUDO} chown ${USER}.${USER} $1
 
     if [ "$2" != "" ]; then
-        chmod $2 $1
+        ${SUDO} chmod $2 $1
     fi
 }
 
