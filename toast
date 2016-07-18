@@ -292,6 +292,7 @@ prepare() {
     ${SUDO} ln -sf /usr/share/zoneinfo/Asia/Seoul /etc/localtime
 
     ${SUDO} sudo yum install -y git vim nmap wget curl unzip yum-utils
+
     ${SUDO} yum-config-manager --enable epel
 
     ${SUDO} rpm -Uvh https://mirror.webtatic.com/yum/el6/latest.rpm
