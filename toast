@@ -1128,10 +1128,12 @@ make_dir() {
         ${SUDO} mkdir $1
     fi
 
-    ${SUDO} chown ${USER}.${USER} $1
-
     if [ "$2" != "" ]; then
         ${SUDO} chmod $2 $1
+    fi
+
+    if [ "${USER}" != "" ]; then
+        ${SUDO} chown ${USER}.${USER} $1
     fi
 }
 
