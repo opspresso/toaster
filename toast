@@ -567,6 +567,9 @@ init_auto() {
 
     for i in "${ARR[@]}"; do
         case "$i" in
+            http|httpd)
+                init_httpd
+                ;;
             php5)
                 init_php56
                 ;;
