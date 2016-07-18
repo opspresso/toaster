@@ -180,9 +180,11 @@ init() {
             init_slave
             ;;
         php5)
+            init_httpd
             init_php56
             ;;
         php7)
+            init_httpd
             init_php70
             ;;
         java|tomcat)
@@ -590,32 +592,38 @@ init_auto() {
     done
 }
 
-init_php56() {
-    ${SUDO} yum install -y httpd24 php56w php56w-mysqlnd php56w-mcrypt php56w-gd php56w-mbstring
+init_httpd() {
+    status=`${SUDO} yum list | grep httpd24 | wc -l | awk '{print $1}'`
 
-    init_php_open_tag
+    if [ ${status} -ge 1 ]; then
+        ${SUDO} yum install -y httpd24
+    else
+        ${SUDO} yum install -y httpd
+    fi
 
     ${SUDO} chkconfig httpd on
-
-    make_dir "${SITE_DIR}"
-    make_dir "${SITE_DIR}/files" 777
-    make_dir "${SITE_DIR}/upload" 777
 
     ${SUDO} cp -rf "${SHELL_DIR}/package/health.txt" "/var/www/html/health.html"
 }
 
-init_php70() {
-    ${SUDO} yum install -y httpd24 php70w php70w-mysqlnd php70w-mcrypt php70w-gd php70w-mbstring
+init_php56() {
+    ${SUDO} yum install -y php56w php56w-mysqlnd php56w-mcrypt php56w-gd php56w-mbstring
 
     init_php_open_tag
-
-    ${SUDO} chkconfig httpd on
 
     make_dir "${SITE_DIR}"
     make_dir "${SITE_DIR}/files" 777
     make_dir "${SITE_DIR}/upload" 777
+}
 
-    ${SUDO} cp -rf "${SHELL_DIR}/package/health.txt" "/var/www/html/health.html"
+init_php70() {
+    ${SUDO} yum install -y php70w php70w-mysqlnd php70w-mcrypt php70w-gd php70w-mbstring
+
+    init_php_open_tag
+
+    make_dir "${SITE_DIR}"
+    make_dir "${SITE_DIR}/files" 777
+    make_dir "${SITE_DIR}/upload" 777
 }
 
 init_java8() {
