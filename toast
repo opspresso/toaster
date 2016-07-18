@@ -318,20 +318,20 @@ prepare() {
         source "${TARGET_FILE}"
     fi
 
+    if [ ! -f "${HOME}/.ssh/config" ]; then
+        ${SUDO} cp -rpf "${SHELL_DIR}/package/ssh/ssh_config" "${HOME}/.ssh/config"
+        ${SUDO} chmod 600 "${HOME}/.ssh/config"
+    fi
+
     if [ ! -f "${HOME}/.m2/settings.xml" ]; then
         TARGET_FILE="${HOME}/.m2/settings.xml"
         TEMP_FILE="${TEMP_DIR}/settings.tmp.$$"
 
-        ${SUDO} cp -rf "${SHELL_DIR}/package/m2/settings.xml" "${TARGET_FILE}"
+        ${SUDO} cp -rpf "${SHELL_DIR}/package/m2/settings.xml" "${TARGET_FILE}"
         ${SUDO} chmod 644 "${TARGET_FILE}"
 
         sed "s/REPO_USER/$REPO_USER/g" ${TARGET_FILE} > ${TEMP_FILE} && mv -f ${TEMP_FILE} ${TARGET_FILE}
         sed "s/REPO_PASS/$REPO_PASS/g" ${TARGET_FILE} > ${TEMP_FILE} && mv -f ${TEMP_FILE} ${TARGET_FILE}
-    fi
-
-    if [ ! -f "${HOME}/.ssh/config" ]; then
-        ${SUDO} cp -rf "${SHELL_DIR}/package/ssh/ssh_config" "${HOME}/.ssh/config"
-        ${SUDO} chmod 600 "${HOME}/.ssh/config"
     fi
 
     make_dir "/data"
