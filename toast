@@ -291,23 +291,10 @@ prepare() {
     ${SUDO} rm -rf /etc/localtime
     ${SUDO} ln -sf /usr/share/zoneinfo/Asia/Seoul /etc/localtime
 
+    ${SUDO} sudo yum install -y git vim nmap wget curl unzip yum-utils
     ${SUDO} yum-config-manager --enable epel
 
-    if [ ! -f "/usr/bin/git" ]; then
-        ${SUDO} yum install -y git
-    fi
-
-    if [ ! -f "/usr/bin/vim" ]; then
-        ${SUDO} yum install -y vim
-    fi
-
-    if [ ! -f "/usr/bin/nmap" ]; then
-        ${SUDO} yum install -y nmap
-    fi
-
-    if [ ! -d "${TEMP_DIR}" ]; then
-        make_dir "${TEMP_DIR}"
-    fi
+    ${SUDO} rpm -Uvh https://mirror.webtatic.com/yum/el6/latest.rpm
 
     make_dir "${HOME}/.m2"
     make_dir "${HOME}/.aws"
