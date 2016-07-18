@@ -164,7 +164,7 @@ update() {
     self_info
     self_update
 
-    update_yum
+    #update_yum
 }
 
 init() {
