@@ -107,7 +107,7 @@ toast() {
 }
 
 usage() {
-    echo_bar
+    echo_toast
     echo " Usage: toast {auto|config|update|init|version|deploy}"
     echo_bar
     echo_
