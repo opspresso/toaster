@@ -41,6 +41,10 @@ DOMAIN=$6
 
 HAS_WAR=FALSE
 
+if [ "${USER}" == "" ]; then
+    USER=`whoami`
+fi
+
 SUDO=""
 
 if [ "${HOME}" != "/root" ]; then
@@ -371,10 +375,6 @@ config_auto() {
 
     if [ "${PORT}" == "" ]; then
         PORT=`nmap localhost | grep ssh | awk '{print $1}' | cut -d'/' -f1`
-    fi
-
-    if [ "${USER}" == "" ]; then
-        USER=`whoami`
     fi
 }
 
