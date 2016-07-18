@@ -297,6 +297,8 @@ prepare() {
 
     ${SUDO} rpm -Uvh https://mirror.webtatic.com/yum/el6/latest.rpm
 
+    make_dir "${TEMP_DIR}"
+
     make_dir "${HOME}/.m2"
     make_dir "${HOME}/.aws"
     make_dir "${HOME}/.ssh"
@@ -634,6 +636,8 @@ init_java8() {
         echo "export JAVA_HOME=\"${JAVA_PATH}\"" >> "${BASH_PROFILE}"
         echo "export CATALINA_OPTS=\"-Dproject.profile=${PHASE}\"" >> "${BASH_PROFILE}"
         source "${BASH_PROFILE}"
+
+        echo "JAVA_HOME=${JAVA_PATH}"
 
         ${SUDO} cp -rf "${SHELL_DIR}/package/jce8/local_policy.jar.bin" "${JAVA_PATH}/lib/security/local_policy.jar"
         ${SUDO} cp -rf "${SHELL_DIR}/package/jce8/US_export_policy.jar.bin" "${JAVA_PATH}/lib/security/US_export_policy.jar"
