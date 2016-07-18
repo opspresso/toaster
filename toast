@@ -589,7 +589,7 @@ init_auto() {
 }
 
 init_php56() {
-    ${SUDO} yum install -y httpd24 php56 php56-mysqlnd php56-mcrypt php56-gd php56-mbstring
+    ${SUDO} yum install -y httpd24 php56w php56w-mysqlnd php56w-mcrypt php56w-gd php56w-mbstring
 
     init_php_open_tag
 
@@ -603,7 +603,7 @@ init_php56() {
 }
 
 init_php70() {
-    ${SUDO} yum install -y httpd24 php70 php70-mysqlnd php70-mcrypt php70-gd php70-mbstring
+    ${SUDO} yum install -y httpd24 php70w php70w-mysqlnd php70w-mcrypt php70w-gd php70w-mbstring
 
     init_php_open_tag
 
