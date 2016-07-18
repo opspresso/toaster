@@ -295,8 +295,7 @@ prepare() {
 
     ${SUDO} sudo yum install -y git vim nmap wget curl unzip yum-utils
 
-    ${SUDO} yum-config-manager --enable epel
-
+    ${SUDO} rpm -Uvh https://dl.fedoraproject.org/pub/epel/epel-release-latest-6.noarch.rpm
     ${SUDO} rpm -Uvh https://mirror.webtatic.com/yum/el6/latest.rpm
 
     make_dir "${TEMP_DIR}"
@@ -610,7 +609,7 @@ init_httpd() {
 }
 
 init_php56() {
-    ${SUDO} yum install -y php56w php56w-mysqlnd php56w-mcrypt php56w-gd php56w-mbstring
+    ${SUDO} yum install -y php56w php56w-mysql php56w-mcrypt php56w-gd php56w-mbstring
 
     init_php_open_tag
 
@@ -620,7 +619,7 @@ init_php56() {
 }
 
 init_php70() {
-    ${SUDO} yum install -y php70w php70w-mysqlnd php70w-mcrypt php70w-gd php70w-mbstring
+    ${SUDO} yum install -y php70w php70w-mysql php70w-mcrypt php70w-gd php70w-mbstring
 
     init_php_open_tag
 
