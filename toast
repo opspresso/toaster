@@ -54,7 +54,7 @@ fi
 TEMP_DIR="/tmp/deploy"
 
 if [ ! -d "${TEMP_DIR}" ]; then
-    mkdir "${TEMP_DIR}"
+    make_dir "${TEMP_DIR}"
 fi
 
 ################################################################################
