@@ -39,8 +39,6 @@ VERSION=$4
 TYPE=$5
 DOMAIN=$6
 
-HAS_WAR=FALSE
-
 if [ "${USER}" == "" ]; then
     USER=`whoami`
 fi
@@ -54,6 +52,9 @@ fi
 TEMP_DIR="/tmp/deploy"
 
 ################################################################################
+
+HAS_HTTPD=FALSE
+HAS_TOMCAT=FALSE
 
 SITE_DIR="/data/site"
 APPS_DIR="/data/apps"
@@ -162,7 +163,6 @@ auto() {
     init_auto
 
     deploy_fleet
-    deploy_vhost
 }
 
 update() {
@@ -264,7 +264,6 @@ deploy() {
             deploy_fleet
             ;;
         *)
-            deploy_vhost
             deploy_fleet
     esac
 }
@@ -541,9 +540,7 @@ init_master() {
 }
 
 init_slave() {
-    ID_RSA="${HOME}/.ssh/id_rsa.pub"
-
-    if [ ! -f "${ID_RSA}" ]; then
+    if [ ! -f "${HOME}/.ssh/id_rsa.pub" ]; then
         #ssh-keygen -t rsa -C "toast@$yanolja.in"
 
         cp -rf ${SHELL_DIR}/package/ssh/id_rsa ${HOME}/.ssh/id_rsa
@@ -553,9 +550,7 @@ init_slave() {
         chmod 644 ${HOME}/.ssh/id_rsa.pub
     fi
 
-    AWS_CONFIG="${HOME}/.aws/config"
-
-    if [ ! -f "${AWS_CONFIG}" ]; then
+    if [ ! -f "${AWS_CONFIG}/.aws/config" ]; then
         cp -rf ${SHELL_DIR}/package/aws/config.txt ${HOME}/.aws/config
         cp -rf ${SHELL_DIR}/package/aws/credentials.txt ${HOME}/.aws/credentials
 
@@ -597,9 +592,15 @@ init_auto() {
                 ;;
         esac
     done
+
+    if [ "${HAS_HTTPD}" == "TRUE" ]; then
+        deploy_vhost
+    fi
 }
 
 init_httpd() {
+    HAS_HTTPD="TRUE"
+
     status=`${SUDO} yum list | grep httpd24 | wc -l | awk '{print $1}'`
 
     if [ ${status} -ge 1 ]; then
@@ -995,7 +996,7 @@ download() {
 
     # war (for tomcat stop/start)
     if [ "${TYPE}" == "war" ]; then
-        HAS_WAR="TRUE"
+        HAS_TOMCAT="TRUE"
     fi
 
     # php unzip
@@ -1076,7 +1077,7 @@ placement() {
 }
 
 tomcat_stop() {
-    if [ "${HAS_WAR}" == "TRUE" ]; then
+    if [ "${HAS_TOMCAT}" == "TRUE" ]; then
         status=`ps -ef | grep catalina | grep java | grep -v grep | wc -l | awk '{print $1}'`
         if [ ${status} -ge 1 ]; then
             echo "tomcat stop..."
@@ -1086,7 +1087,7 @@ tomcat_stop() {
 }
 
 tomcat_start() {
-    if [ "${HAS_WAR}" == "TRUE" ]; then
+    if [ "${HAS_TOMCAT}" == "TRUE" ]; then
         status=`ps -ef | grep catalina | grep java | grep -v grep | wc -l | awk '{print $1}'`
         count=0
         while [ ${status} -ge 1 ]; do
