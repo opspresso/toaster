@@ -301,17 +301,9 @@ prepare() {
 
     ${SUDO} sudo yum install -y git vim nmap wget curl unzip yum-utils
 
-    if [ -f ~/epel-release-latest-6.noarch.rpm ]; then
-        wget -q https://dl.fedoraproject.org/pub/epel/epel-release-latest-6.noarch.rpm
-        ${SUDO} rpm -Uvh ~/epel-release-latest-6.noarch.rpm
-    fi
-
-    if [ -f ~/latest.rpm ]; then
-        status=`${SUDO} yum list | grep php56 | wc -l | awk '{print $1}'`
-        if [ ${status} -lt 1 ]; then
-            wget -q https://mirror.webtatic.com/yum/el6/latest.rpm
-            ${SUDO} rpm -Uvh ~/latest.rpm
-        fi
+    if [ -f "${HOME}/epel-release-latest-6.noarch.rpm" ]; then
+        wget -q -N -P "${HOME}" https://dl.fedoraproject.org/pub/epel/epel-release-latest-6.noarch.rpm
+        ${SUDO} rpm -Uvh "${HOME}/epel-release-latest-6.noarch.rpm"
     fi
 
     make_dir "${TEMP_DIR}"
@@ -626,6 +618,14 @@ init_httpd() {
 }
 
 init_php56() {
+    if [ -f "${HOME}/latest.rpm" ]; then
+        status=`${SUDO} yum list | grep php56 | wc -l | awk '{print $1}'`
+        if [ ${status} -lt 1 ]; then
+            wget -q -N -P "${HOME}" https://mirror.webtatic.com/yum/el6/latest.rpm
+            ${SUDO} rpm -Uvh "${HOME}/latest.rpm"
+        fi
+    fi
+
     status=`${SUDO} yum list | grep php56w | wc -l | awk '{print $1}'`
 
     if [ ${status} -ge 1 ]; then
@@ -642,6 +642,14 @@ init_php56() {
 }
 
 init_php70() {
+    if [ -f "${HOME}/latest.rpm" ]; then
+        status=`${SUDO} yum list | grep php56 | wc -l | awk '{print $1}'`
+        if [ ${status} -lt 1 ]; then
+            wget -q -N -P "${HOME}" https://mirror.webtatic.com/yum/el6/latest.rpm
+            ${SUDO} rpm -Uvh "${HOME}/latest.rpm"
+        fi
+    fi
+
     status=`${SUDO} yum list | grep php70w | wc -l | awk '{print $1}'`
 
     if [ ${status} -ge 1 ]; then
