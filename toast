@@ -41,7 +41,7 @@ TYPE=$5
 DOMAIN=$6
 
 if [ "${ID}" == "" ]; then
-    ID=`curl -s http://instance-data/latest/meta-data/instance-id`
+    ID=`curl http://instance-data/latest/meta-data/instance-id`
 fi
 
 if [ "${USER}" == "" ]; then
