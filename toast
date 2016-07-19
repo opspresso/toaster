@@ -368,6 +368,8 @@ login() {
 config_auto() {
     if [ "${ID}" == "" ]; then
         ID=`curl http://instance-data/latest/meta-data/instance-id`
+
+        echo `curl http://instance-data/latest/meta-data/instance-id`
     fi
 
     if [ "${NAME}" == "" ]; then
