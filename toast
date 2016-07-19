@@ -307,8 +307,11 @@ prepare() {
     fi
 
     if [ -f ~/latest.rpm ]; then
-        wget -q https://mirror.webtatic.com/yum/el6/latest.rpm
-        ${SUDO} rpm -Uvh ~/latest.rpm
+        status=`${SUDO} yum list | grep php56 | wc -l | awk '{print $1}'`
+        if [ ${status} -lt 1 ]; then
+            wget -q https://mirror.webtatic.com/yum/el6/latest.rpm
+            ${SUDO} rpm -Uvh ~/latest.rpm
+        fi
     fi
 
     make_dir "${TEMP_DIR}"
@@ -623,7 +626,13 @@ init_httpd() {
 }
 
 init_php56() {
-    ${SUDO} yum install -y php56w php56w-mysql php56w-mcrypt php56w-gd php56w-mbstring
+    status=`${SUDO} yum list | grep php56w | wc -l | awk '{print $1}'`
+
+    if [ ${status} -ge 1 ]; then
+        ${SUDO} yum install -y php56w php56w-mysql php56w-mcrypt php56w-gd php56w-mbstring
+    else
+        ${SUDO} yum install -y php56 php56-mysql php56-mcrypt php56-gd php56-mbstring
+    fi
 
     init_php_open_tag
 
@@ -633,7 +642,13 @@ init_php56() {
 }
 
 init_php70() {
-    ${SUDO} yum install -y php70w php70w-mysql php70w-mcrypt php70w-gd php70w-mbstring
+    status=`${SUDO} yum list | grep php70w | wc -l | awk '{print $1}'`
+
+    if [ ${status} -ge 1 ]; then
+        ${SUDO} yum install -y php70w php70w-mysql php70w-mcrypt php70w-gd php70w-mbstring
+    else
+        ${SUDO} yum install -y php70 php70-mysql php70-mcrypt php70-gd php70-mbstring
+    fi
 
     init_php_open_tag
 
