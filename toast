@@ -605,7 +605,6 @@ init_httpd() {
     HAS_HTTPD="TRUE"
 
     status=`${SUDO} yum list | grep httpd24 | wc -l | awk '{print $1}'`
-
     if [ ${status} -ge 1 ]; then
         ${SUDO} yum install -y httpd24 httpd24-tools
     else
@@ -627,7 +626,6 @@ init_php56() {
     fi
 
     status=`${SUDO} yum list | grep php56w | wc -l | awk '{print $1}'`
-
     if [ ${status} -ge 1 ]; then
         ${SUDO} yum install -y php56w php56w-mysql php56w-mcrypt php56w-gd php56w-mbstring
     else
@@ -651,7 +649,6 @@ init_php70() {
     fi
 
     status=`${SUDO} yum list | grep php70w | wc -l | awk '{print $1}'`
-
     if [ ${status} -ge 1 ]; then
         ${SUDO} yum install -y php70w php70w-mysql php70w-mcrypt php70w-gd php70w-mbstring
     else
