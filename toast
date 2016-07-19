@@ -734,6 +734,11 @@ init_php_open_tag() {
 }
 
 terminate() {
+    if [ "${ID}" == "" ]; then
+        echo "instance-id does not exist."
+        exit 1
+    fi
+
     aws ec2 terminate-instances --instance-ids ${ID} --region ap-northeast-2
 }
 
