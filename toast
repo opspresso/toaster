@@ -301,8 +301,15 @@ prepare() {
 
     ${SUDO} sudo yum install -y git vim nmap wget curl unzip yum-utils
 
-    ${SUDO} rpm -Uvh https://dl.fedoraproject.org/pub/epel/epel-release-latest-6.noarch.rpm
-    ${SUDO} rpm -Uvh https://mirror.webtatic.com/yum/el6/latest.rpm
+    if [ -f ~/epel-release-latest-6.noarch.rpm ]; then
+        wget -q https://dl.fedoraproject.org/pub/epel/epel-release-latest-6.noarch.rpm
+        ${SUDO} rpm -Uvh ~/epel-release-latest-6.noarch.rpm
+    fi
+
+    if [ -f ~/latest.rpm ]; then
+        wget -q https://mirror.webtatic.com/yum/el6/latest.rpm
+        ${SUDO} rpm -Uvh ~/latest.rpm
+    fi
 
     make_dir "${TEMP_DIR}"
 
