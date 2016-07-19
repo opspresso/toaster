@@ -35,10 +35,11 @@ fi
 CMD=$1
 SUB=$2
 
-ARTIFACT_ID=$3
-VERSION=$4
-TYPE=$5
-DOMAIN=$6
+GROUP_ID=$3
+ARTIFACT_ID=$4
+VERSION=$5
+TYPE=$6
+DOMAIN=$7
 
 if [ "${ID}" == "" ]; then
     ID=`curl http://instance-data/latest/meta-data/instance-id`
@@ -877,7 +878,7 @@ deploy_vhost() {
 }
 
 deploy_project() {
-    # "deploy project yanolja.deploy 0.0.0 php deploy.yanolja.com"
+    # "deploy project com.yanolja yanolja.deploy 0.0.0 php deploy.yanolja.com"
 
     PACKAGING="${TYPE}"
     if [ "${PACKAGING}" == "war" ]; then
@@ -949,10 +950,11 @@ deploy_fleet() {
 
 deploy_value() {
     RANDOM="${TARGET[0]}"
-    ARTIFACT_ID="${TARGET[1]}"
-    VERSION="${TARGET[2]}"
-    TYPE="${TARGET[3]}"
-    DOMAIN="${TARGET[4]}"
+    GROUP_ID="${TARGET[1]}"
+    ARTIFACT_ID="${TARGET[2]}"
+    VERSION="${TARGET[3]}"
+    TYPE="${TARGET[4]}"
+    DOMAIN="${TARGET[5]}"
 
     PACKAGING="${TYPE}"
     if [ "${PACKAGING}" == "war" ]; then
