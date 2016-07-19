@@ -881,6 +881,8 @@ deploy_vhost() {
 deploy_project() {
     # "deploy project com.yanolja yanolja.deploy 0.0.0 php deploy.yanolja.com"
 
+    GROUP_PATH=`echo "${GROUP_ID}" | sed "s/\./\//"`
+
     PACKAGING="${TYPE}"
     if [ "${PACKAGING}" == "war" ]; then
         DEPLOY_PATH="${WEBAPP_DIR}"
