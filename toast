@@ -605,9 +605,9 @@ init_httpd() {
     status=`${SUDO} yum list | grep httpd24 | wc -l | awk '{print $1}'`
 
     if [ ${status} -ge 1 ]; then
-        ${SUDO} yum install -y httpd24
+        ${SUDO} yum install -y httpd24 httpd24-tools
     else
-        ${SUDO} yum install -y httpd
+        ${SUDO} yum install -y httpd httpd-tools
     fi
 
     ${SUDO} chkconfig httpd on
