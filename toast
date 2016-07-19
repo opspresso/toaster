@@ -41,10 +41,6 @@ VERSION=$5
 TYPE=$6
 DOMAIN=$7
 
-if [ "${ID}" == "" ]; then
-    ID=`curl http://instance-data/latest/meta-data/instance-id`
-fi
-
 if [ "${USER}" == "" ]; then
     USER=`whoami`
 fi
@@ -370,6 +366,10 @@ login() {
 }
 
 config_auto() {
+    if [ "${ID}" == "" ]; then
+        ID=`curl http://instance-data/latest/meta-data/instance-id`
+    fi
+
     if [ "${NAME}" == "" ]; then
         NAME=`hostname`
     fi
