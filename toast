@@ -9,6 +9,7 @@ REPO_USER=
 REPO_PASS=
 PHASE=
 FLEET=
+ID=
 NAME=
 HOST=
 PORT=
@@ -38,6 +39,10 @@ ARTIFACT_ID=$3
 VERSION=$4
 TYPE=$5
 DOMAIN=$6
+
+if [ "${ID}" == "" ]; then
+    ID=`curl -s http://instance-data/latest/meta-data/instance-id`
+fi
 
 if [ "${USER}" == "" ]; then
     USER=`whoami`
@@ -448,7 +453,7 @@ config_save() {
     echo "server save..."
 
     URL="${TOAST_URL}/server/config"
-    RES=`curl --data "token=${TOKEN}&no=${SNO}&phase=${PHASE}&fleet=${FLEET}&name=${NAME}&host=${HOST}&port=${PORT}&user=${USER}" ${URL}`
+    RES=`curl --data "token=${TOKEN}&no=${SNO}&phase=${PHASE}&fleet=${FLEET}&id=${ID}&name=${NAME}&host=${HOST}&port=${PORT}&user=${USER}" ${URL}`
     ARR=(${RES})
 
     if [ "${ARR[0]}" != "OK" ]; then
@@ -471,6 +476,7 @@ config_save() {
     echo "REPO_PASS=\"${REPO_PASS}\"" >> ${CONFIG}
     echo "PHASE=\"${PHASE}\"" >> ${CONFIG}
     echo "FLEET=\"${FLEET}\"" >> ${CONFIG}
+    echo "ID=\"${ID}\"" >> ${CONFIG}
     echo "NAME=\"${NAME}\"" >> ${CONFIG}
     echo "HOST=\"${HOST}\"" >> ${CONFIG}
     echo "PORT=\"${PORT}\"" >> ${CONFIG}
@@ -728,7 +734,7 @@ init_php_open_tag() {
 }
 
 terminate() {
-    ${SUDO} ec2-terminate-instances $(curl -s http://169.254.169.254/latest/meta-data/instance-id)
+    aws ec2 terminate-instances --instance-ids ${ID} --region ap-northeast-2
 }
 
 version_parse() {
