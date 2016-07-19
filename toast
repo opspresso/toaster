@@ -366,10 +366,10 @@ login() {
 }
 
 config_auto() {
-    echo `curl http://instance-data/latest/meta-data/instance-id`
+    echo `curl -s http://instance-data/latest/meta-data/instance-id`
 
     if [ "${ID}" == "" ]; then
-        ID=`curl http://instance-data/latest/meta-data/instance-id`
+        ID=`curl -s http://instance-data/latest/meta-data/instance-id`
     fi
 
     if [ "${NAME}" == "" ]; then
