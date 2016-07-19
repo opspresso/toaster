@@ -359,7 +359,7 @@ login() {
 
     echo "yanolja login..."
 
-    RES=`curl --data "id=${YAJA_ID}&passwd=${YAJA_PW}" ${LOGIN_URL}`
+    RES=`curl -s --data "id=${YAJA_ID}&passwd=${YAJA_PW}" ${LOGIN_URL}`
     ARR=(${RES})
 
     TOKEN="${ARR[0]}"
@@ -448,7 +448,7 @@ config_save() {
     echo "server save..."
 
     URL="${TOAST_URL}/server/config"
-    RES=`curl --data "token=${TOKEN}&no=${SNO}&phase=${PHASE}&fleet=${FLEET}&name=${NAME}&host=${HOST}&port=${PORT}&user=${USER}&id=${ID}" ${URL}`
+    RES=`curl -s --data "token=${TOKEN}&no=${SNO}&phase=${PHASE}&fleet=${FLEET}&name=${NAME}&host=${HOST}&port=${PORT}&user=${USER}&id=${ID}" ${URL}`
     ARR=(${RES})
 
     if [ "${ARR[0]}" != "OK" ]; then
@@ -493,7 +493,7 @@ config_health() {
     echo "server health..."
 
     URL="${TOAST_URL}/server/health/${SNO}"
-    RES=`curl ${URL}`
+    RES=`curl -s ${URL}`
 
     echo "${RES}"
 }
@@ -562,7 +562,7 @@ init_slave() {
 
 init_auto() {
     URL="${TOAST_URL}/fleet/apps/${PHASE}/${FLEET}"
-    RES=`curl --data "token=${TOKEN}" ${URL}`
+    RES=`curl -s --data "token=${TOKEN}" ${URL}`
     ARR=(${RES})
 
     for i in "${ARR[@]}"; do
@@ -773,7 +773,7 @@ version_next() {
     echo "version get..."
 
     URL="${TOAST_URL}/version/latest/${ARTIFACT_ID}"
-    RES=`curl --data "token=${TOKEN}" ${URL}`
+    RES=`curl -s --data "token=${TOKEN}" ${URL}`
     ARR=(${RES})
 
     if [ "${ARR[0]}" != "OK" ]; then
@@ -809,7 +809,7 @@ version_save() {
     #aws s3 sync ~/.m2/repository/${GROUP_PATH}/${ARTIFACT_ID}/ s3://repo.yanolja.com/release/${GROUP_PATH}/${ARTIFACT_ID}/
 
     URL="${TOAST_URL}/version/build/${ARTIFACT_ID}/${VERSION}"
-    RES=`curl --data "token=${TOKEN}" ${URL}`
+    RES=`curl -s --data "token=${TOKEN}" ${URL}`
     ARR=(${RES})
 
     if [ "${ARR[0]}" != "OK" ]; then
