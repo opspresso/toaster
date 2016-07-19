@@ -154,8 +154,6 @@ auto() {
 
     prepare
 
-    update
-
     config_auto
     config_save
     config_info
@@ -168,10 +166,12 @@ auto() {
 }
 
 update() {
+    echo_toast
+
     self_info
     self_update
 
-    #update_yum
+    update_yum
 }
 
 init() {
