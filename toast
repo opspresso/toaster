@@ -636,6 +636,8 @@ init_php70() {
 }
 
 init_java8() {
+    make_dir "${APPS_DIR}"
+
     if [ ! -f "${JDK_RPM}" ]; then
         echo "download ${JDK_RPM}..."
 
@@ -666,8 +668,6 @@ init_java8() {
 }
 
 init_tomcat8() {
-    make_dir "${APPS_DIR}"
-
     if [ -f "${TOMCAT_DIR}" ] || [ -d "${TOMCAT_DIR}" ]; then
         rm -rf "${TOMCAT_DIR}"
     fi
