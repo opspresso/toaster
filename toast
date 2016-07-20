@@ -21,10 +21,6 @@ SHELL_DIR=$(dirname $0)
 
 CONFIG="${HOME}/.toast"
 
-if [ ! -f "${CONFIG}" ]; then
-    copy "${SHELL_DIR}/package/toast.txt" ${CONFIG} 644
-fi
-
 if [ -f "${CONFIG}" ]; then
     . ${CONFIG}
 fi
@@ -103,7 +99,7 @@ toast() {
     esac
 
     if [ ! -f "${CONFIG}" ]; then
-        config
+        auto
     fi
 }
 
@@ -167,8 +163,6 @@ auto() {
 }
 
 update() {
-    echo_toast
-
     self_info
     self_update
 
@@ -345,6 +339,10 @@ prepare() {
 
     make_dir "/data"
     make_dir "/data/logs"
+
+    if [ ! -f "${CONFIG}" ]; then
+        copy "${SHELL_DIR}/package/toast.txt" ${CONFIG} 644
+    fi
 }
 
 login() {
