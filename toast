@@ -604,17 +604,21 @@ init_auto() {
 init_apache() {
     HAS_APACHE="TRUE"
 
-    status=`${SUDO} yum list | grep httpd24 | wc -l | awk '{print $1}'`
+    if [ ! -f "${HOME}/.toast_apache" ]; then
+        status=`${SUDO} yum list | grep httpd24 | wc -l | awk '{print $1}'`
 
-    if [ ${status} -ge 1 ]; then
-        ${SUDO} yum install -y httpd24
-        APACHE_VERSION="24"
-    else
-        ${SUDO} yum install -y httpd
-        APACHE_VERSION="22"
+        if [ ${status} -ge 1 ]; then
+            ${SUDO} yum install -y httpd24
+            APACHE_VERSION="24"
+        else
+            ${SUDO} yum install -y httpd
+            APACHE_VERSION="22"
+        fi
+
+        ${SUDO} chkconfig httpd on
+
+        touch "${HOME}/.toast_apache"
     fi
-
-    ${SUDO} chkconfig httpd on
 
     ${SUDO} cp -rf "${SHELL_DIR}/package/health.txt" "/var/www/html/health.html"
 
