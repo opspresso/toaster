@@ -760,6 +760,10 @@ init_rabbitmq() {
     ${SUDO} service rabbitmq-server restart
 }
 
+init_puppet() {
+    ${SUDO} yum install -y puppet
+}
+
 init_php_ini() {
     PHP_INI="/etc/php.ini"
 
@@ -890,7 +894,7 @@ deploy_vhost() {
 
     TEMP_FILE="${TEMP_DIR}/toast-vhost.tmp.$$"
 
-    TEMPLATE="${SHELL_DIR}/package/vhost/vhost-temp.conf"
+    TEMPLATE="${SHELL_DIR}/package/vhost/vhost-temp-${HTTPD_VERSION}.conf"
 
     echo "download vhost..."
 
