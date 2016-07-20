@@ -736,6 +736,8 @@ init_redis() {
 }
 
 init_rabbitmq() {
+    #wget -q -N -P "${HOME}" https://www.rabbitmq.com/releases/rabbitmq-server/v3.6.3/rabbitmq-server-3.6.3-1.noarch.rpm
+
     ${SUDO} yum install -y rabbitmq-server
 
     ${SUDO} chkconfig rabbitmq-server on
