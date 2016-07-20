@@ -154,6 +154,8 @@ auto() {
 
     prepare
 
+    update
+
     config_auto
     config_save
     config_info
