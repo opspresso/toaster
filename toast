@@ -167,7 +167,7 @@ update() {
     self_info
     self_update
 
-    update_yum
+    yum_update
 }
 
 init() {
@@ -295,11 +295,20 @@ prepare() {
     ${SUDO} rm -rf /etc/localtime
     ${SUDO} ln -sf /usr/share/zoneinfo/Asia/Seoul /etc/localtime
 
-    ${SUDO} sudo yum install -y git vim nmap wget curl unzip yum-utils
+    yum_install git
+    yum_install curl
+    yum_install nmap
+    yum_install wget
+    yum_install unzip
 
     if [ ! -f "${HOME}/.toast_epel" ]; then
+        if [ ! -f "/usr/bin/yum-config-manager" ]; then
+            ${SUDO} sudo yum install -y yum-utils
+        fi
+
         ${SUDO} rpm -Uvh https://dl.fedoraproject.org/pub/epel/epel-release-latest-6.noarch.rpm
         ${SUDO} yum-config-manager --enable epel
+
         touch "${HOME}/.toast_epel"
     fi
 
@@ -514,8 +523,14 @@ config_cron() {
     echo_bar
 }
 
-update_yum() {
+yum_update() {
     ${SUDO} yum update -y
+}
+
+yum_install() {
+    if [ ! -f "/usr/bin/$1" ]; then
+        ${SUDO} yum install -y $1
+    fi
 }
 
 init_master() {
