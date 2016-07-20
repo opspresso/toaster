@@ -1,5 +1,5 @@
 127.0.0.1   localhost localhost.localdomain
 
-52.78.49.211   deploy.yanolja.com
-
-52.78.49.211   toast.yanolja.com
+10.0.0.22       deploy.yanolja.com
+10.0.0.22       local.deploy.yanolja.com
+10.0.0.22       toast.yanolja.com
