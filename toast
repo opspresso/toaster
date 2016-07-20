@@ -735,7 +735,7 @@ init_tomcat8() {
 
     TOMCAT_FILE="apache-tomcat-${TOMCAT_VER}.zip"
 
-    if [ ! -f "${TOMCAT_FILE}" ]; then
+    if [ ! -f "${APPS_DIR}/${TOMCAT_FILE}" ]; then
         echo "download ${TOMCAT_FILE}..."
 
         wget -q -N -P "${APPS_DIR}" "${TOMCAT_URL}"
