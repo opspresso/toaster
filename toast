@@ -631,7 +631,7 @@ init_php55() {
         ${SUDO} yum install -y php55 php55-mysql php55-mcrypt php55-gd php55-mbstring
     fi
 
-    init_php_open_tag
+    init_php_ini
 
     make_dir "${SITE_DIR}/files" 777
     make_dir "${SITE_DIR}/upload" 777
@@ -647,7 +647,7 @@ init_php56() {
         ${SUDO} yum install -y php56 php56-mysql php56-mcrypt php56-gd php56-mbstring
     fi
 
-    init_php_open_tag
+    init_php_ini
 
     make_dir "${SITE_DIR}/files" 777
     make_dir "${SITE_DIR}/upload" 777
@@ -663,7 +663,7 @@ init_php70() {
         ${SUDO} yum install -y php70 php70-mysql php70-mcrypt php70-gd php70-mbstring
     fi
 
-    init_php_open_tag
+    init_php_ini
 
     make_dir "${SITE_DIR}/files" 777
     make_dir "${SITE_DIR}/upload" 777
@@ -757,17 +757,16 @@ init_rabbitmq() {
     ${SUDO} service rabbitmq-server restart
 }
 
-init_php_open_tag() {
+init_php_ini() {
     PHP_INI="/etc/php.ini"
 
     TEMP_FILE="${TEMP_DIR}/toast-php.tmp.$$"
 
-    TAG1="short_open_tag = Off"
-    TAG2="short_open_tag = On"
+    # short_open_tag = On
+    sed "s/short\_open\_tag\ \=\ Off/short\_open\_tag\ \=\ On/g" ${PHP_INI} > ${TEMP_FILE} && ${SUDO} mv -f ${TEMP_FILE} ${PHP_INI}
 
-    sed "s/$TAG1/$TAG2/g" ${PHP_INI} > ${TEMP_FILE}
-
-    ${SUDO} mv -f ${TEMP_FILE} ${PHP_INI}
+    # date.timezone = Asia/Seoul
+    sed "s/\;date\.timezone\ \=/date\.timezone\ \=\ Asia\/Seoul/g" ${PHP_INI} > ${TEMP_FILE} && ${SUDO} mv -f ${TEMP_FILE} ${PHP_INI}
 }
 
 terminate() {
