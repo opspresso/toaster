@@ -55,8 +55,8 @@ TEMP_DIR="/tmp/deploy"
 
 ################################################################################
 
-HAS_HTTPD=FALSE
-HAS_TOMCAT=FALSE
+HAS_HTTPD="FALSE"
+HAS_TOMCAT="FALSE"
 
 SITE_DIR="/data/site"
 APPS_DIR="/data/apps"
@@ -110,7 +110,7 @@ toast() {
 
 usage() {
     echo_toast
-    echo " Usage: toast {auto|config|update|init|version|deploy}"
+    echo " Usage: toast {auto|update|config|init|version|deploy}"
     echo_bar
     echo_
     echo " Usage: toast auto"
@@ -631,6 +631,22 @@ init_webtatic() {
     fi
 }
 
+init_php55() {
+    init_webtatic
+
+    status=`${SUDO} yum list | grep php55w | wc -l | awk '{print $1}'`
+    if [ ${status} -ge 1 ]; then
+        ${SUDO} yum install -y php55w php55w-mysql php55w-mcrypt php55w-gd php55w-mbstring
+    else
+        ${SUDO} yum install -y php55 php55-mysql php55-mcrypt php55-gd php55-mbstring
+    fi
+
+    init_php_open_tag
+
+    make_dir "${SITE_DIR}/files" 777
+    make_dir "${SITE_DIR}/upload" 777
+}
+
 init_php56() {
     init_webtatic
 
@@ -719,6 +735,12 @@ init_tomcat8() {
     chmod 755 ${TOMCAT_DIR}/bin/*.sh
 
     rm -rf ${WEBAPP_DIR}/*
+}
+
+init_mysql55() {
+    ${SUDO} yum install -y mysql55-server
+
+    ${SUDO} chkconfig mysqld on
 }
 
 init_mysql56() {
@@ -862,7 +884,7 @@ version_remove() {
 
 deploy_vhost() {
     if [ ! -d "${HTTPD_CONF_DIR}" ]; then
-        echo "Need web server init. [toast init php5|php7]"
+        echo "Need web server init. [toast init httpd]"
         exit 1
     fi
 
