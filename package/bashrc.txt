@@ -7,8 +7,8 @@ fi
 
 # User specific aliases and functions
 
-if [ -f ~/.yanolja_alias ]; then
-  . ~/.yanolja_alias
+if [ -f ~/.toast_alias ]; then
+  . ~/.toast_alias
 fi
 
 export PROFILE="PHASE"

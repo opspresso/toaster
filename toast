@@ -297,10 +297,10 @@ prepare() {
 
     ${SUDO} sudo yum install -y git vim nmap wget curl unzip yum-utils
 
-    if [ ! -f "${HOME}/.rpm-epel" ]; then
+    if [ ! -f "${HOME}/.toast-epel" ]; then
         ${SUDO} rpm -Uvh https://dl.fedoraproject.org/pub/epel/epel-release-latest-6.noarch.rpm
         ${SUDO} yum-config-manager --enable epel
-        touch "${HOME}/.rpm-epel"
+        touch "${HOME}/.toast-epel"
     fi
 
     make_dir "${TEMP_DIR}"
@@ -312,7 +312,7 @@ prepare() {
     ${SUDO} cp -rf "${SHELL_DIR}/package/phase/${PHASE}/hosts.txt" "/etc/hosts"
 
     if [ "${SUDO}" != "" ]; then
-        TARGET_FILE="${HOME}/.yanolja_alias"
+        TARGET_FILE="${HOME}/.toast_alias"
         copy "${SHELL_DIR}/package/phase/${PHASE}/alias.txt" "${TARGET_FILE}" 644
 
         TARGET_FILE="${HOME}/.bashrc"
@@ -624,13 +624,13 @@ init_apache() {
 }
 
 init_webtatic() {
-    if [ ! -f "${HOME}/.rpm-webtatic" ]; then
+    if [ ! -f "${HOME}/.toast-webtatic" ]; then
         status=`${SUDO} yum list | grep php56 | wc -l | awk '{print $1}'`
 
         if [ ${status} -lt 1 ]; then
             ${SUDO} rpm -Uvh https://mirror.webtatic.com/yum/el6/latest.rpm
 
-            touch "${HOME}/.rpm-webtatic"
+            touch "${HOME}/.toast-webtatic"
         fi
     fi
 }
@@ -638,7 +638,7 @@ init_webtatic() {
 init_php55() {
     init_webtatic
 
-    if [ ! -f "${HOME}/.rpm-php55" ]; then
+    if [ ! -f "${HOME}/.toast-php55" ]; then
         status=`${SUDO} yum list | grep php55w | wc -l | awk '{print $1}'`
 
         if [ ${status} -ge 1 ]; then
@@ -647,7 +647,7 @@ init_php55() {
             ${SUDO} yum install -y php55 php55-mysql php55-mcrypt php55-gd php55-mbstring
         fi
 
-        touch "${HOME}/.rpm-php55"
+        touch "${HOME}/.toast-php55"
     fi
 
     init_php_ini
@@ -656,7 +656,7 @@ init_php55() {
 init_php56() {
     init_webtatic
 
-    if [ ! -f "${HOME}/.rpm-php56" ]; then
+    if [ ! -f "${HOME}/.toast-php56" ]; then
         status=`${SUDO} yum list | grep php56w | wc -l | awk '{print $1}'`
 
         if [ ${status} -ge 1 ]; then
@@ -665,7 +665,7 @@ init_php56() {
             ${SUDO} yum install -y php56 php56-mysql php56-mcrypt php56-gd php56-mbstring
         fi
 
-        touch "${HOME}/.rpm-php56"
+        touch "${HOME}/.toast-php56"
     fi
 
     init_php_ini
@@ -674,7 +674,7 @@ init_php56() {
 init_php70() {
     init_webtatic
 
-    if [ ! -f "${HOME}/.rpm-php70" ]; then
+    if [ ! -f "${HOME}/.toast-php70" ]; then
         status=`${SUDO} yum list | grep php70w | wc -l | awk '{print $1}'`
 
         if [ ${status} -ge 1 ]; then
@@ -683,14 +683,14 @@ init_php70() {
             ${SUDO} yum install -y php70 php70-mysql php70-mcrypt php70-gd php70-mbstring
         fi
 
-        touch "${HOME}/.rpm-php70"
+        touch "${HOME}/.toast-php70"
     fi
 
     init_php_ini
 }
 
 init_java8() {
-    if [ ! -f "${HOME}/.rpm-java8" ]; then
+    if [ ! -f "${HOME}/.toast-java8" ]; then
         echo "download ${JDK_RPM}..."
 
         COOKIE="Cookie: gpw_e24=http%3A%2F%2Fwww.oracle.com%2F; oraclelicense=accept-securebackup-cookie"
@@ -714,7 +714,7 @@ init_java8() {
         ${SUDO} cp -rf "${SHELL_DIR}/package/jce8/local_policy.jar.bin" "${JAVA_PATH}/lib/security/local_policy.jar"
         ${SUDO} cp -rf "${SHELL_DIR}/package/jce8/US_export_policy.jar.bin" "${JAVA_PATH}/lib/security/US_export_policy.jar"
 
-        touch "${HOME}/.rpm-java8"
+        touch "${HOME}/.toast-java8"
     fi
 
     make_dir "${APPS_DIR}"
