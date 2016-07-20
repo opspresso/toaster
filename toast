@@ -673,7 +673,7 @@ init_php70() {
 }
 
 init_java8() {
-    if [ ! -f "${JDK_RPM}" ]; then
+    if [ ! -f "${HOME}/.rpm-java8" ]; then
         echo "download ${JDK_RPM}..."
 
         COOKIE="Cookie: gpw_e24=http%3A%2F%2Fwww.oracle.com%2F; oraclelicense=accept-securebackup-cookie"
@@ -681,6 +681,7 @@ init_java8() {
         wget -q --no-cookies --no-check-certificate --header "${COOKIE}" ${JDK_URL}
 
         ${SUDO} yum localinstall -y ${JDK_RPM}
+        ${SUDO} rm -rf ${JDK_RPM}
 
         JAVA_PATH=$(dirname $(dirname $(readlink -f $(which java))))
 
@@ -695,6 +696,8 @@ init_java8() {
 
         ${SUDO} cp -rf "${SHELL_DIR}/package/jce8/local_policy.jar.bin" "${JAVA_PATH}/lib/security/local_policy.jar"
         ${SUDO} cp -rf "${SHELL_DIR}/package/jce8/US_export_policy.jar.bin" "${JAVA_PATH}/lib/security/US_export_policy.jar"
+
+        touch "${HOME}/.rpm-java8"
     fi
 
     make_dir "${APPS_DIR}"
