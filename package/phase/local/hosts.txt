@@ -1,15 +1,13 @@
 127.0.0.1   localhost localhost.localdomain
 
-10.0.0.22       deploy.yanolja.com
-10.0.0.22       local.deploy.yanolja.com
 10.0.0.22       toast.yanolja.com
+10.0.0.22       toast.db.yanolja.com
+
+10.0.0.22       deploy.yanolja.com
 
 192.168.33.1    local.api01.yanolja.com
 192.168.33.1    local.api02.yanolja.com
 192.168.33.1    local.api03.yanolja.com
-
-10.0.0.22       toast.yanolja.com
-10.0.0.22       toast.db.yanolja.com
 
 10.0.0.10       dev.db.yanolja.com
 10.0.0.10       dev.db.yanoljanow.com

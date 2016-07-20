@@ -7,11 +7,8 @@ fi
 
 # User specific aliases and functions
 
-alias ll='ls -l'
-alias l='ls -al'
-
-alias cdw="cd /data"
-
-alias toast="~/toaster/toast"
+if [ -f ~/.yanolja_alias ]; then
+  . ~/.yanolja_alias
+fi
 
 export PROFILE="PHASE"

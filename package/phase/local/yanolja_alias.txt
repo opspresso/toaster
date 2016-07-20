@@ -1,0 +1,12 @@
+alias ll='ls -l'
+alias l='ls -al'
+
+alias toast="~/toaster/toast"
+
+alias cdw="cd /data"
+alias cdv="cd /vagrant"
+
+alias com="/vagrant/bin/composer.sh"
+alias log="/vagrant/bin/log.sh"
+alias swg="/vagrant/bin/swagger.sh"
+alias ret="sudo /vagrant/bin/reset.sh"

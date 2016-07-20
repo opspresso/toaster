@@ -318,12 +318,15 @@ prepare() {
     ${SUDO} cp -rf "${SHELL_DIR}/package/phase/${PHASE}/hosts.txt" "/etc/hosts"
 
     if [ "${SUDO}" != "" ]; then
-        TARGET_FILE="${HOME}/.bashrc"
-        TEMP_FILE="${TEMP_DIR}/bashrc.tmp.$$"
+        TARGET_FILE="${HOME}/.yanolja_alias"
+        ${SUDO} cp -rf "${SHELL_DIR}/package/phase/${PHASE}/yanolja_alias.txt" "${TARGET_FILE}"
+        ${SUDO} chmod 644 "${TARGET_FILE}"
 
+        TARGET_FILE="${HOME}/.bashrc"
         ${SUDO} cp -rf "${SHELL_DIR}/package/bashrc.txt" "${TARGET_FILE}"
         ${SUDO} chmod 644 "${TARGET_FILE}"
 
+        TEMP_FILE="${TEMP_DIR}/bashrc.tmp.$$"
         sed "s/PHASE/$PHASE/g" ${TARGET_FILE} > ${TEMP_FILE} && mv -f ${TEMP_FILE} ${TARGET_FILE}
 
         source "${TARGET_FILE}"
@@ -331,11 +334,10 @@ prepare() {
 
     if [ ! -f "${HOME}/.m2/settings.xml" ]; then
         TARGET_FILE="${HOME}/.m2/settings.xml"
-        TEMP_FILE="${TEMP_DIR}/settings.tmp.$$"
-
         ${SUDO} cp -rpf "${SHELL_DIR}/package/m2/settings.xml" "${TARGET_FILE}"
         ${SUDO} chmod 644 "${TARGET_FILE}"
 
+        TEMP_FILE="${TEMP_DIR}/settings.tmp.$$"
         sed "s/REPO_USER/$REPO_USER/g" ${TARGET_FILE} > ${TEMP_FILE} && mv -f ${TEMP_FILE} ${TARGET_FILE}
         sed "s/REPO_PASS/$REPO_PASS/g" ${TARGET_FILE} > ${TEMP_FILE} && mv -f ${TEMP_FILE} ${TARGET_FILE}
     fi
