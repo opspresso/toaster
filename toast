@@ -304,6 +304,7 @@ prepare() {
     if [ ! -f "${HOME}/epel-release-latest-6.noarch.rpm" ]; then
         wget -q -N -P "${HOME}" https://dl.fedoraproject.org/pub/epel/epel-release-latest-6.noarch.rpm
         ${SUDO} rpm -Uvh "${HOME}/epel-release-latest-6.noarch.rpm"
+        ${SUDO} yum-config-manager --enable epel
     fi
 
     make_dir "${TEMP_DIR}"
