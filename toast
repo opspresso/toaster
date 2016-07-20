@@ -301,10 +301,10 @@ prepare() {
 
     ${SUDO} sudo yum install -y git vim nmap wget curl unzip yum-utils
 
-    if [ ! -f "${HOME}/epel-release-latest-6.noarch.rpm" ]; then
-        wget -q -N -P "${HOME}" https://dl.fedoraproject.org/pub/epel/epel-release-latest-6.noarch.rpm
-        ${SUDO} rpm -Uvh "${HOME}/epel-release-latest-6.noarch.rpm"
+    if [ ! -f "${HOME}/.rpm-epel" ]; then
+        ${SUDO} rpm -Uvh https://dl.fedoraproject.org/pub/epel/epel-release-latest-6.noarch.rpm
         ${SUDO} yum-config-manager --enable epel
+        touch "${HOME}/.rpm-epel"
     fi
 
     make_dir "${TEMP_DIR}"
@@ -607,24 +607,30 @@ init_httpd() {
 
     status=`${SUDO} yum list | grep httpd24 | wc -l | awk '{print $1}'`
     if [ ${status} -ge 1 ]; then
-        ${SUDO} yum install -y httpd24 httpd24-tools
+        ${SUDO} yum install -y httpd24
     else
-        ${SUDO} yum install -y httpd httpd-tools
+        ${SUDO} yum install -y httpd
     fi
 
     ${SUDO} chkconfig httpd on
 
     ${SUDO} cp -rf "${SHELL_DIR}/package/health.txt" "/var/www/html/health.html"
+
+    make_dir "${SITE_DIR}"
+}
+
+init_webtatic() {
+    if [ ! -f "${HOME}/.rpm-webtatic" ]; then
+        status=`${SUDO} yum list | grep php56 | wc -l | awk '{print $1}'`
+        if [ ${status} -lt 1 ]; then
+            ${SUDO} rpm -Uvh https://mirror.webtatic.com/yum/el6/latest.rpm
+            touch "${HOME}/.rpm-webtatic"
+        fi
+    fi
 }
 
 init_php56() {
-    if [ ! -f "${HOME}/latest.rpm" ]; then
-        status=`${SUDO} yum list | grep php56 | wc -l | awk '{print $1}'`
-        if [ ${status} -lt 1 ]; then
-            wget -q -N -P "${HOME}" https://mirror.webtatic.com/yum/el6/latest.rpm
-            ${SUDO} rpm -Uvh "${HOME}/latest.rpm"
-        fi
-    fi
+    init_webtatic
 
     status=`${SUDO} yum list | grep php56w | wc -l | awk '{print $1}'`
     if [ ${status} -ge 1 ]; then
@@ -635,19 +641,12 @@ init_php56() {
 
     init_php_open_tag
 
-    make_dir "${SITE_DIR}"
     make_dir "${SITE_DIR}/files" 777
     make_dir "${SITE_DIR}/upload" 777
 }
 
 init_php70() {
-    if [ ! -f "${HOME}/latest.rpm" ]; then
-        status=`${SUDO} yum list | grep php56 | wc -l | awk '{print $1}'`
-        if [ ${status} -lt 1 ]; then
-            wget -q -N -P "${HOME}" https://mirror.webtatic.com/yum/el6/latest.rpm
-            ${SUDO} rpm -Uvh "${HOME}/latest.rpm"
-        fi
-    fi
+    init_webtatic
 
     status=`${SUDO} yum list | grep php70w | wc -l | awk '{print $1}'`
     if [ ${status} -ge 1 ]; then
@@ -658,14 +657,11 @@ init_php70() {
 
     init_php_open_tag
 
-    make_dir "${SITE_DIR}"
     make_dir "${SITE_DIR}/files" 777
     make_dir "${SITE_DIR}/upload" 777
 }
 
 init_java8() {
-    make_dir "${APPS_DIR}"
-
     if [ ! -f "${JDK_RPM}" ]; then
         echo "download ${JDK_RPM}..."
 
@@ -689,6 +685,8 @@ init_java8() {
         ${SUDO} cp -rf "${SHELL_DIR}/package/jce8/local_policy.jar.bin" "${JAVA_PATH}/lib/security/local_policy.jar"
         ${SUDO} cp -rf "${SHELL_DIR}/package/jce8/US_export_policy.jar.bin" "${JAVA_PATH}/lib/security/US_export_policy.jar"
     fi
+
+    make_dir "${APPS_DIR}"
 
     echo_bar
     java -version
@@ -722,7 +720,7 @@ init_tomcat8() {
 }
 
 init_mysql56() {
-    ${SUDO} yum install -y mysql55-server
+    ${SUDO} yum install -y mysql56-server
 
     ${SUDO} chkconfig mysqld on
 }
