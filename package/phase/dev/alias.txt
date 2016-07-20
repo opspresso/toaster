@@ -2,5 +2,6 @@ alias ll='ls -l'
 alias l='ls -al'
 
 alias toast="~/toaster/toast"
+alias yell="~/nalbam-shell/shell/yell.sh"
 
 alias cdw="cd /data"
