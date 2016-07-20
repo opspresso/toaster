@@ -923,25 +923,25 @@ deploy_vhost() {
         exit 1
     fi
 
+    echo "download vhost..."
+
+    TARGET_FILE="${TEMP_DIR}/${FLEET}"
+
+    URL="${TOAST_URL}/target/vhost/${PHASE}/${FLEET}"
+    wget -q -N -P "${TEMP_DIR}" "${URL}"
+
+    echo "placement vhost..."
+
     ${SUDO} service httpd stop
 
     ${SUDO} rm -rf ${HTTPD_CONF_DIR}/localhost*
     ${SUDO} rm -rf ${HTTPD_CONF_DIR}/vhost*
 
     ${SUDO} cp -rf "${SHELL_DIR}/package/vhost/localhost-${APACHE_VERSION}.conf" "${HTTPD_CONF_DIR}/"
-    ${SUDO} chmod 644 "${HTTPD_CONF_DIR}/localhost-${APACHE_VERSION}.conf"
-
-    TEMP_FILE="${TEMP_DIR}/toast-vhost.tmp.$$"
 
     TEMPLATE="${SHELL_DIR}/package/vhost/vhost-temp-${APACHE_VERSION}.conf"
 
-    echo "download vhost..."
-
-    TARGET_FILE="${TEMP_DIR}/${FLEET}"
-    ${SUDO} rm -rf "${TARGET_FILE}"
-
-    URL="${TOAST_URL}/target/vhost/${PHASE}/${FLEET}"
-    wget -q -N -P "${TEMP_DIR}" "${URL}"
+    TEMP_FILE="${TEMP_DIR}/toast-vhost.tmp.$$"
 
     while read line
     do
@@ -955,11 +955,7 @@ deploy_vhost() {
 
         echo "--> ${DEST_FILE}"
 
-        ${SUDO} cp -rf ${TEMPLATE} ${DEST_FILE}
-
-        sed "s/DOM/$DOM/g" ${DEST_FILE} > ${TEMP_FILE} && ${SUDO} mv -f ${TEMP_FILE} ${DEST_FILE}
-
-        ${SUDO} chmod 644 "${DEST_FILE}"
+        sed "s/DOM/$DOM/g" ${TEMPLATE} > ${TEMP_FILE} && ${SUDO} mv -f ${TEMP_FILE} ${DEST_FILE}
     done < ${TARGET_FILE}
 
     ${SUDO} service httpd start
