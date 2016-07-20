@@ -56,6 +56,7 @@ HAS_TOMCAT="FALSE"
 SITE_DIR="/data/site"
 APPS_DIR="/data/apps"
 
+HTTPD_VERSION="24"
 HTTPD_CONF_DIR="/etc/httpd/conf.d"
 
 JDK_RPM="jdk-8u91-linux-x64.rpm"
@@ -600,8 +601,10 @@ init_httpd() {
     status=`${SUDO} yum list | grep httpd24 | wc -l | awk '{print $1}'`
     if [ ${status} -ge 1 ]; then
         ${SUDO} yum install -y httpd24
+        HTTPD_VERSION="24"
     else
         ${SUDO} yum install -y httpd
+        HTTPD_VERSION="22"
     fi
 
     ${SUDO} chkconfig httpd on
@@ -882,8 +885,8 @@ deploy_vhost() {
     ${SUDO} rm -rf ${HTTPD_CONF_DIR}/localhost*
     ${SUDO} rm -rf ${HTTPD_CONF_DIR}/vhost*
 
-    ${SUDO} cp -rf "${SHELL_DIR}/package/vhost/localhost.conf" "${HTTPD_CONF_DIR}/"
-    ${SUDO} chmod 644 "${HTTPD_CONF_DIR}/localhost.conf"
+    ${SUDO} cp -rf "${SHELL_DIR}/package/vhost/localhost-${HTTPD_VERSION}.conf" "${HTTPD_CONF_DIR}/"
+    ${SUDO} chmod 644 "${HTTPD_CONF_DIR}/localhost-${HTTPD_VERSION}.conf"
 
     TEMP_FILE="${TEMP_DIR}/toast-vhost.tmp.$$"
 
