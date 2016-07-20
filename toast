@@ -149,7 +149,7 @@ auto() {
 
     prepare
 
-    update
+    #update
 
     config_auto
     config_save
