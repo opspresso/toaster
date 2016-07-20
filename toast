@@ -50,13 +50,13 @@ TEMP_DIR="/tmp/deploy"
 
 ################################################################################
 
-HAS_HTTPD="FALSE"
+HAS_APACHE="FALSE"
 HAS_TOMCAT="FALSE"
 
 SITE_DIR="/data/site"
 APPS_DIR="/data/apps"
 
-HTTPD_VERSION="24"
+APACHE_VERSION="24"
 HTTPD_CONF_DIR="/etc/httpd/conf.d"
 
 JDK_RPM="jdk-8u91-linux-x64.rpm"
@@ -183,11 +183,11 @@ init() {
             init_slave
             ;;
         php5)
-            init_httpd
+            init_apache
             init_php56
             ;;
         php7)
-            init_httpd
+            init_apache
             init_php70
             ;;
         java|tomcat)
@@ -563,13 +563,16 @@ init_auto() {
 
     for i in "${ARR[@]}"; do
         case "$i" in
-            http|httpd)
-                init_httpd
+            http|httpd|apache)
+                init_apache
                 ;;
-            php5)
+            php55)
+                init_php55
+                ;;
+            php5|php56)
                 init_php56
                 ;;
-            php7)
+            php7|php70)
                 init_php70
                 ;;
             java|java8)
@@ -577,6 +580,9 @@ init_auto() {
                 ;;
             tomcat|tomcat8)
                 init_tomcat8
+                ;;
+            mysql55)
+                init_mysql55
                 ;;
             mysql|mysql56)
                 init_mysql56
@@ -590,21 +596,22 @@ init_auto() {
         esac
     done
 
-    if [ "${HAS_HTTPD}" == "TRUE" ]; then
+    if [ "${HAS_APACHE}" == "TRUE" ]; then
         deploy_vhost
     fi
 }
 
-init_httpd() {
-    HAS_HTTPD="TRUE"
+init_apache() {
+    HAS_APACHE="TRUE"
 
     status=`${SUDO} yum list | grep httpd24 | wc -l | awk '{print $1}'`
+
     if [ ${status} -ge 1 ]; then
         ${SUDO} yum install -y httpd24
-        HTTPD_VERSION="24"
+        APACHE_VERSION="24"
     else
         ${SUDO} yum install -y httpd
-        HTTPD_VERSION="22"
+        APACHE_VERSION="22"
     fi
 
     ${SUDO} chkconfig httpd on
@@ -612,13 +619,17 @@ init_httpd() {
     ${SUDO} cp -rf "${SHELL_DIR}/package/health.txt" "/var/www/html/health.html"
 
     make_dir "${SITE_DIR}"
+    make_dir "${SITE_DIR}/files" 777
+    make_dir "${SITE_DIR}/upload" 777
 }
 
 init_webtatic() {
     if [ ! -f "${HOME}/.rpm-webtatic" ]; then
         status=`${SUDO} yum list | grep php56 | wc -l | awk '{print $1}'`
+
         if [ ${status} -lt 1 ]; then
             ${SUDO} rpm -Uvh https://mirror.webtatic.com/yum/el6/latest.rpm
+
             touch "${HOME}/.rpm-webtatic"
         fi
     fi
@@ -627,49 +638,55 @@ init_webtatic() {
 init_php55() {
     init_webtatic
 
-    status=`${SUDO} yum list | grep php55w | wc -l | awk '{print $1}'`
-    if [ ${status} -ge 1 ]; then
-        ${SUDO} yum install -y php55w php55w-mysql php55w-mcrypt php55w-gd php55w-mbstring
-    else
-        ${SUDO} yum install -y php55 php55-mysql php55-mcrypt php55-gd php55-mbstring
+    if [ ! -f "${HOME}/.rpm-php55" ]; then
+        status=`${SUDO} yum list | grep php55w | wc -l | awk '{print $1}'`
+
+        if [ ${status} -ge 1 ]; then
+            ${SUDO} yum install -y php55w php55w-mysql php55w-mcrypt php55w-gd php55w-mbstring
+        else
+            ${SUDO} yum install -y php55 php55-mysql php55-mcrypt php55-gd php55-mbstring
+        fi
+
+        touch "${HOME}/.rpm-php55"
     fi
 
     init_php_ini
-
-    make_dir "${SITE_DIR}/files" 777
-    make_dir "${SITE_DIR}/upload" 777
 }
 
 init_php56() {
     init_webtatic
 
-    status=`${SUDO} yum list | grep php56w | wc -l | awk '{print $1}'`
-    if [ ${status} -ge 1 ]; then
-        ${SUDO} yum install -y php56w php56w-mysql php56w-mcrypt php56w-gd php56w-mbstring
-    else
-        ${SUDO} yum install -y php56 php56-mysql php56-mcrypt php56-gd php56-mbstring
+    if [ ! -f "${HOME}/.rpm-php56" ]; then
+        status=`${SUDO} yum list | grep php56w | wc -l | awk '{print $1}'`
+
+        if [ ${status} -ge 1 ]; then
+            ${SUDO} yum install -y php56w php56w-mysql php56w-mcrypt php56w-gd php56w-mbstring
+        else
+            ${SUDO} yum install -y php56 php56-mysql php56-mcrypt php56-gd php56-mbstring
+        fi
+
+        touch "${HOME}/.rpm-php56"
     fi
 
     init_php_ini
-
-    make_dir "${SITE_DIR}/files" 777
-    make_dir "${SITE_DIR}/upload" 777
 }
 
 init_php70() {
     init_webtatic
 
-    status=`${SUDO} yum list | grep php70w | wc -l | awk '{print $1}'`
-    if [ ${status} -ge 1 ]; then
-        ${SUDO} yum install -y php70w php70w-mysql php70w-mcrypt php70w-gd php70w-mbstring
-    else
-        ${SUDO} yum install -y php70 php70-mysql php70-mcrypt php70-gd php70-mbstring
+    if [ ! -f "${HOME}/.rpm-php70" ]; then
+        status=`${SUDO} yum list | grep php70w | wc -l | awk '{print $1}'`
+
+        if [ ${status} -ge 1 ]; then
+            ${SUDO} yum install -y php70w php70w-mysql php70w-mcrypt php70w-gd php70w-mbstring
+        else
+            ${SUDO} yum install -y php70 php70-mysql php70-mcrypt php70-gd php70-mbstring
+        fi
+
+        touch "${HOME}/.rpm-php70"
     fi
 
     init_php_ini
-
-    make_dir "${SITE_DIR}/files" 777
-    make_dir "${SITE_DIR}/upload" 777
 }
 
 init_java8() {
@@ -892,12 +909,12 @@ deploy_vhost() {
     ${SUDO} rm -rf ${HTTPD_CONF_DIR}/localhost*
     ${SUDO} rm -rf ${HTTPD_CONF_DIR}/vhost*
 
-    ${SUDO} cp -rf "${SHELL_DIR}/package/vhost/localhost-${HTTPD_VERSION}.conf" "${HTTPD_CONF_DIR}/"
-    ${SUDO} chmod 644 "${HTTPD_CONF_DIR}/localhost-${HTTPD_VERSION}.conf"
+    ${SUDO} cp -rf "${SHELL_DIR}/package/vhost/localhost-${APACHE_VERSION}.conf" "${HTTPD_CONF_DIR}/"
+    ${SUDO} chmod 644 "${HTTPD_CONF_DIR}/localhost-${APACHE_VERSION}.conf"
 
     TEMP_FILE="${TEMP_DIR}/toast-vhost.tmp.$$"
 
-    TEMPLATE="${SHELL_DIR}/package/vhost/vhost-temp-${HTTPD_VERSION}.conf"
+    TEMPLATE="${SHELL_DIR}/package/vhost/vhost-temp-${APACHE_VERSION}.conf"
 
     echo "download vhost..."
 
