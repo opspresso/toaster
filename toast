@@ -319,7 +319,7 @@ prepare() {
 
     if [ "${SUDO}" != "" ]; then
         TARGET_FILE="${HOME}/.yanolja_alias"
-        ${SUDO} cp -rf "${SHELL_DIR}/package/phase/${PHASE}/yanolja_alias.txt" "${TARGET_FILE}"
+        ${SUDO} cp -rf "${SHELL_DIR}/package/phase/${PHASE}/alias.txt" "${TARGET_FILE}"
         ${SUDO} chmod 644 "${TARGET_FILE}"
 
         TARGET_FILE="${HOME}/.bashrc"
@@ -343,8 +343,9 @@ prepare() {
     fi
 
     if [ ! -f "${HOME}/.ssh/config" ]; then
-        ${SUDO} cp -rpf "${SHELL_DIR}/package/ssh/ssh_config" "${HOME}/.ssh/config"
-        ${SUDO} chmod 600 "${HOME}/.ssh/config"
+        TARGET_FILE="${HOME}/.ssh/config"
+        ${SUDO} cp -rpf "${SHELL_DIR}/package/ssh/ssh_config" "${TARGET_FILE}"
+        ${SUDO} chmod 600 "${TARGET_FILE}"
     fi
 
     make_dir "/data"
