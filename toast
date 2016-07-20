@@ -22,8 +22,7 @@ SHELL_DIR=$(dirname $0)
 CONFIG="${HOME}/.toast"
 
 if [ ! -f "${CONFIG}" ]; then
-    cp -rf "${SHELL_DIR}/package/toast.txt" ${CONFIG}
-    chmod 644 ${CONFIG}
+    copy "${SHELL_DIR}/package/toast.txt" ${CONFIG} 644
 fi
 
 if [ -f "${CONFIG}" ]; then
@@ -319,12 +318,10 @@ prepare() {
 
     if [ "${SUDO}" != "" ]; then
         TARGET_FILE="${HOME}/.yanolja_alias"
-        ${SUDO} cp -rf "${SHELL_DIR}/package/phase/${PHASE}/alias.txt" "${TARGET_FILE}"
-        ${SUDO} chmod 644 "${TARGET_FILE}"
+        copy "${SHELL_DIR}/package/phase/${PHASE}/alias.txt" "${TARGET_FILE}" 644
 
         TARGET_FILE="${HOME}/.bashrc"
-        ${SUDO} cp -rf "${SHELL_DIR}/package/bashrc.txt" "${TARGET_FILE}"
-        ${SUDO} chmod 644 "${TARGET_FILE}"
+        copy "${SHELL_DIR}/package/bashrc.txt" "${TARGET_FILE}" 644
 
         TEMP_FILE="${TEMP_DIR}/bashrc.tmp.$$"
         sed "s/PHASE/$PHASE/g" ${TARGET_FILE} > ${TEMP_FILE} && mv -f ${TEMP_FILE} ${TARGET_FILE}
@@ -334,8 +331,7 @@ prepare() {
 
     if [ ! -f "${HOME}/.m2/settings.xml" ]; then
         TARGET_FILE="${HOME}/.m2/settings.xml"
-        ${SUDO} cp -rpf "${SHELL_DIR}/package/m2/settings.xml" "${TARGET_FILE}"
-        ${SUDO} chmod 644 "${TARGET_FILE}"
+        copy "${SHELL_DIR}/package/m2/settings.xml" "${TARGET_FILE}" 644
 
         TEMP_FILE="${TEMP_DIR}/settings.tmp.$$"
         sed "s/REPO_USER/$REPO_USER/g" ${TARGET_FILE} > ${TEMP_FILE} && mv -f ${TEMP_FILE} ${TARGET_FILE}
@@ -344,8 +340,7 @@ prepare() {
 
     if [ ! -f "${HOME}/.ssh/config" ]; then
         TARGET_FILE="${HOME}/.ssh/config"
-        ${SUDO} cp -rpf "${SHELL_DIR}/package/ssh/config" "${TARGET_FILE}"
-        ${SUDO} chmod 600 "${TARGET_FILE}"
+        copy "${SHELL_DIR}/package/ssh/config" "${TARGET_FILE}" 600
     fi
 
     make_dir "/data"
@@ -529,7 +524,7 @@ init_master() {
 
     if [ ! -f "${AUTH_KEYS}" ]; then
         cat ${SHELL_DIR}/package/ssh/id_rsa.pub > ${AUTH_KEYS}
-        chmod 700 ${AUTH_KEYS}
+        chmod 600 ${AUTH_KEYS}
     else
         IS_KEY="false"
 
@@ -552,19 +547,13 @@ init_slave() {
     if [ ! -f "${HOME}/.ssh/id_rsa.pub" ]; then
         #ssh-keygen -t rsa -C "toast@$yanolja.in"
 
-        cp -rf ${SHELL_DIR}/package/ssh/id_rsa ${HOME}/.ssh/id_rsa
-        cp -rf ${SHELL_DIR}/package/ssh/id_rsa.pub ${HOME}/.ssh/id_rsa.pub
-
-        chmod 600 ${HOME}/.ssh/id_rsa
-        chmod 644 ${HOME}/.ssh/id_rsa.pub
+        copy ${SHELL_DIR}/package/ssh/id_rsa ${HOME}/.ssh/id_rsa 600
+        copy ${SHELL_DIR}/package/ssh/id_rsa.pub ${HOME}/.ssh/id_rsa.pub 644
     fi
 
     if [ ! -f "${HOME}/.aws/config" ]; then
-        cp -rf ${SHELL_DIR}/package/aws/config.txt ${HOME}/.aws/config
-        cp -rf ${SHELL_DIR}/package/aws/credentials.txt ${HOME}/.aws/credentials
-
-        chmod 600 ${HOME}/.aws/config
-        chmod 600 ${HOME}/.aws/credentials
+        copy ${SHELL_DIR}/package/aws/config.txt ${HOME}/.aws/config 600
+        copy ${SHELL_DIR}/package/aws/credentials.txt ${HOME}/.aws/credentials 600
     fi
 }
 
@@ -1197,6 +1186,18 @@ process_start() {
     PID=`ps -ef | grep "[${ARTIFACT_ID:0:1}]""${ARTIFACT_ID:1}" | grep "[-]jar" | awk '{print $2}'`
     if [ "${PID}" != "" ]; then
         echo "startup (${PID})"
+    fi
+}
+
+copy() {
+    ${SUDO} cp -rf $1 $2
+
+    if [ "$3" != "" ]; then
+        ${SUDO} chmod $3 $2
+    fi
+
+    if [ "${USER}" != "" ]; then
+        ${SUDO} chown ${USER}.${USER} $2
     fi
 }
 
