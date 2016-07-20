@@ -344,7 +344,7 @@ prepare() {
 
     if [ ! -f "${HOME}/.ssh/config" ]; then
         TARGET_FILE="${HOME}/.ssh/config"
-        ${SUDO} cp -rpf "${SHELL_DIR}/package/ssh/ssh_config" "${TARGET_FILE}"
+        ${SUDO} cp -rpf "${SHELL_DIR}/package/ssh/config" "${TARGET_FILE}"
         ${SUDO} chmod 600 "${TARGET_FILE}"
     fi
 
