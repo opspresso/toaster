@@ -561,7 +561,9 @@ init_master() {
 }
 
 init_slave() {
-    if [ ! -f "${HOME}/.ssh/id_rsa.pub" ]; then
+    ID_RSA="${HOME}/.ssh/id_rsa"
+
+    if [ ! -f "${ID_RSA}" ]; then
         #ssh-keygen -t rsa -C "toast@$yanolja.in"
 
         #copy ${SHELL_DIR}/package/ssh/id_rsa ${HOME}/.ssh/id_rsa 600
@@ -570,8 +572,8 @@ init_slave() {
         URL="${TOAST_URL}/config/key/rsa_private_key"
         RES=`curl -s --data "token=${TOKEN}" ${URL}`
 
-        echo "${RES}" > ${HOME}/.ssh/id_rsa
-        chmod 600 ${HOME}/.ssh/id_rsa
+        echo "${RES}" > "${ID_RSA}"
+        chmod 600 "${ID_RSA}"
     fi
 
     if [ ! -f "${HOME}/.aws/config" ]; then
