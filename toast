@@ -935,11 +935,11 @@ deploy_vhost() {
     ${SUDO} service httpd stop
 
     ${SUDO} rm -rf ${HTTPD_CONF_DIR}/localhost*
-    ${SUDO} rm -rf ${HTTPD_CONF_DIR}/vhost*
+    ${SUDO} rm -rf ${HTTPD_CONF_DIR}/toast*
 
-    ${SUDO} cp -rf "${SHELL_DIR}/package/vhost/localhost-${APACHE_VERSION}.conf" "${HTTPD_CONF_DIR}/"
+    ${SUDO} cp -rf "${SHELL_DIR}/package/vhost/${APACHE_VERSION}/localhost.conf" "${HTTPD_CONF_DIR}/"
 
-    TEMPLATE="${SHELL_DIR}/package/vhost/vhost-temp-${APACHE_VERSION}.conf"
+    TEMPLATE="${SHELL_DIR}/package/vhost/${APACHE_VERSION}/vhost.conf"
 
     TEMP_FILE="${TEMP_DIR}/toast-vhost.tmp.$$"
 
@@ -951,7 +951,7 @@ deploy_vhost() {
 
         make_dir "${SITE_DIR}/${DOM}"
 
-        DEST_FILE="${HTTPD_CONF_DIR}/vhost-${DOM}.conf"
+        DEST_FILE="${HTTPD_CONF_DIR}/toast-${DOM}.conf"
 
         echo "--> ${DEST_FILE}"
 
