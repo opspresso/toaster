@@ -157,6 +157,7 @@ auto() {
     config_info
     config_cron
 
+    init_aws
     init_slave
     init_auto
 
@@ -315,7 +316,6 @@ prepare() {
     make_dir "${TEMP_DIR}"
 
     make_dir "${HOME}/.m2"
-    make_dir "${HOME}/.aws"
     make_dir "${HOME}/.ssh"
 
     ${SUDO} cp -rf "${SHELL_DIR}/package/phase/${PHASE}/hosts.txt" "/etc/hosts"
@@ -544,7 +544,6 @@ init_master() {
 }
 
 init_slave() {
-    # .ssh
     AUTH_KEYS="${HOME}/.ssh/authorized_keys"
 
     URL="${TOAST_URL}/config/key/rsa_public_key"
@@ -569,8 +568,11 @@ init_slave() {
         echo "${RES}" >> ${AUTH_KEYS}
         chmod 600 ${AUTH_KEYS}
     fi
+}
 
-    # .aws
+init_aws() {
+    make_dir "${HOME}/.aws"
+
     copy ${SHELL_DIR}/package/aws/config.txt ${HOME}/.aws/config 600
     copy ${SHELL_DIR}/package/aws/credentials.txt ${HOME}/.aws/credentials 600
 
