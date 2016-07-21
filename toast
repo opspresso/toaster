@@ -183,6 +183,9 @@ init() {
         slave)
             init_slave
             ;;
+        aws)
+            init_aws
+            ;;
         php5)
             init_apache
             init_php56
