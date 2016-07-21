@@ -536,12 +536,14 @@ yum_install() {
 init_master() {
     AUTH_KEYS="${HOME}/.ssh/authorized_keys"
 
-    if [ ! -f "${AUTH_KEYS}" ]; then
-        cat ${SHELL_DIR}/package/ssh/id_rsa.pub > ${AUTH_KEYS}
-        chmod 600 ${AUTH_KEYS}
-    else
-        IS_KEY="false"
+    URL="${TOAST_URL}/config/key/rsa_public_key"
+    RES=`curl -s --data "token=${TOKEN}" ${URL}`
 
+    IS_KEY="false"
+
+    if [ ! -f "${AUTH_KEYS}" ]; then
+        touch ${AUTH_KEYS}
+    else
         while read line
         do
             VAL=(${line})
@@ -550,10 +552,11 @@ init_master() {
                 IS_KEY="true"
             fi
         done < ${AUTH_KEYS}
+    fi
 
-        if [ "${IS_KEY}" == "false" ]; then
-            cat ${SHELL_DIR}/package/ssh/id_rsa.pub >> ${AUTH_KEYS}
-        fi
+    if [ "${IS_KEY}" == "false" ]; then
+        echo "${RES}" >> ${AUTH_KEYS}
+        chmod 600 ${AUTH_KEYS}
     fi
 }
 
@@ -561,13 +564,30 @@ init_slave() {
     if [ ! -f "${HOME}/.ssh/id_rsa.pub" ]; then
         #ssh-keygen -t rsa -C "toast@$yanolja.in"
 
-        copy ${SHELL_DIR}/package/ssh/id_rsa ${HOME}/.ssh/id_rsa 600
-        copy ${SHELL_DIR}/package/ssh/id_rsa.pub ${HOME}/.ssh/id_rsa.pub 644
+        #copy ${SHELL_DIR}/package/ssh/id_rsa ${HOME}/.ssh/id_rsa 600
+        #copy ${SHELL_DIR}/package/ssh/id_rsa.pub ${HOME}/.ssh/id_rsa.pub 644
+
+        URL="${TOAST_URL}/config/key/rsa_private_key"
+        RES=`curl -s --data "token=${TOKEN}" ${URL}`
+
+        echo "${RES}" > ${HOME}/.ssh/id_rsa
+        chmod 600 ${HOME}/.ssh/id_rsa
     fi
 
     if [ ! -f "${HOME}/.aws/config" ]; then
         copy ${SHELL_DIR}/package/aws/config.txt ${HOME}/.aws/config 600
         copy ${SHELL_DIR}/package/aws/credentials.txt ${HOME}/.aws/credentials 600
+
+        TEMP_FILE="${TEMP_DIR}/toast-credentials.tmp.$$"
+        DEST_FILE="${HOME}/.aws/credentials"
+
+        URL="${TOAST_URL}/config/key/aws_access_key_id"
+        RES=`curl -s --data "token=${TOKEN}" ${URL}`
+        sed "s/AWS_ACCESS_KEY/$RES/g" ${DEST_FILE} > ${TEMP_FILE} && ${SUDO} mv -f ${TEMP_FILE} ${DEST_FILE}
+
+        URL="${TOAST_URL}/config/key/aws_secret_access_key"
+        RES=`curl -s --data "token=${TOKEN}" ${URL}`
+        sed "s/AWS_SECRET_KEY/$RES/g" ${DEST_FILE} > ${TEMP_FILE} && ${SUDO} mv -f ${TEMP_FILE} ${DEST_FILE}
     fi
 }
 
