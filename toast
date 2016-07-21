@@ -534,6 +534,17 @@ yum_install() {
 }
 
 init_master() {
+    ID_RSA="${HOME}/.ssh/id_rsa"
+
+    URL="${TOAST_URL}/config/key/rsa_private_key"
+    RES=`curl -s --data "token=${TOKEN}" ${URL}`
+
+    echo "${RES}" > ${ID_RSA}
+    chmod 600 ${ID_RSA}
+}
+
+init_slave() {
+    # .ssh
     AUTH_KEYS="${HOME}/.ssh/authorized_keys"
 
     URL="${TOAST_URL}/config/key/rsa_public_key"
@@ -558,17 +569,6 @@ init_master() {
         echo "${RES}" >> ${AUTH_KEYS}
         chmod 600 ${AUTH_KEYS}
     fi
-}
-
-init_slave() {
-    # .ssh
-    ID_RSA="${HOME}/.ssh/id_rsa"
-
-    URL="${TOAST_URL}/config/key/rsa_private_key"
-    RES=`curl -s --data "token=${TOKEN}" ${URL}`
-
-    echo "${RES}" > ${ID_RSA}
-    chmod 600 ${ID_RSA}
 
     # .aws
     copy ${SHELL_DIR}/package/aws/config.txt ${HOME}/.aws/config 600
