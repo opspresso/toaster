@@ -561,36 +561,29 @@ init_master() {
 }
 
 init_slave() {
+    # .ssh
     ID_RSA="${HOME}/.ssh/id_rsa"
 
-    if [ ! -f "${ID_RSA}" ]; then
-        #ssh-keygen -t rsa -C "toast@$yanolja.in"
+    URL="${TOAST_URL}/config/key/rsa_private_key"
+    RES=`curl -s --data "token=${TOKEN}" ${URL}`
 
-        #copy ${SHELL_DIR}/package/ssh/id_rsa ${HOME}/.ssh/id_rsa 600
-        #copy ${SHELL_DIR}/package/ssh/id_rsa.pub ${HOME}/.ssh/id_rsa.pub 644
+    echo "${RES}" > ${ID_RSA}
+    chmod 600 ${ID_RSA}
 
-        URL="${TOAST_URL}/config/key/rsa_private_key"
-        RES=`curl -s --data "token=${TOKEN}" ${URL}`
+    # .aws
+    copy ${SHELL_DIR}/package/aws/config.txt ${HOME}/.aws/config 600
+    copy ${SHELL_DIR}/package/aws/credentials.txt ${HOME}/.aws/credentials 600
 
-        echo "${RES}" > ${ID_RSA}
-        chmod 600 ${ID_RSA}
-    fi
+    TEMP_FILE="${TEMP_DIR}/toast-credentials.tmp.$$"
+    DEST_FILE="${HOME}/.aws/credentials"
 
-    if [ ! -f "${HOME}/.aws/config" ]; then
-        copy ${SHELL_DIR}/package/aws/config.txt ${HOME}/.aws/config 600
-        copy ${SHELL_DIR}/package/aws/credentials.txt ${HOME}/.aws/credentials 600
+    URL="${TOAST_URL}/config/key/aws_access_key_id"
+    RES=`curl -s --data "token=${TOKEN}" ${URL}`
+    sed "s/AWS_ACCESS_KEY/$RES/g" ${DEST_FILE} > ${TEMP_FILE} && ${SUDO} mv -f ${TEMP_FILE} ${DEST_FILE}
 
-        TEMP_FILE="${TEMP_DIR}/toast-credentials.tmp.$$"
-        DEST_FILE="${HOME}/.aws/credentials"
-
-        URL="${TOAST_URL}/config/key/aws_access_key_id"
-        RES=`curl -s --data "token=${TOKEN}" ${URL}`
-        sed "s/AWS_ACCESS_KEY/$RES/g" ${DEST_FILE} > ${TEMP_FILE} && ${SUDO} mv -f ${TEMP_FILE} ${DEST_FILE}
-
-        URL="${TOAST_URL}/config/key/aws_secret_access_key"
-        RES=`curl -s --data "token=${TOKEN}" ${URL}`
-        sed "s/AWS_SECRET_KEY/$RES/g" ${DEST_FILE} > ${TEMP_FILE} && ${SUDO} mv -f ${TEMP_FILE} ${DEST_FILE}
-    fi
+    URL="${TOAST_URL}/config/key/aws_secret_access_key"
+    RES=`curl -s --data "token=${TOKEN}" ${URL}`
+    sed "s/AWS_SECRET_KEY/$RES/g" ${DEST_FILE} > ${TEMP_FILE} && ${SUDO} mv -f ${TEMP_FILE} ${DEST_FILE}
 }
 
 init_auto() {
