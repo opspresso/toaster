@@ -661,9 +661,9 @@ init_php55() {
         status=`${SUDO} yum list | grep php55w | wc -l | awk '{print $1}'`
 
         if [ ${status} -ge 1 ]; then
-            ${SUDO} yum install -y php55w php55w-mysql php55w-mcrypt php55w-gd php55w-mbstring
+            ${SUDO} yum install -y php55w php55w-mysqlnd php55w-mcrypt php55w-gd php55w-mbstring
         else
-            ${SUDO} yum install -y php55 php55-mysql php55-mcrypt php55-gd php55-mbstring
+            ${SUDO} yum install -y php55 php55-mysqlnd php55-mcrypt php55-gd php55-mbstring
         fi
 
         touch "${HOME}/.toast_php55"
@@ -679,9 +679,9 @@ init_php56() {
         status=`${SUDO} yum list | grep php56w | wc -l | awk '{print $1}'`
 
         if [ ${status} -ge 1 ]; then
-            ${SUDO} yum install -y php56w php56w-mysql php56w-mcrypt php56w-gd php56w-mbstring
+            ${SUDO} yum install -y php56w php56w-mysqlnd php56w-mcrypt php56w-gd php56w-mbstring
         else
-            ${SUDO} yum install -y php56 php56-mysql php56-mcrypt php56-gd php56-mbstring
+            ${SUDO} yum install -y php56 php56-mysqlnd php56-mcrypt php56-gd php56-mbstring
         fi
 
         touch "${HOME}/.toast_php56"
@@ -697,9 +697,9 @@ init_php70() {
         status=`${SUDO} yum list | grep php70w | wc -l | awk '{print $1}'`
 
         if [ ${status} -ge 1 ]; then
-            ${SUDO} yum install -y php70w php70w-mysql php70w-mcrypt php70w-gd php70w-mbstring
+            ${SUDO} yum install -y php70w php70w-mysqlnd php70w-mcrypt php70w-gd php70w-mbstring
         else
-            ${SUDO} yum install -y php70 php70-mysql php70-mcrypt php70-gd php70-mbstring
+            ${SUDO} yum install -y php70 php70-mysqlnd php70-mcrypt php70-gd php70-mbstring
         fi
 
         touch "${HOME}/.toast_php70"
