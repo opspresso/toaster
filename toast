@@ -572,8 +572,8 @@ init_slave() {
         URL="${TOAST_URL}/config/key/rsa_private_key"
         RES=`curl -s --data "token=${TOKEN}" ${URL}`
 
-        echo "${RES}" > "${ID_RSA}"
-        chmod 600 "${ID_RSA}"
+        echo "${RES}" > ${ID_RSA}
+        chmod 600 ${ID_RSA}
     fi
 
     if [ ! -f "${HOME}/.aws/config" ]; then
