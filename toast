@@ -937,7 +937,9 @@ deploy_vhost() {
     ${SUDO} rm -rf ${HTTPD_CONF_DIR}/localhost*
     ${SUDO} rm -rf ${HTTPD_CONF_DIR}/toast*
 
-    ${SUDO} cp -rf "${SHELL_DIR}/package/vhost/${APACHE_VERSION}/localhost.conf" "${HTTPD_CONF_DIR}/"
+    DEST_FILE="${HTTPD_CONF_DIR}/localhost.conf"
+    ${SUDO} cp -rf "${SHELL_DIR}/package/vhost/${APACHE_VERSION}/localhost.conf" "${DEST_FILE}"
+    ${SUDO} chmod 644 "${DEST_FILE}"
 
     TEMPLATE="${SHELL_DIR}/package/vhost/${APACHE_VERSION}/vhost.conf"
 
