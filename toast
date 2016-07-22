@@ -80,6 +80,9 @@ toast() {
         config)
             config
             ;;
+        health)
+            health
+            ;;
         init)
             init
             ;;
@@ -116,8 +119,9 @@ usage() {
     echo " Usage: toast config"
     echo " Usage: toast config auto"
     echo " Usage: toast config save"
-    echo " Usage: toast config health"
     echo " Usage: toast config info"
+    echo_
+    echo " Usage: toast health"
     echo_
     echo " Usage: toast init"
     echo " Usage: toast init master"
@@ -224,9 +228,6 @@ config() {
             ;;
         save)
             config_save
-            ;;
-        health)
-            config_health
             ;;
         cron)
             config_cron
@@ -498,7 +499,21 @@ config_save() {
     echo "${RES}"
 }
 
-config_health() {
+config_cron() {
+    TEMP_FILE="${TEMP_DIR}/toast-cron.tmp.$$"
+
+    #crontab -l > ${TEMP_FILE}
+
+    echo "* * * * * ${SHELL_DIR}/toast health > /dev/null 2>&1" >> ${TEMP_FILE}
+
+    crontab ${TEMP_FILE}
+
+    echo_bar
+    crontab -l
+    echo_bar
+}
+
+health() {
     if [ "${SNO}" == "" ]; then
         echo "Not configured server. [${SNO}]"
         exit 1
@@ -510,20 +525,6 @@ config_health() {
     RES=`curl -s ${URL}`
 
     echo "${RES}"
-}
-
-config_cron() {
-    TEMP_FILE="${TEMP_DIR}/toast-cron.tmp.$$"
-
-    #crontab -l > ${TEMP_FILE}
-
-    echo "* * * * * ${SHELL_DIR}/toast config health > /dev/null 2>&1" >> ${TEMP_FILE}
-
-    crontab ${TEMP_FILE}
-
-    echo_bar
-    crontab -l
-    echo_bar
 }
 
 yum_update() {
