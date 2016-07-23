@@ -631,10 +631,6 @@ init_auto() {
                 ;;
         esac
     done
-
-    if [ "${HAS_APACHE}" == "TRUE" ]; then
-        deploy_vhost
-    fi
 }
 
 init_apache() {
@@ -1059,6 +1055,10 @@ deploy_fleet() {
     done < ${TARGET_FILE}
 
     tomcat_start
+
+    if [ "${HAS_APACHE}" == "TRUE" ]; then
+        deploy_vhost
+    fi
 }
 
 deploy_value() {
