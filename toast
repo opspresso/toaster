@@ -914,7 +914,9 @@ version_next() {
 version_save() {
     echo "version save..."
 
-    #aws s3 sync ~/.m2/repository/${GROUP_PATH}/${ARTIFACT_ID}/ s3://repo.yanolja.com/release/${GROUP_PATH}/${ARTIFACT_ID}/
+    if [ "${REPO_USER}" == "s3" ]; then
+        aws s3 sync ~/.m2/repository/${GROUP_PATH}/${ARTIFACT_ID}/ ${REPO_PATH}/${GROUP_PATH}/${ARTIFACT_ID}/
+    fi
 
     URL="${TOAST_URL}/version/build/${ARTIFACT_ID}/${VERSION}"
     RES=`curl -s --data "token=${TOKEN}" ${URL}`
@@ -933,7 +935,9 @@ version_remove() {
 
     GROUP_PATH=`echo "${GROUP_ID}" | sed "s/\./\//"`
 
-    #aws s3 rm s3://repo.yanolja.com/release/${GROUP_PATH}/${ARTIFACT_ID}/${VERSION} --recursive
+    if [ "${REPO_USER}" == "s3" ]; then
+        aws s3 rm ${REPO_PATH}/${GROUP_PATH}/${ARTIFACT_ID}/${VERSION} --recursive
+    fi
 
     rm -rf ~/.m2/repository/${GROUP_PATH}/${ARTIFACT_ID}/${VERSION}
 }
@@ -1096,8 +1100,6 @@ log_webapp() {
 }
 
 download() {
-    #aws s3 sync ${TEMP_DIR}/${ARTIFACT_ID}/ s3://repo.yanolja.com/release/${GROUP_PATH}/${ARTIFACT_ID}/
-
     SOURCE="${REPO_PATH}/${GROUP_PATH}/${ARTIFACT_ID}/${VERSION}/${FILENAME}"
 
     echo "--> from : ${SOURCE}"
@@ -1107,10 +1109,14 @@ download() {
         rm -rf "${FILEPATH}"
     fi
 
-    if [ "${REPO_USER}" == "" ] || [ "${REPO_PASS}" == "" ]; then
-        wget -q -N -P "${TEMP_DIR}" "${SOURCE}"
+    if [ "${REPO_USER}" == "s3" ]; then
+        aws s3 cp "${SOURCE}" "${TEMP_DIR}"
     else
-        wget -q --user "${REPO_USER}" --password "${REPO_PASS}" -N -P "${TEMP_DIR}" "${SOURCE}"
+        if [ "${REPO_USER}" == "" ] || [ "${REPO_PASS}" == "" ]; then
+            wget -q -N -P "${TEMP_DIR}" "${SOURCE}"
+        else
+            wget -q --user "${REPO_USER}" --password "${REPO_PASS}" -N -P "${TEMP_DIR}" "${SOURCE}"
+        fi
     fi
 
     if [ ! -f "${FILEPATH}" ]; then
