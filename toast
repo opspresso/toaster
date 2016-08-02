@@ -161,6 +161,8 @@ auto() {
     config_info
     config_cron
 
+    init_alias
+    init_hosts
     init_aws
     init_slave
     init_auto
@@ -322,12 +324,9 @@ prepare() {
     make_dir "${HOME}/.m2"
     make_dir "${HOME}/.ssh"
 
-    ${SUDO} cp -rf "${SHELL_DIR}/package/phase/${PHASE}/hosts.txt" "/etc/hosts"
+    copy "${SHELL_DIR}/package/hosts.txt" "/etc/hosts" 644
 
     if [ "${SUDO}" != "" ]; then
-        TARGET_FILE="${HOME}/.toast_alias"
-        copy "${SHELL_DIR}/package/phase/${PHASE}/alias.txt" "${TARGET_FILE}" 644
-
         TARGET_FILE="${HOME}/.bashrc"
         copy "${SHELL_DIR}/package/bashrc.txt" "${TARGET_FILE}" 644
 
@@ -537,6 +536,38 @@ yum_install() {
     fi
 }
 
+init_hosts() {
+    URL="${TOAST_URL}/phase/hosts/${PHASE}"
+    RES=`curl -s --data "token=${TOKEN}" ${URL}`
+
+    ${SUDO} echo "${RES}" > /etc/hosts
+}
+
+init_alias() {
+    URL="${TOAST_URL}/phase/alias/${PHASE}"
+    RES=`curl -s --data "token=${TOKEN}" ${URL}`
+
+    ${SUDO} echo "${RES}" > ${HOME}/.toast_alias
+}
+
+init_aws() {
+    make_dir "${HOME}/.aws"
+
+    copy ${SHELL_DIR}/package/aws/config.txt ${HOME}/.aws/config 600
+    copy ${SHELL_DIR}/package/aws/credentials.txt ${HOME}/.aws/credentials 600
+
+    TEMP_FILE="${TEMP_DIR}/toast-credentials.tmp.$$"
+    DEST_FILE="${HOME}/.aws/credentials"
+
+    URL="${TOAST_URL}/config/key/aws_access_key_id"
+    RES=`curl -s --data "token=${TOKEN}" ${URL}`
+    sed "s/AWS_ACCESS_KEY/$RES/g" ${DEST_FILE} > ${TEMP_FILE} && ${SUDO} mv -f ${TEMP_FILE} ${DEST_FILE}
+
+    URL="${TOAST_URL}/config/key/aws_secret_access_key"
+    RES=`curl -s --data "token=${TOKEN}" ${URL}`
+    sed "s/AWS_SECRET_KEY/$RES/g" ${DEST_FILE} > ${TEMP_FILE} && ${SUDO} mv -f ${TEMP_FILE} ${DEST_FILE}
+}
+
 init_master() {
     ID_RSA="${HOME}/.ssh/id_rsa"
 
@@ -572,24 +603,6 @@ init_slave() {
         echo "${RES}" >> ${AUTH_KEYS}
         chmod 600 ${AUTH_KEYS}
     fi
-}
-
-init_aws() {
-    make_dir "${HOME}/.aws"
-
-    copy ${SHELL_DIR}/package/aws/config.txt ${HOME}/.aws/config 600
-    copy ${SHELL_DIR}/package/aws/credentials.txt ${HOME}/.aws/credentials 600
-
-    TEMP_FILE="${TEMP_DIR}/toast-credentials.tmp.$$"
-    DEST_FILE="${HOME}/.aws/credentials"
-
-    URL="${TOAST_URL}/config/key/aws_access_key_id"
-    RES=`curl -s --data "token=${TOKEN}" ${URL}`
-    sed "s/AWS_ACCESS_KEY/$RES/g" ${DEST_FILE} > ${TEMP_FILE} && ${SUDO} mv -f ${TEMP_FILE} ${DEST_FILE}
-
-    URL="${TOAST_URL}/config/key/aws_secret_access_key"
-    RES=`curl -s --data "token=${TOKEN}" ${URL}`
-    sed "s/AWS_SECRET_KEY/$RES/g" ${DEST_FILE} > ${TEMP_FILE} && ${SUDO} mv -f ${TEMP_FILE} ${DEST_FILE}
 }
 
 init_auto() {
