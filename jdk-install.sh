@@ -1,5 +1,15 @@
 #!/bin/bash
 
+OS_TYPE=`uname`
+if [ ${OS_TYPE} != 'Linux' ]; then
+    echo "Unsupported OS - $OS_TYPE"
+    exit 1
+fi
+
+################################################################################
+
+OS_NAME="linux"
+
 TYPE="jdk"
 EXT="tar.gz"
 
@@ -7,14 +17,6 @@ SUDO=""
 if [ "${HOME}" != "/root" ]; then
     SUDO="sudo"
 fi
-
-OS_TYPE=`uname`
-if [ ${OS_TYPE} != 'Linux' ]; then
-    echo "Unsupported OS - $OS_TYPE"
-    exit 1
-fi
-
-OS_NAME="linux"
 
 MACHINE=`uname -m`
 if [ ${MACHINE} == 'x86_64' ]; then
@@ -27,6 +29,8 @@ VERSION="8"
 if [ "$1" == "7" ]; then
     VERSION="7"
 fi
+
+################################################################################
 
 URL="http://www.oracle.com"
 URL1="${URL}/technetwork/java/javase/downloads/index.html"
@@ -54,6 +58,8 @@ if [[ -z "$JAVA" ]]; then
 fi
 
 echo ${JAVA}
+
+################################################################################
 
 wget --no-cookies --no-check-certificate --header "Cookie: oraclelicense=accept-securebackup-cookie" ${URL5}
 
