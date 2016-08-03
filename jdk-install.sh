@@ -1,33 +1,26 @@
 #!/bin/bash
 
 TYPE="jdk"
-VERSION="8"
-EXT="rpm"
-OS="x64"
+EXT="tar.gz"
 
 OS_TYPE=`uname`
+if [ ${OS_TYPE} != 'Linux' ]; then
+    echo "Unsupported OS - $OS_TYPE"
+    exit 1
+fi
+
 OS_NAME="linux"
 
-if [ ${OS_TYPE} == 'Linux' ]; then
-    OS_NAME="linux"
-fi
-
-if [ ${OS_TYPE} == 'Darwin' ]; then
-    OS_NAME="macosx"
-    EXT="dmg"
-fi
-
-MACHINE_TYPE=`uname -m`
-if [ ${MACHINE_TYPE} == 'x86_64' ]; then
+MACHINE=`uname -m`
+if [ ${MACHINE} == 'x86_64' ]; then
     OS="x64"
 else
     OS="i586"
 fi
 
-if [[ -n "$1" ]]; then
-    if [[ "$1" == "7" ]]; then
-        VERSION="7"
-    fi
+VERSION="8"
+if [ "$1" == "7" ]; then
+    VERSION="7"
 fi
 
 URL="http://www.oracle.com"
@@ -49,29 +42,19 @@ fi
 
 URL5=$(echo ${URL4} | cut -d " " -f 1)
 
-JAVA_INSTALL=$(echo ${URL5}|cut -d "/" -f 8)
-if [[ -z "$JAVA_INSTALL" ]]; then
-    echo "Could not be JAVA_INSTALL - $JAVA_INSTALL"
+JAVA=$(echo ${URL5} | cut -d "/" -f 8)
+if [[ -z "$JAVA" ]]; then
+    echo "Could not be JAVA_INSTALL - $JAVA"
     exit 1
 fi
 
-echo ${JAVA_INSTALL}
+echo ${JAVA}
 
-if [ ${OS_TYPE} == 'Darwin' ]; then
-    curl --cookie "oraclelicense=accept-securebackup-cookie" --location-trusted -O ${URL5}
-else
-    wget --no-cookies --no-check-certificate --header "Cookie: oraclelicense=accept-securebackup-cookie" ${URL5}
-fi
+wget --no-cookies --no-check-certificate --header "Cookie: oraclelicense=accept-securebackup-cookie" ${URL5}
 
-if [ ${OS_TYPE} == 'Darwin' ]; then
-    # install
-    ls -al | grep jdk
-fi
-
-if [ ${OS_TYPE} == 'Linux' ]; then
-    # install
-    ls -al | grep jdk
-fi
+# install
+ls -al | grep jdk
 
 java -version
-javac -version
+
+JAVA_PATH=$(dirname $(dirname $(readlink -f $(which java))))

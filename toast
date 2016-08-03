@@ -1338,5 +1338,3 @@ toast
 
 # done
 echo "done."
-
-exit $?
