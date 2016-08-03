@@ -612,13 +612,13 @@ init_auto() {
 
     for i in "${ARR[@]}"; do
         case "$i" in
-            http|httpd|apache)
+            httpd|apache)
                 init_apache
                 ;;
-            php55)
+            php5|php55)
                 init_php55
                 ;;
-            php5|php56)
+            php56)
                 init_php56
                 ;;
             php7|php70)
@@ -665,6 +665,7 @@ init_apache() {
         touch "${HOME}/.toast_apache"
     fi
 
+    ${SUDO} cp -rf "${SHELL_DIR}/package/health.txt" "/var/www/html/index.html"
     ${SUDO} cp -rf "${SHELL_DIR}/package/health.txt" "/var/www/html/health.html"
 
     make_dir "${SITE_DIR}"
@@ -800,33 +801,48 @@ init_tomcat8() {
 }
 
 init_mysql55() {
-    ${SUDO} yum install -y mysql55-server
+    if [ ! -f "${HOME}/.toast_mysql" ]; then
+        ${SUDO} yum install -y mysql55-server
 
-    ${SUDO} chkconfig mysqld on
+        ${SUDO} chkconfig mysqld on
+
+        touch "${HOME}/.toast_mysql"
+    fi
 }
 
 init_mysql56() {
-    ${SUDO} yum install -y mysql56-server
+    if [ ! -f "${HOME}/.toast_mysql" ]; then
+        ${SUDO} yum install -y mysql56-server
 
-    ${SUDO} chkconfig mysqld on
+        ${SUDO} chkconfig mysqld on
+
+        touch "${HOME}/.toast_mysql"
+    fi
 }
 
 init_redis() {
-    ${SUDO} yum install -y redis
+    if [ ! -f "${HOME}/.toast_redis" ]; then
+        ${SUDO} yum install -y redis
 
-    ${SUDO} chkconfig redis on
+        ${SUDO} chkconfig redis on
+        ${SUDO} service redis restart
 
-    ${SUDO} service redis restart
+        touch "${HOME}/.toast_redis"
+    fi
 }
 
 init_rabbitmq() {
-    #wget -q -N -P "${HOME}" https://www.rabbitmq.com/releases/rabbitmq-server/v3.6.3/rabbitmq-server-3.6.3-1.noarch.rpm
+    if [ ! -f "${HOME}/.toast_rabbitmq" ]; then
+        #wget -q -N -P "${HOME}" https://packages.erlang-solutions.com/erlang/esl-erlang/FLAVOUR_1_general/esl-erlang_19.0~centos~6_amd64.rpm
+        #wget -q -N -P "${HOME}" https://www.rabbitmq.com/releases/rabbitmq-server/v3.6.4/rabbitmq-server-3.6.4-1.noarch.rpm
 
-    ${SUDO} yum install -y rabbitmq-server
+        ${SUDO} yum install -y rabbitmq-server
 
-    ${SUDO} chkconfig rabbitmq-server on
+        ${SUDO} chkconfig rabbitmq-server on
+        ${SUDO} service rabbitmq-server restart
 
-    ${SUDO} service rabbitmq-server restart
+        touch "${HOME}/.toast_rabbitmq"
+    fi
 }
 
 init_puppet() {
