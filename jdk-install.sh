@@ -58,12 +58,10 @@ fi
 echo ${JAVA_INSTALL}
 
 if [ ${OS_TYPE} == 'Darwin' ]; then
-    sudo curl --cookie "oraclelicense=accept-securebackup-cookie" --location-trusted -O ${URL5}
+    curl --cookie "oraclelicense=accept-securebackup-cookie" --location-trusted -O ${URL5}
 else
-    sudo wget --no-cookies --no-check-certificate --header "Cookie: oraclelicense=accept-securebackup-cookie" ${URL5}
+    wget --no-cookies --no-check-certificate --header "Cookie: oraclelicense=accept-securebackup-cookie" ${URL5}
 fi
-
-pw2
 
 if [ ${OS_TYPE} == 'Darwin' ]; then
     # install
