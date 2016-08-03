@@ -37,12 +37,12 @@ URL1="${URL}/technetwork/java/javase/downloads/index.html"
 URL2=$(curl -s ${URL1} | egrep -o "\/technetwork\/java/\javase\/downloads\/${TYPE}${VERSION}-downloads-.*\.html" | head -1)
 
 if [[ -z "$URL2" ]]; then
-    echo "Could not download - $URL1"
+    echo "Could not download - $URL2"
     exit 1
 fi
 
 URL3="$(echo ${URL}${URL2} | awk -F\" {'print $1'})"
-URL4=$(curl -s "$URL3" | egrep -o "http\:\/\/download.oracle.com\/otn-pub\/java\/jdk\/[7-8]u[0-9]+\-(.*)+\/${TYPE}-[7-8]u[0-9]+(.*)${OS_NAME}-${OS}.${EXT}")
+URL4=$(curl -s "$URL3" | egrep -o "http\:\/\/download\.oracle\.com\/otn-pub\/java\/jdk\/[7-8]u[0-9]+\-(.*)+\/${TYPE}-[7-8]u[0-9]+(.*)${OS_NAME}-${OS}.${EXT}")
 
 if [[ -z "$URL4" ]]; then
     echo "Could not get ${TYPE} url - $URL4"
