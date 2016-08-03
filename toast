@@ -191,16 +191,22 @@ init() {
         aws)
             init_aws
             ;;
-        php5)
+        php5|php55)
+            init_apache
+            init_php55
+            ;;
+        php56)
             init_apache
             init_php56
             ;;
-        php7)
+        php7|php70)
             init_apache
             init_php70
             ;;
-        java|tomcat)
+        java|java8)
             init_java8
+            ;;
+        tomcat|tomcat8)
             init_tomcat8
             ;;
         mysql)
