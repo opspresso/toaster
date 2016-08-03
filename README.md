@@ -18,6 +18,7 @@ yum install -y git
 runuser -l ec2-user -c 'git clone https://github.com/nalbam-ya/toaster.git'
 
 runuser -l ec2-user -c 'cp ~/toaster/package/toast.txt ~/.toast'
+
 runuser -l ec2-user -c 'echo "PHASE=dev" >> ~/.toast'
 runuser -l ec2-user -c 'echo "FLEET=demo" >> ~/.toast'
 
