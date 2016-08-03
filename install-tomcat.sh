@@ -9,8 +9,8 @@ fi
 
 ################################################################################
 
-URL="http://tomcat.apache.org"
-URL1="${URL}/download-${VERSION}0.cgi"
+URL0="http://tomcat.apache.org"
+URL1="${URL0}/download-80.cgi"
 URL2=$(curl -s ${URL1} | egrep -o "http\:\/\/apache\.mirror\.cdnetworks\.com\/tomcat\/tomcat-8\/v${VERSION}\.[0-9]+\/bin\/apache-tomcat-${VERSION}\.[0-9]+\.${EXT}")
 
 # http://apache.mirror.cdnetworks.com/tomcat/tomcat-8/v8.0.36/bin/apache-tomcat-8.0.36.tar.gz

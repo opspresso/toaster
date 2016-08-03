@@ -32,8 +32,8 @@ fi
 
 ################################################################################
 
-URL="http://www.oracle.com"
-URL1="${URL}/technetwork/java/javase/downloads/index.html"
+URL0="http://www.oracle.com"
+URL1="${URL0}/technetwork/java/javase/downloads/index.html"
 URL2=$(curl -s ${URL1} | egrep -o "\/technetwork\/java/\javase\/downloads\/${TYPE}${VERSION}-downloads-.*\.html" | head -1)
 
 if [[ -z "$URL2" ]]; then
@@ -41,7 +41,7 @@ if [[ -z "$URL2" ]]; then
     exit 1
 fi
 
-URL3="$(echo ${URL}${URL2} | awk -F\" {'print $1'})"
+URL3="$(echo ${URL0}${URL2} | awk -F\" {'print $1'})"
 URL4=$(curl -s ${URL3} | egrep -o "http\:\/\/download\.oracle\.com\/otn-pub\/java\/jdk\/${VERSION}u(.*)\/${TYPE}-${VERSION}u(.*)-${OS_NAME}-${OS}.${EXT}")
 
 # http://download.oracle.com/otn-pub/java/jdk/8u101-b13/jdk-8u101-linux-x64.tar.gz
