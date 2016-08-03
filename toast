@@ -759,7 +759,7 @@ init_php70() {
 
 init_java8() {
     if [ ! -f "${HOME}/.toast_java8" ]; then
-        ${SHELL_DIR}/jdk-install.sh
+        ${SHELL_DIR}/install-jdk.sh
 
         JAVA_HOME=$(dirname $(dirname $(readlink -f $(which java))))
 

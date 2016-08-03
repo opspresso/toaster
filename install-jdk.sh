@@ -42,7 +42,7 @@ if [[ -z "$URL2" ]]; then
 fi
 
 URL3="$(echo ${URL}${URL2} | awk -F\" {'print $1'})"
-URL4=$(curl -s "$URL3" | egrep -o "http\:\/\/download.oracle\.com\/otn-pub\/java\/jdk\/[7-8]u[0-9]+\-(.*)+\/${TYPE}-[7-8]u[0-9]+(.*)${OS_NAME}-${OS}.${EXT}")
+URL4=$(curl -s "$URL3" | egrep -o "http\:\/\/download.oracle.com\/otn-pub\/java\/jdk\/[7-8]u[0-9]+\-(.*)+\/${TYPE}-[7-8]u[0-9]+(.*)${OS_NAME}-${OS}.${EXT}")
 
 if [[ -z "$URL4" ]]; then
     echo "Could not get ${TYPE} url - $URL4"
