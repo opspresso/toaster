@@ -759,8 +759,8 @@ init_java8() {
 
         echo "JAVA_HOME=${JAVA_HOME}"
 
-        ${SUDO} cp -rf "${SHELL_DIR}/package/jce8/local_policy.jar.bin" "${JAVA_HOME}/lib/security/local_policy.jar"
-        ${SUDO} cp -rf "${SHELL_DIR}/package/jce8/US_export_policy.jar.bin" "${JAVA_HOME}/lib/security/US_export_policy.jar"
+        ${SUDO} cp -rf "${SHELL_DIR}/package/jce8/local_policy.jar.bin" "${JAVA_HOME}/jre/lib/security/local_policy.jar"
+        ${SUDO} cp -rf "${SHELL_DIR}/package/jce8/US_export_policy.jar.bin" "${JAVA_HOME}/jre/lib/security/US_export_policy.jar"
 
         touch "${HOME}/.toast_java8"
     fi
