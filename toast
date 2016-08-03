@@ -41,7 +41,6 @@ if [ "${USER}" == "" ]; then
 fi
 
 SUDO=""
-
 if [ "${HOME}" != "/root" ]; then
     SUDO="sudo"
 fi

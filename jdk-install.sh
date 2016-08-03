@@ -3,6 +3,11 @@
 TYPE="jdk"
 EXT="tar.gz"
 
+SUDO=""
+if [ "${HOME}" != "/root" ]; then
+    SUDO="sudo"
+fi
+
 OS_TYPE=`uname`
 if [ ${OS_TYPE} != 'Linux' ]; then
     echo "Unsupported OS - $OS_TYPE"
@@ -36,7 +41,7 @@ URL3="$(echo ${URL}${URL2} | awk -F\" {'print $1'})"
 URL4=$(curl -s "$URL3" | egrep -o "http\:\/\/download.oracle\.com\/otn-pub\/java\/jdk\/[7-8]u[0-9]+\-(.*)+\/${TYPE}-[7-8]u[0-9]+(.*)${OS_NAME}-${OS}.${EXT}")
 
 if [[ -z "$URL4" ]]; then
-    echo "Could not get ${TYPE} download url - $URL4"
+    echo "Could not get ${TYPE} url - $URL4"
     exit 1
 fi
 
@@ -44,7 +49,7 @@ URL5=$(echo ${URL4} | cut -d " " -f 1)
 
 JAVA=$(echo ${URL5} | cut -d "/" -f 8)
 if [[ -z "$JAVA" ]]; then
-    echo "Could not be JAVA_INSTALL - $JAVA"
+    echo "Could not get JAVA - $JAVA"
     exit 1
 fi
 
@@ -52,9 +57,35 @@ echo ${JAVA}
 
 wget --no-cookies --no-check-certificate --header "Cookie: oraclelicense=accept-securebackup-cookie" ${URL5}
 
-# install
-ls -al | grep jdk
+${SUDO} tar xvzf ${JAVA}
+
+VS0=$(echo ${JAVA} | cut -d "-" -f 1)
+VS1=$(echo ${JAVA} | cut -d "-" -f 2)
+VS2="${VS1/u/.0_}"
+
+JAVA_DIR="${VS0}1.${VS2}"
+JAVA_PATH="/usr/local/${JAVA_DIR}"
+
+${SUDO} rm -rf "${JAVA_PATH}"
+${SUDO} mv ${JAVA_DIR} /usr/local/.
+
+${SUDO} rm -f /usr/bin/java
+${SUDO} ln -s "${JAVA_PATH}/bin/java" /usr/bin/.
+
+${SUDO} rm -f /usr/bin/javac
+${SUDO} ln -s "${JAVA_PATH}/bin/javac" /usr/bin/.
+
+${SUDO} rm -f /usr/bin/jar
+${SUDO} ln -s "${JAVA_PATH}/bin/jar" /usr/bin/.
 
 java -version
 
 JAVA_PATH=$(dirname $(dirname $(readlink -f $(which java))))
+
+BASH_PROFILE="${HOME}/.bash_profile"
+
+touch "${BASH_PROFILE}"
+echo "export JAVA_HOME=\"${JAVA_PATH}\"" >> "${BASH_PROFILE}"
+source "${BASH_PROFILE}"
+
+echo "JAVA_HOME=${JAVA_PATH}"
