@@ -1,5 +1,11 @@
 #!/bin/bash
 
+OS_TYPE=`uname`
+if [ ${OS_TYPE} != 'Linux' ]; then
+    echo "Unsupported OS - $OS_TYPE"
+    exit 1
+fi
+
 ################################################################################
 
 LOGIN_URL=
