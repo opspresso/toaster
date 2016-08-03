@@ -66,18 +66,18 @@ VS1=$(echo ${JAVA} | cut -d "-" -f 2)
 VS2="${VS1/u/.0_}"
 
 JAVA_DIR="${VS0}1.${VS2}"
-JAVA_PATH="/usr/local/${JAVA_DIR}"
+JAVA_HOME="/usr/local/${JAVA_DIR}"
 
-${SUDO} rm -rf "${JAVA_PATH}"
+${SUDO} rm -rf "${JAVA_HOME}"
 ${SUDO} mv ${JAVA_DIR} /usr/local/.
 
 ${SUDO} rm -f /usr/bin/java
-${SUDO} ln -s "${JAVA_PATH}/bin/java" /usr/bin/.
+${SUDO} ln -s "${JAVA_HOME}/bin/java" /usr/bin/.
 
 ${SUDO} rm -f /usr/bin/javac
-${SUDO} ln -s "${JAVA_PATH}/bin/javac" /usr/bin/.
+${SUDO} ln -s "${JAVA_HOME}/bin/javac" /usr/bin/.
 
 ${SUDO} rm -f /usr/bin/jar
-${SUDO} ln -s "${JAVA_PATH}/bin/jar" /usr/bin/.
+${SUDO} ln -s "${JAVA_HOME}/bin/jar" /usr/bin/.
 
-echo "JAVA_PATH=${JAVA_PATH}"
+echo "JAVA_HOME=${JAVA_HOME}"
