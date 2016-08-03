@@ -13,6 +13,11 @@ OS_NAME="linux"
 TYPE="jdk"
 EXT="tar.gz"
 
+VERSION="8"
+if [ "$1" == "7" ]; then
+    VERSION="7"
+fi
+
 SUDO=""
 if [ "${HOME}" != "/root" ]; then
     SUDO="sudo"
@@ -23,11 +28,6 @@ if [ ${MACHINE} == 'x86_64' ]; then
     OS="x64"
 else
     OS="i586"
-fi
-
-VERSION="8"
-if [ "$1" == "7" ]; then
-    VERSION="7"
 fi
 
 ################################################################################
@@ -42,7 +42,7 @@ if [[ -z "$URL2" ]]; then
 fi
 
 URL3="$(echo ${URL}${URL2} | awk -F\" {'print $1'})"
-URL4=$(curl -s "$URL3" | egrep -o "http\:\/\/download\.oracle\.com\/otn-pub\/java\/jdk\/${VERSION}u(.*)\/${TYPE}-${VERSION}u(.*)-${OS_NAME}-${OS}.${EXT}")
+URL4=$(curl -s ${URL3} | egrep -o "http\:\/\/download\.oracle\.com\/otn-pub\/java\/jdk\/${VERSION}u(.*)\/${TYPE}-${VERSION}u(.*)-${OS_NAME}-${OS}.${EXT}")
 
 # http://download.oracle.com/otn-pub/java/jdk/8u101-b13/jdk-8u101-linux-x64.tar.gz
 
