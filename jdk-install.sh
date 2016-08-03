@@ -59,6 +59,8 @@ wget --no-cookies --no-check-certificate --header "Cookie: oraclelicense=accept-
 
 ${SUDO} tar xvzf ${JAVA}
 
+rm -rf ${JAVA}
+
 VS0=$(echo ${JAVA} | cut -d "-" -f 1)
 VS1=$(echo ${JAVA} | cut -d "-" -f 2)
 VS2="${VS1/u/.0_}"
@@ -78,14 +80,4 @@ ${SUDO} ln -s "${JAVA_PATH}/bin/javac" /usr/bin/.
 ${SUDO} rm -f /usr/bin/jar
 ${SUDO} ln -s "${JAVA_PATH}/bin/jar" /usr/bin/.
 
-java -version
-
-JAVA_PATH=$(dirname $(dirname $(readlink -f $(which java))))
-
-BASH_PROFILE="${HOME}/.bash_profile"
-
-touch "${BASH_PROFILE}"
-echo "export JAVA_HOME=\"${JAVA_PATH}\"" >> "${BASH_PROFILE}"
-source "${BASH_PROFILE}"
-
-echo "JAVA_HOME=${JAVA_PATH}"
+echo "JAVA_PATH=${JAVA_PATH}"

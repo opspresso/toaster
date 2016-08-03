@@ -740,28 +740,21 @@ init_php70() {
 
 init_java8() {
     if [ ! -f "${HOME}/.toast_java8" ]; then
-        echo "download ${JDK_RPM}..."
+        ${SHELL_DIR}/jdk-install.sh
 
-        COOKIE="Cookie: gpw_e24=http%3A%2F%2Fwww.oracle.com%2F; oraclelicense=accept-securebackup-cookie"
-
-        wget -q --no-cookies --no-check-certificate --header "${COOKIE}" ${JDK_URL}
-
-        ${SUDO} yum localinstall -y ${JDK_RPM}
-        ${SUDO} rm -rf ${JDK_RPM}
-
-        JAVA_PATH=$(dirname $(dirname $(readlink -f $(which java))))
+        JAVA_HOME=$(dirname $(dirname $(readlink -f $(which java))))
 
         BASH_PROFILE="${HOME}/.bash_profile"
 
         touch "${BASH_PROFILE}"
-        echo "export JAVA_HOME=\"${JAVA_PATH}\"" >> "${BASH_PROFILE}"
+        echo "export JAVA_HOME=\"${JAVA_HOME}\"" >> "${BASH_PROFILE}"
         echo "export CATALINA_OPTS=\"-Dproject.profile=${PHASE}\"" >> "${BASH_PROFILE}"
         source "${BASH_PROFILE}"
 
-        echo "JAVA_HOME=${JAVA_PATH}"
+        echo "JAVA_HOME=${JAVA_HOME}"
 
-        ${SUDO} cp -rf "${SHELL_DIR}/package/jce8/local_policy.jar.bin" "${JAVA_PATH}/lib/security/local_policy.jar"
-        ${SUDO} cp -rf "${SHELL_DIR}/package/jce8/US_export_policy.jar.bin" "${JAVA_PATH}/lib/security/US_export_policy.jar"
+        ${SUDO} cp -rf "${SHELL_DIR}/package/jce8/local_policy.jar.bin" "${JAVA_HOME}/lib/security/local_policy.jar"
+        ${SUDO} cp -rf "${SHELL_DIR}/package/jce8/US_export_policy.jar.bin" "${JAVA_HOME}/lib/security/US_export_policy.jar"
 
         touch "${HOME}/.toast_java8"
     fi
