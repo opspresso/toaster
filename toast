@@ -715,7 +715,7 @@ init_webtatic() {
 init_php55() {
     init_webtatic
 
-    if [ ! -f "${HOME}/.toast_php55" ]; then
+    if [ ! -f "${HOME}/.toast_php" ]; then
         status=`${SUDO} yum list | grep php55w | wc -l | awk '{print $1}'`
 
         if [ ${status} -ge 1 ]; then
@@ -724,7 +724,7 @@ init_php55() {
             ${SUDO} yum install -y php55 php55-mysqlnd php55-mcrypt php55-gd php55-mbstring
         fi
 
-        touch "${HOME}/.toast_php55"
+        touch "${HOME}/.toast_php"
     fi
 
     init_php_ini
@@ -733,7 +733,7 @@ init_php55() {
 init_php56() {
     init_webtatic
 
-    if [ ! -f "${HOME}/.toast_php56" ]; then
+    if [ ! -f "${HOME}/.toast_php" ]; then
         status=`${SUDO} yum list | grep php56w | wc -l | awk '{print $1}'`
 
         if [ ${status} -ge 1 ]; then
@@ -742,7 +742,7 @@ init_php56() {
             ${SUDO} yum install -y php56 php56-mysqlnd php56-mcrypt php56-gd php56-mbstring
         fi
 
-        touch "${HOME}/.toast_php56"
+        touch "${HOME}/.toast_php"
     fi
 
     init_php_ini
@@ -751,7 +751,7 @@ init_php56() {
 init_php70() {
     init_webtatic
 
-    if [ ! -f "${HOME}/.toast_php70" ]; then
+    if [ ! -f "${HOME}/.toast_php" ]; then
         status=`${SUDO} yum list | grep php70w | wc -l | awk '{print $1}'`
 
         if [ ${status} -ge 1 ]; then
@@ -760,7 +760,7 @@ init_php70() {
             ${SUDO} yum install -y php70 php70-mysqlnd php70-mcrypt php70-gd php70-mbstring
         fi
 
-        touch "${HOME}/.toast_php70"
+        touch "${HOME}/.toast_php"
     fi
 
     init_php_ini
@@ -790,7 +790,7 @@ init_node4() {
 }
 
 init_java8() {
-    if [ ! -f "${HOME}/.toast_java8" ]; then
+    if [ ! -f "${HOME}/.toast_java" ]; then
         ${SHELL_DIR}/install-java.sh
 
         JAVA_HOME=$(dirname $(dirname $(readlink -f $(which java))))
@@ -807,7 +807,7 @@ init_java8() {
         ${SUDO} cp -rf "${SHELL_DIR}/package/jce8/local_policy.jar.bin" "${JAVA_HOME}/jre/lib/security/local_policy.jar"
         ${SUDO} cp -rf "${SHELL_DIR}/package/jce8/US_export_policy.jar.bin" "${JAVA_HOME}/jre/lib/security/US_export_policy.jar"
 
-        touch "${HOME}/.toast_java8"
+        touch "${HOME}/.toast_java"
     fi
 
     make_dir "${APPS_DIR}"
