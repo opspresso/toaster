@@ -711,7 +711,12 @@ init_webtatic() {
         status=`${SUDO} yum list | grep php56 | wc -l | awk '{print $1}'`
 
         if [ ${status} -lt 1 ]; then
-            ${SUDO} rpm -Uvh https://mirror.webtatic.com/yum/el6/latest.rpm
+            UNAME=`uname -a`
+            if [ ${UNAME} =~ 'el7' ]; then
+                ${SUDO} rpm -Uvh https://mirror.webtatic.com/yum/el7/webtatic-release.rpm
+            else
+                ${SUDO} rpm -Uvh https://mirror.webtatic.com/yum/el6/latest.rpm
+            fi
 
             touch "${HOME}/.toast_webtatic"
         fi
