@@ -330,7 +330,13 @@ prepare() {
             ${SUDO} sudo yum install -y yum-utils
         fi
 
-        ${SUDO} rpm -Uvh https://dl.fedoraproject.org/pub/epel/epel-release-latest-6.noarch.rpm
+        UNAME=`uname -a`
+        if [ ${UNAME} =~ 'el7' ]; then
+            ${SUDO} rpm -Uvh https://dl.fedoraproject.org/pub/epel/epel-release-latest-7.noarch.rpm
+        else
+            ${SUDO} rpm -Uvh https://dl.fedoraproject.org/pub/epel/epel-release-latest-6.noarch.rpm
+        fi
+
         ${SUDO} yum-config-manager --enable epel
 
         touch "${HOME}/.toast_epel"
