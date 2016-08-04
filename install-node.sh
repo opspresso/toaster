@@ -53,7 +53,7 @@ echo ${NODE}
 
 wget ${URL5}
 
-tar xvf ${NODE}
+tar xf ${NODE}
 
 rm -rf ${NODE}
 
