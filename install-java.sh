@@ -65,7 +65,7 @@ echo ${JAVA}
 
 wget --no-cookies --no-check-certificate --header "Cookie: oraclelicense=accept-securebackup-cookie" ${URL5}
 
-${SUDO} tar xvzf ${JAVA}
+tar xvzf ${JAVA}
 
 rm -rf ${JAVA}
 
