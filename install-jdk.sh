@@ -25,9 +25,9 @@ fi
 
 MACHINE=`uname -m`
 if [ ${MACHINE} == 'x86_64' ]; then
-    OS="x64"
+    OS_BIT="x64"
 else
-    OS="i586"
+    OS_BIT="i586"
 fi
 
 ################################################################################
@@ -42,7 +42,7 @@ if [[ -z "$URL2" ]]; then
 fi
 
 URL3="$(echo ${URL0}${URL2} | awk -F\" {'print $1'})"
-URL4=$(curl -s ${URL3} | egrep -o "http\:\/\/download\.oracle\.com\/otn-pub\/java\/jdk\/${VERSION}u(.*)\/${TYPE}-${VERSION}u(.*)-${OS_NAME}-${OS}.${EXT}")
+URL4=$(curl -s ${URL3} | egrep -o "http\:\/\/download\.oracle\.com\/otn-pub\/java\/jdk\/${VERSION}u(.*)\/${TYPE}-${VERSION}u(.*)-${OS_NAME}-${OS_BIT}.${EXT}")
 
 # http://download.oracle.com/otn-pub/java/jdk/8u101-b13/jdk-8u101-linux-x64.tar.gz
 

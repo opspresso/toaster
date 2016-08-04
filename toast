@@ -69,6 +69,8 @@ APPS_DIR="/data/apps"
 APACHE_VERSION="24"
 HTTPD_CONF_DIR="/etc/httpd/conf.d"
 
+NODE_VERSION=""
+
 JDK_RPM="jdk-8u91-linux-x64.rpm"
 JDK_URL="http://download.oracle.com/otn-pub/java/jdk/8u91-b14/${JDK_RPM}"
 
@@ -760,6 +762,14 @@ init_php70() {
     fi
 
     init_php_ini
+}
+
+init_node() {
+    if [ ! -f "${HOME}/.toast_node" ]; then
+        wget https://nodejs.org/dist/v4.4.7/node-v4.4.7-linux-x64.tar.xz
+
+        touch "${HOME}/.toast_node"
+    fi
 }
 
 init_java8() {
