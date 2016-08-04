@@ -6,6 +6,11 @@ if [ ${OS_TYPE} != 'Linux' ]; then
     exit 1
 fi
 
+if [ ! -f "/usr/bin/yum" ]; then
+    echo "Could not use yum"
+    exit 1
+fi
+
 ################################################################################
 
 LOGIN_URL=
