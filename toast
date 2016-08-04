@@ -648,6 +648,9 @@ init_auto() {
             php7|php70)
                 init_php70
                 ;;
+            node|node4)
+                init_node4
+                ;;
             java|java8)
                 init_java8
                 ;;
