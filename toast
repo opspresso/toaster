@@ -770,8 +770,23 @@ init_node4() {
     if [ ! -f "${HOME}/.toast_node" ]; then
         ${SHELL_DIR}/install-node.sh
 
+        NODE_HOME=$(dirname $(dirname $(readlink -f $(which node))))
+
+        BASH_PROFILE="${HOME}/.bash_profile"
+
+        touch "${BASH_PROFILE}"
+        echo "export NODE_HOME=\"${NODE_HOME}\"" >> "${BASH_PROFILE}"
+        source "${BASH_PROFILE}"
+
+        echo "NODE_HOME=${NODE_HOME}"
+
         touch "${HOME}/.toast_node"
     fi
+
+    echo_bar
+    echo "node version : `node -v`"
+    echo "npm version : `npm -v`"
+    echo_bar
 }
 
 init_java8() {
