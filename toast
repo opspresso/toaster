@@ -601,7 +601,7 @@ init_aws() {
     sed "s/AWS_SECRET_KEY/$RES/g" ${DEST_FILE} > ${TEMP_FILE} && ${SUDO} mv -f ${TEMP_FILE} ${DEST_FILE}
 
     if [ ! -f "/usr/bin/aws" ]; then
-        curl "https://s3.amazonaws.com/aws-cli/awscli-bundle.zip" -o "awscli-bundle.zip"
+        wget "https://s3.amazonaws.com/aws-cli/awscli-bundle.zip"
         unzip awscli-bundle.zip
         sudo ./awscli-bundle/install -i /usr/local/aws -b /usr/local/bin/aws
     fi
