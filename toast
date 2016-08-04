@@ -69,11 +69,6 @@ APPS_DIR="/data/apps"
 APACHE_VERSION="24"
 HTTPD_CONF_DIR="/etc/httpd/conf.d"
 
-NODE_VERSION=""
-
-JDK_RPM="jdk-8u91-linux-x64.rpm"
-JDK_URL="http://download.oracle.com/otn-pub/java/jdk/8u91-b14/${JDK_RPM}"
-
 TOMCAT_VER="8.0.36"
 TOMCAT_URL="http://mirror.apache-kr.org/tomcat/tomcat-8/v${TOMCAT_VER}/bin/apache-tomcat-${TOMCAT_VER}.zip"
 TOMCAT_DIR="${APPS_DIR}/tomcat8"
@@ -140,6 +135,7 @@ usage() {
     echo " Usage: toast init slave"
     echo " Usage: toast init php5"
     echo " Usage: toast init php7"
+    echo " Usage: toast init node"
     echo " Usage: toast init java"
     echo " Usage: toast init tomcat"
     echo " Usage: toast init mysql"
@@ -215,6 +211,9 @@ init() {
         php7|php70)
             init_apache
             init_php70
+            ;;
+        node|node4)
+            init_node4
             ;;
         java|java8)
             init_java8
@@ -764,9 +763,9 @@ init_php70() {
     init_php_ini
 }
 
-init_node() {
+init_node4() {
     if [ ! -f "${HOME}/.toast_node" ]; then
-        wget https://nodejs.org/dist/v4.4.7/node-v4.4.7-linux-x64.tar.xz
+        ${SHELL_DIR}/install-node.sh
 
         touch "${HOME}/.toast_node"
     fi
@@ -774,7 +773,7 @@ init_node() {
 
 init_java8() {
     if [ ! -f "${HOME}/.toast_java8" ]; then
-        ${SHELL_DIR}/install-jdk.sh
+        ${SHELL_DIR}/install-java.sh
 
         JAVA_HOME=$(dirname $(dirname $(readlink -f $(which java))))
 
