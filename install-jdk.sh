@@ -77,15 +77,15 @@ JAVA_DIR="${VS0}1.${VS2}"
 JAVA_HOME="/usr/local/${JAVA_DIR}"
 
 ${SUDO} rm -rf "${JAVA_HOME}"
-${SUDO} mv ${JAVA_DIR} /usr/local/.
+${SUDO} mv ${JAVA_DIR} /usr/local/
 
 ${SUDO} rm -f /usr/bin/java
-${SUDO} ln -s "${JAVA_HOME}/bin/java" /usr/bin/.
+${SUDO} ln -s "${JAVA_HOME}/bin/java" /usr/bin/java
 
 ${SUDO} rm -f /usr/bin/javac
-${SUDO} ln -s "${JAVA_HOME}/bin/javac" /usr/bin/.
+${SUDO} ln -s "${JAVA_HOME}/bin/javac" /usr/bin/javac
 
 ${SUDO} rm -f /usr/bin/jar
-${SUDO} ln -s "${JAVA_HOME}/bin/jar" /usr/bin/.
+${SUDO} ln -s "${JAVA_HOME}/bin/jar" /usr/bin/jar
 
 echo "JAVA_HOME=${JAVA_HOME}"

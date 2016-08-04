@@ -61,12 +61,12 @@ NODE_DIR=$(echo ${NODE} | egrep -o "node-v${VERSION}.(.*)-${OS_NAME}-${OS_BIT}")
 NODE_HOME="/usr/local/${NODE_DIR}"
 
 ${SUDO} rm -rf "${NODE_HOME}"
-${SUDO} mv ${NODE_DIR} /usr/local/.
+${SUDO} mv ${NODE_DIR} /usr/local/
 
 ${SUDO} rm -f /usr/bin/NODE
-${SUDO} ln -s "${NODE_HOME}/bin/node" /usr/bin/.
+${SUDO} ln -s "${NODE_HOME}/bin/node" /usr/bin/node
 
 ${SUDO} rm -f /usr/bin/jar
-${SUDO} ln -s "${NODE_HOME}/bin/npm" /usr/bin/.
+${SUDO} ln -s "${NODE_HOME}/bin/npm" /usr/bin/npm
 
 echo "NODE_HOME=${NODE_HOME}"
