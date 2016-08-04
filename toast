@@ -330,8 +330,11 @@ prepare() {
             ${SUDO} sudo yum install -y yum-utils
         fi
 
+        # rpm -Uvh https://dl.fedoraproject.org/pub/epel/epel-release-latest-7.noarch.rpm
+        # rpm -Uvh https://dl.fedoraproject.org/pub/epel/epel-release-latest-6.noarch.rpm
+
         UNAME=`uname -a`
-        if [ ${UNAME} =~ 'el7' ]; then
+        if [ `echo ${UNAME} | grep -c "el7" ` -gt 0 ]; then
             ${SUDO} rpm -Uvh https://dl.fedoraproject.org/pub/epel/epel-release-latest-7.noarch.rpm
         else
             ${SUDO} rpm -Uvh https://dl.fedoraproject.org/pub/epel/epel-release-latest-6.noarch.rpm
@@ -712,7 +715,7 @@ init_webtatic() {
 
         if [ ${status} -lt 1 ]; then
             UNAME=`uname -a`
-            if [ ${UNAME} =~ 'el7' ]; then
+            if [ `echo ${UNAME} | grep -c "el7" ` -gt 0 ]; then
                 ${SUDO} rpm -Uvh https://mirror.webtatic.com/yum/el7/webtatic-release.rpm
             else
                 ${SUDO} rpm -Uvh https://mirror.webtatic.com/yum/el6/latest.rpm
