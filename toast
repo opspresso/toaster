@@ -84,31 +84,31 @@ toast() {
     echo_toast
 
     case ${CMD} in
-        auto)
+        a|auto)
             auto
             ;;
-        update)
+        u|update)
             update
             ;;
-        config)
+        c|config)
             config
             ;;
-        health)
+        h|health)
             health
             ;;
-        init)
+        i|init)
             init
             ;;
-        terminate)
+        t|terminate)
             terminate
             ;;
-        version)
+        v|version)
             version
             ;;
-        deploy)
+        d|deploy)
             deploy
             ;;
-        log)
+        l|log)
             log
             ;;
         *)
