@@ -64,7 +64,7 @@ echo ${JAVA}
 
 ################################################################################
 
-wget --no-cookies --no-check-certificate --header "Cookie: oraclelicense=accept-securebackup-cookie" ${URL5}
+wget -q -N -P --no-cookies --no-check-certificate --header "Cookie: oraclelicense=accept-securebackup-cookie" ${URL5}
 
 tar xzf ${JAVA}
 

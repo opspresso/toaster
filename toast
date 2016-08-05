@@ -608,7 +608,7 @@ init_aws() {
 
     if [ ! -f "/usr/bin/aws" ]; then
         if [ ! -f "${HOME}/.toast_awscli" ]; then
-            wget "https://s3.amazonaws.com/aws-cli/awscli-bundle.zip"
+            wget -q -N -P "https://s3.amazonaws.com/aws-cli/awscli-bundle.zip"
             unzip awscli-bundle.zip
             sudo ./awscli-bundle/install -i /usr/local/aws -b /usr/local/bin/aws
 
@@ -1254,7 +1254,7 @@ download() {
         if [ "${REPO_USER}" == "" ] || [ "${REPO_PASS}" == "" ]; then
             wget -q -N -P "${TEMP_DIR}" "${SOURCE}"
         else
-            wget -q --user "${REPO_USER}" --password "${REPO_PASS}" -N -P "${TEMP_DIR}" "${SOURCE}"
+            wget -q -N -P --user "${REPO_USER}" --password "${REPO_PASS}" "${TEMP_DIR}" "${SOURCE}"
         fi
     fi
 
