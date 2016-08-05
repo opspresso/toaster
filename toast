@@ -1065,6 +1065,8 @@ deploy_vhost() {
         exit 1
     fi
 
+    echo_bar
+
     echo "download vhost..."
 
     URL="${TOAST_URL}/target/vhost/${PHASE}/${FLEET}"
@@ -1110,6 +1112,8 @@ deploy_vhost() {
     done < ${VHOST_LIST}
 
     service_ctl httpd start
+
+    echo_bar
 }
 
 deploy_project() {
@@ -1134,6 +1138,8 @@ deploy_project() {
 
     UNZIP_DIR="${TEMP_DIR}/${ARTIFACT_ID}"
 
+    echo_bar
+
     echo "download..."
 
     download
@@ -1145,10 +1151,14 @@ deploy_project() {
     placement
 
     tomcat_start
+
+    echo_bar
 }
 
 deploy_fleet() {
     # "deploy fleet"
+
+    echo_bar
 
     echo "download target..."
 
@@ -1187,6 +1197,8 @@ deploy_fleet() {
     if [ "${HAS_APACHE}" == "TRUE" ]; then
         deploy_vhost
     fi
+
+    echo_bar
 }
 
 deploy_value() {
