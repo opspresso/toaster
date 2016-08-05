@@ -718,8 +718,6 @@ init_apache() {
             APACHE_VERSION="22"
         fi
 
-        ${SUDO} chkconfig httpd on
-
         touch "${HOME}/.toast_apache"
     fi
 
