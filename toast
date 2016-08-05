@@ -729,6 +729,10 @@ init_apache() {
     make_dir "${SITE_DIR}"
     make_dir "${SITE_DIR}/files" 777
     make_dir "${SITE_DIR}/upload" 777
+
+    echo_bar
+    httpd -version
+    echo_bar
 }
 
 init_webtatic() {
@@ -763,6 +767,10 @@ init_php55() {
     fi
 
     init_php_ini
+
+    echo_bar
+    php -version
+    echo_bar
 }
 
 init_php56() {
@@ -781,6 +789,10 @@ init_php56() {
     fi
 
     init_php_ini
+
+    echo_bar
+    php -version
+    echo_bar
 }
 
 init_php70() {
@@ -799,6 +811,10 @@ init_php70() {
     fi
 
     init_php_ini
+
+    echo_bar
+    php -version
+    echo_bar
 }
 
 init_node4() {
