@@ -619,7 +619,7 @@ init_aws() {
     fi
 
     echo_bar
-    aws -version
+    aws --version
     echo_bar
 }
 
