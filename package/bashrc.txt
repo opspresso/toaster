@@ -7,8 +7,6 @@ fi
 
 # User specific aliases and functions
 
-if [ -f ~/.toast_alias ]; then
-  . ~/.toast_alias
+if [ -f ~/.toast_profile ]; then
+  . ~/.toast_profile
 fi
-
-export PROFILE="PHASE"

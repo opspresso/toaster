@@ -172,7 +172,7 @@ auto() {
     config_info
     config_cron
 
-    init_alias
+    init_profile
     init_hosts
     init_aws
     init_slave
@@ -360,12 +360,10 @@ prepare() {
     if [ "${SUDO}" != "" ]; then
         BASHRC="${HOME}/.bashrc"
         copy "${SHELL_DIR}/package/bashrc.txt" ${BASHRC} 644
-
-        TEMP_FILE="${TEMP_DIR}/bashrc.tmp.$$"
-        sed "s/PHASE/$PHASE/g" ${BASHRC} > ${TEMP_FILE} && mv -f ${TEMP_FILE} ${BASHRC}
-
         source ${BASHRC}
     fi
+
+    add_env "PROFILE" "${PHASE}"
 
     if [ ! -f "${HOME}/.m2/settings.xml" ]; then
         TARGET_FILE="${HOME}/.m2/settings.xml"
@@ -575,11 +573,11 @@ init_hosts() {
     ${SUDO} echo "${RES}" > /etc/hosts
 }
 
-init_alias() {
-    URL="${TOAST_URL}/phase/alias/${PHASE}"
+init_profile() {
+    URL="${TOAST_URL}/phase/profile/${PHASE}"
     RES=`curl -s --data "token=${TOKEN}" ${URL}`
 
-    ${SUDO} echo "${RES}" > ${HOME}/.toast_alias
+    ${SUDO} echo "${RES}" > ${HOME}/.toast_profile
 }
 
 init_aws() {
@@ -815,9 +813,7 @@ init_node4() {
 
         NODE_HOME=$(dirname $(dirname $(readlink -f $(which node))))
 
-        BASHRC="${HOME}/.bashrc"
-        echo "export NODE_HOME=\"${NODE_HOME}\"" >> ${BASHRC}
-        source ${BASHRC}
+        add_env "NODE_HOME" "${NODE_HOME}"
 
         echo "NODE_HOME=${NODE_HOME}"
 
@@ -836,10 +832,8 @@ init_java8() {
 
         JAVA_HOME=$(dirname $(dirname $(readlink -f $(which java))))
 
-        BASHRC="${HOME}/.bashrc"
-        echo "export JAVA_HOME=\"${JAVA_HOME}\"" >> ${BASHRC}
-        echo "export CATALINA_OPTS=\"-Dproject.profile=${PHASE}\"" >> ${BASHRC}
-        source ${BASHRC}
+        add_env "JAVA_HOME" "${JAVA_HOME}"
+        add_env "CATALINA_OPTS" "-Dproject.profile=${PHASE}"
 
         echo "JAVA_HOME=${JAVA_HOME}"
 
@@ -1397,6 +1391,34 @@ process_start() {
     if [ "${PID}" != "" ]; then
         echo "startup (${PID})"
     fi
+}
+
+add_env() {
+    TARGET="${HOME}/.bash_profile"
+
+    KEY=$1
+    VAL=$2
+
+    IS_KEY="false"
+
+    if [ ! -f "${TARGET}" ]; then
+        touch ${TARGET}
+    fi
+
+    while read LINE
+    do
+        KEY1=$(echo ${LINE} | cut -d "=" -f 1)
+
+        if [ "${KEY1}" == "${KEY}" ]; then
+            IS_KEY="true"
+        fi
+    done < ${TARGET}
+
+    if [ "${IS_KEY}" == "false" ]; then
+        echo "export ${KEY}=\"${VAL}\"" >> ${TARGET}
+    fi
+
+    source ${TARGET}
 }
 
 copy() {
