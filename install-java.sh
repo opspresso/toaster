@@ -10,7 +10,6 @@ fi
 
 OS_NAME="linux"
 
-TYPE="jre"
 EXT="tar.gz"
 
 VERSION="8"
@@ -34,7 +33,7 @@ fi
 
 URL0="http://www.oracle.com"
 URL1="${URL0}/technetwork/java/javase/downloads/index.html"
-URL2=$(curl -s ${URL1} | egrep -o "\/technetwork\/java/\javase\/downloads\/server-${TYPE}${VERSION}-downloads-(.*)\.html" | head -1)
+URL2=$(curl -s ${URL1} | egrep -o "\/technetwork\/java/\javase\/downloads\/server-jre${VERSION}-downloads-(.*)\.html" | head -1)
 
 # http://www.oracle.com/technetwork/java/javase/downloads/server-jre8-downloads-2133154.html
 
@@ -44,12 +43,12 @@ if [[ -z "$URL2" ]]; then
 fi
 
 URL3="$(echo ${URL0}${URL2} | awk -F\" {'print $1'})"
-URL4=$(curl -s ${URL3} | egrep -o "http\:\/\/download\.oracle\.com\/otn-pub\/java\/jdk\/${VERSION}u(.*)\/server-${TYPE}-${VERSION}u(.*)-${OS_NAME}-${OS_BIT}.${EXT}")
+URL4=$(curl -s ${URL3} | egrep -o "http\:\/\/download\.oracle\.com\/otn-pub\/java\/jdk\/${VERSION}u(.*)\/server-jre-${VERSION}u(.*)-${OS_NAME}-${OS_BIT}.${EXT}")
 
 # http://download.oracle.com/otn-pub/java/jdk/8u101-b13/server-jre-8u101-linux-x64.tar.gz
 
 if [[ -z "$URL4" ]]; then
-    echo "Could not get ${TYPE} url - $URL4"
+    echo "Could not get java url - $URL4"
     exit 1
 fi
 
@@ -71,11 +70,10 @@ tar xzf ${JAVA}
 
 rm -rf ${JAVA}
 
-VS1=$(echo ${JAVA} | cut -d "-" -f 2)
-VS2=$(echo ${JAVA} | cut -d "-" -f 3)
-VS3="${VS2/u/.0_}"
+VS1=$(echo ${JAVA} | cut -d "-" -f 3)
+VS2="${VS1/u/.0_}"
 
-JAVA_DIR="${VS1}1.${VS3}"
+JAVA_DIR="jdk1.${VS2}"
 JAVA_HOME="/usr/local/${JAVA_DIR}"
 
 ${SUDO} rm -rf "${JAVA_HOME}"
