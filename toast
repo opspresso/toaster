@@ -646,7 +646,7 @@ init_slave() {
 
     if [ "${IS_KEY}" == "false" ]; then
         echo "${RES}" >> ${AUTH_KEYS}
-        chmod 600 ${AUTH_KEYS}
+        chmod 700 ${AUTH_KEYS}
     fi
 }
 
