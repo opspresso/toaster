@@ -357,14 +357,14 @@ prepare() {
         TARGET_FILE="${HOME}/.bashrc"
         copy "${SHELL_DIR}/package/bashrc.txt" "${TARGET_FILE}" 644
 
-        TEMP_FILE="${TEMP_DIR}/bashrc.tmp.$$"
-        sed "s/PHASE/$PHASE/g" ${TARGET_FILE} > ${TEMP_FILE} && mv -f ${TEMP_FILE} ${TARGET_FILE}
-
         source "${TARGET_FILE}"
 
         # bash_profile
         TARGET_FILE="${HOME}/.bash_profile"
         copy "${SHELL_DIR}/package/bash_profile.txt" "${TARGET_FILE}" 644
+
+        TEMP_FILE="${TEMP_DIR}/bash_profile.tmp.$$"
+        sed "s/PHASE/$PHASE/g" ${TARGET_FILE} > ${TEMP_FILE} && mv -f ${TEMP_FILE} ${TARGET_FILE}
 
         source "${TARGET_FILE}"
     fi
