@@ -1065,10 +1065,10 @@ deploy_vhost() {
 
     echo "download vhost..."
 
-    TARGET_FILE="${TEMP_DIR}/${FLEET}"
-
     URL="${TOAST_URL}/target/vhost/${PHASE}/${FLEET}"
     wget -q -N -P "${TEMP_DIR}" "${URL}"
+
+    VHOST_LIST="${TEMP_DIR}/${FLEET}"
 
     echo "placement vhost..."
 
@@ -1077,12 +1077,10 @@ deploy_vhost() {
     ${SUDO} rm -rf ${HTTPD_CONF_DIR}/localhost*
     ${SUDO} rm -rf ${HTTPD_CONF_DIR}/toast*
 
-    DEST_FILE="${HTTPD_CONF_DIR}/localhost.conf"
-    ${SUDO} cp -rf "${SHELL_DIR}/package/vhost/${APACHE_VERSION}/localhost.conf" "${DEST_FILE}"
-    ${SUDO} chmod 644 "${DEST_FILE}"
+    # localhost
+    copy "${SHELL_DIR}/package/vhost/${APACHE_VERSION}/localhost.conf" "${HTTPD_CONF_DIR}/localhost.conf" 644
 
     TEMPLATE="${SHELL_DIR}/package/vhost/${APACHE_VERSION}/vhost.conf"
-
     TEMP_FILE="${TEMP_DIR}/toast-vhost.tmp.$$"
 
     while read line
@@ -1097,8 +1095,9 @@ deploy_vhost() {
 
         echo "--> ${DEST_FILE}"
 
+        # vhost
         sed "s/DOM/$DOM/g" ${TEMPLATE} > ${TEMP_FILE} && ${SUDO} mv -f ${TEMP_FILE} ${DEST_FILE}
-    done < ${TARGET_FILE}
+    done < ${VHOST_LIST}
 
     service_ctl httpd start
 }
