@@ -833,8 +833,8 @@ init_node4() {
     fi
 
     echo_bar
-    echo "node version : `node -v`"
-    echo "npm version : `npm -v`"
+    echo "node : `node -v`"
+    echo "npm : `npm -v`"
     echo_bar
 }
 
