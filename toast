@@ -6,6 +6,13 @@ if [ ${OS_TYPE} != 'Linux' ]; then
     exit 1
 fi
 
+UNAME=`uname -a`
+if [ `echo ${UNAME} | grep -c "el7" ` -gt 0 ]; then
+    REDHAT="el7"
+else
+    REDHAT="el6"
+fi
+
 if [ ! -f "/usr/bin/yum" ]; then
     echo "Could not use yum"
     exit 1
@@ -333,8 +340,7 @@ prepare() {
         # rpm -Uvh https://dl.fedoraproject.org/pub/epel/epel-release-latest-7.noarch.rpm
         # rpm -Uvh https://dl.fedoraproject.org/pub/epel/epel-release-latest-6.noarch.rpm
 
-        UNAME=`uname -a`
-        if [ `echo ${UNAME} | grep -c "el7" ` -gt 0 ]; then
+        if [ "${REDHAT}" == "el7" ]; then
             ${SUDO} rpm -Uvh https://dl.fedoraproject.org/pub/epel/epel-release-latest-7.noarch.rpm
         else
             ${SUDO} rpm -Uvh https://dl.fedoraproject.org/pub/epel/epel-release-latest-6.noarch.rpm
@@ -720,8 +726,7 @@ init_webtatic() {
         status=`${SUDO} yum list | grep php56 | wc -l | awk '{print $1}'`
 
         if [ ${status} -lt 1 ]; then
-            UNAME=`uname -a`
-            if [ `echo ${UNAME} | grep -c "el7" ` -gt 0 ]; then
+            if [ "${REDHAT}" == "el7" ]; then
                 ${SUDO} rpm -Uvh https://mirror.webtatic.com/yum/el7/webtatic-release.rpm
             else
                 ${SUDO} rpm -Uvh https://mirror.webtatic.com/yum/el6/latest.rpm
@@ -887,8 +892,7 @@ init_redis() {
     if [ ! -f "${HOME}/.toast_redis" ]; then
         ${SUDO} yum install -y redis
 
-        ${SUDO} chkconfig redis on
-        ${SUDO} service redis restart
+        service_ctl redis restart on
 
         touch "${HOME}/.toast_redis"
     fi
@@ -901,8 +905,7 @@ init_rabbitmq() {
 
         ${SUDO} yum install -y rabbitmq-server
 
-        ${SUDO} chkconfig rabbitmq-server on
-        ${SUDO} service rabbitmq-server restart
+        service_ctl rabbitmq-server restart on
 
         touch "${HOME}/.toast_rabbitmq"
     fi
@@ -1045,7 +1048,7 @@ deploy_vhost() {
 
     echo "placement vhost..."
 
-    ${SUDO} service httpd stop
+    service_ctl httpd stop
 
     ${SUDO} rm -rf ${HTTPD_CONF_DIR}/localhost*
     ${SUDO} rm -rf ${HTTPD_CONF_DIR}/toast*
@@ -1073,7 +1076,7 @@ deploy_vhost() {
         sed "s/DOM/$DOM/g" ${TEMPLATE} > ${TEMP_FILE} && ${SUDO} mv -f ${TEMP_FILE} ${DEST_FILE}
     done < ${TARGET_FILE}
 
-    ${SUDO} service httpd start
+    service_ctl httpd start
 }
 
 deploy_project() {
@@ -1296,6 +1299,14 @@ placement() {
 
     process_start
   fi
+}
+
+service_ctl() {
+    ${SUDO} service $1 $2
+
+    if [ "$3" == "on" ]; then
+        ${SUDO} chkconfig $1 on
+    fi
 }
 
 tomcat_stop() {
