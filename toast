@@ -67,6 +67,8 @@ TEMP_DIR="/tmp/deploy"
 
 ################################################################################
 
+SSH_PORT="2230"
+
 HAS_APACHE="FALSE"
 HAS_TOMCAT="FALSE"
 
@@ -424,6 +426,9 @@ config_auto() {
     NAME=`hostname`
 
     PORT=`nmap localhost | grep ssh | awk '{print $1}' | cut -d'/' -f1`
+    if [ "${PORT}" == "" ]; then
+        PORT="${SSH_PORT}"
+    fi
 }
 
 config_read() {
