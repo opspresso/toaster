@@ -81,6 +81,8 @@ WEBAPP_DIR="${TOMCAT_DIR}/webapps"
 ################################################################################
 
 toast() {
+    echo_toast
+
     case ${CMD} in
         auto)
             auto
@@ -119,7 +121,6 @@ toast() {
 }
 
 usage() {
-    echo_toast
     echo " Usage: toast {auto|update|config|init|version|deploy}"
     echo_bar
     echo_
@@ -162,8 +163,6 @@ usage() {
 }
 
 auto() {
-    echo_toast
-
     prepare
 
     update
