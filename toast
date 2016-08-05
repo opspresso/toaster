@@ -65,8 +65,6 @@ fi
 
 TEMP_DIR="/tmp/deploy"
 
-SSH_PORT="2230"
-
 HAS_APACHE="FALSE"
 HAS_TOMCAT="FALSE"
 
@@ -328,7 +326,6 @@ prepare() {
 
     yum_install git
     yum_install curl
-    yum_install nmap
     yum_install wget
     yum_install unzip
 
@@ -423,10 +420,8 @@ config_auto() {
 
     NAME=`hostname`
 
-    PORT=`nmap localhost | grep ssh | awk '{print $1}' | cut -d'/' -f1`
-    if [ "${PORT}" == "" ]; then
-        PORT="${SSH_PORT}"
-    fi
+    ARR=(`${SUDO} netstat -anp | grep LISTEN | grep sshd | grep "0\.0\.0\.0"`)
+    PORT=`echo "${ARR[3]}" | cut -d ":" -f 1`
 }
 
 config_read() {
