@@ -421,7 +421,7 @@ config_auto() {
     NAME=`hostname`
 
     ARR=(`${SUDO} netstat -anp | grep LISTEN | grep sshd | grep "0\.0\.0\.0"`)
-    PORT=`echo "${ARR[3]}" | cut -d ":" -f 1`
+    PORT=`echo "${ARR[3]}" | cut -d ":" -f 2`
 }
 
 config_read() {
