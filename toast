@@ -617,6 +617,10 @@ init_aws() {
             touch "${HOME}/.toast_awscli"
         fi
     fi
+
+    echo_bar
+    aws -version
+    echo_bar
 }
 
 init_master() {
