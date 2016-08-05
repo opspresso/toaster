@@ -816,11 +816,9 @@ init_node4() {
 
         NODE_HOME=$(dirname $(dirname $(readlink -f $(which node))))
 
-        BASHRC="${HOME}/.bashrc"
-
-        touch "${BASHRC}"
-        echo "export NODE_HOME=\"${NODE_HOME}\"" >> "${BASHRC}"
-        source "${BASHRC}"
+        BASHRC=${HOME}/.bashrc
+        echo "export NODE_HOME=\"${NODE_HOME}\"" >> ${BASHRC}
+        source ${BASHRC}
 
         echo "NODE_HOME=${NODE_HOME}"
 
@@ -840,11 +838,9 @@ init_java8() {
         JAVA_HOME=$(dirname $(dirname $(readlink -f $(which java))))
 
         BASHRC="${HOME}/.bashrc"
-
-        touch "${BASHRC}"
-        echo "export JAVA_HOME=\"${JAVA_HOME}\"" >> "${BASHRC}"
-        echo "export CATALINA_OPTS=\"-Dproject.profile=${PHASE}\"" >> "${BASHRC}"
-        source "${BASHRC}"
+        echo "export JAVA_HOME=\"${JAVA_HOME}\"" >> ${BASHRC}
+        echo "export CATALINA_OPTS=\"-Dproject.profile=${PHASE}\"" >> ${BASHRC}
+        source ${BASHRC}
 
         echo "JAVA_HOME=${JAVA_HOME}"
 
