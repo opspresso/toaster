@@ -609,13 +609,15 @@ init_aws() {
     RES=`curl -s --data "token=${TOKEN}" ${URL}`
     sed "s/AWS_SECRET_KEY/$RES/g" ${DEST_FILE} > ${TEMP_FILE} && ${SUDO} mv -f ${TEMP_FILE} ${DEST_FILE}
 
-    if [ ! -f "/usr/bin/aws" ]; then
+    if [ ! -f "${HOME}/.toast_awscli" ]; then
         wget "https://s3.amazonaws.com/aws-cli/awscli-bundle.zip"
         unzip awscli-bundle.zip
         sudo ./awscli-bundle/install -i /usr/local/aws -b /usr/local/bin/aws
 
         rm -rf awscli-bundle
         rm -rf awscli-bundle.zip
+
+        touch "${HOME}/.toast_awscli"
     fi
 }
 
