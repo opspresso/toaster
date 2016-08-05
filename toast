@@ -6,11 +6,11 @@ if [ ${OS_TYPE} != 'Linux' ]; then
     exit 1
 fi
 
-UNAME=`uname -a`
-if [ `echo ${UNAME} | grep -c "el7" ` -gt 0 ]; then
-    REDHAT="el7"
+OS_FULL=`uname -a`
+if [ `echo ${OS_FULL} | grep -c "el7" ` -gt 0 ]; then
+    ELX="el7"
 else
-    REDHAT="el6"
+    ELX="el6"
 fi
 
 if [ ! -f "/usr/bin/yum" ]; then
@@ -340,7 +340,7 @@ prepare() {
         # rpm -Uvh https://dl.fedoraproject.org/pub/epel/epel-release-latest-7.noarch.rpm
         # rpm -Uvh https://dl.fedoraproject.org/pub/epel/epel-release-latest-6.noarch.rpm
 
-        if [ "${REDHAT}" == "el7" ]; then
+        if [ "${ELX}" == "el7" ]; then
             ${SUDO} rpm -Uvh https://dl.fedoraproject.org/pub/epel/epel-release-latest-7.noarch.rpm
         else
             ${SUDO} rpm -Uvh https://dl.fedoraproject.org/pub/epel/epel-release-latest-6.noarch.rpm
@@ -729,7 +729,7 @@ init_webtatic() {
         status=`${SUDO} yum list | grep php56 | wc -l | awk '{print $1}'`
 
         if [ ${status} -lt 1 ]; then
-            if [ "${REDHAT}" == "el7" ]; then
+            if [ "${ELX}" == "el7" ]; then
                 ${SUDO} rpm -Uvh https://mirror.webtatic.com/yum/el7/webtatic-release.rpm
             else
                 ${SUDO} rpm -Uvh https://mirror.webtatic.com/yum/el6/latest.rpm
