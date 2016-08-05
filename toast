@@ -352,7 +352,9 @@ prepare() {
     make_dir "${HOME}/.m2"
     make_dir "${HOME}/.ssh"
 
-    copy "${SHELL_DIR}/package/hosts.txt" "/etc/hosts" 644
+    copy ${SHELL_DIR}/package/i18n.txt /etc/sysconfig/i18n 644
+    copy ${SHELL_DIR}/package/selinux.txt /etc/selinux/config 644
+    copy ${SHELL_DIR}/package/hosts.txt /etc/hosts 644
 
     if [ "${SUDO}" != "" ]; then
         # bashrc
