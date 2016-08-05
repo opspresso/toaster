@@ -1409,7 +1409,7 @@ add_env() {
     do
         KEY1=$(echo ${LINE} | cut -d "=" -f 1)
 
-        if [ "${KEY1}" == "${KEY}" ]; then
+        if [ "${KEY1}" == "export ${KEY}" ]; then
             IS_KEY="true"
         fi
     done < ${TARGET}
