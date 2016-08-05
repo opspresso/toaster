@@ -3,7 +3,7 @@
 OS_TYPE=`uname`
 if [ ${OS_TYPE} != 'Linux' ]; then
     echo "Unsupported OS - $OS_TYPE"
-#    exit 1
+    exit 1
 fi
 
 ################################################################################
@@ -28,19 +28,19 @@ fi
 
 ################################################################################
 
-URL0="https://nodejs.org/en/download/"
-URL4=$(curl -s ${URL0} | egrep -o "https\:\/\/nodejs\.org\/dist\/v${VERSION}.(.*)\/node-v${VERSION}.(.*)-${OS_NAME}-${OS_BIT}.${EXT}")
+URL1="https://nodejs.org/en/download/"
+URL2=$(curl -s ${URL1} | egrep -o "https\:\/\/nodejs\.org\/dist\/v${VERSION}.(.*)\/node-v${VERSION}.(.*)-${OS_NAME}-${OS_BIT}.${EXT}")
 
 # https://nodejs.org/dist/v4.4.7/node-v4.4.7-linux-x64.tar.xz
 
-if [[ -z "$URL4" ]]; then
-    echo "Could not get node url - $URL4"
+if [[ -z "$URL2" ]]; then
+    echo "Could not get node url - $URL2"
     exit 1
 fi
 
-URL5=$(echo ${URL4} | cut -d " " -f 1)
+URL3=$(echo ${URL2} | cut -d " " -f 1)
 
-NODE=$(echo ${URL5} | cut -d "/" -f 6)
+NODE=$(echo ${URL3} | cut -d "/" -f 6)
 
 if [[ -z "$NODE" ]]; then
     echo "Could not get NODE - $NODE"
@@ -51,7 +51,7 @@ echo ${NODE}
 
 ################################################################################
 
-wget ${URL5}
+wget ${URL3}
 
 tar xf ${NODE}
 
