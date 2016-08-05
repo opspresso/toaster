@@ -10,3 +10,5 @@ fi
 if [ -f ~/.toast_alias ]; then
   . ~/.toast_alias
 fi
+
+export PROFILE="PHASE"

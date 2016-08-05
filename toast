@@ -359,19 +359,13 @@ prepare() {
 
     if [ "${SUDO}" != "" ]; then
         # bashrc
-        TARGET_FILE="${HOME}/.bashrc"
-        copy "${SHELL_DIR}/package/bashrc.txt" "${TARGET_FILE}" 644
+        BASHRC="${HOME}/.bashrc"
+        copy "${SHELL_DIR}/package/bashrc.txt" "${BASHRC}" 644
 
-        source "${TARGET_FILE}"
+        TEMP_FILE="${TEMP_DIR}/bashrc.tmp.$$"
+        sed "s/PHASE/$PHASE/g" ${BASHRC} > ${TEMP_FILE} && mv -f ${TEMP_FILE} ${BASHRC}
 
-        # bash_profile
-        TARGET_FILE="${HOME}/.bash_profile"
-        copy "${SHELL_DIR}/package/bash_profile.txt" "${TARGET_FILE}" 644
-
-        TEMP_FILE="${TEMP_DIR}/bash_profile.tmp.$$"
-        sed "s/PHASE/$PHASE/g" ${TARGET_FILE} > ${TEMP_FILE} && mv -f ${TEMP_FILE} ${TARGET_FILE}
-
-        source "${TARGET_FILE}"
+        source "${BASHRC}"
     fi
 
     if [ ! -f "${HOME}/.m2/settings.xml" ]; then
@@ -822,11 +816,11 @@ init_node4() {
 
         NODE_HOME=$(dirname $(dirname $(readlink -f $(which node))))
 
-        BASH_PROFILE="${HOME}/.bash_profile"
+        BASHRC="${HOME}/.bashrc"
 
-        touch "${BASH_PROFILE}"
-        echo "export NODE_HOME=\"${NODE_HOME}\"" >> "${BASH_PROFILE}"
-        source "${BASH_PROFILE}"
+        touch "${BASHRC}"
+        echo "export NODE_HOME=\"${NODE_HOME}\"" >> "${BASHRC}"
+        source "${BASHRC}"
 
         echo "NODE_HOME=${NODE_HOME}"
 
@@ -845,12 +839,12 @@ init_java8() {
 
         JAVA_HOME=$(dirname $(dirname $(readlink -f $(which java))))
 
-        BASH_PROFILE="${HOME}/.bash_profile"
+        BASHRC="${HOME}/.bashrc"
 
-        touch "${BASH_PROFILE}"
-        echo "export JAVA_HOME=\"${JAVA_HOME}\"" >> "${BASH_PROFILE}"
-        echo "export CATALINA_OPTS=\"-Dproject.profile=${PHASE}\"" >> "${BASH_PROFILE}"
-        source "${BASH_PROFILE}"
+        touch "${BASHRC}"
+        echo "export JAVA_HOME=\"${JAVA_HOME}\"" >> "${BASHRC}"
+        echo "export CATALINA_OPTS=\"-Dproject.profile=${PHASE}\"" >> "${BASHRC}"
+        source "${BASHRC}"
 
         echo "JAVA_HOME=${JAVA_HOME}"
 
