@@ -38,7 +38,6 @@ SNO=
 SHELL_DIR=$(dirname $0)
 
 CONFIG="${HOME}/.toast"
-
 if [ -f "${CONFIG}" ]; then
     . ${CONFIG}
 fi
@@ -713,7 +712,7 @@ init_apache() {
             APACHE_VERSION="22"
         fi
 
-        touch "${HOME}/.toast_apache"
+        echo "APACHE_VERSION=${APACHE_VERSION}" > "${HOME}/.toast_apache"
     fi
 
     ${SUDO} cp -rf "${SHELL_DIR}/package/health.txt" "/var/www/html/index.html"
@@ -1071,6 +1070,14 @@ deploy_vhost() {
 
     ${SUDO} rm -rf ${HTTPD_CONF_DIR}/localhost*
     ${SUDO} rm -rf ${HTTPD_CONF_DIR}/toast*
+
+    TOAST_APACHE="${HOME}/.toast_apache"
+    if [ -f "${TOAST_APACHE}" ]; then
+        . ${TOAST_APACHE}
+    fi
+    if [ "${APACHE_VERSION}" == "" ]; then
+        APACHE_VERSION="24"
+    fi
 
     # localhost
     copy "${SHELL_DIR}/package/vhost/${APACHE_VERSION}/localhost.conf" "${HTTPD_CONF_DIR}/localhost.conf" 644
