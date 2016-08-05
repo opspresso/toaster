@@ -356,6 +356,8 @@ prepare() {
     copy ${SHELL_DIR}/package/selinux.txt /etc/selinux/config 644
     copy ${SHELL_DIR}/package/hosts.txt /etc/hosts 644
 
+    ${SUDO} setenforce 0
+
     if [ "${SUDO}" != "" ]; then
         # bashrc
         TARGET_FILE="${HOME}/.bashrc"
