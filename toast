@@ -358,14 +358,13 @@ prepare() {
     ${SUDO} setenforce 0
 
     if [ "${SUDO}" != "" ]; then
-        # bashrc
         BASHRC="${HOME}/.bashrc"
-        copy "${SHELL_DIR}/package/bashrc.txt" "${BASHRC}" 644
+        copy "${SHELL_DIR}/package/bashrc.txt" ${BASHRC} 644
 
         TEMP_FILE="${TEMP_DIR}/bashrc.tmp.$$"
         sed "s/PHASE/$PHASE/g" ${BASHRC} > ${TEMP_FILE} && mv -f ${TEMP_FILE} ${BASHRC}
 
-        source "${BASHRC}"
+        source ${BASHRC}
     fi
 
     if [ ! -f "${HOME}/.m2/settings.xml" ]; then
@@ -816,7 +815,7 @@ init_node4() {
 
         NODE_HOME=$(dirname $(dirname $(readlink -f $(which node))))
 
-        BASHRC=${HOME}/.bashrc
+        BASHRC="${HOME}/.bashrc"
         echo "export NODE_HOME=\"${NODE_HOME}\"" >> ${BASHRC}
         source ${BASHRC}
 
