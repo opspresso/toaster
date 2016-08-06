@@ -704,9 +704,15 @@ init_apache() {
 
         if [ ${status} -ge 1 ]; then
             ${SUDO} yum install -y httpd24
-            APACHE_VERSION="24"
         else
             ${SUDO} yum install -y httpd
+        fi
+
+        HTTPD_VERSION=$(httpd -version | egrep -o "Apache\/2.4")
+
+        if [ "${HTTPD_VERSION}" != "" ]; then
+            APACHE_VERSION="24"
+        else
             APACHE_VERSION="22"
         fi
 
