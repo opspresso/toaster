@@ -2,7 +2,7 @@
 
 OS_TYPE=`uname`
 if [ ${OS_TYPE} != 'Linux' ]; then
-    echo "Unsupported OS - $OS_TYPE"
+    echo "Not supported OS - $OS_TYPE"
     exit 1
 fi
 
@@ -17,6 +17,13 @@ if [ ! -f "/usr/bin/yum" ]; then
     echo "Could not use yum"
     exit 1
 fi
+
+if [ "${HOME}" != "/root" ]; then
+    echo "Not supported ROOT"
+    exit 1
+fi
+
+SUDO="sudo"
 
 ################################################################################
 
@@ -55,11 +62,6 @@ DOMAIN=$7
 
 if [ "${USER}" == "" ]; then
     USER=`whoami`
-fi
-
-SUDO=""
-if [ "${HOME}" != "/root" ]; then
-    SUDO="sudo"
 fi
 
 TEMP_DIR="/tmp/deploy"
@@ -346,6 +348,9 @@ prepare() {
         touch "${HOME}/.toast_epel"
     fi
 
+    make_dir "/data"
+    make_dir "/data/logs"
+
     make_dir "${TEMP_DIR}"
 
     make_dir "${HOME}/.m2"
@@ -365,7 +370,8 @@ prepare() {
 
     add_env "PROFILE" "${PHASE}"
 
-    if [ ! -f "${HOME}/.m2/settings.xml" ]; then
+    if [ "${REPO_USER}" != "" ]; then
+        # settings.xml
         TARGET_FILE="${HOME}/.m2/settings.xml"
         copy "${SHELL_DIR}/package/m2/settings.xml" "${TARGET_FILE}" 644
 
@@ -374,14 +380,11 @@ prepare() {
         sed "s/REPO_PASS/$REPO_PASS/g" ${TARGET_FILE} > ${TEMP_FILE} && mv -f ${TEMP_FILE} ${TARGET_FILE}
     fi
 
-    if [ ! -f "${HOME}/.ssh/config" ]; then
-        TARGET_FILE="${HOME}/.ssh/config"
-        copy "${SHELL_DIR}/package/ssh/config" "${TARGET_FILE}" 600
-    fi
+    # ssh config
+    TARGET_FILE="${HOME}/.ssh/config"
+    copy "${SHELL_DIR}/package/ssh/config" "${TARGET_FILE}" 600
 
-    make_dir "/data"
-    make_dir "/data/logs"
-
+    # toast config
     if [ ! -f "${CONFIG}" ]; then
         copy "${SHELL_DIR}/package/toast.txt" ${CONFIG} 644
     fi

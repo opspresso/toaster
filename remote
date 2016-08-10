@@ -18,7 +18,7 @@ PORT=$3
 GROUP_ID=$4
 ARTIFACT_ID=$5
 VERSION=$6
-PACKAGING=$7
+TYPE=$7
 DOMAIN=$8
 
 if [ "${SERVER}" == "" ]; then
@@ -30,9 +30,6 @@ if [ "${PORT}" == "" ]; then
   PORT=22
 fi
 
-PARAM="${GROUP_ID} ${ARTIFACT_ID} ${VERSION} ${PACKAGING} ${DOMAIN}"
+PARAM="${GROUP_ID} ${ARTIFACT_ID} ${VERSION} ${TYPE} ${DOMAIN}"
 
 ssh ${USER}@${SERVER} -p ${PORT} "ls -al"
-
-# done
-echo "done."
