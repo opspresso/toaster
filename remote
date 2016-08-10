@@ -1,0 +1,38 @@
+#!/bin/bash
+
+############################################################
+
+function usage() {
+  echo "Usage: $0 {username} {host} {port:22}"
+}
+
+############################################################
+
+BASEDIR=$(dirname $0)
+cd ${BASEDIR}
+
+USER=$1
+SERVER=$2
+PORT=$3
+
+GROUP_ID=$4
+ARTIFACT_ID=$5
+VERSION=$6
+PACKAGING=$7
+DOMAIN=$8
+
+if [ "${SERVER}" == "" ]; then
+  usage
+  exit 1
+fi
+
+if [ "${PORT}" == "" ]; then
+  PORT=22
+fi
+
+PARAM="${GROUP_ID} ${ARTIFACT_ID} ${VERSION} ${PACKAGING} ${DOMAIN}"
+
+ssh ${USER}@${SERVER} -p ${PORT} "ls -al"
+
+# done
+echo "done."
