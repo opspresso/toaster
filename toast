@@ -18,7 +18,7 @@ if [ ! -f "/usr/bin/yum" ]; then
     exit 1
 fi
 
-if [ "${HOME}" != "/root" ]; then
+if [ "${HOME}" == "/root" ]; then
     echo "Not supported ROOT"
     exit 1
 fi
