@@ -11,15 +11,18 @@ function usage() {
 BASEDIR=$(dirname $0)
 cd ${BASEDIR}
 
-USER=$1
-SERVER=$2
-PORT=$3
+USER=${1}
+SERVER=${2}
+PORT=${3}
 
-GROUP_ID=$4
-ARTIFACT_ID=$5
-VERSION=$6
-TYPE=$7
-DOMAIN=$8
+CMD=${4}
+SUB=${5}
+
+GROUP_ID=${6}
+ARTIFACT_ID=${7}
+VERSION=${8}
+TYPE=${9}
+DOMAIN=${10}
 
 if [ "${SERVER}" == "" ]; then
   usage
@@ -30,6 +33,6 @@ if [ "${PORT}" == "" ]; then
   PORT=22
 fi
 
-PARAM="${GROUP_ID} ${ARTIFACT_ID} ${VERSION} ${TYPE} ${DOMAIN}"
+COMMAND="~/toaster/toast ${CMD} ${SUB} ${GROUP_ID} ${ARTIFACT_ID} ${VERSION} ${TYPE} ${DOMAIN}"
 
-ssh ${USER}@${SERVER} -p ${PORT} "ls -al"
+ssh ${USER}@${SERVER} -p ${PORT} "${COMMAND}"
