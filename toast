@@ -149,8 +149,6 @@ usage() {
     echo " Usage: toast init redis"
     echo " Usage: toast init rabbitmq"
     echo_
-    echo " Usage: toast terminate"
-    echo_
     echo " Usage: toast version"
     echo " Usage: toast version next"
     echo " Usage: toast version save"
@@ -160,6 +158,8 @@ usage() {
     echo " Usage: toast deploy vhost"
     echo " Usage: toast deploy fleet"
     echo " Usage: toast deploy project"
+    echo_
+    echo " Usage: toast terminate"
     echo_
     echo_bar
 }
@@ -188,6 +188,20 @@ update() {
     self_update
 
     yum_update
+}
+
+health() {
+    if [ "${SNO}" == "" ]; then
+        echo "Not configured server. [${SNO}]"
+        exit 1
+    fi
+
+    echo "server health..."
+
+    URL="${TOAST_URL}/server/health/${SNO}"
+    RES=`curl -s ${URL}`
+
+    echo "${RES}"
 }
 
 init() {
@@ -293,6 +307,15 @@ deploy() {
         *)
             deploy_fleet
     esac
+}
+
+terminate() {
+    if [ "${SUB}" == "" ]; then
+        echo "instance-id does not exist."
+        exit 1
+    fi
+
+    aws ec2 terminate-instances --instance-ids ${SUB} --region ap-northeast-2
 }
 
 log() {
@@ -543,20 +566,6 @@ config_cron() {
     echo_bar
     crontab -l
     echo_bar
-}
-
-health() {
-    if [ "${SNO}" == "" ]; then
-        echo "Not configured server. [${SNO}]"
-        exit 1
-    fi
-
-    echo "server health..."
-
-    URL="${TOAST_URL}/server/health/${SNO}"
-    RES=`curl -s ${URL}`
-
-    echo "${RES}"
 }
 
 yum_update() {
@@ -934,15 +943,6 @@ init_php_ini() {
 
     # date.timezone = Asia/Seoul
     sed "s/\;date\.timezone\ \=/date\.timezone\ \=\ Asia\/Seoul/g" ${PHP_INI} > ${TEMP_FILE} && ${SUDO} mv -f ${TEMP_FILE} ${PHP_INI}
-}
-
-terminate() {
-    if [ "${ID}" == "" ]; then
-        echo "instance-id does not exist."
-        exit 1
-    fi
-
-    aws ec2 terminate-instances --instance-ids ${ID} --region ap-northeast-2
 }
 
 version_parse() {
