@@ -412,10 +412,12 @@ prepare() {
     fi
 
     if [ "${PARAM1}" != "" ]; then
-        echo "PHASE=${PARAM1}" >> ${CONFIG}
+        PHASE="${PARAM1}"
+        echo "PHASE=${PHASE}" >> ${CONFIG}
     fi
     if [ "${PARAM2}" != "" ]; then
-        echo "FLEET=${PARAM2}" >> ${CONFIG}
+        FLEET="${PARAM2}"
+        echo "FLEET=${FLEET}" >> ${CONFIG}
     fi
 }
 
