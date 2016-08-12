@@ -6,12 +6,7 @@ sudo yum install -y git
 
 git clone https://github.com/yanolja/toaster.git
 
-cp ~/toaster/package/toast.txt ~/.toast
-
-echo "PHASE=dev" >> ~/.toast
-echo "FLEET=demo" >> ~/.toast
-
-~/toaster/toast auto
+~/toaster/toast auto dev demo
 ```
 
 ### AWS User data
