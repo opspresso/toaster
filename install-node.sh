@@ -43,7 +43,7 @@ URL3=$(echo ${URL2} | cut -d " " -f 1)
 NODE=$(echo ${URL3} | cut -d "/" -f 6)
 
 if [[ -z "$NODE" ]]; then
-    echo "Could not get NODE - $NODE"
+    echo "Could not get node - $NODE"
     exit 1
 fi
 
