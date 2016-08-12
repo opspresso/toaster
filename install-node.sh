@@ -63,10 +63,10 @@ NODE_HOME="/usr/local/${NODE_DIR}"
 ${SUDO} rm -rf "${NODE_HOME}"
 ${SUDO} mv ${NODE_DIR} /usr/local/
 
-${SUDO} rm -f /usr/bin/NODE
+${SUDO} rm -f /usr/bin/node
 ${SUDO} ln -s "${NODE_HOME}/bin/node" /usr/bin/node
 
-${SUDO} rm -f /usr/bin/jar
+${SUDO} rm -f /usr/bin/npm
 ${SUDO} ln -s "${NODE_HOME}/bin/npm" /usr/bin/npm
 
 ${SUDO} npm install pm2 -g
