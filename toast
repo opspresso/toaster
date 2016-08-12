@@ -62,12 +62,6 @@ PARAM6=$7
 PARAM7=$8
 PARAM8=$9
 
-#GROUP_ID=$3
-#ARTIFACT_ID=$4
-#VERSION=$5
-#TYPE=$6
-#DOMAIN=$7
-
 if [ "${USER}" == "" ]; then
     USER=`whoami`
 fi
@@ -215,15 +209,7 @@ health() {
 }
 
 init() {
-    if [ "$1" != "" ]; then
-        SUB="$1"
-    else
-        if [ "$PARAM1" != "" ]; then
-            SUB="$PARAM1"
-        fi
-    fi
-
-    case ${SUB} in
+    case ${PARAM1} in
         master)
             init_master
             ;;
@@ -269,15 +255,7 @@ init() {
 }
 
 config() {
-    if [ "$1" != "" ]; then
-        SUB="$1"
-    else
-        if [ "$PARAM1" != "" ]; then
-            SUB="$PARAM1"
-        fi
-    fi
-
-    case ${SUB} in
+    case ${PARAM1} in
         auto)
             config_auto
             config_save
