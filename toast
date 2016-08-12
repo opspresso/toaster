@@ -52,13 +52,15 @@ fi
 ################################################################################
 
 CMD=$1
-SUB=$2
 
-GROUP_ID=$3
-ARTIFACT_ID=$4
-VERSION=$5
-TYPE=$6
-DOMAIN=$7
+PARAM1=$2
+PARAM2=$3
+PARAM3=$4
+PARAM4=$5
+PARAM5=$6
+PARAM6=$7
+PARAM7=$8
+PARAM8=$9
 
 if [ "${USER}" == "" ]; then
     USER=`whoami`
@@ -207,11 +209,7 @@ health() {
 }
 
 init() {
-    if [ "$1" != "" ]; then
-        SUB="$1"
-    fi
-
-    case ${SUB} in
+    case ${PARAM1} in
         master)
             init_master
             ;;
@@ -257,11 +255,7 @@ init() {
 }
 
 config() {
-    if [ "$1" != "" ]; then
-        SUB="$1"
-    fi
-
-    case ${SUB} in
+    case ${PARAM1} in
         auto)
             config_auto
             config_save
@@ -285,18 +279,21 @@ config() {
 version() {
     version_parse
 
-    case ${SUB} in
+    case ${PARAM1} in
         next)
             version_next
             ;;
         save)
             version_save
             ;;
+        remove)
+            version_remove
+            ;;
     esac
 }
 
 deploy() {
-    case ${SUB} in
+    case ${PARAM1} in
         vhost)
             deploy_vhost
             ;;
@@ -312,16 +309,16 @@ deploy() {
 }
 
 terminate() {
-    if [ "${SUB}" == "" ]; then
+    if [ "${PARAM1}" == "" ]; then
         echo "instance-id does not exist."
         exit 1
     fi
 
-    aws ec2 terminate-instances --instance-ids ${SUB} --region ap-northeast-2
+    aws ec2 terminate-instances --instance-ids ${PARAM1} --region ap-northeast-2
 }
 
 log() {
-    case ${SUB} in
+    case ${PARAM1} in
         tomcat)
             log_tomcat
             ;;
@@ -412,6 +409,13 @@ prepare() {
     # toast config
     if [ ! -f "${CONFIG}" ]; then
         copy "${SHELL_DIR}/package/toast.txt" ${CONFIG} 644
+    fi
+
+    if [ "${PARAM1}" != "" ]; then
+        echo "PHASE=${PARAM1}" >> ${CONFIG}
+    fi
+    if [ "${PARAM2}" != "" ]; then
+        echo "FLEET=${PARAM2}" >> ${CONFIG}
     fi
 }
 
@@ -1035,7 +1039,7 @@ version_save() {
 version_remove() {
     echo "version remove..."
 
-    GROUP_PATH=`echo "${GROUP_ID}" | sed "s/\./\//"`
+    GROUP_PATH=`echo "${PARAM2}" | sed "s/\./\//"`
 
     if [ "${REPO_USER}" == "s3" ]; then
         aws s3 rm ${REPO_PATH}/${GROUP_PATH}/${ARTIFACT_ID}/${VERSION} --recursive
@@ -1103,6 +1107,12 @@ deploy_vhost() {
 
 deploy_project() {
     # "deploy project com.yanolja yanolja.deploy 0.0.2 php deploy.yanolja.com"
+
+    GROUP_ID="${PARAM2}"
+    ARTIFACT_ID="${PARAM3}"
+    VERSION="${PARAM4}"
+    TYPE="${PARAM5}"
+    DOMAIN="${PARAM6}"
 
     GROUP_PATH=`echo "${GROUP_ID}" | sed "s/\./\//"`
 
@@ -1221,7 +1231,7 @@ log_tomcat() {
 log_webapp() {
     TODAY=`date +%Y-%m-%d`
 
-    tail -f -n 500 "${SITE_DIR}/${SUB}/application/logs/log-${TODAY}.php"
+    tail -f -n 500 "${SITE_DIR}/${PARAM1}/application/logs/log-${TODAY}.php"
 }
 
 download() {
