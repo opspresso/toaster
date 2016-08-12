@@ -4,7 +4,7 @@
 ```
 sudo yum install -y git
 
-git clone https://github.com/nalbam-ya/toaster.git
+git clone https://github.com/yanolja/toaster.git
 
 ~/toaster/toast auto
 ```
@@ -15,7 +15,7 @@ git clone https://github.com/nalbam-ya/toaster.git
 
 yum install -y git
 
-runuser -l ec2-user -c 'git clone https://github.com/nalbam-ya/toaster.git'
+runuser -l ec2-user -c 'git clone https://github.com/yanolja/toaster.git'
 
 runuser -l ec2-user -c 'cp ~/toaster/package/toast.txt ~/.toast'
 
