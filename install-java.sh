@@ -56,7 +56,7 @@ URL5=$(echo ${URL4} | cut -d " " -f 1)
 
 JAVA=$(echo ${URL5} | cut -d "/" -f 8)
 if [[ -z "$JAVA" ]]; then
-    echo "Could not get JAVA - $JAVA"
+    echo "Could not get java - $JAVA"
     exit 1
 fi
 
