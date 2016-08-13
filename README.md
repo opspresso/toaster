@@ -28,3 +28,17 @@ runuser -l ec2-user -c '~/toaster/toast auto'
 ```
 cat /var/log/cloud-init-output.log
 ```
+
+### Deploy
+```
+~/toaster/toast deploy fleet
+~/toaster/toast deploy project com.yanolja yanolja.api 0.0.0 war
+~/toaster/toast deploy project com.yanolja yanolja.web 0.0.0 php web.yanolja.com
+```
+
+### Remote
+```
+~/toaster/remote user ip port auto
+~/toaster/remote user ip port init java8
+~/toaster/remote user ip port deploy fleet
+```
