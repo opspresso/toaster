@@ -156,7 +156,6 @@ usage() {
     echo " Usage: toast version save"
     echo_
     echo " Usage: toast deploy"
-    echo " Usage: toast deploy auto"
     echo " Usage: toast deploy vhost"
     echo " Usage: toast deploy fleet"
     echo " Usage: toast deploy project"
@@ -305,6 +304,7 @@ deploy() {
             ;;
         *)
             deploy_fleet
+            deploy_vhost
     esac
 }
 
