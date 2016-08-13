@@ -296,11 +296,11 @@ deploy() {
         vhost)
             deploy_vhost
             ;;
+        fleet)
+            deploy_fleet
+            ;;
         project)
             deploy_project
-            ;;
-        server)
-            deploy_fleet
             ;;
         *)
             deploy_fleet
