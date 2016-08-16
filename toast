@@ -1060,7 +1060,7 @@ deploy_vhost() {
 
     echo "download vhost..."
 
-    URL="${TOAST_URL}/target/vhost/${PHASE}/${FLEET}"
+    URL="${TOAST_URL}/target/vhost/${PHASE}/${FLEET}?token=${TOKEN}"
     wget -q -N -P "${TEMP_DIR}" "${URL}"
 
     VHOST_LIST="${TEMP_DIR}/${FLEET}"
@@ -1162,7 +1162,7 @@ deploy_fleet() {
     TARGET_FILE="${TEMP_DIR}/${FLEET}"
     ${SUDO} rm -rf "${TARGET_FILE}"
 
-    URL="${TOAST_URL}/target/fleet/${PHASE}/${FLEET}"
+    URL="${TOAST_URL}/target/deploy/${PHASE}/${FLEET}?token=${TOKEN}"
     wget -q -N -P "${TEMP_DIR}" "${URL}"
 
     echo "download..."
