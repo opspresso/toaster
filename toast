@@ -1240,8 +1240,8 @@ log_webapp() {
 download() {
     SOURCE="${REPO_PATH}/${GROUP_PATH}/${ARTIFACT_ID}/${VERSION}/${FILENAME}"
 
-    echo "--> from : ${SOURCE}"
-    echo "--> to   : ${TEMP_DIR}/${FILENAME}"
+    echo "--> from: ${SOURCE}"
+    echo "--> to  : ${TEMP_DIR}/${FILENAME}"
 
     if [ -d "${FILEPATH}" ] || [ -f "${FILEPATH}" ]; then
         rm -rf "${FILEPATH}"
