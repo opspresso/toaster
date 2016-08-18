@@ -1060,10 +1060,11 @@ deploy_vhost() {
 
     echo "download vhost..."
 
+    VHOST_LIST="${TEMP_DIR}/${FLEET}"
+    ${SUDO} rm -rf "${VHOST_LIST}"
+
     URL="${TOAST_URL}/target/vhost/${PHASE}/${FLEET}"
     wget -q -N --post-data "token=${TOKEN}" -P "${TEMP_DIR}" "${URL}"
-
-    VHOST_LIST="${TEMP_DIR}/${FLEET}"
 
     echo "placement vhost..."
 
@@ -1169,11 +1170,11 @@ deploy_fleet() {
 
     while read line
     do
-      TARGET=(${line})
+        TARGET=(${line})
 
-      deploy_value
+        deploy_value
 
-      download
+        download
     done < ${TARGET_FILE}
 
     tomcat_stop
@@ -1182,11 +1183,11 @@ deploy_fleet() {
 
     while read line
     do
-      TARGET=(${line})
+        TARGET=(${line})
 
-      deploy_value
+        deploy_value
 
-      placement
+        placement
     done < ${TARGET_FILE}
 
     tomcat_start
@@ -1239,8 +1240,8 @@ log_webapp() {
 download() {
     SOURCE="${REPO_PATH}/${GROUP_PATH}/${ARTIFACT_ID}/${VERSION}/${FILENAME}"
 
-    echo "--> from : ${SOURCE}"
-    echo "--> to   : ${TEMP_DIR}/${FILENAME}"
+    echo "--> from: ${SOURCE}"
+    echo "--> to  : ${TEMP_DIR}/${FILENAME}"
 
     if [ -d "${FILEPATH}" ] || [ -f "${FILEPATH}" ]; then
         rm -rf "${FILEPATH}"
