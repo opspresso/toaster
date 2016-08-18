@@ -1160,7 +1160,6 @@ deploy_fleet() {
     echo "download target..."
 
     TARGET_FILE="${TEMP_DIR}/${FLEET}"
-    ${SUDO} rm -rf "${TARGET_FILE}"
 
     URL="${TOAST_URL}/target/deploy/${PHASE}/${FLEET}"
     wget -q -N --post-data "token=${TOKEN}" -P "${TEMP_DIR}" "${URL}"
@@ -1169,11 +1168,11 @@ deploy_fleet() {
 
     while read line
     do
-      TARGET=(${line})
+        TARGET=(${line})
 
-      deploy_value
+        deploy_value
 
-      download
+        download
     done < ${TARGET_FILE}
 
     tomcat_stop
@@ -1182,11 +1181,11 @@ deploy_fleet() {
 
     while read line
     do
-      TARGET=(${line})
+        TARGET=(${line})
 
-      deploy_value
+        deploy_value
 
-      placement
+        placement
     done < ${TARGET_FILE}
 
     tomcat_start
