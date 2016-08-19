@@ -1198,10 +1198,6 @@ deploy_fleet() {
 
     tomcat_start
 
-    if [ "${HAS_APACHE}" == "TRUE" ]; then
-        deploy_vhost
-    fi
-
     echo_bar
 }
 
