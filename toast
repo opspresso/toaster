@@ -333,6 +333,9 @@ self_info() {
     echo_bar
     echo "PATH : $0"
     echo "HOME : ${HOME}"
+    echo "NAME : ${NAME}"
+    echo "PHASE : ${PHASE}"
+    echo "FLEET : ${FLEET}"
     echo_bar
 }
 
