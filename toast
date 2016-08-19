@@ -588,6 +588,8 @@ init_hosts() {
     RES=`curl -s --data "token=${TOKEN}" ${URL}`
 
     ${SUDO} echo "${RES}" > /etc/hosts
+
+    ${SUDO} echo "127.0.0.1 ${NAME}" >> /etc/hosts
 }
 
 init_profile() {
