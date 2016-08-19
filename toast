@@ -567,6 +567,7 @@ config_cron() {
 
     #crontab -l > ${TEMP_FILE}
 
+    echo "* 5 * * * ${SHELL_DIR}/toast update > /dev/null 2>&1" >> ${TEMP_FILE}
     echo "* * * * * ${SHELL_DIR}/toast health > /dev/null 2>&1" >> ${TEMP_FILE}
 
     crontab ${TEMP_FILE}
