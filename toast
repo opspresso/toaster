@@ -1184,6 +1184,7 @@ deploy_fleet() {
     done < ${TARGET_FILE}
 
     tomcat_stop
+    process_stop_all
 
     echo "placement..."
 
@@ -1399,6 +1400,14 @@ tomcat_start() {
 
         echo "tomcat start..."
         ${TOMCAT_DIR}/bin/startup.sh
+    fi
+}
+
+process_stop_all() {
+    PID=`ps -ef | grep "[j]ava" | grep "[-]jar" | awk '{print $2}'`
+    if [ "${PID}" != "" ]; then
+        kill -9 ${PID}
+        echo "killed (${PID})"
     fi
 }
 
