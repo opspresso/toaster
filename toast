@@ -390,8 +390,6 @@ prepare() {
         source ${BASHRC}
     fi
 
-    add_env "PROFILE" "${PHASE}"
-
     if [ "${REPO_USER}" != "" ]; then
         # settings.xml
         TARGET_FILE="${HOME}/.m2/settings.xml"
