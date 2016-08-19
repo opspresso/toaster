@@ -190,7 +190,7 @@ update() {
     self_info
     self_update
 
-    yum_update
+    #yum_update
 }
 
 health() {
@@ -946,10 +946,12 @@ init_php_ini() {
     TEMP_FILE="${TEMP_DIR}/toast-php.tmp.$$"
 
     # short_open_tag = On
-    sed "s/short\_open\_tag\ \=\ Off/short\_open\_tag\ \=\ On/g" ${PHP_INI} > ${TEMP_FILE} && ${SUDO} mv -f ${TEMP_FILE} ${PHP_INI}
+    sed "s/short\_open\_tag\ \=\ Off/short\_open\_tag\ \=\ On/g" ${PHP_INI} > ${TEMP_FILE}
+    ${SUDO} mv -f ${TEMP_FILE} ${PHP_INI}
 
     # date.timezone = Asia/Seoul
-    sed "s/\;date\.timezone\ \=/date\.timezone\ \=\ Asia\/Seoul/g" ${PHP_INI} > ${TEMP_FILE} && ${SUDO} mv -f ${TEMP_FILE} ${PHP_INI}
+    sed "s/\;date\.timezone\ \=/date\.timezone\ \=\ Asia\/Seoul/g" ${PHP_INI} > ${TEMP_FILE}
+    ${SUDO} mv -f ${TEMP_FILE} ${PHP_INI}
 }
 
 version_parse() {
@@ -1060,7 +1062,7 @@ deploy_vhost() {
     echo "download vhost..."
 
     VHOST_LIST="${TEMP_DIR}/${FLEET}"
-    ${SUDO} rm -rf "${VHOST_LIST}"
+    rm -rf "${VHOST_LIST}"
 
     URL="${TOAST_URL}/target/vhost/${PHASE}/${FLEET}"
     wget -q -N --post-data "token=${TOKEN}" -P "${TEMP_DIR}" "${URL}"
@@ -1160,7 +1162,7 @@ deploy_fleet() {
     echo "download target..."
 
     TARGET_FILE="${TEMP_DIR}/${FLEET}"
-    ${SUDO} rm -rf "${TARGET_FILE}"
+    rm -rf "${TARGET_FILE}"
 
     URL="${TOAST_URL}/target/deploy/${PHASE}/${FLEET}"
     wget -q -N --post-data "token=${TOKEN}" -P "${TEMP_DIR}" "${URL}"
