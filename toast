@@ -421,7 +421,7 @@ prepare() {
         echo "FLEET=${FLEET}" >> ${CONFIG}
     fi
 
-    add_env "PROFILE" "${PHASE}"
+    #add_env "PROFILE" "${PHASE}"
 }
 
 login() {
