@@ -3,7 +3,7 @@
 ############################################################
 
 function usage() {
-  echo "Usage: $0 {username} {host} {port:22}"
+  echo "Usage: $0 {user} {host} {port:22}"
 }
 
 ############################################################
@@ -12,7 +12,7 @@ BASEDIR=$(dirname $0)
 cd ${BASEDIR}
 
 USER=${1}
-SERVER=${2}
+HOST=${2}
 PORT=${3}
 
 CMD=${4}
@@ -24,7 +24,7 @@ VERSION=${8}
 TYPE=${9}
 DOMAIN=${10}
 
-if [ "${SERVER}" == "" ]; then
+if [ "${HOST}" == "" ]; then
   usage
   exit 1
 fi
@@ -35,7 +35,7 @@ fi
 
 COMMAND="~/toaster/toast ${CMD} ${SUB} ${GROUP_ID} ${ARTIFACT_ID} ${VERSION} ${TYPE} ${DOMAIN}"
 
-ssh ${USER}@${SERVER} -p ${PORT} "${COMMAND}"
+ssh ${USER}@${HOST} -p ${PORT} "${COMMAND}"
 
-# ~/toaster/remote user ip 22 deploy fleet
-# ~/toaster/remote user ip 22 deploy project com.yanolja yanolja.deploy 0.0.2 php deploy.yanolja.com
+# ~/toaster/remote user host port deploy fleet
+# ~/toaster/remote user host port deploy project com.yanolja yanolja.deploy 0.0.2 php deploy.yanolja.com
