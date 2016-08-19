@@ -37,5 +37,5 @@ COMMAND="~/toaster/toast ${CMD} ${SUB} ${GROUP_ID} ${ARTIFACT_ID} ${VERSION} ${T
 
 ssh ${USER}@${SERVER} -p ${PORT} "${COMMAND}"
 
-# ~/toaster/remote user ip 22 deploy fleet
-# ~/toaster/remote user ip 22 deploy project com.yanolja yanolja.deploy 0.0.2 php deploy.yanolja.com
+# ~/toaster/remote user host port deploy fleet
+# ~/toaster/remote user host port deploy project com.yanolja yanolja.deploy 0.0.2 php deploy.yanolja.com
