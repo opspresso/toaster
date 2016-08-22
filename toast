@@ -535,7 +535,7 @@ config_save() {
     ARR=(${RES})
 
     if [ "${ARR[0]}" != "OK" ]; then
-        echo "Server Error. [${RES}]"
+        echo "Server Error. [${URL}][${RES}]"
         exit 1
     fi
 
@@ -1001,7 +1001,7 @@ version_next() {
     ARR=(${RES})
 
     if [ "${ARR[0]}" != "OK" ]; then
-        echo "Server Error. [${RES}]"
+        echo "Server Error. [${URL}][${RES}]"
         exit 1
     fi
 
@@ -1039,7 +1039,7 @@ version_save() {
     ARR=(${RES})
 
     if [ "${ARR[0]}" != "OK" ]; then
-        echo "Server Error. [${RES}]"
+        echo "Server Error. [${URL}][${RES}]"
         exit 1
     fi
 
@@ -1359,7 +1359,7 @@ placement() {
     ARR=(${RES})
 
     if [ "${ARR[0]}" != "OK" ]; then
-        echo "Server Error. [${RES}]"
+        echo "Server Error. [${URL}][${RES}]"
     fi
 }
 
