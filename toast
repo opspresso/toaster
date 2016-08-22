@@ -1355,7 +1355,7 @@ placement() {
 
     # version status
     URL="${TOAST_URL}/version/deploy/${PHASE}/${ARTIFACT_ID}/${VERSION}"
-    RES=`curl -s ${URL}`
+    RES=`curl -s --data "token=${TOKEN}" ${URL}`
 }
 
 service_ctl() {
