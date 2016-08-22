@@ -1297,61 +1297,65 @@ download() {
 }
 
 placement() {
-  if [ "${DEPLOY_PATH}" == "" ]; then
-      echo "empty deploy path. [${DEPLOY_PATH}]"
-      exit 1
-  fi
-
-  echo "--> ${DEPLOY_PATH}"
-
-  # php
-  if [ "${TYPE}" == "php" ]; then
-    rm -rf "${DEPLOY_PATH}.backup"
-
-    if [ -d "${DEPLOY_PATH}" ] || [ -f "${DEPLOY_PATH}" ]; then
-        mv -f "${DEPLOY_PATH}" "${DEPLOY_PATH}.backup"
+    if [ "${DEPLOY_PATH}" == "" ]; then
+        echo "empty deploy path. [${DEPLOY_PATH}]"
+        exit 1
     fi
 
-    if [ -d "${DEPLOY_PATH}" ] || [ -f "${DEPLOY_PATH}" ]; then
-      echo "deploy dir can not copy. [${DEPLOY_PATH}]"
-      exit 1
+    echo "--> ${DEPLOY_PATH}"
+
+    # php
+    if [ "${TYPE}" == "php" ]; then
+        rm -rf "${DEPLOY_PATH}.backup"
+
+        if [ -d "${DEPLOY_PATH}" ] || [ -f "${DEPLOY_PATH}" ]; then
+            mv -f "${DEPLOY_PATH}" "${DEPLOY_PATH}.backup"
+        fi
+
+        if [ -d "${DEPLOY_PATH}" ] || [ -f "${DEPLOY_PATH}" ]; then
+            echo "deploy dir can not copy. [${DEPLOY_PATH}]"
+            exit 1
+        fi
+
+        mv -f "${UNZIP_DIR}" "${DEPLOY_PATH}"
     fi
 
-    mv -f "${UNZIP_DIR}" "${DEPLOY_PATH}"
-  fi
+    # war
+    if [ "${TYPE}" == "war" ]; then
+        DEST_WAR="${DEPLOY_PATH}/${ARTIFACT_ID}.${PACKAGING}"
 
-  # war
-  if [ "${TYPE}" == "war" ]; then
-    DEST_WAR="${DEPLOY_PATH}/${ARTIFACT_ID}.${PACKAGING}"
+        rm -rf "${DEPLOY_PATH}/${ARTIFACT_ID}"
+        rm -rf "${DEST_WAR}"
 
-    rm -rf "${DEPLOY_PATH}/${ARTIFACT_ID}"
-    rm -rf "${DEST_WAR}"
+        if [ -d "${DEST_WAR}" ] || [ -f "${DEST_WAR}" ]; then
+            echo "deploy file can not copy. [${DEST_WAR}]"
+            exit 1
+        fi
 
-    if [ -d "${DEST_WAR}" ] || [ -f "${DEST_WAR}" ]; then
-      echo "deploy file can not copy. [${DEST_WAR}]"
-      exit 1
+        cp -rf "${FILEPATH}" "${DEST_WAR}"
     fi
 
-    cp -rf "${FILEPATH}" "${DEST_WAR}"
-  fi
+    # jar
+    if [ "${TYPE}" == "jar" ]; then
+        DEST_WAR="${DEPLOY_PATH}/${ARTIFACT_ID}.${PACKAGING}"
 
-  # jar
-  if [ "${TYPE}" == "jar" ]; then
-    DEST_WAR="${DEPLOY_PATH}/${ARTIFACT_ID}.${PACKAGING}"
+        process_stop
 
-    process_stop
+        rm -rf "${DEST_WAR}"
 
-    rm -rf "${DEST_WAR}"
+        if [ -d "${DEST_WAR}" ] || [ -f "${DEST_WAR}" ]; then
+            echo "deploy file can not copy. [${DEST_WAR}]"
+            exit 1
+        fi
 
-    if [ -d "${DEST_WAR}" ] || [ -f "${DEST_WAR}" ]; then
-      echo "deploy file can not copy. [${DEST_WAR}]"
-      exit 1
+        cp -rf "${FILEPATH}" "${DEST_WAR}"
+
+        process_start
     fi
 
-    cp -rf "${FILEPATH}" "${DEST_WAR}"
-
-    process_start
-  fi
+    # version status
+    URL="${TOAST_URL}/version/deploy/${PHASE}/${ARTIFACT_ID}/${VERSION}"
+    RES=`curl -s ${URL}`
 }
 
 service_ctl() {
