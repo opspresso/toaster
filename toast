@@ -1356,6 +1356,11 @@ placement() {
     # version status
     URL="${TOAST_URL}/version/deploy/${PHASE}/${ARTIFACT_ID}/${VERSION}"
     RES=`curl -s --data "token=${TOKEN}" ${URL}`
+    ARR=(${RES})
+
+    if [ "${ARR[0]}" != "OK" ]; then
+        echo "Server Error. [${RES}]"
+    fi
 }
 
 service_ctl() {
