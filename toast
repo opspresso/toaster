@@ -411,6 +411,7 @@ prepare() {
     # toast config
     if [ ! -f "${CONFIG}" ]; then
         copy "${SHELL_DIR}/package/toast.txt" ${CONFIG} 644
+        . ${CONFIG}
     fi
 
     if [ "${PARAM1}" != "" ]; then
