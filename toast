@@ -69,7 +69,8 @@ fi
 TEMP_DIR="/tmp/deploy"
 
 HAS_APACHE="FALSE"
-HAS_TOMCAT="FALSE"
+HAS_WAR="FALSE"
+HAS_JAR="FALSE"
 
 SITE_DIR="/data/site"
 APPS_DIR="/data/apps"
@@ -1267,7 +1268,12 @@ download() {
 
     # war (for tomcat stop/start)
     if [ "${TYPE}" == "war" ]; then
-        HAS_TOMCAT="TRUE"
+        HAS_WAR="TRUE"
+    fi
+
+    # jar (for jar stop/start)
+    if [ "${TYPE}" == "jar" ]; then
+        HAS_JAR="true"
     fi
 
     # php unzip
@@ -1370,7 +1376,7 @@ service_ctl() {
 }
 
 tomcat_stop() {
-    if [ "${HAS_TOMCAT}" == "TRUE" ]; then
+    if [ "${HAS_WAR}" == "TRUE" ]; then
         status=`ps -ef | grep catalina | grep java | grep -v grep | wc -l | awk '{print $1}'`
         if [ ${status} -ge 1 ]; then
             echo "tomcat stop..."
@@ -1380,7 +1386,7 @@ tomcat_stop() {
 }
 
 tomcat_start() {
-    if [ "${HAS_TOMCAT}" == "TRUE" ]; then
+    if [ "${HAS_WAR}" == "TRUE" ]; then
         status=`ps -ef | grep catalina | grep java | grep -v grep | wc -l | awk '{print $1}'`
         count=0
         while [ ${status} -ge 1 ]; do
@@ -1404,10 +1410,12 @@ tomcat_start() {
 }
 
 process_stop_all() {
-    PID=`ps -ef | grep "[j]ava" | grep "[-]jar" | awk '{print $2}'`
-    if [ "${PID}" != "" ]; then
-        kill -9 ${PID}
-        echo "killed (${PID})"
+    if [ "${HAS_JAR}" == "TRUE" ]; then
+        PID=`ps -ef | grep "[j]ava" | grep "[-]jar" | awk '{print $2}'`
+        if [ "${PID}" != "" ]; then
+            kill -9 ${PID}
+            echo "killed (${PID})"
+        fi
     fi
 }
 
