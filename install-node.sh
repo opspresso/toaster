@@ -69,7 +69,7 @@ ${SUDO} ln -s "${NODE_HOME}/bin/node" /usr/bin/node
 ${SUDO} rm -f /usr/bin/npm
 ${SUDO} ln -s "${NODE_HOME}/bin/npm" /usr/bin/npm
 
-${SUDO} npm install pm2 -g
+${SUDO} npm install -g pm2
 
 ${SUDO} rm -f /usr/bin/pm2
 ${SUDO} ln -s "${NODE_HOME}/lib/node_modules/pm2/bin/pm2" /usr/bin/pm2
