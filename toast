@@ -357,7 +357,7 @@ prepare() {
 
     if [ ! -f "${HOME}/.toast_epel" ]; then
         if [ ! -f "/usr/bin/yum-config-manager" ]; then
-            ${SUDO} sudo yum install -y yum-utils
+            yum_install yum-utils
         fi
 
         # rpm -Uvh https://dl.fedoraproject.org/pub/epel/epel-release-latest-7.noarch.rpm
