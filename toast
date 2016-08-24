@@ -293,10 +293,10 @@ version() {
 
 lb() {
     case ${PARAM1} in
-        up)
+        u|up)
             lb_up
             ;;
-        down)
+        d|down)
             lb_down
             ;;
     esac
@@ -304,13 +304,13 @@ lb() {
 
 deploy() {
     case ${PARAM1} in
-        vhost)
+        v|vhost)
             deploy_vhost
             ;;
-        fleet)
+        f|fleet)
             deploy_fleet
             ;;
-        project)
+        p|project)
             deploy_project
             ;;
         *)
@@ -344,7 +344,7 @@ terminate() {
 
 log() {
     case ${PARAM1} in
-        tomcat)
+        t|tomcat)
             log_tomcat
             ;;
         *)
