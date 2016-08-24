@@ -802,6 +802,10 @@ init_nginx () {
     ${SUDO} cp -rf "${SHELL_DIR}/package/health.txt" "/usr/share/nginx/html/index.html"
     ${SUDO} cp -rf "${SHELL_DIR}/package/health.txt" "/usr/share/nginx/html/health.html"
 
+    make_dir "${SITE_DIR}"
+    make_dir "${SITE_DIR}/files" 777
+    make_dir "${SITE_DIR}/upload" 777
+
     echo_bar
     nginx -v
     echo_bar
