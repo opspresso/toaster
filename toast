@@ -799,6 +799,9 @@ init_nginx () {
         touch "${HOME}/.toast_nginx"
     fi
 
+    ${SUDO} cp -rf "${SHELL_DIR}/package/health.txt" "/usr/share/nginx/html/index.html"
+    ${SUDO} cp -rf "${SHELL_DIR}/package/health.txt" "/usr/share/nginx/html/health.html"
+
     echo_bar
     nginx -v
     echo_bar
