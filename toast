@@ -78,6 +78,8 @@ APPS_DIR="/data/apps"
 APACHE_VERSION="24"
 HTTPD_CONF_DIR="/etc/httpd/conf.d"
 
+NGINX_CONF_DIR="/etc/nginx/conf.d"
+
 TOMCAT_VER="8.0.36"
 TOMCAT_URL="http://mirror.apache-kr.org/tomcat/tomcat-8/v${TOMCAT_VER}/bin/apache-tomcat-${TOMCAT_VER}.zip"
 TOMCAT_DIR="${APPS_DIR}/tomcat8"
@@ -96,9 +98,6 @@ toast() {
         c|config)
             config
             ;;
-        h|health)
-            health
-            ;;
         i|init)
             init
             ;;
@@ -108,8 +107,14 @@ toast() {
         v|version)
             version
             ;;
+        b|lb)
+            lb
+            ;;
         d|deploy)
             deploy
+            ;;
+        h|health)
+            health
             ;;
         l|log)
             log
@@ -138,11 +143,11 @@ usage() {
     echo " Usage: toast config save"
     echo " Usage: toast config info"
     echo_
-    echo " Usage: toast health"
-    echo_
     echo " Usage: toast init"
     echo " Usage: toast init master"
     echo " Usage: toast init slave"
+    echo " Usage: toast init apache"
+    echo " Usage: toast init nginx"
     echo " Usage: toast init php5"
     echo " Usage: toast init php7"
     echo " Usage: toast init node"
@@ -160,6 +165,8 @@ usage() {
     echo " Usage: toast deploy vhost"
     echo " Usage: toast deploy fleet"
     echo " Usage: toast deploy project"
+    echo_
+    echo " Usage: toast health"
     echo_
     echo " Usage: toast terminate"
     echo_
@@ -194,20 +201,6 @@ update() {
     #yum_update
 }
 
-health() {
-    if [ "${SNO}" == "" ]; then
-        echo "Not configured server. [${SNO}]"
-        exit 1
-    fi
-
-    echo "server health..."
-
-    URL="${TOAST_URL}/server/health/${SNO}"
-    RES=`curl -s ${URL}`
-
-    echo "${RES}"
-}
-
 init() {
     case ${PARAM1} in
         master)
@@ -218,6 +211,12 @@ init() {
             ;;
         aws)
             init_aws
+            ;;
+        httpd|apache)
+            init_apache
+            ;;
+        nginx)
+            init_nginx
             ;;
         php5|php55)
             init_apache
@@ -292,6 +291,17 @@ version() {
     esac
 }
 
+lb() {
+    case ${PARAM1} in
+        up)
+            lb_up
+            ;;
+        down)
+            lb_down
+            ;;
+    esac
+}
+
 deploy() {
     case ${PARAM1} in
         vhost)
@@ -307,6 +317,20 @@ deploy() {
             deploy_fleet
             deploy_vhost
     esac
+}
+
+health() {
+    if [ "${SNO}" == "" ]; then
+        echo "Not configured server. [${SNO}]"
+        exit 1
+    fi
+
+    echo "server health..."
+
+    URL="${TOAST_URL}/server/health/${SNO}"
+    RES=`curl -s ${URL}`
+
+    echo "${RES}"
 }
 
 terminate() {
@@ -347,14 +371,21 @@ self_update() {
 }
 
 prepare() {
-    ${SUDO} rm -rf /etc/localtime
-    ${SUDO} ln -sf /usr/share/zoneinfo/Asia/Seoul /etc/localtime
-
     yum_install git
+    yum_install gcc
     yum_install curl
     yum_install wget
     yum_install unzip
 
+    # timezone
+    if [ ! -f "${HOME}/.toast_time" ]; then
+        ${SUDO} rm -rf /etc/localtime
+        ${SUDO} ln -sf /usr/share/zoneinfo/Asia/Seoul /etc/localtime
+
+        touch "${HOME}/.toast_time"
+    fi
+
+    # yum epel
     if [ ! -f "${HOME}/.toast_epel" ]; then
         if [ ! -f "/usr/bin/yum-config-manager" ]; then
             yum_install yum-utils
@@ -388,14 +419,15 @@ prepare() {
 
     ${SUDO} setenforce 0
 
+    # bashrc
     if [ "${SUDO}" != "" ]; then
         BASHRC="${HOME}/.bashrc"
         copy "${SHELL_DIR}/package/bashrc.txt" ${BASHRC} 644
         source ${BASHRC}
     fi
 
+    # settings.xml
     if [ "${REPO_USER}" != "" ]; then
-        # settings.xml
         TARGET_FILE="${HOME}/.m2/settings.xml"
         copy "${SHELL_DIR}/package/m2/settings.xml" "${TARGET_FILE}" 644
 
@@ -591,12 +623,12 @@ yum_install() {
 }
 
 init_hosts() {
+    ${SUDO} echo "127.0.0.1 ${NAME}" > /etc/hosts
+
     URL="${TOAST_URL}/phase/hosts/${PHASE}"
     RES=`curl -s --data "token=${TOKEN}" ${URL}`
 
-    ${SUDO} echo "${RES}" > /etc/hosts
-
-    ${SUDO} echo "127.0.0.1 ${NAME}" >> /etc/hosts
+    ${SUDO} echo "${RES}" >> /etc/hosts
 }
 
 init_profile() {
@@ -688,6 +720,9 @@ init_auto() {
             httpd|apache)
                 init_apache
                 ;;
+            nginx)
+                init_nginx
+                ;;
             php5|php55)
                 init_php55
                 ;;
@@ -757,6 +792,18 @@ init_apache() {
     echo_bar
 }
 
+init_nginx () {
+    if [ ! -f "${HOME}/.toast_nginx" ]; then
+        ${SUDO} yum install -y nginx
+
+        touch "${HOME}/.toast_nginx"
+    fi
+
+    echo_bar
+    nginx -v
+    echo_bar
+}
+
 init_webtatic() {
     if [ ! -f "${HOME}/.toast_webtatic" ]; then
         status=`${SUDO} yum list | grep php56 | wc -l | awk '{print $1}'`
@@ -767,9 +814,9 @@ init_webtatic() {
             else
                 ${SUDO} rpm -Uvh https://mirror.webtatic.com/yum/el6/latest.rpm
             fi
-
-            touch "${HOME}/.toast_webtatic"
         fi
+
+        touch "${HOME}/.toast_webtatic"
     fi
 }
 
@@ -780,9 +827,9 @@ init_php55() {
         status=`${SUDO} yum list | grep php55w | wc -l | awk '{print $1}'`
 
         if [ ${status} -ge 1 ]; then
-            ${SUDO} yum install -y php55w php55w-mysqlnd php55w-mcrypt php55w-gd php55w-mbstring
+            ${SUDO} yum install -y php55w php55w-mysqlnd php55w-mcrypt php55w-gd php55w-mbstring php55w-fpm
         else
-            ${SUDO} yum install -y php55 php55-mysqlnd php55-mcrypt php55-gd php55-mbstring
+            ${SUDO} yum install -y php55 php55-mysqlnd php55-mcrypt php55-gd php55-mbstring php55-fpm
         fi
 
         touch "${HOME}/.toast_php"
@@ -802,9 +849,9 @@ init_php56() {
         status=`${SUDO} yum list | grep php56w | wc -l | awk '{print $1}'`
 
         if [ ${status} -ge 1 ]; then
-            ${SUDO} yum install -y php56w php56w-mysqlnd php56w-mcrypt php56w-gd php56w-mbstring
+            ${SUDO} yum install -y php56w php56w-mysqlnd php56w-mcrypt php56w-gd php56w-mbstring php56w-fpm
         else
-            ${SUDO} yum install -y php56 php56-mysqlnd php56-mcrypt php56-gd php56-mbstring
+            ${SUDO} yum install -y php56 php56-mysqlnd php56-mcrypt php56-gd php56-mbstring php56-fpm
         fi
 
         touch "${HOME}/.toast_php"
@@ -824,9 +871,9 @@ init_php70() {
         status=`${SUDO} yum list | grep php70w | wc -l | awk '{print $1}'`
 
         if [ ${status} -ge 1 ]; then
-            ${SUDO} yum install -y php70w php70w-mysqlnd php70w-mcrypt php70w-gd php70w-mbstring
+            ${SUDO} yum install -y php70w php70w-mysqlnd php70w-mcrypt php70w-gd php70w-mbstring php70w-fpm
         else
-            ${SUDO} yum install -y php70 php70-mysqlnd php70-mcrypt php70-gd php70-mbstring
+            ${SUDO} yum install -y php70 php70-mysqlnd php70-mcrypt php70-gd php70-mbstring php70-fpm
         fi
 
         touch "${HOME}/.toast_php"
