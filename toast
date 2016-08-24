@@ -777,6 +777,8 @@ init_apache() {
             APACHE_VERSION="22"
         fi
 
+        service_ctl httpd start on
+
         echo "APACHE_VERSION=${APACHE_VERSION}" > "${HOME}/.toast_apache"
     fi
 
@@ -795,6 +797,8 @@ init_apache() {
 init_nginx () {
     if [ ! -f "${HOME}/.toast_nginx" ]; then
         ${SUDO} yum install -y nginx
+
+        service_ctl nginx start on
 
         touch "${HOME}/.toast_nginx"
     fi
@@ -958,7 +962,7 @@ init_mysql55() {
     if [ ! -f "${HOME}/.toast_mysql" ]; then
         ${SUDO} yum install -y mysql55-server
 
-        ${SUDO} chkconfig mysqld on
+        service_ctl mysqld start on
 
         touch "${HOME}/.toast_mysql"
     fi
@@ -968,7 +972,7 @@ init_mysql56() {
     if [ ! -f "${HOME}/.toast_mysql" ]; then
         ${SUDO} yum install -y mysql56-server
 
-        ${SUDO} chkconfig mysqld on
+        service_ctl mysqld start on
 
         touch "${HOME}/.toast_mysql"
     fi
@@ -978,7 +982,7 @@ init_redis() {
     if [ ! -f "${HOME}/.toast_redis" ]; then
         ${SUDO} yum install -y redis
 
-        service_ctl redis restart on
+        service_ctl redis start on
 
         touch "${HOME}/.toast_redis"
     fi
@@ -1130,7 +1134,7 @@ deploy_vhost() {
 
     echo "placement vhost..."
 
-    service_ctl httpd stop
+    #service_ctl httpd stop
 
     ${SUDO} rm -rf ${HTTPD_CONF_DIR}/localhost*
     ${SUDO} rm -rf ${HTTPD_CONF_DIR}/toast*
@@ -1165,7 +1169,8 @@ deploy_vhost() {
         sed "s/DOM/$DOM/g" ${TEMPLATE} > ${TEMP_FILE} && ${SUDO} mv -f ${TEMP_FILE} ${DEST_FILE}
     done < ${VHOST_LIST}
 
-    service_ctl httpd start
+    #service_ctl httpd start
+    service_ctl httpd graceful
 
     echo_bar
 }
