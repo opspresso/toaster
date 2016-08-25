@@ -800,8 +800,10 @@ init_apache() {
         echo "APACHE_VERSION=${APACHE_VERSION}" > "${HOME}/.toast_apache"
     fi
 
-    ${SUDO} cp -rf "${SHELL_DIR}/package/health.txt" "/var/www/html/index.html"
-    ${SUDO} cp -rf "${SHELL_DIR}/package/health.txt" "/var/www/html/health.html"
+    if [ -d "/var/www/html" ]; then
+        ${SUDO} cp -rf "${SHELL_DIR}/package/health.txt" "/var/www/html/index.html"
+        ${SUDO} cp -rf "${SHELL_DIR}/package/health.txt" "/var/www/html/health.html"
+    fi
 
     make_dir "${SITE_DIR}"
     make_dir "${SITE_DIR}/files" 777
@@ -823,8 +825,10 @@ init_nginx () {
         touch "${HOME}/.toast_nginx"
     fi
 
-    ${SUDO} cp -rf "${SHELL_DIR}/package/health.txt" "/usr/share/nginx/html/index.html"
-    ${SUDO} cp -rf "${SHELL_DIR}/package/health.txt" "/usr/share/nginx/html/health.html"
+    if [ -d "/usr/share/nginx/html" ]; then
+        ${SUDO} cp -rf "${SHELL_DIR}/package/health.txt" "/usr/share/nginx/html/index.html"
+        ${SUDO} cp -rf "${SHELL_DIR}/package/health.txt" "/usr/share/nginx/html/health.html"
+    fi
 
     make_dir "${SITE_DIR}"
     make_dir "${SITE_DIR}/files" 777
