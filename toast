@@ -78,7 +78,7 @@ APPS_DIR="/data/apps"
 APACHE_VERSION="24"
 HTTPD_CONF_DIR="/etc/httpd/conf.d"
 
-NGINX_CONF_DIR="/etc/nginx/conf.d"
+NGINX_CONF_DIR="/usr/local/nginx/conf"
 
 TOMCAT_VER="8.0.36"
 TOMCAT_URL="http://mirror.apache-kr.org/tomcat/tomcat-8/v${TOMCAT_VER}/bin/apache-tomcat-${TOMCAT_VER}.zip"
@@ -1167,7 +1167,7 @@ lb_up() {
         TEMP_FILE="${TEMP_DIR}/toast-nginx.tmp.$$"
         NGINX_CONF="${NGINX_CONF_DIR}/nginx.conf"
 
-        sed "s/\#server\s12.0.0.147\:80/ server 12.0.0.147:80/g" ${NGINX_CONF} > ${TEMP_FILE} && ${SUDO} mv -f ${TEMP_FILE} ${NGINX_CONF}
+        sed "s/\#server\s$PARAM2\:80/ server $PARAM2:80/g" ${NGINX_CONF} > ${TEMP_FILE} && ${SUDO} mv -f ${TEMP_FILE} ${NGINX_CONF}
 
         service_ctl nginx reload
     fi
@@ -1182,7 +1182,7 @@ lb_down() {
         TEMP_FILE="${TEMP_DIR}/toast-nginx.tmp.$$"
         NGINX_CONF="${NGINX_CONF_DIR}/nginx.conf"
 
-        sed "s/\sserver\s12.0.0.147:80/#server 12.0.0.147:80/g" ${NGINX_CONF} > ${TEMP_FILE} && ${SUDO} mv -f ${TEMP_FILE} ${NGINX_CONF}
+        sed "s/\sserver\s$PARAM2:80/#server $PARAM2:80/g" ${NGINX_CONF} > ${TEMP_FILE} && ${SUDO} mv -f ${TEMP_FILE} ${NGINX_CONF}
 
         service_ctl nginx reload
     fi
