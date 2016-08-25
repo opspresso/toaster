@@ -1182,7 +1182,7 @@ lb_down() {
         TEMP_FILE="${TEMP_DIR}/toast-nginx.tmp.$$"
         NGINX_CONF="${NGINX_CONF_DIR}/nginx.conf"
 
-        sed "s/\sserver\s$PARAM2:80/#server $PARAM2:80/g" ${NGINX_CONF} > ${TEMP_FILE} && ${SUDO} mv -f ${TEMP_FILE} ${NGINX_CONF}
+        sed "s/\sserver\s$PARAM2\:80/#server $PARAM2:80/g" ${NGINX_CONF} > ${TEMP_FILE} && ${SUDO} mv -f ${TEMP_FILE} ${NGINX_CONF}
 
         service_ctl nginx reload
     fi
