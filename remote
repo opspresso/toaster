@@ -33,10 +33,7 @@ if [ "${PORT}" == "" ]; then
   PORT=22
 fi
 
-COMMAND="~/toaster/toast ${CMD} ${SUB} ${PARAM1} ${PARAM2} ${PARAM3} ${PARAM4} ${PARAM5}"
-
-ssh -t ${USER}@${HOST} -p ${PORT} "whoami"
-ssh -t ${USER}@${HOST} -p ${PORT} "sudo whoami"
+COMMAND="/home/yanolja/toaster/toast ${CMD} ${SUB} ${PARAM1} ${PARAM2} ${PARAM3} ${PARAM4} ${PARAM5}"
 
 ssh -t ${USER}@${HOST} -p ${PORT} "${COMMAND}"
 
