@@ -447,6 +447,13 @@ prepare() {
     # toast config
     if [ ! -f "${CONFIG}" ]; then
         copy "${SHELL_DIR}/package/toast.txt" ${CONFIG} 644
+
+        URL="${TOAST_URL}/config/key/toast"
+        RES=`curl -s ${URL}`
+        if [ "${RES}" != "" ]; then
+            echo "${RES}" >> ${CONFIG}
+        fi
+
         . ${CONFIG}
     fi
 
