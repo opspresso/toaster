@@ -475,7 +475,7 @@ login() {
     if [ "${ARR[0]}" != "OK" ]; then
         echo "Server Error. [${LOGIN_URL}][${RES}]"
     else
-        TOKEN="${ARR[0]}"
+        TOKEN="${ARR[1]}"
     fi
 }
 
