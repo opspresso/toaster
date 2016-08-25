@@ -161,6 +161,10 @@ usage() {
     echo " Usage: toast version next"
     echo " Usage: toast version save"
     echo_
+    echo " Usage: toast lb"
+    echo " Usage: toast lb up"
+    echo " Usage: toast lb down"
+    echo_
     echo " Usage: toast deploy"
     echo " Usage: toast deploy vhost"
     echo " Usage: toast deploy fleet"
@@ -761,6 +765,8 @@ init_apache() {
     HAS_APACHE="TRUE"
 
     if [ ! -f "${HOME}/.toast_apache" ]; then
+        echo "init httpd..."
+
         status=`${SUDO} yum list | grep httpd24 | wc -l | awk '{print $1}'`
 
         if [ ${status} -ge 1 ]; then
@@ -796,6 +802,8 @@ init_apache() {
 
 init_nginx () {
     if [ ! -f "${HOME}/.toast_nginx" ]; then
+        echo "init nginx..."
+
         ${SUDO} yum install -y nginx
 
         service_ctl nginx start on
@@ -835,6 +843,8 @@ init_php55() {
     init_webtatic
 
     if [ ! -f "${HOME}/.toast_php" ]; then
+        echo "init php55..."
+
         status=`${SUDO} yum list | grep php55w | wc -l | awk '{print $1}'`
 
         if [ ${status} -ge 1 ]; then
@@ -857,6 +867,8 @@ init_php56() {
     init_webtatic
 
     if [ ! -f "${HOME}/.toast_php" ]; then
+        echo "init php56..."
+
         status=`${SUDO} yum list | grep php56w | wc -l | awk '{print $1}'`
 
         if [ ${status} -ge 1 ]; then
@@ -879,6 +891,8 @@ init_php70() {
     init_webtatic
 
     if [ ! -f "${HOME}/.toast_php" ]; then
+        echo "init php70..."
+
         status=`${SUDO} yum list | grep php70w | wc -l | awk '{print $1}'`
 
         if [ ${status} -ge 1 ]; then
@@ -899,6 +913,8 @@ init_php70() {
 
 init_node4() {
     if [ ! -f "${HOME}/.toast_node" ]; then
+        echo "init node..."
+
         ${SHELL_DIR}/install-node.sh
 
         NODE_HOME=$(dirname $(dirname $(readlink -f $(which node))))
@@ -918,6 +934,8 @@ init_node4() {
 
 init_java8() {
     if [ ! -f "${HOME}/.toast_java" ]; then
+        echo "init java..."
+
         ${SHELL_DIR}/install-java.sh
 
         JAVA_HOME=$(dirname $(dirname $(readlink -f $(which java))))
@@ -942,6 +960,8 @@ init_java8() {
 
 init_tomcat8() {
     if [ ! -f "${HOME}/.toast_tomcat" ]; then
+        echo "init tomcat..."
+
         TOMCAT_FILE="apache-tomcat-${TOMCAT_VER}.zip"
 
         wget -q -N -P "${APPS_DIR}" "${TOMCAT_URL}"
@@ -960,6 +980,8 @@ init_tomcat8() {
 
 init_mysql55() {
     if [ ! -f "${HOME}/.toast_mysql" ]; then
+        echo "init mysql55..."
+
         ${SUDO} yum install -y mysql55-server
 
         service_ctl mysqld start on
@@ -970,6 +992,8 @@ init_mysql55() {
 
 init_mysql56() {
     if [ ! -f "${HOME}/.toast_mysql" ]; then
+        echo "init mysql56..."
+
         ${SUDO} yum install -y mysql56-server
 
         service_ctl mysqld start on
@@ -980,6 +1004,8 @@ init_mysql56() {
 
 init_redis() {
     if [ ! -f "${HOME}/.toast_redis" ]; then
+        echo "init redis..."
+
         ${SUDO} yum install -y redis
 
         service_ctl redis start on
@@ -990,6 +1016,8 @@ init_redis() {
 
 init_rabbitmq() {
     if [ ! -f "${HOME}/.toast_rabbitmq" ]; then
+        echo "init rabbitmq..."
+
         #wget -q -N -P "${HOME}" https://packages.erlang-solutions.com/erlang/esl-erlang/FLAVOUR_1_general/esl-erlang_19.0~centos~6_amd64.rpm
         #wget -q -N -P "${HOME}" https://www.rabbitmq.com/releases/rabbitmq-server/v3.6.4/rabbitmq-server-3.6.4-1.noarch.rpm
 
@@ -1114,6 +1142,16 @@ version_remove() {
     fi
 
     rm -rf ~/.m2/repository/${GROUP_PATH}/${ARTIFACT_ID}/${VERSION}
+}
+
+lb_up() {
+    echo "lb up..."
+
+}
+
+lb_down() {
+    echo "lb down..."
+
 }
 
 deploy_vhost() {
