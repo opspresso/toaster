@@ -463,22 +463,20 @@ prepare() {
 login() {
     echo "Please input yanolja id."
     read YAJA_ID
-    if [ "${YAJA_ID}" == "" ]; then
-        exit 1
-    fi
 
     echo "Please input yanolja password."
     read YAJA_PW
-    if [ "${YAJA_PW}" == "" ]; then
-        exit 1
-    fi
 
     echo "yanolja login..."
 
     RES=`curl -s --data "id=${YAJA_ID}&passwd=${YAJA_PW}" ${LOGIN_URL}`
     ARR=(${RES})
 
-    TOKEN="${ARR[0]}"
+    if [ "${ARR[0]}" != "OK" ]; then
+        echo "Server Error. [${LOGIN_URL}][${RES}]"
+    else
+        TOKEN="${ARR[0]}"
+    fi
 }
 
 config_auto() {
@@ -553,12 +551,11 @@ config_read() {
 config_info() {
     if [ ! -f "${CONFIG}" ]; then
         echo "Not exist file. [${CONFIG}]"
-        exit 1
+    else
+        echo_bar
+        cat ${CONFIG}
+        echo_bar
     fi
-
-    echo_bar
-    cat ${CONFIG}
-    echo_bar
 }
 
 config_save() {
@@ -570,7 +567,6 @@ config_save() {
 
     if [ "${ARR[0]}" != "OK" ]; then
         echo "Server Error. [${URL}][${RES}]"
-        exit 1
     fi
 
     if [ "${ARR[1]}" != "" ]; then
@@ -625,19 +621,25 @@ yum_install() {
 }
 
 init_hosts() {
-    ${SUDO} echo "127.0.0.1 ${NAME}" > /etc/hosts
+    ${SUDO} echo "# yanolja hosts" > /etc/hosts
+    ${SUDO} echo "127.0.0.1 ${NAME}" >> /etc/hosts
+    ${SUDO} echo "127.0.0.1 localhost localhost.localdomain" >> /etc/hosts
 
     URL="${TOAST_URL}/phase/hosts/${PHASE}"
     RES=`curl -s --data "token=${TOKEN}" ${URL}`
 
-    ${SUDO} echo "${RES}" >> /etc/hosts
+    if [ "${RES}" != "" ]; then
+        ${SUDO} echo "${RES}" >> /etc/hosts
+    fi
 }
 
 init_profile() {
     URL="${TOAST_URL}/phase/profile/${PHASE}"
     RES=`curl -s --data "token=${TOKEN}" ${URL}`
 
-    ${SUDO} echo "${RES}" > ${HOME}/.toast_profile
+    if [ "${RES}" != "" ]; then
+        ${SUDO} echo "${RES}" > ${HOME}/.toast_profile
+    fi
 }
 
 init_aws() {
@@ -651,11 +653,15 @@ init_aws() {
 
     URL="${TOAST_URL}/config/key/aws_access_key_id"
     RES=`curl -s --data "token=${TOKEN}" ${URL}`
-    sed "s/AWS_ACCESS_KEY/$RES/g" ${DEST_FILE} > ${TEMP_FILE} && ${SUDO} mv -f ${TEMP_FILE} ${DEST_FILE}
+    if [ "${RES}" != "" ]; then
+        sed "s/AWS_ACCESS_KEY/$RES/g" ${DEST_FILE} > ${TEMP_FILE} && ${SUDO} mv -f ${TEMP_FILE} ${DEST_FILE}
+    fi
 
     URL="${TOAST_URL}/config/key/aws_secret_access_key"
     RES=`curl -s --data "token=${TOKEN}" ${URL}`
-    sed "s/AWS_SECRET_KEY/$RES/g" ${DEST_FILE} > ${TEMP_FILE} && ${SUDO} mv -f ${TEMP_FILE} ${DEST_FILE}
+    if [ "${RES}" != "" ]; then
+        sed "s/AWS_SECRET_KEY/$RES/g" ${DEST_FILE} > ${TEMP_FILE} && ${SUDO} mv -f ${TEMP_FILE} ${DEST_FILE}
+    fi
 
     if [ ! -f "/usr/bin/aws" ]; then
         if [ ! -f "${HOME}/.toast_awscli" ]; then
@@ -681,8 +687,10 @@ init_master() {
     URL="${TOAST_URL}/config/key/rsa_private_key"
     RES=`curl -s --data "token=${TOKEN}" ${URL}`
 
-    echo "${RES}" > ${ID_RSA}
-    chmod 600 ${ID_RSA}
+    if [ "${RES}" != "" ]; then
+        echo "${RES}" > ${ID_RSA}
+        chmod 600 ${ID_RSA}
+    fi
 }
 
 init_slave() {
@@ -691,24 +699,26 @@ init_slave() {
     URL="${TOAST_URL}/config/key/rsa_public_key"
     RES=`curl -s --data "token=${TOKEN}" ${URL}`
 
-    IS_KEY="false"
+    if [ "${RES}" != "" ]; then
+        IS_KEY="false"
 
-    if [ ! -f "${AUTH_KEYS}" ]; then
-        touch ${AUTH_KEYS}
-    else
-        while read line
-        do
-            VAL=(${line})
+        if [ ! -f ${AUTH_KEYS} ]; then
+            touch ${AUTH_KEYS}
+        else
+            while read line
+            do
+                VAL=(${line})
 
-            if [ "${VAL[2]}" == "toast@yanolja.in" ]; then
-                IS_KEY="true"
-            fi
-        done < ${AUTH_KEYS}
-    fi
+                if [ "${VAL[2]}" == "toast@yanolja.in" ]; then
+                    IS_KEY="true"
+                fi
+            done < ${AUTH_KEYS}
+        fi
 
-    if [ "${IS_KEY}" == "false" ]; then
-        echo "${RES}" >> ${AUTH_KEYS}
-        chmod 700 ${AUTH_KEYS}
+        if [ "${IS_KEY}" == "false" ]; then
+            echo "${RES}" >> ${AUTH_KEYS}
+            chmod 700 ${AUTH_KEYS}
+        fi
     fi
 }
 
@@ -1086,29 +1096,28 @@ version_next() {
 
     if [ "${ARR[0]}" != "OK" ]; then
         echo "Server Error. [${URL}][${RES}]"
-        exit 1
-    fi
-
-    NEXT_VERSION="${ARR[1]}"
-
-    echo "${NEXT_VERSION}"
-
-    VER1="<version>[\.0-9a-zA-Z]\+<\/version>"
-    VER2="<version>${NEXT_VERSION}<\/version>"
-
-    TEMP_FILE="${TEMP_DIR}/toast-pom.tmp.$$"
-
-    if [ -f ${DEST_FILE} -a -r ${DEST_FILE} ]; then
-        sed "s/$VER1/$VER2/;10q;" ${DEST_FILE} > ${TEMP_FILE}
-        sed "1,10d" ${DEST_FILE} >> ${TEMP_FILE}
-
-        mv -f ${TEMP_FILE} ${DEST_FILE}
     else
-        echo "Error - Read Fail : ${DEST_FILE}"
-        exit 1
-    fi
+        NEXT_VERSION="${ARR[1]}"
 
-    VERSION=NEXT_VERSION
+        echo "${NEXT_VERSION}"
+
+        VER1="<version>[\.0-9a-zA-Z]\+<\/version>"
+        VER2="<version>${NEXT_VERSION}<\/version>"
+
+        TEMP_FILE="${TEMP_DIR}/toast-pom.tmp.$$"
+
+        if [ -f ${DEST_FILE} -a -r ${DEST_FILE} ]; then
+            sed "s/$VER1/$VER2/;10q;" ${DEST_FILE} > ${TEMP_FILE}
+            sed "1,10d" ${DEST_FILE} >> ${TEMP_FILE}
+
+            mv -f ${TEMP_FILE} ${DEST_FILE}
+        else
+            echo "Error - Read Fail : ${DEST_FILE}"
+            exit 1
+        fi
+
+        VERSION=NEXT_VERSION
+    fi
 }
 
 version_save() {
@@ -1124,10 +1133,9 @@ version_save() {
 
     if [ "${ARR[0]}" != "OK" ]; then
         echo "Server Error. [${URL}][${RES}]"
-        exit 1
+    else
+        echo "${ARR[1]}"
     fi
-
-    echo "${ARR[1]}"
 }
 
 version_remove() {
@@ -1153,60 +1161,61 @@ lb_down() {
 }
 
 deploy_vhost() {
-    if [ ! -d "${HTTPD_CONF_DIR}" ]; then
-        echo "Need web server init. [toast init httpd]"
-        exit 1
-    fi
-
     echo_bar
 
-    echo "download vhost..."
+    if [ ! -d "${HTTPD_CONF_DIR}" ]; then
+        echo "not found httpd conf dir. [${HTTPD_CONF_DIR}]"
+    else
+        echo "download vhost..."
 
-    VHOST_LIST="${TEMP_DIR}/${FLEET}"
-    rm -rf "${VHOST_LIST}"
+        VHOST_LIST="${TEMP_DIR}/${FLEET}"
+        rm -rf ${VHOST_LIST}
 
-    URL="${TOAST_URL}/target/vhost/${PHASE}/${FLEET}"
-    wget -q -N --post-data "token=${TOKEN}" -P "${TEMP_DIR}" "${URL}"
+        URL="${TOAST_URL}/target/vhost/${PHASE}/${FLEET}"
+        wget -q -N --post-data "token=${TOKEN}" -P "${TEMP_DIR}" "${URL}"
 
-    echo "placement vhost..."
+        if [ -f ${VHOST_LIST} ]; then
+            echo "placement vhost..."
 
-    #service_ctl httpd stop
+            #service_ctl httpd stop
 
-    ${SUDO} rm -rf ${HTTPD_CONF_DIR}/localhost*
-    ${SUDO} rm -rf ${HTTPD_CONF_DIR}/toast*
+            ${SUDO} rm -rf ${HTTPD_CONF_DIR}/localhost*
+            ${SUDO} rm -rf ${HTTPD_CONF_DIR}/toast*
 
-    TOAST_APACHE="${HOME}/.toast_apache"
-    if [ -f "${TOAST_APACHE}" ]; then
-        . ${TOAST_APACHE}
+            TOAST_APACHE="${HOME}/.toast_apache"
+            if [ -f "${TOAST_APACHE}" ]; then
+                . ${TOAST_APACHE}
+            fi
+            if [ "${APACHE_VERSION}" == "" ]; then
+                APACHE_VERSION="24"
+            fi
+
+            # localhost
+            copy "${SHELL_DIR}/package/vhost/${APACHE_VERSION}/localhost.conf" "${HTTPD_CONF_DIR}/localhost.conf" 644
+
+            TEMPLATE="${SHELL_DIR}/package/vhost/${APACHE_VERSION}/vhost.conf"
+            TEMP_FILE="${TEMP_DIR}/toast-vhost.tmp.$$"
+
+            while read line
+            do
+                TARGET=(${line})
+
+                DOM="${TARGET[0]}"
+
+                make_dir "${SITE_DIR}/${DOM}"
+
+                DEST_FILE="${HTTPD_CONF_DIR}/toast-${DOM}.conf"
+
+                echo "--> ${DEST_FILE}"
+
+                # vhost
+                sed "s/DOM/$DOM/g" ${TEMPLATE} > ${TEMP_FILE} && ${SUDO} mv -f ${TEMP_FILE} ${DEST_FILE}
+            done < ${VHOST_LIST}
+
+            #service_ctl httpd start
+            service_ctl httpd graceful
+        fi
     fi
-    if [ "${APACHE_VERSION}" == "" ]; then
-        APACHE_VERSION="24"
-    fi
-
-    # localhost
-    copy "${SHELL_DIR}/package/vhost/${APACHE_VERSION}/localhost.conf" "${HTTPD_CONF_DIR}/localhost.conf" 644
-
-    TEMPLATE="${SHELL_DIR}/package/vhost/${APACHE_VERSION}/vhost.conf"
-    TEMP_FILE="${TEMP_DIR}/toast-vhost.tmp.$$"
-
-    while read line
-    do
-        TARGET=(${line})
-
-        DOM="${TARGET[0]}"
-
-        make_dir "${SITE_DIR}/${DOM}"
-
-        DEST_FILE="${HTTPD_CONF_DIR}/toast-${DOM}.conf"
-
-        echo "--> ${DEST_FILE}"
-
-        # vhost
-        sed "s/DOM/$DOM/g" ${TEMPLATE} > ${TEMP_FILE} && ${SUDO} mv -f ${TEMP_FILE} ${DEST_FILE}
-    done < ${VHOST_LIST}
-
-    #service_ctl httpd start
-    service_ctl httpd graceful
 
     echo_bar
 }
@@ -1264,7 +1273,7 @@ deploy_fleet() {
     echo "download target..."
 
     TARGET_FILE="${TEMP_DIR}/${FLEET}"
-    rm -rf "${TARGET_FILE}"
+    rm -rf ${TARGET_FILE}
 
     URL="${TOAST_URL}/target/deploy/${PHASE}/${FLEET}"
     wget -q -N --post-data "token=${TOKEN}" -P "${TEMP_DIR}" "${URL}"
@@ -1351,44 +1360,37 @@ download() {
 
     if [ ! -f "${FILEPATH}" ]; then
         echo "deploy file does not exist. [${FILEPATH}]"
-        exit 1
-    fi
-
-    # war (for tomcat stop/start)
-    if [ "${TYPE}" == "war" ]; then
-        HAS_WAR="TRUE"
-    fi
-
-    # jar (for jar stop/start)
-    if [ "${TYPE}" == "jar" ]; then
-        HAS_JAR="true"
-    fi
-
-    # php unzip
-    if [ "${TYPE}" == "php" ]; then
-        if [ -d "${UNZIP_DIR}" ] || [ -f "${UNZIP_DIR}" ]; then
-            rm -rf "${UNZIP_DIR}"
+    else
+        # war (for tomcat stop/start)
+        if [ "${TYPE}" == "war" ]; then
+            HAS_WAR="TRUE"
         fi
 
-        if [ -d "${UNZIP_DIR}" ] || [ -f "${UNZIP_DIR}" ]; then
-            echo "deploy file can not unzip. [${UNZIP_DIR}]"
-            exit 1
+        # jar (for jar stop/start)
+        if [ "${TYPE}" == "jar" ]; then
+            HAS_JAR="true"
         fi
 
-        unzip -q "${FILEPATH}" -d "${UNZIP_DIR}"
+        # php unzip
+        if [ "${TYPE}" == "php" ]; then
+            if [ -d "${UNZIP_DIR}" ] || [ -f "${UNZIP_DIR}" ]; then
+                rm -rf "${UNZIP_DIR}"
+            fi
 
-        if [ -d "${UNZIP_DIR}/application/logs" ]; then
-            chmod 777 "${UNZIP_DIR}/application/logs"
+            if [ -d "${UNZIP_DIR}" ] || [ -f "${UNZIP_DIR}" ]; then
+                echo "deploy file can not unzip. [${UNZIP_DIR}]"
+            else
+                unzip -q "${FILEPATH}" -d "${UNZIP_DIR}"
+
+                if [ -d "${UNZIP_DIR}/application/logs" ]; then
+                    chmod 777 "${UNZIP_DIR}/application/logs"
+                fi
+            fi
         fi
     fi
 }
 
 placement() {
-    if [ "${DEPLOY_PATH}" == "" ]; then
-        echo "empty deploy path. [${DEPLOY_PATH}]"
-        exit 1
-    fi
-
     echo "--> ${DEPLOY_PATH}"
 
     # php
@@ -1401,10 +1403,9 @@ placement() {
 
         if [ -d "${DEPLOY_PATH}" ] || [ -f "${DEPLOY_PATH}" ]; then
             echo "deploy dir can not copy. [${DEPLOY_PATH}]"
-            exit 1
+        else
+            mv -f "${UNZIP_DIR}" "${DEPLOY_PATH}"
         fi
-
-        mv -f "${UNZIP_DIR}" "${DEPLOY_PATH}"
     fi
 
     # war
@@ -1416,28 +1417,24 @@ placement() {
 
         if [ -d "${DEST_WAR}" ] || [ -f "${DEST_WAR}" ]; then
             echo "deploy file can not copy. [${DEST_WAR}]"
-            exit 1
+        else
+            cp -rf "${FILEPATH}" "${DEST_WAR}"
         fi
-
-        cp -rf "${FILEPATH}" "${DEST_WAR}"
     fi
 
     # jar
     if [ "${TYPE}" == "jar" ]; then
         DEST_WAR="${DEPLOY_PATH}/${ARTIFACT_ID}.${PACKAGING}"
 
-        process_stop
-
         rm -rf "${DEST_WAR}"
 
         if [ -d "${DEST_WAR}" ] || [ -f "${DEST_WAR}" ]; then
             echo "deploy file can not copy. [${DEST_WAR}]"
-            exit 1
+        else
+            process_stop
+            cp -rf "${FILEPATH}" "${DEST_WAR}"
+            process_start
         fi
-
-        cp -rf "${FILEPATH}" "${DEST_WAR}"
-
-        process_start
     fi
 
     # version status
