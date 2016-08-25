@@ -436,8 +436,8 @@ prepare() {
         copy "${SHELL_DIR}/package/m2/settings.xml" "${TARGET_FILE}" 644
 
         TEMP_FILE="${TEMP_DIR}/settings.tmp"
-        sed "s/REPO_USER/$REPO_USER/g" ${TARGET_FILE} > ${TEMP_FILE} && mv -f ${TEMP_FILE} ${TARGET_FILE}
-        sed "s/REPO_PASS/$REPO_PASS/g" ${TARGET_FILE} > ${TEMP_FILE} && mv -f ${TEMP_FILE} ${TARGET_FILE}
+        sed "s/REPO_USER/$REPO_USER/g" ${TARGET_FILE} > ${TEMP_FILE} && copy ${TEMP_FILE} ${TARGET_FILE}
+        sed "s/REPO_PASS/$REPO_PASS/g" ${TARGET_FILE} > ${TEMP_FILE} && copy ${TEMP_FILE} ${TARGET_FILE}
     fi
 
     # ssh config
@@ -660,13 +660,13 @@ init_aws() {
     URL="${TOAST_URL}/config/key/aws_access_key_id"
     RES=`curl -s --data "token=${TOKEN}" ${URL}`
     if [ "${RES}" != "" ]; then
-        sed "s/AWS_ACCESS_KEY/$RES/g" ${DEST_FILE} > ${TEMP_FILE} && ${SUDO} mv -f ${TEMP_FILE} ${DEST_FILE}
+        sed "s/AWS_ACCESS_KEY/$RES/g" ${DEST_FILE} > ${TEMP_FILE} && copy ${TEMP_FILE} ${DEST_FILE}
     fi
 
     URL="${TOAST_URL}/config/key/aws_secret_access_key"
     RES=`curl -s --data "token=${TOKEN}" ${URL}`
     if [ "${RES}" != "" ]; then
-        sed "s/AWS_SECRET_KEY/$RES/g" ${DEST_FILE} > ${TEMP_FILE} && ${SUDO} mv -f ${TEMP_FILE} ${DEST_FILE}
+        sed "s/AWS_SECRET_KEY/$RES/g" ${DEST_FILE} > ${TEMP_FILE} && copy ${TEMP_FILE} ${DEST_FILE}
     fi
 
     if [ ! -f "/usr/bin/aws" ]; then
@@ -801,8 +801,8 @@ init_apache() {
     fi
 
     if [ -d "/var/www/html" ]; then
-        ${SUDO} cp -rf "${SHELL_DIR}/package/health.txt" "/var/www/html/index.html"
-        ${SUDO} cp -rf "${SHELL_DIR}/package/health.txt" "/var/www/html/health.html"
+        copy "${SHELL_DIR}/package/health.txt" "/var/www/html/index.html"
+        copy "${SHELL_DIR}/package/health.txt" "/var/www/html/health.html"
     fi
 
     make_dir "${SITE_DIR}"
@@ -826,8 +826,8 @@ init_nginx () {
     fi
 
     if [ -d "/usr/share/nginx/html" ]; then
-        ${SUDO} cp -rf "${SHELL_DIR}/package/health.txt" "/usr/share/nginx/html/index.html"
-        ${SUDO} cp -rf "${SHELL_DIR}/package/health.txt" "/usr/share/nginx/html/health.html"
+        copy "${SHELL_DIR}/package/health.txt" "/usr/share/nginx/html/index.html"
+        copy "${SHELL_DIR}/package/health.txt" "/usr/share/nginx/html/health.html"
     fi
 
     make_dir "${SITE_DIR}"
@@ -961,8 +961,8 @@ init_java8() {
 
         echo "JAVA_HOME=${JAVA_HOME}"
 
-        ${SUDO} cp -rf "${SHELL_DIR}/package/jce8/local_policy.jar.bin" "${JAVA_HOME}/jre/lib/security/local_policy.jar"
-        ${SUDO} cp -rf "${SHELL_DIR}/package/jce8/US_export_policy.jar.bin" "${JAVA_HOME}/jre/lib/security/US_export_policy.jar"
+        copy "${SHELL_DIR}/package/jce8/local_policy.jar.bin" "${JAVA_HOME}/jre/lib/security/local_policy.jar"
+        copy "${SHELL_DIR}/package/jce8/US_export_policy.jar.bin" "${JAVA_HOME}/jre/lib/security/US_export_policy.jar"
 
         touch "${HOME}/.toast_java"
     fi
@@ -1056,11 +1056,11 @@ init_php_ini() {
 
     # short_open_tag = On
     sed "s/short\_open\_tag\ \=\ Off/short\_open\_tag\ \=\ On/g" ${PHP_INI} > ${TEMP_FILE}
-    ${SUDO} mv -f ${TEMP_FILE} ${PHP_INI}
+    copy ${TEMP_FILE} ${PHP_INI}
 
     # date.timezone = Asia/Seoul
     sed "s/\;date\.timezone\ \=/date\.timezone\ \=\ Asia\/Seoul/g" ${PHP_INI} > ${TEMP_FILE}
-    ${SUDO} mv -f ${TEMP_FILE} ${PHP_INI}
+    copy ${TEMP_FILE} ${PHP_INI}
 }
 
 version_parse() {
@@ -1118,7 +1118,7 @@ version_next() {
             sed "s/$VER1/$VER2/;10q;" ${DEST_FILE} > ${TEMP_FILE}
             sed "1,10d" ${DEST_FILE} >> ${TEMP_FILE}
 
-            mv -f ${TEMP_FILE} ${DEST_FILE}
+            copy ${TEMP_FILE} ${DEST_FILE}
         else
             echo "Error - Read Fail : ${DEST_FILE}"
             exit 1
@@ -1170,7 +1170,7 @@ lb_up() {
         CONF1="\#server\s$PARAM2\:80"
         CONF2=" server $PARAM2:80"
 
-        sed "s/$CONF1/$CONF2/g" ${NGINX_CONF} > ${TEMP_FILE} && ${SUDO} mv -f ${TEMP_FILE} ${NGINX_CONF}
+        sed "s/$CONF1/$CONF2/g" ${NGINX_CONF} > ${TEMP_FILE} && copy ${TEMP_FILE} ${NGINX_CONF}
 
         #service_ctl nginx reload
     fi
@@ -1188,7 +1188,7 @@ lb_down() {
         CONF1="\sserver\s$PARAM2\:80"
         CONF2="#server $PARAM2:80"
 
-        sed "s/$CONF1/$CONF2/g" ${NGINX_CONF} > ${TEMP_FILE} && ${SUDO} mv -f ${TEMP_FILE} ${NGINX_CONF}
+        sed "s/$CONF1/$CONF2/g" ${NGINX_CONF} > ${TEMP_FILE} && copy ${TEMP_FILE} ${NGINX_CONF}
 
         #service_ctl nginx reload
     fi
@@ -1243,7 +1243,7 @@ deploy_vhost() {
                 echo "--> ${DEST_FILE}"
 
                 # vhost
-                sed "s/DOM/$DOM/g" ${TEMPLATE} > ${TEMP_FILE} && ${SUDO} mv -f ${TEMP_FILE} ${DEST_FILE}
+                sed "s/DOM/$DOM/g" ${TEMPLATE} > ${TEMP_FILE} && copy ${TEMP_FILE} ${DEST_FILE}
             done < ${VHOST_LIST}
 
             #service_ctl httpd start
