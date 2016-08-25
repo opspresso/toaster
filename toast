@@ -628,14 +628,13 @@ yum_install() {
 }
 
 init_hosts() {
-    ${SUDO} echo "# yanolja hosts" > /etc/hosts
-    ${SUDO} echo "127.0.0.1 ${NAME}" >> /etc/hosts
-    ${SUDO} echo "127.0.0.1 localhost localhost.localdomain" >> /etc/hosts
-
     URL="${TOAST_URL}/phase/hosts/${PHASE}"
     RES=`curl -s --data "token=${TOKEN}" ${URL}`
 
     if [ "${RES}" != "" ]; then
+        ${SUDO} echo "# yanolja hosts" > /etc/hosts
+        ${SUDO} echo "127.0.0.1 ${NAME}" >> /etc/hosts
+        ${SUDO} echo "127.0.0.1 localhost localhost.localdomain" >> /etc/hosts
         ${SUDO} echo "${RES}" >> /etc/hosts
     fi
 }
@@ -690,6 +689,7 @@ init_aws() {
 
 init_master() {
     ID_RSA="${HOME}/.ssh/id_rsa"
+    touch ${ID_RSA}
 
     URL="${TOAST_URL}/config/key/rsa_private_key"
     RES=`curl -s --data "token=${TOKEN}" ${URL}`
@@ -702,6 +702,7 @@ init_master() {
 
 init_slave() {
     AUTH_KEYS="${HOME}/.ssh/authorized_keys"
+    touch ${AUTH_KEYS}
 
     URL="${TOAST_URL}/config/key/rsa_public_key"
     RES=`curl -s --data "token=${TOKEN}" ${URL}`
@@ -709,18 +710,14 @@ init_slave() {
     if [ "${RES}" != "" ]; then
         IS_KEY="false"
 
-        if [ ! -f ${AUTH_KEYS} ]; then
-            touch ${AUTH_KEYS}
-        else
-            while read line
-            do
-                VAL=(${line})
+        while read line
+        do
+            VAL=(${line})
 
-                if [ "${VAL[2]}" == "toast@yanolja.in" ]; then
-                    IS_KEY="true"
-                fi
-            done < ${AUTH_KEYS}
-        fi
+            if [ "${VAL[2]}" == "toast@yanolja.in" ]; then
+                IS_KEY="true"
+            fi
+        done < ${AUTH_KEYS}
 
         if [ "${IS_KEY}" == "false" ]; then
             echo "${RES}" >> ${AUTH_KEYS}
