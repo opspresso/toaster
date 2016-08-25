@@ -78,7 +78,7 @@ APPS_DIR="/data/apps"
 APACHE_VERSION="24"
 HTTPD_CONF_DIR="/etc/httpd/conf.d"
 
-NGINX_CONF_DIR="/etc/nginx/conf.d"
+NGINX_CONF_DIR="/usr/local/nginx/conf"
 
 TOMCAT_VER="8.0.36"
 TOMCAT_URL="http://mirror.apache-kr.org/tomcat/tomcat-8/v${TOMCAT_VER}/bin/apache-tomcat-${TOMCAT_VER}.zip"
