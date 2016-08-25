@@ -435,7 +435,7 @@ prepare() {
         TARGET_FILE="${HOME}/.m2/settings.xml"
         copy "${SHELL_DIR}/package/m2/settings.xml" "${TARGET_FILE}" 644
 
-        TEMP_FILE="${TEMP_DIR}/settings.tmp.$$"
+        TEMP_FILE="${TEMP_DIR}/settings.tmp"
         sed "s/REPO_USER/$REPO_USER/g" ${TARGET_FILE} > ${TEMP_FILE} && mv -f ${TEMP_FILE} ${TARGET_FILE}
         sed "s/REPO_PASS/$REPO_PASS/g" ${TARGET_FILE} > ${TEMP_FILE} && mv -f ${TEMP_FILE} ${TARGET_FILE}
     fi
@@ -605,7 +605,7 @@ config_save() {
 }
 
 config_cron() {
-    TEMP_FILE="${TEMP_DIR}/toast-cron.tmp.$$"
+    TEMP_FILE="${TEMP_DIR}/toast-cron.tmp"
 
     echo "* 5 * * * ${SHELL_DIR}/toast update > /dev/null 2>&1" >> ${TEMP_FILE}
     echo "* * * * * ${SHELL_DIR}/toast health > /dev/null 2>&1" >> ${TEMP_FILE}
@@ -654,7 +654,7 @@ init_aws() {
     copy ${SHELL_DIR}/package/aws/config.txt ${HOME}/.aws/config 600
     copy ${SHELL_DIR}/package/aws/credentials.txt ${HOME}/.aws/credentials 600
 
-    TEMP_FILE="${TEMP_DIR}/toast-credentials.tmp.$$"
+    TEMP_FILE="${TEMP_DIR}/toast-credentials.tmp"
     DEST_FILE="${HOME}/.aws/credentials"
 
     URL="${TOAST_URL}/config/key/aws_access_key_id"
@@ -1052,7 +1052,7 @@ init_puppet() {
 init_php_ini() {
     PHP_INI="/etc/php.ini"
 
-    TEMP_FILE="${TEMP_DIR}/toast-php.tmp.$$"
+    TEMP_FILE="${TEMP_DIR}/toast-php.tmp"
 
     # short_open_tag = On
     sed "s/short\_open\_tag\ \=\ Off/short\_open\_tag\ \=\ On/g" ${PHP_INI} > ${TEMP_FILE}
@@ -1112,7 +1112,7 @@ version_next() {
         VER1="<version>[\.0-9a-zA-Z]\+<\/version>"
         VER2="<version>${NEXT_VERSION}<\/version>"
 
-        TEMP_FILE="${TEMP_DIR}/toast-pom.tmp.$$"
+        TEMP_FILE="${TEMP_DIR}/toast-pom.tmp"
 
         if [ -f ${DEST_FILE} -a -r ${DEST_FILE} ]; then
             sed "s/$VER1/$VER2/;10q;" ${DEST_FILE} > ${TEMP_FILE}
@@ -1164,14 +1164,13 @@ lb_up() {
     if [ ! -d ${NGINX_CONF_DIR} ]; then
         echo "not found nginx conf dir. [${NGINX_CONF_DIR}]"
     else
-        TEMP_FILE="${TEMP_DIR}/toast-nginx.tmp.$$"
+        TEMP_FILE="${TEMP_DIR}/toast-nginx.tmp"
         NGINX_CONF="${NGINX_CONF_DIR}/nginx.conf"
 
         CONF1="\#server\s$PARAM2\:80"
         CONF2=" server $PARAM2:80"
 
-        sed "s/$CONF1/$CONF2/g" ${NGINX_CONF} > ${TEMP_FILE}
-        ${SUDO} mv -f ${TEMP_FILE} ${NGINX_CONF}
+        sed "s/$CONF1/$CONF2/g" ${NGINX_CONF} > ${TEMP_FILE} && ${SUDO} mv -f ${TEMP_FILE} ${NGINX_CONF}
 
         #service_ctl nginx reload
     fi
@@ -1183,14 +1182,13 @@ lb_down() {
     if [ ! -d ${NGINX_CONF_DIR} ]; then
         echo "not found nginx conf dir. [${NGINX_CONF_DIR}]"
     else
-        TEMP_FILE="${TEMP_DIR}/toast-nginx.tmp.$$"
+        TEMP_FILE="${TEMP_DIR}/toast-nginx.tmp"
         NGINX_CONF="${NGINX_CONF_DIR}/nginx.conf"
 
         CONF1="\sserver\s$PARAM2\:80"
         CONF2="#server $PARAM2:80"
 
-        sed "s/$CONF1/$CONF2/g" ${NGINX_CONF} > ${TEMP_FILE}
-        ${SUDO} mv -f ${TEMP_FILE} ${NGINX_CONF}
+        sed "s/$CONF1/$CONF2/g" ${NGINX_CONF} > ${TEMP_FILE} && ${SUDO} mv -f ${TEMP_FILE} ${NGINX_CONF}
 
         #service_ctl nginx reload
     fi
@@ -1230,7 +1228,7 @@ deploy_vhost() {
             copy "${SHELL_DIR}/package/vhost/${APACHE_VERSION}/localhost.conf" "${HTTPD_CONF_DIR}/localhost.conf" 644
 
             TEMPLATE="${SHELL_DIR}/package/vhost/${APACHE_VERSION}/vhost.conf"
-            TEMP_FILE="${TEMP_DIR}/toast-vhost.tmp.$$"
+            TEMP_FILE="${TEMP_DIR}/toast-vhost.tmp"
 
             while read line
             do
