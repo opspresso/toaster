@@ -458,8 +458,6 @@ prepare() {
         FLEET="${PARAM2}"
         echo "FLEET=${FLEET}" >> ${CONFIG}
     fi
-
-    #add_env "PROFILE" "${PHASE}"
 }
 
 login() {
@@ -1135,7 +1133,7 @@ version_save() {
 version_remove() {
     echo "version remove..."
 
-    GROUP_PATH=`echo "${PARAM2}" | sed "s/\./\//"`
+    GROUP_PATH=`echo "${GROUP_ID}" | sed "s/\./\//"`
 
     if [ "${REPO_USER}" == "s3" ]; then
         aws s3 rm ${REPO_PATH}/${GROUP_PATH}/${ARTIFACT_ID}/${VERSION} --recursive
@@ -1145,12 +1143,12 @@ version_remove() {
 }
 
 lb_up() {
-    echo "lb up..."
+    echo "lb up... ${PARAM2}"
 
 }
 
 lb_down() {
-    echo "lb down..."
+    echo "lb down... ${PARAM2}"
 
 }
 
@@ -1329,16 +1327,6 @@ deploy_value() {
     UNZIP_DIR="${TEMP_DIR}/${RANDOM}"
 }
 
-log_tomcat() {
-    tail -f -n 500 "${TOMCAT_DIR}/logs/catalina.out"
-}
-
-log_webapp() {
-    TODAY=`date +%Y-%m-%d`
-
-    tail -f -n 500 "${SITE_DIR}/${PARAM1}/application/logs/log-${TODAY}.php"
-}
-
 download() {
     SOURCE="${REPO_PATH}/${GROUP_PATH}/${ARTIFACT_ID}/${VERSION}/${FILENAME}"
 
@@ -1458,6 +1446,16 @@ placement() {
     if [ "${ARR[0]}" != "OK" ]; then
         echo "Server Error. [${URL}][${RES}]"
     fi
+}
+
+log_tomcat() {
+    tail -f -n 500 "${TOMCAT_DIR}/logs/catalina.out"
+}
+
+log_webapp() {
+    TODAY=`date +%Y-%m-%d`
+
+    tail -f -n 500 "${SITE_DIR}/${PARAM1}/application/logs/log-${TODAY}.php"
 }
 
 service_ctl() {
