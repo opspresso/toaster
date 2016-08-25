@@ -1269,32 +1269,34 @@ deploy_fleet() {
     URL="${TOAST_URL}/target/deploy/${PHASE}/${FLEET}"
     wget -q -N --post-data "token=${TOKEN}" -P "${TEMP_DIR}" "${URL}"
 
-    echo "download..."
+    if [ -f ${TARGET_FILE} ]; then
+        echo "download..."
 
-    while read line
-    do
-        TARGET=(${line})
+        while read line
+        do
+            TARGET=(${line})
 
-        deploy_value
+            deploy_value
 
-        download
-    done < ${TARGET_FILE}
+            download
+        done < ${TARGET_FILE}
 
-    tomcat_stop
-    process_stop_all
+        tomcat_stop
+        process_stop_all
 
-    echo "placement..."
+        echo "placement..."
 
-    while read line
-    do
-        TARGET=(${line})
+        while read line
+        do
+            TARGET=(${line})
 
-        deploy_value
+            deploy_value
 
-        placement
-    done < ${TARGET_FILE}
+            placement
+        done < ${TARGET_FILE}
 
-    tomcat_start
+        tomcat_start
+    fi
 
     echo_bar
 }
