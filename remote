@@ -18,11 +18,11 @@ PORT=${3}
 CMD=${4}
 SUB=${5}
 
-GROUP_ID=${6}
-ARTIFACT_ID=${7}
-VERSION=${8}
-TYPE=${9}
-DOMAIN=${10}
+PARAM1=${6}
+PARAM2=${7}
+PARAM3=${8}
+PARAM4=${9}
+PARAM5=${10}
 
 if [ "${HOST}" == "" ]; then
   usage
@@ -33,7 +33,7 @@ if [ "${PORT}" == "" ]; then
   PORT=22
 fi
 
-COMMAND="~/toaster/toast ${CMD} ${SUB} ${GROUP_ID} ${ARTIFACT_ID} ${VERSION} ${TYPE} ${DOMAIN}"
+COMMAND="~/toaster/toast ${CMD} ${SUB} ${PARAM1} ${PARAM2} ${PARAM3} ${PARAM4} ${PARAM5}"
 
 ssh -t ${USER}@${HOST} -p ${PORT} "${COMMAND}"
 
