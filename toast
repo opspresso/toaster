@@ -1161,8 +1161,6 @@ version_remove() {
 lb_up() {
     echo "lb up... ${PARAM2}"
 
-    ${SUDO} yum list | grep nginx
-
     if [ ! -d ${NGINX_CONF_DIR} ]; then
         echo "not found nginx conf dir. [${NGINX_CONF_DIR}]"
     else
@@ -1181,8 +1179,6 @@ lb_up() {
 
 lb_down() {
     echo "lb down... ${PARAM2}"
-
-    ${SUDO} yum list | grep nginx
 
     if [ ! -d ${NGINX_CONF_DIR} ]; then
         echo "not found nginx conf dir. [${NGINX_CONF_DIR}]"
