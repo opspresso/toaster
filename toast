@@ -1175,7 +1175,7 @@ lb_up() {
         sed "s/$CONF1/$CONF2/g" ${NGINX_CONF} > ${TEMP_FILE} && copy ${TEMP_FILE} ${NGINX_CONF}
         cat ${NGINX_CONF} | grep ":80"
 
-        #service_ctl nginx reload
+        service_ctl nginx reload
     fi
 }
 
@@ -1196,7 +1196,7 @@ lb_down() {
         sed "s/$CONF1/$CONF2/g" ${NGINX_CONF} > ${TEMP_FILE} && copy ${TEMP_FILE} ${NGINX_CONF}
         cat ${NGINX_CONF} | grep ":80"
 
-        #service_ctl nginx reload
+        service_ctl nginx reload
     fi
 }
 
