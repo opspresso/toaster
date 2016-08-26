@@ -1180,6 +1180,7 @@ lb_up() {
         CONF2=" server $PARAM2:80"
 
         sed "s/$CONF1/$CONF2/g" ${NGINX_CONF} > ${TEMP_FILE} && copy ${TEMP_FILE} ${NGINX_CONF}
+        cp -fv ${TEMP_FILE} "${TEMP_FILE}_bak"
         cat ${NGINX_CONF} | grep ":80"
 
         service_ctl nginx reload
@@ -1199,6 +1200,7 @@ lb_down() {
         CONF2="#server $PARAM2:80"
 
         sed "s/$CONF1/$CONF2/g" ${NGINX_CONF} > ${TEMP_FILE} && copy ${TEMP_FILE} ${NGINX_CONF}
+        cp -fv ${TEMP_FILE} "${TEMP_FILE}_bak"
         cat ${NGINX_CONF} | grep ":80"
 
         service_ctl nginx reload
