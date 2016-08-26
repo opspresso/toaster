@@ -35,6 +35,8 @@ fi
 
 COMMAND="~/toaster/toast ${CMD} ${SUB} ${PARAM1} ${PARAM2} ${PARAM3} ${PARAM4} ${PARAM5}"
 
+ssh -t ${USER}@${HOST} -p ${PORT} "sudo yum list"
+
 ssh -t ${USER}@${HOST} -p ${PORT} "${COMMAND}"
 
 # ~/toaster/remote user host port deploy fleet
