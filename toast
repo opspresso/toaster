@@ -688,6 +688,7 @@ init_aws() {
 }
 
 init_master() {
+    # rsa private key
     ID_RSA="${HOME}/.ssh/id_rsa"
     touch ${ID_RSA}
 
@@ -697,6 +698,18 @@ init_master() {
     if [ "${RES}" != "" ]; then
         echo "${RES}" > ${ID_RSA}
         chmod 600 ${ID_RSA}
+    fi
+
+    # rsa public key
+    ID_RSA_PUB="${HOME}/.ssh/id_rsa.pub"
+    touch ${ID_RSA_PUB}
+
+    URL="${TOAST_URL}/config/key/rsa_public_key"
+    RES=`curl -s --data "token=${TOKEN}" ${URL}`
+
+    if [ "${RES}" != "" ]; then
+        echo "${RES}" > ${ID_RSA_PUB}
+        chmod 644 ${ID_RSA_PUB}
     fi
 }
 
@@ -1043,10 +1056,6 @@ init_rabbitmq() {
 
         touch "${HOME}/.toast_rabbitmq"
     fi
-}
-
-init_puppet() {
-    ${SUDO} yum install -y puppet
 }
 
 init_php_ini() {
