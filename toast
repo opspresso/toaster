@@ -1277,6 +1277,8 @@ deploy_vhost() {
                 HTTPD_VERSION="24"
             fi
 
+            echo "httpd version [${HTTPD_VERSION}]"
+
             # localhost
             copy "${SHELL_DIR}/package/vhost/${HTTPD_VERSION}/localhost.conf" "${HTTPD_CONF_DIR}/localhost.conf" 644
 
