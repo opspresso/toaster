@@ -363,7 +363,7 @@ log() {
 
 self_info() {
     echo_bar
-    echo "PATH  : $0"
+    echo "OS    : ${OS_NAME} ${OS_TYPE}"
     echo "HOME  : ${HOME}"
     echo "NAME  : ${NAME}"
     echo "PHASE : ${PHASE}"
