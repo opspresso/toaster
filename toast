@@ -970,7 +970,11 @@ init_php() {
     fi
 
     echo_bar
-    php -version
+    if [ "${OS_TYPE}" == "Ubuntu" ]; then
+        php -v
+    else
+        php -version
+    fi
     echo_bar
 }
 
