@@ -253,6 +253,7 @@ init() {
             init_rabbitmq
             ;;
         *)
+            self_info
             init_auto
     esac
 }
