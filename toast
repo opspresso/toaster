@@ -433,11 +433,11 @@ prepare() {
     make_dir "${HOME}/.ssh"
 
     if [ "${OS_TYPE}" != "Ubuntu" ]; then
-        copy ${SHELL_DIR}/package/i18n.txt /etc/sysconfig/i18n 644
-        copy ${SHELL_DIR}/package/selinux.txt /etc/selinux/config 644
+        copy ${SHELL_DIR}/package/linux/i18n.txt /etc/sysconfig/i18n 644
+        copy ${SHELL_DIR}/package/linux/selinux.txt /etc/selinux/config 644
     fi
 
-    copy ${SHELL_DIR}/package/hosts.txt /etc/hosts 644
+    copy ${SHELL_DIR}/package/linux/hosts.txt /etc/hosts 644
 
     if [ -f "/usr/sbin/setenforce" ]; then
         ${SUDO} setenforce 0
