@@ -837,7 +837,7 @@ init_httpd() {
         if [ "${OS_TYPE}" == "Ubuntu" ]; then
             service_install apache2
 
-            VERSION=$(apache2 -version | egrep -o "Apache\/2.4")
+            HTTPD_VERSION="ubuntu"
         else
             status=`${SUDO} yum list | grep httpd24 | wc -l | awk '{print $1}'`
 
@@ -848,12 +848,12 @@ init_httpd() {
             fi
 
             VERSION=$(httpd -version | egrep -o "Apache\/2.4")
-        fi
 
-        if [ "${VERSION}" != "" ]; then
-            HTTPD_VERSION="24"
-        else
-            HTTPD_VERSION="22"
+            if [ "${VERSION}" != "" ]; then
+                HTTPD_VERSION="24"
+            else
+                HTTPD_VERSION="22"
+            fi
         fi
 
         if [ "${OS_TYPE}" == "Ubuntu" ]; then
