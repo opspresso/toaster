@@ -79,10 +79,9 @@ APPS_DIR="/data/apps"
 
 HTTPD_VERSION="24"
 
+NGINX="/usr/local/nginx/sbin/nginx"
 NGINX_CONF_DIR="/usr/local/nginx/conf"
 
-TOMCAT_VER="8.0.36"
-TOMCAT_URL="http://mirror.apache-kr.org/tomcat/tomcat-8/v${TOMCAT_VER}/bin/apache-tomcat-${TOMCAT_VER}.zip"
 TOMCAT_DIR="${APPS_DIR}/tomcat8"
 WEBAPP_DIR="${TOMCAT_DIR}/webapps"
 
@@ -898,7 +897,7 @@ init_nginx () {
     make_dir "${SITE_DIR}/upload" 777
 
     echo_bar
-    nginx -v
+    ${NGINX} -v
     echo_bar
 }
 
@@ -993,20 +992,12 @@ init_tomcat8() {
     if [ ! -f "${HOME}/.toast_tomcat" ]; then
         echo "init tomcat..."
 
-        TOMCAT_FILE="apache-tomcat-${TOMCAT_VER}.zip"
+        make_dir "${APPS_DIR}"
 
-        wget -q -N -P "${APPS_DIR}" "${TOMCAT_URL}"
+        ${SHELL_DIR}/install-tomcat.sh "${APPS_DIR}"
 
-        unzip -q "${APPS_DIR}/${TOMCAT_FILE}" -d "${APPS_DIR}"
-
-        ln -s "${APPS_DIR}/apache-tomcat-${TOMCAT_VER}" "${TOMCAT_DIR}"
-
-        chmod 755 ${TOMCAT_DIR}/bin/*.sh
-
-        echo "${TOMCAT_VER}" > "${HOME}/.toast_tomcat"
+        touch "${HOME}/.toast_tomcat"
     fi
-
-    rm -rf ${WEBAPP_DIR}/*
 }
 
 init_mysql55() {
