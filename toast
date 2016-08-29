@@ -13,13 +13,21 @@ else
     ELX="el6"
 fi
 
-if [ ! -f "/usr/bin/yum" ]; then
-    echo "Could not use yum"
+if [ "${HOME}" == "/root" ]; then
+    echo "Not supported ROOT"
     exit 1
 fi
 
-if [ "${HOME}" == "/root" ]; then
-    echo "Not supported ROOT"
+if [ -f "/usr/bin/yum" ]; then
+    YUM="/usr/bin/yum"
+else
+    if [ -f "/usr/bin/apt-get" ]; then
+        YUM="/usr/bin/apt-get"
+    fi
+fi
+
+if [ "${YUM}" == "" ]; then
+    echo "Not found yum or apt-get"
     exit 1
 fi
 
@@ -75,7 +83,7 @@ HAS_JAR="FALSE"
 SITE_DIR="/data/site"
 APPS_DIR="/data/apps"
 
-APACHE_VERSION="24"
+HTTPD_VERSION="24"
 HTTPD_CONF_DIR="/etc/httpd/conf.d"
 
 NGINX_CONF_DIR="/usr/local/nginx/conf"
@@ -147,6 +155,7 @@ usage() {
     echo " Usage: toast init master"
     echo " Usage: toast init slave"
     echo " Usage: toast init apache"
+    echo " Usage: toast init httpd"
     echo " Usage: toast init nginx"
     echo " Usage: toast init php5"
     echo " Usage: toast init php7"
@@ -202,7 +211,7 @@ update() {
     self_info
     self_update
 
-    #yum_update
+    #service_update
 }
 
 init() {
@@ -216,8 +225,11 @@ init() {
         aws)
             init_aws
             ;;
-        httpd|apache)
+        apache)
             init_apache
+            ;;
+        httpd)
+            init_httpd
             ;;
         nginx)
             init_nginx
@@ -375,11 +387,11 @@ self_update() {
 }
 
 prepare() {
-    yum_install git
-    yum_install gcc
-    yum_install curl
-    yum_install wget
-    yum_install unzip
+    service_install git
+    service_install gcc
+    service_install curl
+    service_install wget
+    service_install unzip
 
     # timezone
     if [ ! -f "${HOME}/.toast_time" ]; then
@@ -390,23 +402,25 @@ prepare() {
     fi
 
     # yum epel
-    if [ ! -f "${HOME}/.toast_epel" ]; then
-        if [ ! -f "/usr/bin/yum-config-manager" ]; then
-            yum_install yum-utils
+    if [ "${YUM}" == "yum" ]; then
+        if [ ! -f "${HOME}/.toast_epel" ]; then
+            if [ ! -f "/usr/bin/yum-config-manager" ]; then
+                service_install yum-utils
+            fi
+
+            # rpm -Uvh https://dl.fedoraproject.org/pub/epel/epel-release-latest-7.noarch.rpm
+            # rpm -Uvh https://dl.fedoraproject.org/pub/epel/epel-release-latest-6.noarch.rpm
+
+            if [ "${ELX}" == "el7" ]; then
+                ${SUDO} rpm -Uvh https://dl.fedoraproject.org/pub/epel/epel-release-latest-7.noarch.rpm
+            else
+                ${SUDO} rpm -Uvh https://dl.fedoraproject.org/pub/epel/epel-release-latest-6.noarch.rpm
+            fi
+
+            ${SUDO} yum-config-manager --enable epel
+
+            touch "${HOME}/.toast_epel"
         fi
-
-        # rpm -Uvh https://dl.fedoraproject.org/pub/epel/epel-release-latest-7.noarch.rpm
-        # rpm -Uvh https://dl.fedoraproject.org/pub/epel/epel-release-latest-6.noarch.rpm
-
-        if [ "${ELX}" == "el7" ]; then
-            ${SUDO} rpm -Uvh https://dl.fedoraproject.org/pub/epel/epel-release-latest-7.noarch.rpm
-        else
-            ${SUDO} rpm -Uvh https://dl.fedoraproject.org/pub/epel/epel-release-latest-6.noarch.rpm
-        fi
-
-        ${SUDO} yum-config-manager --enable epel
-
-        touch "${HOME}/.toast_epel"
     fi
 
     make_dir "/data"
@@ -421,7 +435,9 @@ prepare() {
     copy ${SHELL_DIR}/package/selinux.txt /etc/selinux/config 644
     copy ${SHELL_DIR}/package/hosts.txt /etc/hosts 644
 
-    ${SUDO} setenforce 0
+    if [ -f "/usr/sbin/setenforce" ]; then
+        ${SUDO} setenforce 0
+    fi
 
     # bashrc
     if [ "${SUDO}" != "" ]; then
@@ -617,16 +633,6 @@ config_cron() {
     echo_bar
 }
 
-yum_update() {
-    ${SUDO} yum update -y
-}
-
-yum_install() {
-    if [ ! -f "/usr/bin/$1" ]; then
-        ${SUDO} yum install -y $1
-    fi
-}
-
 init_hosts() {
     URL="${TOAST_URL}/phase/hosts/${PHASE}"
     RES=`curl -s --data "token=${TOKEN}" ${URL}`
@@ -746,8 +752,11 @@ init_auto() {
 
     for i in "${ARR[@]}"; do
         case "$i" in
-            httpd|apache)
+            apache)
                 init_apache
+                ;;
+            httpd)
+                init_httpd
                 ;;
             nginx)
                 init_nginx
@@ -786,31 +795,84 @@ init_auto() {
     done
 }
 
+init_webtatic() {
+    if [ "${YUM}" == "yum" ]; then
+        if [ ! -f "${HOME}/.toast_webtatic" ]; then
+            status=`${SUDO} yum list | grep php56 | wc -l | awk '{print $1}'`
+
+            if [ ${status} -lt 1 ]; then
+                if [ "${ELX}" == "el7" ]; then
+                    ${SUDO} rpm -Uvh https://mirror.webtatic.com/yum/el7/webtatic-release.rpm
+                else
+                    ${SUDO} rpm -Uvh https://mirror.webtatic.com/yum/el6/latest.rpm
+                fi
+            fi
+
+            touch "${HOME}/.toast_webtatic"
+        fi
+    fi
+}
+
 init_apache() {
     HAS_APACHE="TRUE"
 
-    if [ ! -f "${HOME}/.toast_apache" ]; then
+    if [ ! -f "${HOME}/.toast_httpd" ]; then
+        echo "init httpd..."
+
+        service_install apache2
+
+        VERSION=$(apache2 -version | egrep -o "Apache\/2.4")
+
+        if [ "${VERSION}" != "" ]; then
+            HTTPD_VERSION="24"
+        else
+            HTTPD_VERSION="22"
+        fi
+
+        service_ctl apache2 start on
+
+        echo "HTTPD_VERSION=${HTTPD_VERSION}" > "${HOME}/.toast_httpd"
+    fi
+
+    if [ -d "/var/www/html" ]; then
+        copy "${SHELL_DIR}/package/health.txt" "/var/www/html/index.html"
+        copy "${SHELL_DIR}/package/health.txt" "/var/www/html/health.html"
+    fi
+
+    make_dir "${SITE_DIR}"
+    make_dir "${SITE_DIR}/files" 777
+    make_dir "${SITE_DIR}/upload" 777
+
+    echo_bar
+    apache2 -version
+    echo_bar
+}
+
+init_httpd() {
+    HAS_APACHE="TRUE"
+
+    if [ ! -f "${HOME}/.toast_httpd" ]; then
         echo "init httpd..."
 
         status=`${SUDO} yum list | grep httpd24 | wc -l | awk '{print $1}'`
 
         if [ ${status} -ge 1 ]; then
-            ${SUDO} yum install -y httpd24
+            service_install httpd24
         else
-            ${SUDO} yum install -y httpd
+            service_install httpd
         fi
 
-        HTTPD_VERSION=$(httpd -version | egrep -o "Apache\/2.4")
+        VERSION=$(httpd -version | egrep -o "Apache\/2.4")
 
-        if [ "${HTTPD_VERSION}" != "" ]; then
-            APACHE_VERSION="24"
+        if [ "${VERSION}" != "" ]; then
+            HTTPD_VERSION="24"
         else
-            APACHE_VERSION="22"
+            HTTPD_VERSION="22"
         fi
 
         service_ctl httpd start on
 
-        echo "APACHE_VERSION=${APACHE_VERSION}" > "${HOME}/.toast_apache"
+        echo "HTTPD_VERSION=${HTTPD_VERSION}" > "${HOME}/.toast_httpd"
     fi
 
     if [ -d "/var/www/html" ]; then
@@ -831,7 +893,7 @@ init_nginx () {
     if [ ! -f "${HOME}/.toast_nginx" ]; then
         echo "init nginx..."
 
-        ${SUDO} yum install -y nginx
+        service_install nginx
 
         service_ctl nginx start on
 
@@ -852,22 +914,6 @@ init_nginx () {
     echo_bar
 }
 
-init_webtatic() {
-    if [ ! -f "${HOME}/.toast_webtatic" ]; then
-        status=`${SUDO} yum list | grep php56 | wc -l | awk '{print $1}'`
-
-        if [ ${status} -lt 1 ]; then
-            if [ "${ELX}" == "el7" ]; then
-                ${SUDO} rpm -Uvh https://mirror.webtatic.com/yum/el7/webtatic-release.rpm
-            else
-                ${SUDO} rpm -Uvh https://mirror.webtatic.com/yum/el6/latest.rpm
-            fi
-        fi
-
-        touch "${HOME}/.toast_webtatic"
-    fi
-}
-
 init_php55() {
     init_webtatic
 
@@ -877,9 +923,9 @@ init_php55() {
         status=`${SUDO} yum list | grep php55w | wc -l | awk '{print $1}'`
 
         if [ ${status} -ge 1 ]; then
-            ${SUDO} yum install -y php55w php55w-mysqlnd php55w-mcrypt php55w-gd php55w-mbstring
+            service_install "php55w php55w-mysqlnd php55w-mcrypt php55w-gd php55w-mbstring"
         else
-            ${SUDO} yum install -y php55 php55-mysqlnd php55-mcrypt php55-gd php55-mbstring
+            service_install "php55 php55-mysqlnd php55-mcrypt php55-gd php55-mbstring"
         fi
 
         touch "${HOME}/.toast_php"
@@ -901,9 +947,9 @@ init_php56() {
         status=`${SUDO} yum list | grep php56w | wc -l | awk '{print $1}'`
 
         if [ ${status} -ge 1 ]; then
-            ${SUDO} yum install -y php56w php56w-mysqlnd php56w-mcrypt php56w-gd php56w-mbstring
+            service_install "php56w php56w-mysqlnd php56w-mcrypt php56w-gd php56w-mbstring"
         else
-            ${SUDO} yum install -y php56 php56-mysqlnd php56-mcrypt php56-gd php56-mbstring
+            service_install "php56 php56-mysqlnd php56-mcrypt php56-gd php56-mbstring"
         fi
 
         touch "${HOME}/.toast_php"
@@ -925,9 +971,9 @@ init_php70() {
         status=`${SUDO} yum list | grep php70w | wc -l | awk '{print $1}'`
 
         if [ ${status} -ge 1 ]; then
-            ${SUDO} yum install -y php70w php70w-mysqlnd php70w-mcrypt php70w-gd php70w-mbstring
+            service_install "php70w php70w-mysqlnd php70w-mcrypt php70w-gd php70w-mbstring"
         else
-            ${SUDO} yum install -y php70 php70-mysqlnd php70-mcrypt php70-gd php70-mbstring
+            service_install "php70 php70-mysqlnd php70-mcrypt php70-gd php70-mbstring"
         fi
 
         touch "${HOME}/.toast_php"
@@ -1011,7 +1057,7 @@ init_mysql55() {
     if [ ! -f "${HOME}/.toast_mysql" ]; then
         echo "init mysql55..."
 
-        ${SUDO} yum install -y mysql55-server
+        service_install mysql55-server
 
         service_ctl mysqld start on
 
@@ -1023,7 +1069,7 @@ init_mysql56() {
     if [ ! -f "${HOME}/.toast_mysql" ]; then
         echo "init mysql56..."
 
-        ${SUDO} yum install -y mysql56-server
+        service_install mysql56-server
 
         service_ctl mysqld start on
 
@@ -1035,7 +1081,7 @@ init_redis() {
     if [ ! -f "${HOME}/.toast_redis" ]; then
         echo "init redis..."
 
-        ${SUDO} yum install -y redis
+        service_install redis
 
         service_ctl redis start on
 
@@ -1050,7 +1096,7 @@ init_rabbitmq() {
         #wget -q -N -P "${HOME}" https://packages.erlang-solutions.com/erlang/esl-erlang/FLAVOUR_1_general/esl-erlang_19.0~centos~6_amd64.rpm
         #wget -q -N -P "${HOME}" https://www.rabbitmq.com/releases/rabbitmq-server/v3.6.4/rabbitmq-server-3.6.4-1.noarch.rpm
 
-        ${SUDO} yum install -y rabbitmq-server
+        service_install rabbitmq-server
 
         service_ctl rabbitmq-server restart on
 
@@ -1227,18 +1273,18 @@ deploy_vhost() {
             ${SUDO} rm -rf ${HTTPD_CONF_DIR}/localhost*
             ${SUDO} rm -rf ${HTTPD_CONF_DIR}/toast*
 
-            TOAST_APACHE="${HOME}/.toast_apache"
+            TOAST_APACHE="${HOME}/.toast_httpd"
             if [ -f "${TOAST_APACHE}" ]; then
                 . ${TOAST_APACHE}
             fi
-            if [ "${APACHE_VERSION}" == "" ]; then
-                APACHE_VERSION="24"
+            if [ "${HTTPD_VERSION}" == "" ]; then
+                HTTPD_VERSION="24"
             fi
 
             # localhost
-            copy "${SHELL_DIR}/package/vhost/${APACHE_VERSION}/localhost.conf" "${HTTPD_CONF_DIR}/localhost.conf" 644
+            copy "${SHELL_DIR}/package/vhost/${HTTPD_VERSION}/localhost.conf" "${HTTPD_CONF_DIR}/localhost.conf" 644
 
-            TEMPLATE="${SHELL_DIR}/package/vhost/${APACHE_VERSION}/vhost.conf"
+            TEMPLATE="${SHELL_DIR}/package/vhost/${HTTPD_VERSION}/vhost.conf"
             TEMP_FILE="${TEMP_DIR}/toast-vhost.tmp"
 
             while read line
@@ -1500,6 +1546,25 @@ log_webapp() {
     TODAY=`date +%Y-%m-%d`
 
     tail -f -n 500 "${SITE_DIR}/${PARAM1}/application/logs/log-${TODAY}.php"
+}
+
+service_update() {
+    if [ "${YUM}" == "yum" ]; then
+        ${SUDO} yum update -y
+    else
+        ${SUDO} apt-get update
+        ${SUDO} apt-get upgrade -y
+    fi
+}
+
+service_install() {
+    if [ ! -f "/usr/bin/$1" ]; then
+        if [ "${YUM}" == "yum" ]; then
+            ${SUDO} yum install -y $1
+        else
+            ${SUDO} apt-get install -y $1
+        fi
+    fi
 }
 
 service_ctl() {
