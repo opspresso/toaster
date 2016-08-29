@@ -1097,9 +1097,13 @@ init_rabbitmq() {
 }
 
 init_php_ini() {
-    PHP_INI="/etc/php.ini"
+    if [ "${OS_TYPE}" == "Ubuntu" ]; then
+        PHP_INI="/etc/php5/apache2/php.ini"
+    else
+        PHP_INI="/etc/php.ini"
+    fi
 
-    TEMP_FILE="${TEMP_DIR}/toast-php.tmp"
+    TEMP_FILE="${TEMP_DIR}/toast-php-ini.tmp"
 
     # short_open_tag = On
     sed "s/short\_open\_tag\ \=\ Off/short\_open\_tag\ \=\ On/g" ${PHP_INI} > ${TEMP_FILE}
