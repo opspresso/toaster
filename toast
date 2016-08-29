@@ -841,7 +841,7 @@ init_apache() {
     HAS_APACHE="TRUE"
 
     if [ ! -f "${HOME}/.toast_httpd" ]; then
-        echo "init httpd..."
+        echo "init apache..."
 
         service_install apache2
 
