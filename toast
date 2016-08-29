@@ -699,6 +699,8 @@ init_aws() {
 
     if [ ! -f "/usr/bin/aws" ]; then
         if [ ! -f "${HOME}/.toast_awscli" ]; then
+            echo "init aws cli..."
+
             wget -q -N "https://s3.amazonaws.com/aws-cli/awscli-bundle.zip"
             unzip awscli-bundle.zip
             sudo ./awscli-bundle/install -i /usr/local/aws -b /usr/local/bin/aws
