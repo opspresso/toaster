@@ -82,8 +82,6 @@ HTTPD_VERSION="24"
 NGINX="/usr/local/nginx/sbin/nginx"
 NGINX_CONF_DIR="/usr/local/nginx/conf"
 
-TOMCAT_VER="8.0.36"
-TOMCAT_URL="http://mirror.apache-kr.org/tomcat/tomcat-8/v${TOMCAT_VER}/bin/apache-tomcat-${TOMCAT_VER}.zip"
 TOMCAT_DIR="${APPS_DIR}/tomcat8"
 WEBAPP_DIR="${TOMCAT_DIR}/webapps"
 
@@ -998,7 +996,7 @@ init_tomcat8() {
 
         ${SHELL_DIR}/install-tomcat.sh "${APPS_DIR}"
 
-        echo "${TOMCAT_VER}" > "${HOME}/.toast_tomcat"
+        touch "${HOME}/.toast_tomcat"
     fi
 }
 
