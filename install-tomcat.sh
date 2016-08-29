@@ -59,6 +59,8 @@ wget -q -N "${URL3}"
 
 tar xzf ${TOMCAT}
 
+rm -rf ${TOMCAT}
+
 mv "apache-tomcat-${CURRENT}" "${APPS_DIR}/tomcat${VERSION}"
 
 TOMCAT_DIR="${APPS_DIR}/tomcat${VERSION}"
