@@ -84,7 +84,6 @@ PARAM8=$9
 
 TEMP_DIR="/tmp/deploy"
 
-HAS_APACHE="FALSE"
 HAS_WAR="FALSE"
 HAS_JAR="FALSE"
 
@@ -233,10 +232,7 @@ init() {
         aws)
             init_aws
             ;;
-        apache)
-            init_apache
-            ;;
-        httpd)
+        apache|httpd)
             init_httpd
             ;;
         nginx)
@@ -778,10 +774,7 @@ init_auto() {
 
     for i in "${ARR[@]}"; do
         case "$i" in
-            apache)
-                init_apache
-                ;;
-            httpd)
+            apache|httpd)
                 init_httpd
                 ;;
             nginx)
@@ -837,56 +830,25 @@ init_webtatic() {
     fi
 }
 
-init_apache() {
-    HAS_APACHE="TRUE"
-
-    if [ ! -f "${HOME}/.toast_httpd" ]; then
-        echo "init apache..."
-
-        service_install apache2
-
-        VERSION=$(apache2 -version | egrep -o "Apache\/2.4")
-
-        if [ "${VERSION}" != "" ]; then
-            HTTPD_VERSION="24"
-        else
-            HTTPD_VERSION="22"
-        fi
-
-        service_ctl apache2 start on
-
-        echo "HTTPD_VERSION=${HTTPD_VERSION}" > "${HOME}/.toast_httpd"
-    fi
-
-    if [ -d "/var/www/html" ]; then
-        copy "${SHELL_DIR}/package/health.txt" "/var/www/html/index.html"
-        copy "${SHELL_DIR}/package/health.txt" "/var/www/html/health.html"
-    fi
-
-    make_dir "${SITE_DIR}"
-    make_dir "${SITE_DIR}/files" 777
-    make_dir "${SITE_DIR}/upload" 777
-
-    echo_bar
-    apache2 -version
-    echo_bar
-}
-
 init_httpd() {
-    HAS_APACHE="TRUE"
-
     if [ ! -f "${HOME}/.toast_httpd" ]; then
         echo "init httpd..."
 
-        status=`${SUDO} yum list | grep httpd24 | wc -l | awk '{print $1}'`
+        if [ "${OS_TYPE}" == "Ubuntu" ]; then
+            service_install apache2
 
-        if [ ${status} -ge 1 ]; then
-            service_install httpd24
+            VERSION=$(apache2 -version | egrep -o "Apache\/2.4")
         else
-            service_install httpd
-        fi
+            status=`${SUDO} yum list | grep httpd24 | wc -l | awk '{print $1}'`
 
-        VERSION=$(httpd -version | egrep -o "Apache\/2.4")
+            if [ ${status} -ge 1 ]; then
+                service_install httpd24
+            else
+                service_install httpd
+            fi
+
+            VERSION=$(httpd -version | egrep -o "Apache\/2.4")
+        fi
 
         if [ "${VERSION}" != "" ]; then
             HTTPD_VERSION="24"
@@ -894,7 +856,11 @@ init_httpd() {
             HTTPD_VERSION="22"
         fi
 
-        service_ctl httpd start on
+        if [ "${OS_TYPE}" == "Ubuntu" ]; then
+            service_ctl apache2 start on
+        else
+            service_ctl httpd start on
+        fi
 
         echo "HTTPD_VERSION=${HTTPD_VERSION}" > "${HOME}/.toast_httpd"
     fi
@@ -909,7 +875,11 @@ init_httpd() {
     make_dir "${SITE_DIR}/upload" 777
 
     echo_bar
-    httpd -version
+    if [ "${OS_TYPE}" == "Ubuntu" ]; then
+        apache2 -version
+    else
+        httpd -version
+    fi
     echo_bar
 }
 
@@ -1270,8 +1240,6 @@ deploy_vhost() {
         if [ -f ${VHOST_LIST} ]; then
             echo "placement vhost..."
 
-            #service_ctl httpd stop
-
             ${SUDO} rm -rf ${HTTPD_CONF_DIR}/localhost*
             ${SUDO} rm -rf ${HTTPD_CONF_DIR}/toast*
 
@@ -1307,8 +1275,11 @@ deploy_vhost() {
                 sed "s/DOM/$DOM/g" ${TEMPLATE} > ${TEMP_FILE} && copy ${TEMP_FILE} ${DEST_FILE}
             done < ${VHOST_LIST}
 
-            #service_ctl httpd start
-            service_ctl httpd graceful
+            if [ "${OS_TYPE}" == "Ubuntu" ]; then
+                service_ctl apache2 graceful
+            else
+                service_ctl httpd graceful
+            fi
         fi
     fi
 
