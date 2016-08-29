@@ -1245,7 +1245,7 @@ deploy_vhost() {
             # localhost
             TEMPLATE="${SHELL_DIR}/package/vhost/${HTTPD_VERSION}/localhost.conf"
             if [ -f "${TEMPLATE}" ]; then
-                copy "${SHELL_DIR}" "${HTTPD_CONF_DIR}/localhost.conf" 644
+                copy "${TEMPLATE}" "${HTTPD_CONF_DIR}/localhost.conf" 644
             fi
 
             # vhost
