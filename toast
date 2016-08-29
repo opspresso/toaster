@@ -243,16 +243,13 @@ init() {
             init_nginx
             ;;
         php5|php55)
-            init_apache
-            init_php55
+            init_php 5
             ;;
         php56)
-            init_apache
-            init_php56
+            init_php 56
             ;;
         php7|php70)
-            init_apache
-            init_php70
+            init_php 70
             ;;
         node|node4)
             init_node4
@@ -469,7 +466,7 @@ prepare() {
             echo "" >> ${BASHRC}
             echo "# toast_profile" >> ${BASHRC}
             echo "if [ -f ~/.toast_profile ]; then" >> ${BASHRC}
-            echo " . ~/.toast_profile" >> ${BASHRC}
+            echo "  . ~/.toast_profile" >> ${BASHRC}
             echo "fi" >> ${BASHRC}
         fi
     fi
@@ -791,13 +788,13 @@ init_auto() {
                 init_nginx
                 ;;
             php5|php55)
-                init_php55
+                init_php 55
                 ;;
             php56)
-                init_php56
+                init_php 56
                 ;;
             php7|php70)
-                init_php70
+                init_php 70
                 ;;
             node|node4)
                 init_node4
@@ -825,20 +822,18 @@ init_auto() {
 }
 
 init_webtatic() {
-    if [ "${YUM}" == "yum" ]; then
-        if [ ! -f "${HOME}/.toast_webtatic" ]; then
-            status=`${SUDO} yum list | grep php56 | wc -l | awk '{print $1}'`
+    if [ ! -f "${HOME}/.toast_webtatic" ]; then
+        status=`${SUDO} yum list | grep php56 | wc -l | awk '{print $1}'`
 
-            if [ ${status} -lt 1 ]; then
-                if [ "${OS_TYPE}" == "el7" ]; then
-                    ${SUDO} rpm -Uvh https://mirror.webtatic.com/yum/el7/webtatic-release.rpm
-                else
-                    ${SUDO} rpm -Uvh https://mirror.webtatic.com/yum/el6/latest.rpm
-                fi
+        if [ ${status} -lt 1 ]; then
+            if [ "${OS_TYPE}" == "el7" ]; then
+                ${SUDO} rpm -Uvh https://mirror.webtatic.com/yum/el7/webtatic-release.rpm
+            else
+                ${SUDO} rpm -Uvh https://mirror.webtatic.com/yum/el6/latest.rpm
             fi
-
-            touch "${HOME}/.toast_webtatic"
         fi
+
+        touch "${HOME}/.toast_webtatic"
     fi
 }
 
@@ -943,72 +938,36 @@ init_nginx () {
     echo_bar
 }
 
-init_php55() {
-    init_webtatic
-
+init_php() {
     if [ ! -f "${HOME}/.toast_php" ]; then
-        echo "init php55..."
+        if [ "${OS_TYPE}" == "Ubuntu" ]; then
+            echo "init php5..."
 
-        status=`${SUDO} yum list | grep php55w | wc -l | awk '{print $1}'`
+            VERSION="5"
 
-        if [ ${status} -ge 1 ]; then
-            service_install "php55w php55w-mysqlnd php55w-mcrypt php55w-gd php55w-mbstring"
+            echo "init php${VERSION}..."
+
+            service_install "php${VERSION} php${VERSION}-mysqlnd php${VERSION}-mcrypt php${VERSION}-gd"
         else
-            service_install "php55 php55-mysqlnd php55-mcrypt php55-gd php55-mbstring"
+            init_webtatic
+
+            VERSION="$1"
+
+            echo "init php${VERSION}..."
+
+            status=`${SUDO} yum list | grep php${VERSION}w | wc -l | awk '{print $1}'`
+
+            if [ ${status} -ge 1 ]; then
+                service_install "php${VERSION}w php${VERSION}w-mysqlnd php${VERSION}w-mcrypt php${VERSION}w-gd php${VERSION}w-mbstring"
+            else
+                service_install "php${VERSION} php${VERSION}-mysqlnd php${VERSION}-mcrypt php${VERSION}-gd php${VERSION}-mbstring"
+            fi
         fi
 
-        touch "${HOME}/.toast_php"
+        init_php_ini
+
+        echo "PHP_VERSION=${VERSION}" > "${HOME}/.toast_php"
     fi
-
-    init_php_ini
-
-    echo_bar
-    php -version
-    echo_bar
-}
-
-init_php56() {
-    init_webtatic
-
-    if [ ! -f "${HOME}/.toast_php" ]; then
-        echo "init php56..."
-
-        status=`${SUDO} yum list | grep php56w | wc -l | awk '{print $1}'`
-
-        if [ ${status} -ge 1 ]; then
-            service_install "php56w php56w-mysqlnd php56w-mcrypt php56w-gd php56w-mbstring"
-        else
-            service_install "php56 php56-mysqlnd php56-mcrypt php56-gd php56-mbstring"
-        fi
-
-        touch "${HOME}/.toast_php"
-    fi
-
-    init_php_ini
-
-    echo_bar
-    php -version
-    echo_bar
-}
-
-init_php70() {
-    init_webtatic
-
-    if [ ! -f "${HOME}/.toast_php" ]; then
-        echo "init php70..."
-
-        status=`${SUDO} yum list | grep php70w | wc -l | awk '{print $1}'`
-
-        if [ ${status} -ge 1 ]; then
-            service_install "php70w php70w-mysqlnd php70w-mcrypt php70w-gd php70w-mbstring"
-        else
-            service_install "php70 php70-mysqlnd php70-mcrypt php70-gd php70-mbstring"
-        fi
-
-        touch "${HOME}/.toast_php"
-    fi
-
-    init_php_ini
 
     echo_bar
     php -version
