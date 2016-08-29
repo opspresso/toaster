@@ -1630,7 +1630,7 @@ process_start() {
 }
 
 add_env() {
-    TARGET="${HOME}/.bash_profile"
+    TARGET="${HOME}/.bashrc"
 
     if [ ! -f "${TARGET}" ]; then
         touch ${TARGET}
