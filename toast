@@ -1483,7 +1483,7 @@ placement() {
     fi
 
     # version status
-    URL="${TOAST_URL}/version/deploy/${PHASE}/${ARTIFACT_ID}/${VERSION}"
+    URL="${TOAST_URL}/version/deploy/${PHASE}/${FLEET}/${ARTIFACT_ID}/${VERSION}"
     RES=`curl -s --data "token=${TOKEN}" ${URL}`
     ARR=(${RES})
 
