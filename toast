@@ -213,6 +213,7 @@ auto() {
     init_auto
 
     deploy_fleet
+    deploy_vhost
 }
 
 update() {
