@@ -92,7 +92,6 @@ SITE_DIR="/data/site"
 APPS_DIR="/data/apps"
 
 HTTPD_VERSION="24"
-HTTPD_CONF_DIR="/etc/httpd/conf.d"
 
 NGINX_CONF_DIR="/usr/local/nginx/conf"
 
@@ -1250,6 +1249,12 @@ lb_down() {
 
 deploy_vhost() {
     echo_bar
+
+    if [ "${OS_TYPE}" == "Ubuntu" ]; then
+        HTTPD_CONF_DIR="/etc/apache2/sites-enabled"
+    else
+        HTTPD_CONF_DIR="/etc/httpd/conf.d"
+    fi
 
     if [ ! -d ${HTTPD_CONF_DIR} ]; then
         echo "not found httpd conf dir. [${HTTPD_CONF_DIR}]"
