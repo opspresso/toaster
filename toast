@@ -1,23 +1,31 @@
 #!/bin/bash
 
-OS_TYPE=`uname`
-if [ ${OS_TYPE} != 'Linux' ]; then
-    echo "Not supported OS - $OS_TYPE"
+# linux
+OS=`uname`
+if [ ${OS} != 'Linux' ]; then
+    echo "Not supported OS - $OS"
     exit 1
 fi
 
-OS_FULL=`uname -a`
-if [ `echo ${OS_FULL} | grep -c "el7" ` -gt 0 ]; then
-    ELX="el7"
-else
-    ELX="el6"
-fi
-
+# root
 if [ "${HOME}" == "/root" ]; then
     echo "Not supported ROOT"
     exit 1
 fi
 
+# el or ubuntu
+OS_FULL=`uname -a`
+if [ `echo ${OS_FULL} | grep -c "Ubuntu" ` -gt 0 ]; then
+    OS_TYPE="Ubuntu"
+else
+    if [ `echo ${OS_FULL} | grep -c "el7" ` -gt 0 ]; then
+        OS_TYPE="el7"
+    else
+        OS_TYPE="el6"
+    fi
+fi
+
+# yum or apt-get
 if [ -f "/usr/bin/yum" ]; then
     YUM="/usr/bin/yum"
 else
@@ -25,12 +33,12 @@ else
         YUM="/usr/bin/apt-get"
     fi
 fi
-
 if [ "${YUM}" == "" ]; then
     echo "Not found yum or apt-get"
     exit 1
 fi
 
+# sudo
 SUDO="sudo"
 
 ################################################################################
@@ -57,6 +65,10 @@ if [ -f "${CONFIG}" ]; then
     . ${CONFIG}
 fi
 
+if [ "${USER}" == "" ]; then
+    USER=`whoami`
+fi
+
 ################################################################################
 
 CMD=$1
@@ -69,10 +81,6 @@ PARAM5=$6
 PARAM6=$7
 PARAM7=$8
 PARAM8=$9
-
-if [ "${USER}" == "" ]; then
-    USER=`whoami`
-fi
 
 TEMP_DIR="/tmp/deploy"
 
@@ -402,7 +410,7 @@ prepare() {
     fi
 
     # yum epel
-    if [ "${YUM}" == "yum" ]; then
+    if [ "${OS_TYPE}" != "Ubuntu" ]; then
         if [ ! -f "${HOME}/.toast_epel" ]; then
             if [ ! -f "/usr/bin/yum-config-manager" ]; then
                 service_install yum-utils
@@ -411,7 +419,7 @@ prepare() {
             # rpm -Uvh https://dl.fedoraproject.org/pub/epel/epel-release-latest-7.noarch.rpm
             # rpm -Uvh https://dl.fedoraproject.org/pub/epel/epel-release-latest-6.noarch.rpm
 
-            if [ "${ELX}" == "el7" ]; then
+            if [ "${OS_TYPE}" == "el7" ]; then
                 ${SUDO} rpm -Uvh https://dl.fedoraproject.org/pub/epel/epel-release-latest-7.noarch.rpm
             else
                 ${SUDO} rpm -Uvh https://dl.fedoraproject.org/pub/epel/epel-release-latest-6.noarch.rpm
@@ -431,8 +439,11 @@ prepare() {
     make_dir "${HOME}/.m2"
     make_dir "${HOME}/.ssh"
 
-    copy ${SHELL_DIR}/package/i18n.txt /etc/sysconfig/i18n 644
-    copy ${SHELL_DIR}/package/selinux.txt /etc/selinux/config 644
+    if [ "${OS_TYPE}" != "Ubuntu" ]; then
+        copy ${SHELL_DIR}/package/i18n.txt /etc/sysconfig/i18n 644
+        copy ${SHELL_DIR}/package/selinux.txt /etc/selinux/config 644
+    fi
+
     copy ${SHELL_DIR}/package/hosts.txt /etc/hosts 644
 
     if [ -f "/usr/sbin/setenforce" ]; then
@@ -442,8 +453,25 @@ prepare() {
     # bashrc
     if [ "${SUDO}" != "" ]; then
         BASHRC="${HOME}/.bashrc"
-        copy "${SHELL_DIR}/package/bashrc.txt" ${BASHRC} 644
-        source ${BASHRC}
+
+        HAS_KEY="false"
+
+        while read line
+        do
+            VAL=(${line})
+
+            if [ "${VAL[1]}" == "toast_profile" ]; then
+                HAS_KEY="true"
+            fi
+        done < ${BASHRC}
+
+        if [ "${HAS_KEY}" == "false" ]; then
+            echo "" >> ${BASHRC}
+            echo "# toast_profile" >> ${BASHRC}
+            echo "if [ -f ~/.toast_profile ]; then" >> ${BASHRC}
+            echo " . ~/.toast_profile" >> ${BASHRC}
+            echo "fi" >> ${BASHRC}
+        fi
     fi
 
     # settings.xml
@@ -728,18 +756,18 @@ init_slave() {
     RES=`curl -s --data "token=${TOKEN}" ${URL}`
 
     if [ "${RES}" != "" ]; then
-        IS_KEY="false"
+        HAS_KEY="false"
 
         while read line
         do
             VAL=(${line})
 
             if [ "${VAL[2]}" == "toast@yanolja.in" ]; then
-                IS_KEY="true"
+                HAS_KEY="true"
             fi
         done < ${AUTH_KEYS}
 
-        if [ "${IS_KEY}" == "false" ]; then
+        if [ "${HAS_KEY}" == "false" ]; then
             echo "${RES}" >> ${AUTH_KEYS}
             chmod 700 ${AUTH_KEYS}
         fi
@@ -802,7 +830,7 @@ init_webtatic() {
             status=`${SUDO} yum list | grep php56 | wc -l | awk '{print $1}'`
 
             if [ ${status} -lt 1 ]; then
-                if [ "${ELX}" == "el7" ]; then
+                if [ "${OS_TYPE}" == "el7" ]; then
                     ${SUDO} rpm -Uvh https://mirror.webtatic.com/yum/el7/webtatic-release.rpm
                 else
                     ${SUDO} rpm -Uvh https://mirror.webtatic.com/yum/el6/latest.rpm
@@ -1569,7 +1597,7 @@ service_install() {
 }
 
 service_ctl() {
-    if [ "${ELX}" == "el7" ]; then
+    if [ "${OS_TYPE}" == "el7" ]; then
         ${SUDO} systemctl $2 $1.service
 
         if [ "$3" == "on" ]; then
@@ -1654,25 +1682,25 @@ process_start() {
 add_env() {
     TARGET="${HOME}/.bash_profile"
 
-    KEY=$1
-    VAL=$2
-
-    IS_KEY="false"
-
     if [ ! -f "${TARGET}" ]; then
         touch ${TARGET}
     fi
+
+    KEY=$1
+    VAL=$2
+
+    HAS_KEY="false"
 
     while read LINE
     do
         KEY1=$(echo ${LINE} | cut -d "=" -f 1)
 
         if [ "${KEY1}" == "export ${KEY}" ]; then
-            IS_KEY="true"
+            HAS_KEY="true"
         fi
     done < ${TARGET}
 
-    if [ "${IS_KEY}" == "false" ]; then
+    if [ "${HAS_KEY}" == "false" ]; then
         echo "export ${KEY}=\"${VAL}\"" >> ${TARGET}
     fi
 
