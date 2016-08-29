@@ -1254,8 +1254,12 @@ deploy_vhost() {
             echo "httpd version [${HTTPD_VERSION}]"
 
             # localhost
-            copy "${SHELL_DIR}/package/vhost/${HTTPD_VERSION}/localhost.conf" "${HTTPD_CONF_DIR}/localhost.conf" 644
+            TEMPLATE="${SHELL_DIR}/package/vhost/${HTTPD_VERSION}/localhost.conf"
+            if [ -f "${TEMPLATE}" ]; then
+                copy "${SHELL_DIR}" "${HTTPD_CONF_DIR}/localhost.conf" 644
+            fi
 
+            # vhost
             TEMPLATE="${SHELL_DIR}/package/vhost/${HTTPD_VERSION}/vhost.conf"
             TEMP_FILE="${TEMP_DIR}/toast-vhost.tmp"
 
