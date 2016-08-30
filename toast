@@ -1124,7 +1124,7 @@ version_next() {
             sed "s/$VER1/$VER2/;10q;" ${DEST_FILE} > ${TEMP_FILE}
             sed "1,10d" ${DEST_FILE} >> ${TEMP_FILE}
 
-            copy ${TEMP_FILE} ${DEST_FILE}
+            cp -rf ${TEMP_FILE} ${DEST_FILE}
         else
             echo "Error - Read Fail : ${DEST_FILE}"
             exit 1
@@ -1200,6 +1200,12 @@ lb_down() {
 
         service_ctl nginx reload
     fi
+}
+
+deploy_lb() {
+    echo_bar
+
+    echo_bar
 }
 
 deploy_vhost() {
