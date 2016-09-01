@@ -1057,7 +1057,7 @@ init_munin() {
 
         service_install munin
 
-        service_ctl munin restart on
+        service_ctl munin-node restart on
 
         touch "${HOME}/.toast_munin"
     fi
