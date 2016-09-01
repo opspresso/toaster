@@ -1051,6 +1051,18 @@ init_rabbitmq() {
     fi
 }
 
+init_munin() {
+    if [ ! -f "${HOME}/.toast_munin" ]; then
+        echo "init munin..."
+
+        service_install munin
+
+        service_ctl munin restart on
+
+        touch "${HOME}/.toast_munin"
+    fi
+}
+
 init_php_ini() {
     if [ "${OS_TYPE}" == "Ubuntu" ]; then
         PHP_INI="/etc/php5/apache2/php.ini"
