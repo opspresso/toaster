@@ -1038,25 +1038,31 @@ init_munin() {
 init_php_ini() {
     if [ "${OS_TYPE}" == "Ubuntu" ]; then
         PHP_INI="/etc/php5/apache2/php.ini"
+
+        if [ ! -f ${PHP_INI} ]; then
+            PHP_INI="/etc/php/7.0/apache2/php.ini"
+        fi
     else
         PHP_INI="/etc/php.ini"
     fi
 
-    TEMP_FILE="${TEMP_DIR}/toast-php-ini.tmp"
+    if [ -f ${PHP_INI} ]; then
+        TEMP_FILE="${TEMP_DIR}/toast-php-ini.tmp"
 
-    # short_open_tag = On
-    sed "s/short\_open\_tag\ \=\ Off/short\_open\_tag\ \=\ On/g" ${PHP_INI} > ${TEMP_FILE}
-    copy ${TEMP_FILE} ${PHP_INI}
+        # short_open_tag = On
+        sed "s/short\_open\_tag\ \=\ Off/short\_open\_tag\ \=\ On/g" ${PHP_INI} > ${TEMP_FILE}
+        copy ${TEMP_FILE} ${PHP_INI}
 
-    # date.timezone = Asia/Seoul
-    sed "s/\;date\.timezone\ \=/date\.timezone\ \=\ Asia\/Seoul/g" ${PHP_INI} > ${TEMP_FILE}
-    copy ${TEMP_FILE} ${PHP_INI}
+        # date.timezone = Asia/Seoul
+        sed "s/\;date\.timezone\ \=/date\.timezone\ \=\ Asia\/Seoul/g" ${PHP_INI} > ${TEMP_FILE}
+        copy ${TEMP_FILE} ${PHP_INI}
+    fi
 }
 
 version_parse() {
     DEST_FILE="./pom.xml"
 
-    if [ ! -f "${DEST_FILE}" ]; then
+    if [ -f "${DEST_FILE}" ]; then
         echo "Not exist file. [${DEST_FILE}]"
         exit 1
     fi
