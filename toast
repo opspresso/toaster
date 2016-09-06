@@ -69,13 +69,14 @@ PARAM6=$7
 PARAM7=$8
 PARAM8=$9
 
-TEMP_DIR="/tmp/deploy"
-
 HAS_WAR="FALSE"
 HAS_JAR="FALSE"
 
-SITE_DIR="/data/site"
-APPS_DIR="/data/apps"
+DATA_DIR="/data"
+APPS_DIR="${DATA_DIR}/apps"
+LOGS_DIR="${DATA_DIR}/logs"
+SITE_DIR="${DATA_DIR}/site"
+TEMP_DIR="/tmp/deploy"
 
 HTTPD_VERSION="24"
 
@@ -194,6 +195,7 @@ auto() {
     init_hosts
     init_aws
     init_slave
+    init_epel
     init_auto
 
     deploy_fleet
@@ -384,6 +386,16 @@ prepare() {
     service_install wget
     service_install unzip
 
+    make_dir ${DATA_DIR}
+    make_dir ${LOGS_DIR}
+    make_dir ${TEMP_DIR}
+
+    make_dir "${HOME}/.m2"
+    make_dir "${HOME}/.ssh"
+
+    # hosts
+    copy ${SHELL_DIR}/package/linux/hosts.txt /etc/hosts 644
+
     # timezone
     if [ ! -f "${HOME}/.toast_time" ]; then
         ${SUDO} rm -rf /etc/localtime
@@ -392,69 +404,14 @@ prepare() {
         touch "${HOME}/.toast_time"
     fi
 
-    # yum epel
-    if [ "${OS_TYPE}" != "Ubuntu" ]; then
-        if [ ! -f "${HOME}/.toast_epel" ]; then
-            if [ ! -f "/usr/bin/yum-config-manager" ]; then
-                service_install yum-utils
-            fi
-
-            # rpm -Uvh https://dl.fedoraproject.org/pub/epel/epel-release-latest-7.noarch.rpm
-            # rpm -Uvh https://dl.fedoraproject.org/pub/epel/epel-release-latest-6.noarch.rpm
-
-            if [ "${OS_TYPE}" == "el7" ]; then
-                ${SUDO} rpm -Uvh https://dl.fedoraproject.org/pub/epel/epel-release-latest-7.noarch.rpm
-            else
-                ${SUDO} rpm -Uvh https://dl.fedoraproject.org/pub/epel/epel-release-latest-6.noarch.rpm
-            fi
-
-            ${SUDO} yum-config-manager --enable epel
-
-            touch "${HOME}/.toast_epel"
-        fi
-    fi
-
-    make_dir "/data"
-    make_dir "/data/logs"
-
-    make_dir "${TEMP_DIR}"
-
-    make_dir "${HOME}/.m2"
-    make_dir "${HOME}/.ssh"
-
+    # i18n & selinux
     if [ "${OS_TYPE}" != "Ubuntu" ]; then
         copy ${SHELL_DIR}/package/linux/i18n.txt /etc/sysconfig/i18n 644
         copy ${SHELL_DIR}/package/linux/selinux.txt /etc/selinux/config 644
     fi
 
-    copy ${SHELL_DIR}/package/linux/hosts.txt /etc/hosts 644
-
     if [ -f "/usr/sbin/setenforce" ]; then
         ${SUDO} setenforce 0
-    fi
-
-    # bashrc
-    if [ "${SUDO}" != "" ]; then
-        BASHRC="${HOME}/.bashrc"
-
-        HAS_KEY="false"
-
-        while read line
-        do
-            VAL=(${line})
-
-            if [ "${VAL[1]}" == "toast_profile" ]; then
-                HAS_KEY="true"
-            fi
-        done < ${BASHRC}
-
-        if [ "${HAS_KEY}" == "false" ]; then
-            echo "" >> ${BASHRC}
-            echo "# toast_profile" >> ${BASHRC}
-            echo "if [ -f ~/.toast_profile ]; then" >> ${BASHRC}
-            echo "  . ~/.toast_profile" >> ${BASHRC}
-            echo "fi" >> ${BASHRC}
-        fi
     fi
 
     # settings.xml
@@ -470,28 +427,6 @@ prepare() {
     # ssh config
     TARGET_FILE="${HOME}/.ssh/config"
     copy "${SHELL_DIR}/package/ssh/config" "${TARGET_FILE}" 600
-
-    # toast config
-    if [ ! -f "${CONFIG}" ]; then
-        copy "${SHELL_DIR}/package/toast.txt" ${CONFIG} 644
-
-        #URL="${TOAST_URL}/config/key/toast"
-        #RES=`curl -s ${URL}`
-        #if [ "${RES}" != "" ]; then
-        #    echo "${RES}" >> ${CONFIG}
-        #fi
-
-        . ${CONFIG}
-    fi
-
-    if [ "${PARAM1}" != "" ]; then
-        PHASE="${PARAM1}"
-        echo "PHASE=${PHASE}" >> ${CONFIG}
-    fi
-    if [ "${PARAM2}" != "" ]; then
-        FLEET="${PARAM2}"
-        echo "FLEET=${FLEET}" >> ${CONFIG}
-    fi
 }
 
 login() {
@@ -659,11 +594,39 @@ init_hosts() {
 }
 
 init_profile() {
+    # bashrc
+    BASHRC="${HOME}/.bashrc"
+
+    if [ `cat ${BASHRC} | grep -c "toast_profile" ` -eq 0 ]; then
+        echo "" >> ${BASHRC}
+        echo "# toast_profile" >> ${BASHRC}
+        echo "if [ -f ~/.toast_profile ]; then" >> ${BASHRC}
+        echo "  . ~/.toast_profile" >> ${BASHRC}
+        echo "fi" >> ${BASHRC}
+    fi
+
+    # toast_profile
     URL="${TOAST_URL}/phase/profile/${PHASE}"
     RES=`curl -s --data "token=${TOKEN}" ${URL}`
 
     if [ "${RES}" != "" ]; then
         ${SUDO} echo "${RES}" > ${HOME}/.toast_profile
+    fi
+
+    # toast config
+    if [ ! -f "${CONFIG}" ]; then
+        copy "${SHELL_DIR}/package/toast.txt" ${CONFIG} 644
+
+        . ${CONFIG}
+    fi
+
+    if [ "${PARAM1}" != "" ]; then
+        PHASE="${PARAM1}"
+        echo "PHASE=${PHASE}" >> ${CONFIG}
+    fi
+    if [ "${PARAM2}" != "" ]; then
+        FLEET="${PARAM2}"
+        echo "FLEET=${FLEET}" >> ${CONFIG}
     fi
 }
 
@@ -738,22 +701,11 @@ init_slave() {
     AUTH_KEYS="${HOME}/.ssh/authorized_keys"
     touch ${AUTH_KEYS}
 
-    URL="${TOAST_URL}/config/key/rsa_public_key"
-    RES=`curl -s --data "token=${TOKEN}" ${URL}`
+    if [ `cat ${AUTH_KEYS} | grep -c "toast@yanolja.in" ` -eq 0 ]; then
+        URL="${TOAST_URL}/config/key/rsa_public_key"
+        RES=`curl -s --data "token=${TOKEN}" ${URL}`
 
-    if [ "${RES}" != "" ]; then
-        HAS_KEY="false"
-
-        while read line
-        do
-            VAL=(${line})
-
-            if [ "${VAL[2]}" == "toast@yanolja.in" ]; then
-                HAS_KEY="true"
-            fi
-        done < ${AUTH_KEYS}
-
-        if [ "${HAS_KEY}" == "false" ]; then
+        if [ "${RES}" != "" ]; then
             echo "${RES}" >> ${AUTH_KEYS}
             chmod 700 ${AUTH_KEYS}
         fi
@@ -807,19 +759,41 @@ init_auto() {
     done
 }
 
-init_webtatic() {
-    if [ ! -f "${HOME}/.toast_webtatic" ]; then
-        status=`${SUDO} yum list | grep php56 | wc -l | awk '{print $1}'`
-
-        if [ ${status} -lt 1 ]; then
-            if [ "${OS_TYPE}" == "el7" ]; then
-                ${SUDO} rpm -Uvh https://mirror.webtatic.com/yum/el7/webtatic-release.rpm
-            else
-                ${SUDO} rpm -Uvh https://mirror.webtatic.com/yum/el6/latest.rpm
+init_epel() {
+    if [ "${OS_TYPE}" != "Ubuntu" ]; then
+        if [ ! -f "${HOME}/.toast_epel" ]; then
+            if [ ! -f "/usr/bin/yum-config-manager" ]; then
+                service_install yum-utils
             fi
-        fi
 
-        touch "${HOME}/.toast_webtatic"
+            if [ "${OS_TYPE}" == "el7" ]; then
+                ${SUDO} rpm -Uvh https://dl.fedoraproject.org/pub/epel/epel-release-latest-7.noarch.rpm
+            else
+                ${SUDO} rpm -Uvh https://dl.fedoraproject.org/pub/epel/epel-release-latest-6.noarch.rpm
+            fi
+
+            ${SUDO} yum-config-manager --enable epel
+
+            touch "${HOME}/.toast_epel"
+        fi
+    fi
+}
+
+init_webtatic() {
+    if [ "${OS_TYPE}" != "Ubuntu" ]; then
+        if [ ! -f "${HOME}/.toast_webtatic" ]; then
+            status=`${SUDO} yum list | grep php56 | wc -l | awk '{print $1}'`
+
+            if [ ${status} -lt 1 ]; then
+                if [ "${OS_TYPE}" == "el7" ]; then
+                    ${SUDO} rpm -Uvh https://mirror.webtatic.com/yum/el7/webtatic-release.rpm
+                else
+                    ${SUDO} rpm -Uvh https://mirror.webtatic.com/yum/el6/latest.rpm
+                fi
+            fi
+
+            touch "${HOME}/.toast_webtatic"
+        fi
     fi
 }
 
