@@ -147,7 +147,6 @@ usage() {
     echo " Usage: toast init"
     echo " Usage: toast init master"
     echo " Usage: toast init slave"
-    echo " Usage: toast init apache"
     echo " Usage: toast init httpd"
     echo " Usage: toast init nginx"
     echo " Usage: toast init php5"
@@ -157,7 +156,6 @@ usage() {
     echo " Usage: toast init tomcat"
     echo " Usage: toast init mysql"
     echo " Usage: toast init redis"
-    echo " Usage: toast init rabbitmq"
     echo_
     echo " Usage: toast version"
     echo " Usage: toast version next"
@@ -227,7 +225,7 @@ init() {
             init_nginx
             ;;
         php5|php55)
-            init_php 5
+            init_php 55
             ;;
         php56)
             init_php 56
