@@ -1638,7 +1638,7 @@ conn() {
         return 1
     fi
 
-    echo "connect... ${CONN_PARAM}"
+    echo "connect... ${CONN_PARAM}..."
 
     # ssh
     ssh ${CONN_PARAM}
