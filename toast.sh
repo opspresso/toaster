@@ -599,7 +599,7 @@ init_profile() {
     # bashrc
     BASHRC="${HOME}/.bashrc"
 
-    if [ `cat ${BASHRC} | grep -c "toast_profile" ` -eq 0 ]; then
+    if [ `cat ${BASHRC} | grep -c "toast_profile"` -eq 0 ]; then
         echo "" >> ${BASHRC}
         echo "# toast_profile" >> ${BASHRC}
         echo "if [ -f ~/.toast_profile ]; then" >> ${BASHRC}
@@ -703,7 +703,7 @@ init_slave() {
     AUTH_KEYS="${HOME}/.ssh/authorized_keys"
     touch ${AUTH_KEYS}
 
-    if [ `cat ${AUTH_KEYS} | grep -c "toast@yanolja.in" ` -eq 0 ]; then
+    if [ `cat ${AUTH_KEYS} | grep -c "toast@yanolja.in"` -eq 0 ]; then
         URL="${TOAST_URL}/config/key/rsa_public_key"
         RES=`curl -s --data "token=${TOKEN}" ${URL}`
 
@@ -1581,25 +1581,38 @@ conn() {
     CONN_LIST="${TEMP_DIR}/${FLEET}"
     CONN_PARAM=""
 
-    echo_bar
-    cat ${CONN_LIST}
-    echo_bar
+    if [ `cat ${CONN_LIST} | wc -l` -eq 1 ]; then
+        while read line
+        do
+            ARR=(${line})
 
-    echo "Please input server no."
-    read READ_NO
+            if [ "${ARR[0]}" != "" ]; then
+                CONN_PARAM="${ARR[1]}@${ARR[2]} -p ${ARR[3]}"
+            fi
+        done < ${CONN_LIST}
+    else
+        echo_bar
+        cat ${CONN_LIST}
+        echo_bar
 
-    while read line
-    do
-        ARR=(${line})
+        echo "Please input server no."
+        read READ_NO
 
-        if [ "${ARR[0]}" == "${READ_NO}" ]; then
-            CONN_PARAM=" ${ARR[1]}@${ARR[2]} -p ${ARR[3]}"
-        fi
-    done < ${CONN_LIST}
+        while read line
+        do
+            ARR=(${line})
+
+            if [ "${ARR[0]}" == "${READ_NO}" ]; then
+                CONN_PARAM="${ARR[1]}@${ARR[2]} -p ${ARR[3]}"
+            fi
+        done < ${CONN_LIST}
+    fi
 
     if [ "${CONN_PARAM}" == "" ]; then
         return 1
     fi
+
+    echo "connect... ${CONN_PARAM}"
 
     ssh ${CONN_PARAM}
 }
