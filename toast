@@ -326,7 +326,7 @@ deploy() {
 health() {
     if [ "${SNO}" == "" ]; then
         echo "Not configured server. [${SNO}]"
-        exit 1
+        return 1
     fi
 
     echo "server health..."
@@ -340,7 +340,7 @@ health() {
 terminate() {
     if [ "${PARAM1}" == "" ]; then
         echo "instance-id does not exist."
-        exit 1
+        return 1
     fi
 
     aws ec2 terminate-instances --instance-ids ${PARAM1} --region ap-northeast-2
@@ -518,11 +518,12 @@ config_read() {
 config_info() {
     if [ ! -f "${CONFIG}" ]; then
         echo "Not exist file. [${CONFIG}]"
-    else
-        echo_bar
-        cat ${CONFIG}
-        echo_bar
+        return 1
     fi
+
+    echo_bar
+    cat ${CONFIG}
+    echo_bar
 }
 
 config_save() {
@@ -758,41 +759,49 @@ init_auto() {
 }
 
 init_epel() {
-    if [ "${OS_TYPE}" != "Ubuntu" ]; then
-        if [ ! -f "${HOME}/.toast_epel" ]; then
-            if [ ! -f "/usr/bin/yum-config-manager" ]; then
-                service_install yum-utils
-            fi
-
-            if [ "${OS_TYPE}" == "el7" ]; then
-                ${SUDO} rpm -Uvh https://dl.fedoraproject.org/pub/epel/epel-release-latest-7.noarch.rpm
-            else
-                ${SUDO} rpm -Uvh https://dl.fedoraproject.org/pub/epel/epel-release-latest-6.noarch.rpm
-            fi
-
-            ${SUDO} yum-config-manager --enable epel
-
-            touch "${HOME}/.toast_epel"
-        fi
+    if [ "${OS_TYPE}" == "Ubuntu" ]; then
+        return 1
     fi
+
+    if [ -f "${HOME}/.toast_epel" ]; then
+        return 1
+    fi
+
+    if [ ! -f "/usr/bin/yum-config-manager" ]; then
+        service_install yum-utils
+    fi
+
+    if [ "${OS_TYPE}" == "el7" ]; then
+        ${SUDO} rpm -Uvh https://dl.fedoraproject.org/pub/epel/epel-release-latest-7.noarch.rpm
+    else
+        ${SUDO} rpm -Uvh https://dl.fedoraproject.org/pub/epel/epel-release-latest-6.noarch.rpm
+    fi
+
+    ${SUDO} yum-config-manager --enable epel
+
+    touch "${HOME}/.toast_epel"
 }
 
 init_webtatic() {
-    if [ "${OS_TYPE}" != "Ubuntu" ]; then
-        if [ ! -f "${HOME}/.toast_webtatic" ]; then
-            status=`${SUDO} yum list | grep php56 | wc -l | awk '{print $1}'`
+    if [ "${OS_TYPE}" == "Ubuntu" ]; then
+        return 1
+    fi
 
-            if [ ${status} -lt 1 ]; then
-                if [ "${OS_TYPE}" == "el7" ]; then
-                    ${SUDO} rpm -Uvh https://mirror.webtatic.com/yum/el7/webtatic-release.rpm
-                else
-                    ${SUDO} rpm -Uvh https://mirror.webtatic.com/yum/el6/latest.rpm
-                fi
-            fi
+    if [ -f "${HOME}/.toast_webtatic" ]; then
+        return 1
+    fi
 
-            touch "${HOME}/.toast_webtatic"
+    status=`${SUDO} yum list | grep php56 | wc -l | awk '{print $1}'`
+
+    if [ ${status} -lt 1 ]; then
+        if [ "${OS_TYPE}" == "el7" ]; then
+            ${SUDO} rpm -Uvh https://mirror.webtatic.com/yum/el7/webtatic-release.rpm
+        else
+            ${SUDO} rpm -Uvh https://mirror.webtatic.com/yum/el6/latest.rpm
         fi
     fi
+
+    touch "${HOME}/.toast_webtatic"
 }
 
 init_httpd() {
@@ -876,13 +885,11 @@ init_nginx () {
 init_php() {
     if [ ! -f "${HOME}/.toast_php" ]; then
         if [ "${OS_TYPE}" == "Ubuntu" ]; then
-            echo "init php5..."
-
-            VERSION="5"
+            VERSION=""
 
             echo "init php${VERSION}..."
 
-            service_install "php${VERSION} php${VERSION}-mysqlnd php${VERSION}-mcrypt php${VERSION}-gd"
+            service_install "php${VERSION} php${VERSION}-mysql php${VERSION}-mcrypt php${VERSION}-gd"
         else
             init_webtatic
 
