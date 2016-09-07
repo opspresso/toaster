@@ -326,7 +326,7 @@ deploy() {
 health() {
     if [ "${SNO}" == "" ]; then
         echo "Not configured server. [${SNO}]"
-        exit 1
+        return 1
     fi
 
     echo "server health..."
@@ -340,7 +340,7 @@ health() {
 terminate() {
     if [ "${PARAM1}" == "" ]; then
         echo "instance-id does not exist."
-        exit 1
+        return 1
     fi
 
     aws ec2 terminate-instances --instance-ids ${PARAM1} --region ap-northeast-2
@@ -518,11 +518,12 @@ config_read() {
 config_info() {
     if [ ! -f "${CONFIG}" ]; then
         echo "Not exist file. [${CONFIG}]"
-    else
-        echo_bar
-        cat ${CONFIG}
-        echo_bar
+        return 1
     fi
+
+    echo_bar
+    cat ${CONFIG}
+    echo_bar
 }
 
 config_save() {
@@ -568,9 +569,9 @@ config_cron() {
     TEMP_FILE="${TEMP_DIR}/toast-cron.tmp"
 
     echo "# yanolja cron" > ${TEMP_FILE}
-    echo "* 1 * * * ${SHELL_DIR}/toast log > /dev/null 2>&1" >> ${TEMP_FILE}
-    echo "* 5 * * * ${SHELL_DIR}/toast update > /dev/null 2>&1" >> ${TEMP_FILE}
-    echo "* * * * * ${SHELL_DIR}/toast health > /dev/null 2>&1" >> ${TEMP_FILE}
+    echo "* 1 * * * ${SHELL_DIR}/toast.sh log > /dev/null 2>&1" >> ${TEMP_FILE}
+    echo "* 5 * * * ${SHELL_DIR}/toast.sh update > /dev/null 2>&1" >> ${TEMP_FILE}
+    echo "* * * * * ${SHELL_DIR}/toast.sh health > /dev/null 2>&1" >> ${TEMP_FILE}
 
     crontab ${TEMP_FILE}
 
@@ -758,41 +759,49 @@ init_auto() {
 }
 
 init_epel() {
-    if [ "${OS_TYPE}" != "Ubuntu" ]; then
-        if [ ! -f "${HOME}/.toast_epel" ]; then
-            if [ ! -f "/usr/bin/yum-config-manager" ]; then
-                service_install yum-utils
-            fi
-
-            if [ "${OS_TYPE}" == "el7" ]; then
-                ${SUDO} rpm -Uvh https://dl.fedoraproject.org/pub/epel/epel-release-latest-7.noarch.rpm
-            else
-                ${SUDO} rpm -Uvh https://dl.fedoraproject.org/pub/epel/epel-release-latest-6.noarch.rpm
-            fi
-
-            ${SUDO} yum-config-manager --enable epel
-
-            touch "${HOME}/.toast_epel"
-        fi
+    if [ "${OS_TYPE}" == "Ubuntu" ]; then
+        return 1
     fi
+
+    if [ -f "${HOME}/.toast_epel" ]; then
+        return 1
+    fi
+
+    if [ ! -f "/usr/bin/yum-config-manager" ]; then
+        service_install yum-utils
+    fi
+
+    if [ "${OS_TYPE}" == "el7" ]; then
+        ${SUDO} rpm -Uvh https://dl.fedoraproject.org/pub/epel/epel-release-latest-7.noarch.rpm
+    else
+        ${SUDO} rpm -Uvh https://dl.fedoraproject.org/pub/epel/epel-release-latest-6.noarch.rpm
+    fi
+
+    ${SUDO} yum-config-manager --enable epel
+
+    touch "${HOME}/.toast_epel"
 }
 
 init_webtatic() {
-    if [ "${OS_TYPE}" != "Ubuntu" ]; then
-        if [ ! -f "${HOME}/.toast_webtatic" ]; then
-            status=`${SUDO} yum list | grep php56 | wc -l | awk '{print $1}'`
+    if [ "${OS_TYPE}" == "Ubuntu" ]; then
+        return 1
+    fi
 
-            if [ ${status} -lt 1 ]; then
-                if [ "${OS_TYPE}" == "el7" ]; then
-                    ${SUDO} rpm -Uvh https://mirror.webtatic.com/yum/el7/webtatic-release.rpm
-                else
-                    ${SUDO} rpm -Uvh https://mirror.webtatic.com/yum/el6/latest.rpm
-                fi
-            fi
+    if [ -f "${HOME}/.toast_webtatic" ]; then
+        return 1
+    fi
 
-            touch "${HOME}/.toast_webtatic"
+    status=`${SUDO} yum list | grep php56 | wc -l | awk '{print $1}'`
+
+    if [ ${status} -lt 1 ]; then
+        if [ "${OS_TYPE}" == "el7" ]; then
+            ${SUDO} rpm -Uvh https://mirror.webtatic.com/yum/el7/webtatic-release.rpm
+        else
+            ${SUDO} rpm -Uvh https://mirror.webtatic.com/yum/el6/latest.rpm
         fi
     fi
+
+    touch "${HOME}/.toast_webtatic"
 }
 
 init_httpd() {
@@ -876,13 +885,11 @@ init_nginx () {
 init_php() {
     if [ ! -f "${HOME}/.toast_php" ]; then
         if [ "${OS_TYPE}" == "Ubuntu" ]; then
-            echo "init php5..."
-
-            VERSION="5"
+            VERSION=""
 
             echo "init php${VERSION}..."
 
-            service_install "php${VERSION} php${VERSION}-mysqlnd php${VERSION}-mcrypt php${VERSION}-gd"
+            service_install "php${VERSION} php${VERSION}-mysql php${VERSION}-mcrypt php${VERSION}-gd"
         else
             init_webtatic
 
@@ -1038,27 +1045,33 @@ init_munin() {
 init_php_ini() {
     if [ "${OS_TYPE}" == "Ubuntu" ]; then
         PHP_INI="/etc/php5/apache2/php.ini"
+
+        if [ ! -f ${PHP_INI} ]; then
+            PHP_INI="/etc/php/7.0/apache2/php.ini"
+        fi
     else
         PHP_INI="/etc/php.ini"
     fi
 
-    TEMP_FILE="${TEMP_DIR}/toast-php-ini.tmp"
+    if [ -f ${PHP_INI} ]; then
+        TEMP_FILE="${TEMP_DIR}/toast-php-ini.tmp"
 
-    # short_open_tag = On
-    sed "s/short\_open\_tag\ \=\ Off/short\_open\_tag\ \=\ On/g" ${PHP_INI} > ${TEMP_FILE}
-    copy ${TEMP_FILE} ${PHP_INI}
+        # short_open_tag = On
+        sed "s/short\_open\_tag\ \=\ Off/short\_open\_tag\ \=\ On/g" ${PHP_INI} > ${TEMP_FILE}
+        copy ${TEMP_FILE} ${PHP_INI}
 
-    # date.timezone = Asia/Seoul
-    sed "s/\;date\.timezone\ \=/date\.timezone\ \=\ Asia\/Seoul/g" ${PHP_INI} > ${TEMP_FILE}
-    copy ${TEMP_FILE} ${PHP_INI}
+        # date.timezone = Asia/Seoul
+        sed "s/\;date\.timezone\ \=/date\.timezone\ \=\ Asia\/Seoul/g" ${PHP_INI} > ${TEMP_FILE}
+        copy ${TEMP_FILE} ${PHP_INI}
+    fi
 }
 
 version_parse() {
     DEST_FILE="./pom.xml"
 
-    if [ ! -f "${DEST_FILE}" ]; then
+    if [ -f "${DEST_FILE}" ]; then
         echo "Not exist file. [${DEST_FILE}]"
-        exit 1
+        return 1
     fi
 
     ARR_GROUP=($(cat ${DEST_FILE} | grep -oP '(?<=groupId>)[^<]+'))
@@ -1086,6 +1099,11 @@ version_parse() {
 }
 
 version_next() {
+    if [ "${ARTIFACT_ID}" == "" ]; then
+        echo "Not set artifact_id. [${ARTIFACT_ID}]"
+        return 1
+    fi
+
     echo "version get..."
 
     URL="${TOAST_URL}/version/latest/${ARTIFACT_ID}"
@@ -1094,31 +1112,34 @@ version_next() {
 
     if [ "${ARR[0]}" != "OK" ]; then
         echo "Server Error. [${URL}][${RES}]"
-    else
-        NEXT_VERSION="${ARR[1]}"
-
-        echo "${NEXT_VERSION}"
-
-        VER1="<version>[\.0-9a-zA-Z]\+<\/version>"
-        VER2="<version>${NEXT_VERSION}<\/version>"
-
-        TEMP_FILE="${TEMP_DIR}/toast-pom.tmp"
-
-        if [ -f ${DEST_FILE} -a -r ${DEST_FILE} ]; then
-            sed "s/$VER1/$VER2/;10q;" ${DEST_FILE} > ${TEMP_FILE}
-            sed "1,10d" ${DEST_FILE} >> ${TEMP_FILE}
-
-            cp -rf ${TEMP_FILE} ${DEST_FILE}
-        else
-            echo "Error - Read Fail : ${DEST_FILE}"
-            exit 1
-        fi
-
-        VERSION=NEXT_VERSION
+        return 1
     fi
+
+    NEXT_VERSION="${ARR[1]}"
+
+    echo "${NEXT_VERSION}"
+
+    VER1="<version>[\.0-9a-zA-Z]\+<\/version>"
+    VER2="<version>${NEXT_VERSION}<\/version>"
+
+    TEMP_FILE="${TEMP_DIR}/toast-pom.tmp"
+
+    if [ -f ${DEST_FILE} -a -r ${DEST_FILE} ]; then
+        sed "s/$VER1/$VER2/;10q;" ${DEST_FILE} > ${TEMP_FILE}
+        sed "1,10d" ${DEST_FILE} >> ${TEMP_FILE}
+
+        cp -rf ${TEMP_FILE} ${DEST_FILE}
+    fi
+
+    VERSION=NEXT_VERSION
 }
 
 version_save() {
+    if [ "${ARTIFACT_ID}" == "" ]; then
+        echo "Not set artifact_id. [${ARTIFACT_ID}]"
+        return 1
+    fi
+
     echo "version save..."
 
     if [ "${REPO_USER}" == "s3" ]; then
@@ -1149,41 +1170,43 @@ version_remove() {
 }
 
 lb_up() {
-    echo "lb up... ${PARAM2}"
-
     if [ ! -d ${NGINX_CONF_DIR} ]; then
         echo "not found nginx conf dir. [${NGINX_CONF_DIR}]"
-    else
-        TEMP_FILE="${TEMP_DIR}/toast-nginx.tmp"
-        NGINX_CONF="${NGINX_CONF_DIR}/nginx.conf"
-
-        CONF1="\#server\s$PARAM2\:80"
-        CONF2=" server $PARAM2:80"
-
-        sed "s/$CONF1/$CONF2/g" ${NGINX_CONF} > ${TEMP_FILE} && copy ${TEMP_FILE} ${NGINX_CONF}
-        cat ${NGINX_CONF} | grep ":80"
-
-        service_ctl nginx reload
+        return 1
     fi
+
+    echo "lb up... ${PARAM2}"
+
+    TEMP_FILE="${TEMP_DIR}/toast-nginx.tmp"
+    NGINX_CONF="${NGINX_CONF_DIR}/nginx.conf"
+
+    CONF1="\#server\s$PARAM2\:80"
+    CONF2=" server $PARAM2:80"
+
+    sed "s/$CONF1/$CONF2/g" ${NGINX_CONF} > ${TEMP_FILE} && copy ${TEMP_FILE} ${NGINX_CONF}
+    cat ${NGINX_CONF} | grep ":80"
+
+    service_ctl nginx reload
 }
 
 lb_down() {
-    echo "lb down... ${PARAM2}"
-
     if [ ! -d ${NGINX_CONF_DIR} ]; then
         echo "not found nginx conf dir. [${NGINX_CONF_DIR}]"
-    else
-        TEMP_FILE="${TEMP_DIR}/toast-nginx.tmp"
-        NGINX_CONF="${NGINX_CONF_DIR}/nginx.conf"
-
-        CONF1="\sserver\s$PARAM2\:80"
-        CONF2="#server $PARAM2:80"
-
-        sed "s/$CONF1/$CONF2/g" ${NGINX_CONF} > ${TEMP_FILE} && copy ${TEMP_FILE} ${NGINX_CONF}
-        cat ${NGINX_CONF} | grep ":80"
-
-        service_ctl nginx reload
+        return 1
     fi
+
+    echo "lb down... ${PARAM2}"
+
+    TEMP_FILE="${TEMP_DIR}/toast-nginx.tmp"
+    NGINX_CONF="${NGINX_CONF_DIR}/nginx.conf"
+
+    CONF1="\sserver\s$PARAM2\:80"
+    CONF2="#server $PARAM2:80"
+
+    sed "s/$CONF1/$CONF2/g" ${NGINX_CONF} > ${TEMP_FILE} && copy ${TEMP_FILE} ${NGINX_CONF}
+    cat ${NGINX_CONF} | grep ":80"
+
+    service_ctl nginx reload
 }
 
 deploy_lb() {
@@ -1193,8 +1216,6 @@ deploy_lb() {
 }
 
 deploy_vhost() {
-    echo_bar
-
     if [ "${OS_TYPE}" == "Ubuntu" ]; then
         HTTPD_CONF_DIR="/etc/apache2/sites-enabled"
     else
@@ -1203,62 +1224,64 @@ deploy_vhost() {
 
     if [ ! -d ${HTTPD_CONF_DIR} ]; then
         echo "not found httpd conf dir. [${HTTPD_CONF_DIR}]"
-    else
-        echo "download vhost..."
+        return 1
+    fi
 
-        VHOST_LIST="${TEMP_DIR}/${FLEET}"
-        rm -rf ${VHOST_LIST}
+    echo_bar
+    echo "download vhost..."
 
-        URL="${TOAST_URL}/target/vhost/${PHASE}/${FLEET}"
-        wget -q -N --post-data "token=${TOKEN}" -P "${TEMP_DIR}" "${URL}"
+    VHOST_LIST="${TEMP_DIR}/${FLEET}"
+    rm -rf ${VHOST_LIST}
 
-        if [ -f ${VHOST_LIST} ]; then
-            echo "placement vhost..."
+    URL="${TOAST_URL}/target/vhost/${PHASE}/${FLEET}"
+    wget -q -N --post-data "token=${TOKEN}" -P "${TEMP_DIR}" "${URL}"
 
-            ${SUDO} rm -rf ${HTTPD_CONF_DIR}/localhost*
-            ${SUDO} rm -rf ${HTTPD_CONF_DIR}/toast*
+    if [ -f ${VHOST_LIST} ]; then
+        echo "placement vhost..."
 
-            TOAST_APACHE="${HOME}/.toast_httpd"
-            if [ -f "${TOAST_APACHE}" ]; then
-                . ${TOAST_APACHE}
-            fi
-            if [ "${HTTPD_VERSION}" == "" ]; then
-                HTTPD_VERSION="24"
-            fi
+        ${SUDO} rm -rf ${HTTPD_CONF_DIR}/localhost*
+        ${SUDO} rm -rf ${HTTPD_CONF_DIR}/toast*
 
-            echo "httpd version [${HTTPD_VERSION}]"
+        TOAST_APACHE="${HOME}/.toast_httpd"
+        if [ -f "${TOAST_APACHE}" ]; then
+            . ${TOAST_APACHE}
+        fi
+        if [ "${HTTPD_VERSION}" == "" ]; then
+            HTTPD_VERSION="24"
+        fi
 
-            # localhost
-            TEMPLATE="${SHELL_DIR}/package/vhost/${HTTPD_VERSION}/localhost.conf"
-            if [ -f "${TEMPLATE}" ]; then
-                copy "${TEMPLATE}" "${HTTPD_CONF_DIR}/localhost.conf" 644
-            fi
+        echo "httpd version [${HTTPD_VERSION}]"
+
+        # localhost
+        TEMPLATE="${SHELL_DIR}/package/vhost/${HTTPD_VERSION}/localhost.conf"
+        if [ -f "${TEMPLATE}" ]; then
+            copy "${TEMPLATE}" "${HTTPD_CONF_DIR}/localhost.conf" 644
+        fi
+
+        # vhost
+        TEMPLATE="${SHELL_DIR}/package/vhost/${HTTPD_VERSION}/vhost.conf"
+        TEMP_FILE="${TEMP_DIR}/toast-vhost.tmp"
+
+        while read line
+        do
+            TARGET=(${line})
+
+            DOM="${TARGET[0]}"
+
+            make_dir "${SITE_DIR}/${DOM}"
+
+            DEST_FILE="${HTTPD_CONF_DIR}/toast-${DOM}.conf"
+
+            echo "--> ${DEST_FILE}"
 
             # vhost
-            TEMPLATE="${SHELL_DIR}/package/vhost/${HTTPD_VERSION}/vhost.conf"
-            TEMP_FILE="${TEMP_DIR}/toast-vhost.tmp"
+            sed "s/DOM/$DOM/g" ${TEMPLATE} > ${TEMP_FILE} && copy ${TEMP_FILE} ${DEST_FILE}
+        done < ${VHOST_LIST}
 
-            while read line
-            do
-                TARGET=(${line})
-
-                DOM="${TARGET[0]}"
-
-                make_dir "${SITE_DIR}/${DOM}"
-
-                DEST_FILE="${HTTPD_CONF_DIR}/toast-${DOM}.conf"
-
-                echo "--> ${DEST_FILE}"
-
-                # vhost
-                sed "s/DOM/$DOM/g" ${TEMPLATE} > ${TEMP_FILE} && copy ${TEMP_FILE} ${DEST_FILE}
-            done < ${VHOST_LIST}
-
-            if [ "${OS_TYPE}" == "Ubuntu" ]; then
-                service_ctl apache2 graceful
-            else
-                service_ctl httpd graceful
-            fi
+        if [ "${OS_TYPE}" == "Ubuntu" ]; then
+            service_ctl apache2 graceful
+        else
+            service_ctl httpd graceful
         fi
     fi
 
@@ -1294,7 +1317,6 @@ deploy_project() {
     UNZIP_DIR="${TEMP_DIR}/${ARTIFACT_ID}"
 
     echo_bar
-
     echo "download..."
 
     download
@@ -1314,7 +1336,6 @@ deploy_fleet() {
     # "deploy fleet"
 
     echo_bar
-
     echo "download target..."
 
     TARGET_FILE="${TEMP_DIR}/${FLEET}"
