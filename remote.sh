@@ -33,9 +33,9 @@ if [ "${PORT}" == "" ]; then
   PORT=22
 fi
 
-COMMAND="~/toaster/toast ${CMD} ${SUB} ${PARAM1} ${PARAM2} ${PARAM3} ${PARAM4} ${PARAM5}"
+COMMAND="~/toaster/toast.sh ${CMD} ${SUB} ${PARAM1} ${PARAM2} ${PARAM3} ${PARAM4} ${PARAM5}"
 
 ssh -t ${USER}@${HOST} -p ${PORT} "${COMMAND}"
 
-# ~/toaster/remote user host port deploy fleet
-# ~/toaster/remote user host port deploy project com.yanolja yanolja.deploy 0.0.2 php deploy.yanolja.com
+# ~/toaster/remote.sh user host port deploy fleet
+# ~/toaster/remote.sh user host port deploy project com.yanolja yanolja.deploy 0.0.2 php deploy.yanolja.com
