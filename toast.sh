@@ -1528,10 +1528,11 @@ conn() {
         CONN_LIST="${TEMP_DIR}/conn"
 
         echo_bar
+        echo "# phase list"
         cat ${CONN_LIST}
         echo_bar
 
-        if [ `cat ${CONN_LIST} | wc -l` -eq 1 ]; then
+        if [ `cat ${CONN_LIST} | wc -l` -lt 2 ]; then
             while read line
             do
                 ARR=(${line})
@@ -1567,10 +1568,11 @@ conn() {
         CONN_LIST="${TEMP_DIR}/${PHASE}"
 
         echo_bar
+        echo "# fleet list"
         cat ${CONN_LIST}
         echo_bar
 
-        if [ `cat ${CONN_LIST} | wc -l` -eq 1 ]; then
+        if [ `cat ${CONN_LIST} | wc -l` -lt 2 ]; then
             while read line
             do
                 ARR=(${line})
@@ -1608,10 +1610,11 @@ conn() {
     CONN_PARAM=""
 
     echo_bar
+    echo "# server list"
     cat ${CONN_LIST}
     echo_bar
 
-    if [ `cat ${CONN_LIST} | wc -l` -eq 1 ]; then
+    if [ `cat ${CONN_LIST} | wc -l` -lt 2 ]; then
         while read line
         do
             ARR=(${line})
@@ -1639,6 +1642,7 @@ conn() {
     fi
 
     echo "connect... ${CONN_PARAM}..."
+    echo_bar
 
     # ssh
     ssh ${CONN_PARAM}
