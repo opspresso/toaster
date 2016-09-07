@@ -1520,6 +1520,7 @@ conn() {
     PHASE="${PARAM1}"
     FLEET="${PARAM2}"
 
+    # phase
     if [ "${PHASE}" == "" ]; then
         URL="${TOAST_URL}/phase/conn"
         wget -q -N --post-data "token=${TOKEN}" -P "${TEMP_DIR}" "${URL}"
@@ -1530,28 +1531,44 @@ conn() {
         cat ${CONN_LIST}
         echo_bar
 
-        echo "Please input phase no."
-        read READ_NO
+        if [ `cat ${CONN_LIST} | wc -l` -eq 1 ]; then
+            while read line
+            do
+                ARR=(${line})
 
-        while read line
-        do
-            ARR=(${line})
+                if [ "${ARR[0]}" != "" ]; then
+                    PHASE="${ARR[1]}"
+                fi
+            done < ${CONN_LIST}
+        else
+            echo "Please input phase no."
+            read READ_NO
 
-            if [ "${ARR[0]}" == "${READ_NO}" ]; then
-                PHASE="${ARR[1]}"
-            fi
-        done < ${CONN_LIST}
+            while read line
+            do
+                ARR=(${line})
+
+                if [ "${ARR[0]}" == "${READ_NO}" ]; then
+                    PHASE="${ARR[1]}"
+                fi
+            done < ${CONN_LIST}
+        fi
 
         if [ "${PHASE}" == "" ]; then
             return 1
         fi
     fi
 
+    # fleet
     if [ "${FLEET}" == "" ]; then
         URL="${TOAST_URL}/fleet/conn/${PHASE}"
         wget -q -N --post-data "token=${TOKEN}" -P "${TEMP_DIR}" "${URL}"
 
         CONN_LIST="${TEMP_DIR}/${PHASE}"
+
+        echo_bar
+        cat ${CONN_LIST}
+        echo_bar
 
         if [ `cat ${CONN_LIST} | wc -l` -eq 1 ]; then
             while read line
@@ -1564,10 +1581,6 @@ conn() {
                 fi
             done < ${CONN_LIST}
         else
-            echo_bar
-            cat ${CONN_LIST}
-            echo_bar
-
             echo "Please input fleet no."
             read READ_NO
 
@@ -1587,11 +1600,16 @@ conn() {
         fi
     fi
 
+    # server
     URL="${TOAST_URL}/server/conn/${PHASE}/${FLEET}"
     wget -q -N --post-data "token=${TOKEN}" -P "${TEMP_DIR}" "${URL}"
 
     CONN_LIST="${TEMP_DIR}/${FLEET}"
     CONN_PARAM=""
+
+    echo_bar
+    cat ${CONN_LIST}
+    echo_bar
 
     if [ `cat ${CONN_LIST} | wc -l` -eq 1 ]; then
         while read line
@@ -1603,10 +1621,6 @@ conn() {
             fi
         done < ${CONN_LIST}
     else
-        echo_bar
-        cat ${CONN_LIST}
-        echo_bar
-
         echo "Please input server no."
         read READ_NO
 
@@ -1624,8 +1638,9 @@ conn() {
         return 1
     fi
 
-    echo "connect... ${CONN_PARAM}"
+    echo "connect... ${CONN_PARAM}..."
 
+    # ssh
     ssh ${CONN_PARAM}
 }
 
