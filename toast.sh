@@ -1553,22 +1553,34 @@ conn() {
 
         CONN_LIST="${TEMP_DIR}/${PHASE}"
 
-        echo_bar
-        cat ${CONN_LIST}
-        echo_bar
+        if [ `cat ${CONN_LIST} | wc -l` -eq 1 ]; then
+            while read line
+            do
+                ARR=(${line})
 
-        echo "Please input fleet no."
-        read READ_NO
+                if [ "${ARR[0]}" != "" ]; then
+                    PHASE="${ARR[1]}"
+                    FLEET="${ARR[2]}"
+                fi
+            done < ${CONN_LIST}
+        else
+            echo_bar
+            cat ${CONN_LIST}
+            echo_bar
 
-        while read line
-        do
-            ARR=(${line})
+            echo "Please input fleet no."
+            read READ_NO
 
-            if [ "${ARR[0]}" == "${READ_NO}" ]; then
-                PHASE="${ARR[1]}"
-                FLEET="${ARR[2]}"
-            fi
-        done < ${CONN_LIST}
+            while read line
+            do
+                ARR=(${line})
+
+                if [ "${ARR[0]}" == "${READ_NO}" ]; then
+                    PHASE="${ARR[1]}"
+                    FLEET="${ARR[2]}"
+                fi
+            done < ${CONN_LIST}
+        fi
 
         if [ "${FLEET}" == "" ]; then
             return 1
