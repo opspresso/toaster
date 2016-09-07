@@ -117,6 +117,9 @@ toast() {
         h|health)
             health
             ;;
+        s|ssh)
+            conn
+            ;;
         l|log)
             log
             ;;
@@ -1511,6 +1514,94 @@ placement() {
     if [ "${ARR[0]}" != "OK" ]; then
         echo "Server Error. [${URL}][${RES}]"
     fi
+}
+
+conn() {
+    PHASE="${PARAM1}"
+    FLEET="${PARAM2}"
+
+    if [ "${PHASE}" == "" ]; then
+        URL="${TOAST_URL}/phase/conn"
+        wget -q -N --post-data "token=${TOKEN}" -P "${TEMP_DIR}" "${URL}"
+
+        CONN_LIST="${TEMP_DIR}/conn"
+
+        echo_bar
+        cat ${CONN_LIST}
+        echo_bar
+
+        echo "Please input phase no."
+        read READ_NO
+
+        while read line
+        do
+            ARR=(${line})
+
+            if [ "${ARR[0]}" == "${READ_NO}" ]; then
+                PHASE="${ARR[1]}"
+            fi
+        done < ${CONN_LIST}
+
+        if [ "${PHASE}" == "" ]; then
+            return 1
+        fi
+    fi
+
+    if [ "${FLEET}" == "" ]; then
+        URL="${TOAST_URL}/fleet/conn/${PHASE}"
+        wget -q -N --post-data "token=${TOKEN}" -P "${TEMP_DIR}" "${URL}"
+
+        CONN_LIST="${TEMP_DIR}/${PHASE}"
+
+        echo_bar
+        cat ${CONN_LIST}
+        echo_bar
+
+        echo "Please input fleet no."
+        read READ_NO
+
+        while read line
+        do
+            ARR=(${line})
+
+            if [ "${ARR[0]}" == "${READ_NO}" ]; then
+                PHASE="${ARR[1]}"
+                FLEET="${ARR[2]}"
+            fi
+        done < ${CONN_LIST}
+
+        if [ "${FLEET}" == "" ]; then
+            return 1
+        fi
+    fi
+
+    URL="${TOAST_URL}/server/conn/${PHASE}/${FLEET}"
+    wget -q -N --post-data "token=${TOKEN}" -P "${TEMP_DIR}" "${URL}"
+
+    CONN_LIST="${TEMP_DIR}/${FLEET}"
+    CONN_PARAM=""
+
+    echo_bar
+    cat ${CONN_LIST}
+    echo_bar
+
+    echo "Please input server no."
+    read READ_NO
+
+    while read line
+    do
+        ARR=(${line})
+
+        if [ "${ARR[0]}" == "${READ_NO}" ]; then
+            CONN_PARAM=" ${ARR[1]}@${ARR[2]} -p ${ARR[3]}"
+        fi
+    done < ${CONN_LIST}
+
+    if [ "${CONN_PARAM}" == "" ]; then
+        return 1
+    fi
+
+    ssh ${CONN_PARAM}
 }
 
 log_tomcat() {
