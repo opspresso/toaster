@@ -47,6 +47,8 @@ SNO=
 
 SHELL_DIR=$(dirname $0)
 
+THIS_DIR=`pwd`
+
 CONFIG="${HOME}/.toast"
 if [ -f "${CONFIG}" ]; then
     . ${CONFIG}
@@ -1070,7 +1072,7 @@ init_php_ini() {
 }
 
 version_parse() {
-    DEST_FILE="./pom.xml"
+    DEST_FILE="${THIS_DIR}/pom.xml"
 
     if [ -f "${DEST_FILE}" ]; then
         echo "Not exist file. [${DEST_FILE}]"
@@ -1161,6 +1163,11 @@ version_save() {
 }
 
 version_remove() {
+    if [ "${ARTIFACT_ID}" == "" ]; then
+        echo "Not set artifact_id. [${ARTIFACT_ID}]"
+        return 1
+    fi
+
     echo "version remove..."
 
     GROUP_PATH=`echo "${GROUP_ID}" | sed "s/\./\//"`
