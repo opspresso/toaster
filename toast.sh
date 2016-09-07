@@ -1531,17 +1531,28 @@ conn() {
         cat ${CONN_LIST}
         echo_bar
 
-        echo "Please input phase no."
-        read READ_NO
+        if [ `cat ${CONN_LIST} | wc -l` -eq 1 ]; then
+            while read line
+            do
+                ARR=(${line})
 
-        while read line
-        do
-            ARR=(${line})
+                if [ "${ARR[0]}" != "" ]; then
+                    PHASE="${ARR[1]}"
+                fi
+            done < ${CONN_LIST}
+        else
+            echo "Please input phase no."
+            read READ_NO
 
-            if [ "${ARR[0]}" == "${READ_NO}" ]; then
-                PHASE="${ARR[1]}"
-            fi
-        done < ${CONN_LIST}
+            while read line
+            do
+                ARR=(${line})
+
+                if [ "${ARR[0]}" == "${READ_NO}" ]; then
+                    PHASE="${ARR[1]}"
+                fi
+            done < ${CONN_LIST}
+        fi
 
         if [ "${PHASE}" == "" ]; then
             return 1
@@ -1555,6 +1566,10 @@ conn() {
 
         CONN_LIST="${TEMP_DIR}/${PHASE}"
 
+        echo_bar
+        cat ${CONN_LIST}
+        echo_bar
+
         if [ `cat ${CONN_LIST} | wc -l` -eq 1 ]; then
             while read line
             do
@@ -1566,10 +1581,6 @@ conn() {
                 fi
             done < ${CONN_LIST}
         else
-            echo_bar
-            cat ${CONN_LIST}
-            echo_bar
-
             echo "Please input fleet no."
             read READ_NO
 
@@ -1596,6 +1607,10 @@ conn() {
     CONN_LIST="${TEMP_DIR}/${FLEET}"
     CONN_PARAM=""
 
+    echo_bar
+    cat ${CONN_LIST}
+    echo_bar
+
     if [ `cat ${CONN_LIST} | wc -l` -eq 1 ]; then
         while read line
         do
@@ -1606,10 +1621,6 @@ conn() {
             fi
         done < ${CONN_LIST}
     else
-        echo_bar
-        cat ${CONN_LIST}
-        echo_bar
-
         echo "Please input server no."
         read READ_NO
 
