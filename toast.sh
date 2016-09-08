@@ -221,7 +221,7 @@ init() {
         aws)
             init_aws
             ;;
-        apache|httpd)
+        httpd)
             init_httpd
             ;;
         nginx)
@@ -721,7 +721,7 @@ init_auto() {
 
     for i in "${ARR[@]}"; do
         case "$i" in
-            apache|httpd)
+            httpd)
                 init_httpd
                 ;;
             nginx)
