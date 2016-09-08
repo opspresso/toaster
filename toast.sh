@@ -638,7 +638,7 @@ init_profile() {
 }
 
 init_aws() {
-    make_dir "${HOME}/.aws"
+    mkdir "${HOME}/.aws"
 
     cp -rf ${SHELL_DIR}/package/aws/config.txt ${HOME}/.aws/config
     cp -rf ${SHELL_DIR}/package/aws/credentials.txt ${HOME}/.aws/credentials
