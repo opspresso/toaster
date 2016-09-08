@@ -640,8 +640,8 @@ init_profile() {
 init_aws() {
     make_dir "${HOME}/.aws"
 
-    copy ${SHELL_DIR}/package/aws/config.txt ${HOME}/.aws/config 600
-    copy ${SHELL_DIR}/package/aws/credentials.txt ${HOME}/.aws/credentials 600
+    cp -rf ${SHELL_DIR}/package/aws/config.txt ${HOME}/.aws/config
+    cp -rf ${SHELL_DIR}/package/aws/credentials.txt ${HOME}/.aws/credentials
 
     TEMP_FILE="${TEMP_DIR}/toast-credentials.tmp"
     DEST_FILE="${HOME}/.aws/credentials"
