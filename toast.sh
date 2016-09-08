@@ -1157,7 +1157,8 @@ version_save() {
     echo "version save..."
 
     if [ "${REPO_USER}" == "s3" ]; then
-        aws s3 sync ~/.m2/repository/${GROUP_PATH}/${ARTIFACT_ID}/ ${REPO_PATH}/${GROUP_PATH}/${ARTIFACT_ID}/
+        S3_PATH="${GROUP_PATH}/${ARTIFACT_ID}/${VERSION}"
+        aws s3 sync ~/.m2/repository/${S3_PATH}/ ${REPO_PATH}/${S3_PATH}/
     fi
 
     URL="${TOAST_URL}/version/build/${ARTIFACT_ID}/${VERSION}"
