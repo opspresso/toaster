@@ -423,11 +423,13 @@ prepare() {
     # settings.xml
     if [ "${REPO_USER}" != "" ]; then
         TARGET_FILE="${HOME}/.m2/settings.xml"
-        copy "${SHELL_DIR}/package/m2/settings.xml" "${TARGET_FILE}" 644
+        cp -rf "${SHELL_DIR}/package/m2/settings.xml" ${TARGET_FILE}
 
         TEMP_FILE="${TEMP_DIR}/settings.tmp"
         sed "s/REPO_USER/$REPO_USER/g" ${TARGET_FILE} > ${TEMP_FILE} && copy ${TEMP_FILE} ${TARGET_FILE}
         sed "s/REPO_PASS/$REPO_PASS/g" ${TARGET_FILE} > ${TEMP_FILE} && copy ${TEMP_FILE} ${TARGET_FILE}
+
+        chmod 644 ${TARGET_FILE}
     fi
 
     # ssh config
@@ -617,12 +619,13 @@ init_profile() {
     RES=`curl -s --data "token=${TOKEN}" ${URL}`
 
     if [ "${RES}" != "" ]; then
-        ${SUDO} echo "${RES}" > ${HOME}/.toast_profile
+        echo "${RES}" > ${HOME}/.toast_profile
     fi
 
     # toast config
     if [ ! -f "${CONFIG}" ]; then
-        copy "${SHELL_DIR}/package/toast.txt" ${CONFIG} 644
+        cp -rf "${SHELL_DIR}/package/toast.txt" ${CONFIG}
+        chmod 644 ${CONFIG}
 
         . ${CONFIG}
     fi
@@ -638,7 +641,11 @@ init_profile() {
 }
 
 init_aws() {
-    mkdir "${HOME}/.aws"
+    AWS_DIR="${HOME}/.aws"
+
+    if [ ! -d ${AWS_DIR} ]; then
+        mkdir ${AWS_DIR}
+    fi
 
     cp -rf ${SHELL_DIR}/package/aws/config.txt ${HOME}/.aws/config
     cp -rf ${SHELL_DIR}/package/aws/credentials.txt ${HOME}/.aws/credentials
@@ -649,13 +656,17 @@ init_aws() {
     URL="${TOAST_URL}/config/key/aws_access_key_id"
     RES=`curl -s --data "token=${TOKEN}" ${URL}`
     if [ "${RES}" != "" ]; then
-        sed "s/AWS_ACCESS_KEY/$RES/g" ${DEST_FILE} > ${TEMP_FILE} && copy ${TEMP_FILE} ${DEST_FILE}
+        sed "s/AWS_ACCESS_KEY/$RES/g" ${DEST_FILE} > ${TEMP_FILE}
+        cp -rf ${TEMP_FILE} ${DEST_FILE}
+        chmod 600 ${DEST_FILE}
     fi
 
     URL="${TOAST_URL}/config/key/aws_secret_access_key"
     RES=`curl -s --data "token=${TOKEN}" ${URL}`
     if [ "${RES}" != "" ]; then
-        sed "s/AWS_SECRET_KEY/$RES/g" ${DEST_FILE} > ${TEMP_FILE} && copy ${TEMP_FILE} ${DEST_FILE}
+        sed "s/AWS_SECRET_KEY/$RES/g" ${DEST_FILE} > ${TEMP_FILE}
+        cp -rf ${TEMP_FILE} ${DEST_FILE}
+        chmod 600 ${DEST_FILE}
     fi
 
     if [ ! -f "/usr/bin/aws" ]; then
