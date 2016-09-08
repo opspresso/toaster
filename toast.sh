@@ -888,7 +888,7 @@ init_nginx () {
 init_php() {
     if [ ! -f "${HOME}/.toast_php" ]; then
         if [ "${OS_TYPE}" == "Ubuntu" ]; then
-            VERSION=""
+            VERSION="5.6"
 
             echo "init php${VERSION}..."
 
