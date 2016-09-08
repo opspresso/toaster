@@ -1057,6 +1057,8 @@ init_php_ini() {
     fi
 
     if [ -f ${PHP_INI} ]; then
+        echo "${PHP_INI}"
+
         TEMP_FILE="${TEMP_DIR}/toast-php-ini.tmp"
 
         # short_open_tag = On
