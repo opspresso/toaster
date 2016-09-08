@@ -647,28 +647,21 @@ init_aws() {
         mkdir ${AWS_DIR}
     fi
 
-    cp -rf ${SHELL_DIR}/package/aws/config.txt ${HOME}/.aws/config
-    cp -rf ${SHELL_DIR}/package/aws/credentials.txt ${HOME}/.aws/credentials
+    # .aws/config
+    DEST_FILE="${HOME}/.aws/config"
+    cp -rf ${SHELL_DIR}/package/aws/config.txt ${DEST_FILE}
+    chmod 600 ${DEST_FILE}
 
-    TEMP_FILE="${TEMP_DIR}/toast-credentials.tmp"
-    DEST_FILE="${HOME}/.aws/credentials"
-
-    URL="${TOAST_URL}/config/key/aws_access_key_id"
+    # .aws/credentials
+    URL="${TOAST_URL}/config/key/aws_credentials"
     RES=`curl -s --data "token=${TOKEN}" ${URL}`
     if [ "${RES}" != "" ]; then
-        sed "s/AWS_ACCESS_KEY/$RES/g" ${DEST_FILE} > ${TEMP_FILE}
-        cp -rf ${TEMP_FILE} ${DEST_FILE}
+        DEST_FILE="${HOME}/.aws/credentials"
+        cat "${RES}" > ${DEST_FILE}
         chmod 600 ${DEST_FILE}
     fi
 
-    URL="${TOAST_URL}/config/key/aws_secret_access_key"
-    RES=`curl -s --data "token=${TOKEN}" ${URL}`
-    if [ "${RES}" != "" ]; then
-        sed "s/AWS_SECRET_KEY/$RES/g" ${DEST_FILE} > ${TEMP_FILE}
-        cp -rf ${TEMP_FILE} ${DEST_FILE}
-        chmod 600 ${DEST_FILE}
-    fi
-
+    # aws cli
     if [ ! -f "/usr/bin/aws" ]; then
         if [ ! -f "${HOME}/.toast_awscli" ]; then
             echo "init aws cli..."
