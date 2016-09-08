@@ -1047,7 +1047,7 @@ init_munin() {
 
 init_php_ini() {
     if [ "${OS_TYPE}" == "Ubuntu" ]; then
-        PHP_INI="/etc/php5/apache2/php.ini"
+        PHP_INI="/etc/php/5.6/apache2/php.ini"
 
         if [ ! -f ${PHP_INI} ]; then
             PHP_INI="/etc/php/7.0/apache2/php.ini"
