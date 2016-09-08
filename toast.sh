@@ -221,7 +221,7 @@ init() {
         aws)
             init_aws
             ;;
-        apache|httpd)
+        httpd)
             init_httpd
             ;;
         nginx)
@@ -721,7 +721,7 @@ init_auto() {
 
     for i in "${ARR[@]}"; do
         case "$i" in
-            apache|httpd)
+            httpd)
                 init_httpd
                 ;;
             nginx)
@@ -888,7 +888,7 @@ init_nginx () {
 init_php() {
     if [ ! -f "${HOME}/.toast_php" ]; then
         if [ "${OS_TYPE}" == "Ubuntu" ]; then
-            VERSION=""
+            VERSION="5.6"
 
             echo "init php${VERSION}..."
 
@@ -1047,7 +1047,7 @@ init_munin() {
 
 init_php_ini() {
     if [ "${OS_TYPE}" == "Ubuntu" ]; then
-        PHP_INI="/etc/php5/apache2/php.ini"
+        PHP_INI="/etc/php/5.6/apache2/php.ini"
 
         if [ ! -f ${PHP_INI} ]; then
             PHP_INI="/etc/php/7.0/apache2/php.ini"
@@ -1057,6 +1057,8 @@ init_php_ini() {
     fi
 
     if [ -f ${PHP_INI} ]; then
+        echo "${PHP_INI}"
+
         TEMP_FILE="${TEMP_DIR}/toast-php-ini.tmp"
 
         # short_open_tag = On
