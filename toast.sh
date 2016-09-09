@@ -306,11 +306,16 @@ lb() {
         d|down)
             lb_down
             ;;
+        *)
+            deploy_lb
     esac
 }
 
 deploy() {
     case ${PARAM1} in
+        b|lb)
+            deploy_lb
+            ;;
         v|vhost)
             deploy_vhost
             ;;
