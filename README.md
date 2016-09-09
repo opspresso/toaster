@@ -2,9 +2,7 @@
 
 ### Install
 ```
-sudo yum install -y git
-
-git clone https://github.com/yanolja/toaster.git
+curl http://toast.sh/install | bash
 
 ~/toaster/toast.sh auto dev demo
 ```
@@ -13,9 +11,7 @@ git clone https://github.com/yanolja/toaster.git
 ```
 #!/bin/bash
 
-yum install -y git
-
-runuser -l ec2-user -c 'git clone https://github.com/yanolja/toaster.git'
+runuser -l ec2-user -c 'curl http://toast.sh/install | bash'
 
 runuser -l ec2-user -c 'cp ~/toaster/package/toast.txt ~/.toast'
 
