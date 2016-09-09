@@ -1157,7 +1157,8 @@ version_save() {
     echo "version save..."
 
     if [ "${REPO_USER}" == "s3" ]; then
-        aws s3 sync ~/.m2/repository/${GROUP_PATH}/${ARTIFACT_ID}/ ${REPO_PATH}/${GROUP_PATH}/${ARTIFACT_ID}/
+        ARTIFACT_PATH="${GROUP_PATH}/${ARTIFACT_ID}/${VERSION}"
+        aws s3 sync ~/.m2/repository/${ARTIFACT_PATH}/ ${REPO_PATH}/${ARTIFACT_PATH}/
     fi
 
     URL="${TOAST_URL}/version/build/${ARTIFACT_ID}/${VERSION}"
@@ -1180,12 +1181,13 @@ version_remove() {
     echo "version remove..."
 
     GROUP_PATH=`echo "${GROUP_ID}" | sed "s/\./\//"`
+    ARTIFACT_PATH="${GROUP_PATH}/${ARTIFACT_ID}/${VERSION}"
 
     if [ "${REPO_USER}" == "s3" ]; then
-        aws s3 rm ${REPO_PATH}/${GROUP_PATH}/${ARTIFACT_ID}/${VERSION} --recursive
+        aws s3 rm ${REPO_PATH}/${ARTIFACT_PATH} --recursive
     fi
 
-    rm -rf ~/.m2/repository/${GROUP_PATH}/${ARTIFACT_ID}/${VERSION}
+    rm -rf ~/.m2/repository/${ARTIFACT_PATH}
 }
 
 lb_up() {
