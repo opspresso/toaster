@@ -2,14 +2,14 @@
 
 # root
 if [ "${HOME}" == "/root" ]; then
-    echo "Not supported ROOT"
+    warning "Not supported ROOT"
     exit 1
 fi
 
 # linux
 OS_NAME=`uname`
 if [ ${OS_NAME} != 'Linux' ]; then
-    echo "Not supported OS - $OS_NAME"
+    warning "Not supported OS - $OS_NAME"
     exit 1
 fi
 
@@ -145,7 +145,7 @@ usage() {
     echo " Usage: toast config"
     echo " Usage: toast config auto"
     echo " Usage: toast config save"
-    echo " Usage: toast config info"
+    echo " Usage: toast config show"
     echo_
     echo " Usage: toast init"
     echo " Usage: toast init master"
@@ -272,7 +272,7 @@ config() {
         cron)
             config_cron
             ;;
-        info|echo|show)
+        show)
             ;;
         *)
             config_read
@@ -306,11 +306,16 @@ lb() {
         d|down)
             lb_down
             ;;
+        *)
+            deploy_lb
     esac
 }
 
 deploy() {
     case ${PARAM1} in
+        b|lb)
+            deploy_lb
+            ;;
         v|vhost)
             deploy_vhost
             ;;
@@ -328,7 +333,7 @@ deploy() {
 
 health() {
     if [ "${SNO}" == "" ]; then
-        echo "Not configured server. [${SNO}]"
+        warning "Not configured server. [${SNO}]"
         return 1
     fi
 
@@ -342,7 +347,7 @@ health() {
 
 terminate() {
     if [ "${PARAM1}" == "" ]; then
-        echo "instance-id does not exist."
+        warning "instance-id does not exist."
         return 1
     fi
 
@@ -443,7 +448,7 @@ login() {
     ARR=(${RES})
 
     if [ "${ARR[0]}" != "OK" ]; then
-        echo "Server Error. [${LOGIN_URL}][${RES}]"
+        warning "Server Error. [${LOGIN_URL}][${RES}]"
     else
         TOKEN="${ARR[1]}"
     fi
@@ -520,7 +525,7 @@ config_read() {
 
 config_info() {
     if [ ! -f "${CONFIG}" ]; then
-        echo "Not exist file. [${CONFIG}]"
+        warning "Not exist file. [${CONFIG}]"
         return 1
     fi
 
@@ -1105,7 +1110,7 @@ version_parse() {
 
 version_next() {
     if [ "${ARTIFACT_ID}" == "" ]; then
-        echo "Not set artifact_id. [${ARTIFACT_ID}]"
+        warning "Not set artifact_id. [${ARTIFACT_ID}]"
         return 1
     fi
 
@@ -1141,7 +1146,7 @@ version_next() {
 
 version_save() {
     if [ "${ARTIFACT_ID}" == "" ]; then
-        echo "Not set artifact_id. [${ARTIFACT_ID}]"
+        warning "Not set artifact_id. [${ARTIFACT_ID}]"
         return 1
     fi
 
@@ -1164,7 +1169,7 @@ version_save() {
 
 version_remove() {
     if [ "${ARTIFACT_ID}" == "" ]; then
-        echo "Not set artifact_id. [${ARTIFACT_ID}]"
+        warning "Not set artifact_id. [${ARTIFACT_ID}]"
         return 1
     fi
 
@@ -1181,7 +1186,7 @@ version_remove() {
 
 lb_up() {
     if [ ! -d ${NGINX_CONF_DIR} ]; then
-        echo "not found nginx conf dir. [${NGINX_CONF_DIR}]"
+        warning "not found nginx conf dir. [${NGINX_CONF_DIR}]"
         return 1
     fi
 
@@ -1201,7 +1206,7 @@ lb_up() {
 
 lb_down() {
     if [ ! -d ${NGINX_CONF_DIR} ]; then
-        echo "not found nginx conf dir. [${NGINX_CONF_DIR}]"
+        warning "not found nginx conf dir. [${NGINX_CONF_DIR}]"
         return 1
     fi
 
@@ -1220,8 +1225,13 @@ lb_down() {
 }
 
 deploy_lb() {
-    echo_bar
+    if [ ! -d ${NGINX_CONF_DIR} ]; then
+        warning "not found nginx conf dir. [${NGINX_CONF_DIR}]"
+        return 1
+    fi
 
+    echo_bar
+    cat ${NGINX_CONF} | grep ":80"
     echo_bar
 }
 
@@ -1519,7 +1529,7 @@ placement() {
     ARR=(${RES})
 
     if [ "${ARR[0]}" != "OK" ]; then
-        echo "Server Error. [${URL}][${RES}]"
+        warning "Server Error. [${URL}][${RES}]"
     fi
 }
 
@@ -1848,9 +1858,17 @@ echo_() {
     echo ""
 }
 
+success() {
+    echo "$(tput setaf 2)$1$(tput sgr0)"
+}
+
+warning() {
+    echo "$(tput setaf 1)$1$(tput sgr0)"
+}
+
 ################################################################################
 
 toast
 
 # done
-echo "done."
+success "done."
