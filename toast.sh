@@ -145,7 +145,7 @@ usage() {
     echo " Usage: toast config"
     echo " Usage: toast config auto"
     echo " Usage: toast config save"
-    echo " Usage: toast config info"
+    echo " Usage: toast config show"
     echo_
     echo " Usage: toast init"
     echo " Usage: toast init master"
@@ -272,7 +272,7 @@ config() {
         cron)
             config_cron
             ;;
-        info|echo|show)
+        show)
             ;;
         *)
             config_read
@@ -1220,8 +1220,13 @@ lb_down() {
 }
 
 deploy_lb() {
-    echo_bar
+    if [ ! -d ${NGINX_CONF_DIR} ]; then
+        warning "not found nginx conf dir. [${NGINX_CONF_DIR}]"
+        return 1
+    fi
 
+    echo_bar
+    cat ${NGINX_CONF} | grep ":80"
     echo_bar
 }
 
