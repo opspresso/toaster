@@ -1,6 +1,7 @@
 # yanolja toast config
 LOGIN_URL=https://member.yanolja.com/ywt/loginToken
 TOAST_URL=http://deploy.yanolja.com
-REPO_PATH=http://toast.yanolja.com/uploads
+REPO_PATH=s3://repo.yanolja.com/maven2
+REPO_USER=s3
 PHASE=dev
 FLEET=demo
