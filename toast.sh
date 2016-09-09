@@ -657,7 +657,7 @@ init_aws() {
     RES=`curl -s --data "token=${TOKEN}" ${URL}`
     if [ "${RES}" != "" ]; then
         DEST_FILE="${HOME}/.aws/credentials"
-        cat "${RES}" > ${DEST_FILE}
+        echo "${RES}" > ${DEST_FILE}
         chmod 600 ${DEST_FILE}
     fi
 
