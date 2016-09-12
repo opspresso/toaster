@@ -4,7 +4,7 @@
 ```
 curl -s http://toast.sh/install | bash
 
-~/toaster/toast.sh auto dev demo
+~/toaster/toast.sh auto {fleet} {phase} {org}
 ```
 
 ### AWS User data
@@ -13,12 +13,7 @@ curl -s http://toast.sh/install | bash
 
 runuser -l ec2-user -c 'curl -s http://toast.sh/install | bash'
 
-runuser -l ec2-user -c 'cp ~/toaster/package/toast.txt ~/.toast'
-
-runuser -l ec2-user -c 'echo "PHASE=dev" >> ~/.toast'
-runuser -l ec2-user -c 'echo "FLEET=demo" >> ~/.toast'
-
-runuser -l ec2-user -c '~/toaster/toast.sh auto'
+runuser -l ec2-user -c '~/toaster/toast.sh auto {fleet} {phase} {org}'
 ```
 
 ```
