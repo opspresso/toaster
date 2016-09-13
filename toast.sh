@@ -147,7 +147,7 @@ usage() {
     echo " Usage: toast config"
     echo " Usage: toast config auto"
     echo " Usage: toast config save"
-    echo " Usage: toast config show"
+    echo " Usage: toast config info"
     echo_
     echo " Usage: toast init"
     echo " Usage: toast init master"
@@ -172,7 +172,7 @@ usage() {
     echo_
     echo " Usage: toast vhost"
     echo " Usage: toast vhost fleet"
-    echo " Usage: toast vhost project"
+    echo " Usage: toast vhost domain"
     echo_
     echo " Usage: toast deploy"
     echo " Usage: toast deploy fleet"
@@ -267,17 +267,17 @@ init() {
 
 config() {
     case ${PARAM1} in
-        auto)
+        a|auto)
             config_auto
             config_save
             ;;
-        save)
+        s|save)
             config_save
             ;;
-        cron)
+        c|cron)
             config_cron
             ;;
-        show)
+        i|info)
             ;;
         *)
             config_read
@@ -291,13 +291,13 @@ version() {
     version_parse
 
     case ${PARAM1} in
-        next)
+        n|next)
             version_next
             ;;
-        save)
+        s|save)
             version_save
             ;;
-        remove)
+        d|remove)
             version_remove
             ;;
     esac
