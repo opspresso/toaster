@@ -486,6 +486,12 @@ config_read() {
         REPO_PATH=${READ_REPO_PATH}
     fi
 
+    echo "Please input server org. [default:${ORG}]"
+    read READ_ORG
+    if [ "${READ_ORG}" != "" ]; then
+        ORG=${READ_ORG}
+    fi
+
     echo "Please input server phase. [default:${PHASE}]"
     read READ_PHASE
     if [ "${READ_PHASE}" != "" ]; then
