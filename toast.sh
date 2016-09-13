@@ -33,8 +33,7 @@ SUDO="sudo"
 LOGIN_URL=
 TOAST_URL=
 REPO_PATH=
-REPO_USER=
-REPO_PASS=
+ORG=
 PHASE=
 FLEET=
 ID=
@@ -102,20 +101,23 @@ toast() {
         i|init)
             init
             ;;
-        t|terminate)
-            terminate
-            ;;
         v|version)
             version
             ;;
         b|lb)
             lb
             ;;
+        h|vhost)
+            vhost
+            ;;
         d|deploy)
             deploy
             ;;
         h|health)
             health
+            ;;
+        t|terminate)
+            terminate
             ;;
         s|ssh)
             conn
@@ -145,7 +147,7 @@ usage() {
     echo " Usage: toast config"
     echo " Usage: toast config auto"
     echo " Usage: toast config save"
-    echo " Usage: toast config show"
+    echo " Usage: toast config info"
     echo_
     echo " Usage: toast init"
     echo " Usage: toast init master"
@@ -168,8 +170,11 @@ usage() {
     echo " Usage: toast lb up"
     echo " Usage: toast lb down"
     echo_
+    echo " Usage: toast vhost"
+    echo " Usage: toast vhost fleet"
+    echo " Usage: toast vhost domain"
+    echo_
     echo " Usage: toast deploy"
-    echo " Usage: toast deploy vhost"
     echo " Usage: toast deploy fleet"
     echo " Usage: toast deploy project"
     echo_
@@ -200,7 +205,7 @@ auto() {
     init_auto
 
     deploy_fleet
-    deploy_vhost
+    vhost_fleet
 }
 
 update() {
@@ -262,17 +267,17 @@ init() {
 
 config() {
     case ${PARAM1} in
-        auto)
+        a|auto)
             config_auto
             config_save
             ;;
-        save)
+        s|save)
             config_save
             ;;
-        cron)
+        c|cron)
             config_cron
             ;;
-        show)
+        i|info)
             ;;
         *)
             config_read
@@ -286,13 +291,13 @@ version() {
     version_parse
 
     case ${PARAM1} in
-        next)
+        n|next)
             version_next
             ;;
-        save)
+        s|save)
             version_save
             ;;
-        remove)
+        d|remove)
             version_remove
             ;;
     esac
@@ -307,27 +312,30 @@ lb() {
             lb_down
             ;;
         *)
-            deploy_lb
+            vhost_lb
+    esac
+}
+
+vhost() {
+    case ${PARAM1} in
+        b|lb)
+            vhost_lb
+            ;;
+        d|domain)
+            vhost_domain
+            ;;
+        *)
+            vhost_fleet
     esac
 }
 
 deploy() {
     case ${PARAM1} in
-        b|lb)
-            deploy_lb
-            ;;
-        v|vhost)
-            deploy_vhost
-            ;;
-        f|fleet)
-            deploy_fleet
-            ;;
         p|project)
             deploy_project
             ;;
         *)
             deploy_fleet
-            deploy_vhost
     esac
 }
 
@@ -340,7 +348,7 @@ health() {
     echo "server health..."
 
     URL="${TOAST_URL}/server/health/${SNO}"
-    RES=`curl -s ${URL}`
+    RES=`curl -s --data "org=${ORG}&token=${TOKEN}" ${URL}`
 
     echo "${RES}"
 }
@@ -373,9 +381,11 @@ self_info() {
     echo_bar
     echo "OS    : ${OS_NAME} ${OS_TYPE}"
     echo "HOME  : ${HOME}"
-    echo "NAME  : ${NAME}"
+    echo_bar
+    echo "ORG   : ${ORG}"
     echo "PHASE : ${PHASE}"
     echo "FLEET : ${FLEET}"
+    echo "NAME  : ${NAME}"
     echo_bar
 }
 
@@ -418,18 +428,6 @@ prepare() {
 
     if [ -f "/usr/sbin/setenforce" ]; then
         ${SUDO} setenforce 0
-    fi
-
-    # settings.xml
-    if [ "${REPO_USER}" != "" ]; then
-        TARGET_FILE="${HOME}/.m2/settings.xml"
-        cp -rf "${SHELL_DIR}/package/m2/settings.xml" ${TARGET_FILE}
-
-        TEMP_FILE="${TEMP_DIR}/settings.tmp"
-        sed "s/REPO_USER/$REPO_USER/g" ${TARGET_FILE} > ${TEMP_FILE} && copy ${TEMP_FILE} ${TARGET_FILE}
-        sed "s/REPO_PASS/$REPO_PASS/g" ${TARGET_FILE} > ${TEMP_FILE} && copy ${TEMP_FILE} ${TARGET_FILE}
-
-        chmod 644 ${TARGET_FILE}
     fi
 
     # ssh config
@@ -540,7 +538,7 @@ config_save() {
     echo "server save..."
 
     URL="${TOAST_URL}/server/config"
-    RES=`curl -s --data "token=${TOKEN}&no=${SNO}&phase=${PHASE}&fleet=${FLEET}&name=${NAME}&host=${HOST}&port=${PORT}&user=${USER}&id=${ID}" ${URL}`
+    RES=`curl -s --data "token=${TOKEN}&no=${SNO}&org=${ORG}&phase=${PHASE}&fleet=${FLEET}&name=${NAME}&host=${HOST}&port=${PORT}&user=${USER}&id=${ID}" ${URL}`
     ARR=(${RES})
 
     if [ "${ARR[0]}" != "OK" ]; then
@@ -558,8 +556,7 @@ config_save() {
     echo "LOGIN_URL=\"${LOGIN_URL}\"" >> ${CONFIG}
     echo "TOAST_URL=\"${TOAST_URL}\"" >> ${CONFIG}
     echo "REPO_PATH=\"${REPO_PATH}\"" >> ${CONFIG}
-    echo "REPO_USER=\"${REPO_USER}\"" >> ${CONFIG}
-    echo "REPO_PASS=\"${REPO_PASS}\"" >> ${CONFIG}
+    echo "ORG=\"${ORG}\"" >> ${CONFIG}
     echo "PHASE=\"${PHASE}\"" >> ${CONFIG}
     echo "FLEET=\"${FLEET}\"" >> ${CONFIG}
     echo "ID=\"${ID}\"" >> ${CONFIG}
@@ -592,7 +589,7 @@ config_cron() {
 
 init_hosts() {
     URL="${TOAST_URL}/phase/hosts/${PHASE}"
-    RES=`curl -s --data "token=${TOKEN}" ${URL}`
+    RES=`curl -s --data "org=${ORG}&token=${TOKEN}" ${URL}`
 
     if [ "${RES}" != "" ]; then
         ${SUDO} echo "# yanolja hosts" > /etc/hosts
@@ -612,11 +609,12 @@ init_profile() {
         echo "if [ -f ~/.toast_profile ]; then" >> ${BASHRC}
         echo "  . ~/.toast_profile" >> ${BASHRC}
         echo "fi" >> ${BASHRC}
+        echo "" >> ${BASHRC}
     fi
 
     # toast_profile
     URL="${TOAST_URL}/phase/profile/${PHASE}"
-    RES=`curl -s --data "token=${TOKEN}" ${URL}`
+    RES=`curl -s --data "org=${ORG}&token=${TOKEN}" ${URL}`
 
     if [ "${RES}" != "" ]; then
         echo "${RES}" > ${HOME}/.toast_profile
@@ -630,13 +628,18 @@ init_profile() {
         . ${CONFIG}
     fi
 
+    #  fleet phase org
     if [ "${PARAM1}" != "" ]; then
-        PHASE="${PARAM1}"
-        echo "PHASE=${PHASE}" >> ${CONFIG}
+        FLEET="${PARAM1}"
+        echo "FLEET=${FLEET}" >> ${CONFIG}
     fi
     if [ "${PARAM2}" != "" ]; then
-        FLEET="${PARAM2}"
-        echo "FLEET=${FLEET}" >> ${CONFIG}
+        PHASE="${PARAM2}"
+        echo "PHASE=${PHASE}" >> ${CONFIG}
+    fi
+    if [ "${PARAM3}" != "" ]; then
+        ORG="${PARAM3}"
+        echo "ORG=${ORG}" >> ${CONFIG}
     fi
 }
 
@@ -654,7 +657,7 @@ init_aws() {
 
     # .aws/credentials
     URL="${TOAST_URL}/config/key/aws_credentials"
-    RES=`curl -s --data "token=${TOKEN}" ${URL}`
+    RES=`curl -s --data "org=${ORG}&token=${TOKEN}" ${URL}`
     if [ "${RES}" != "" ]; then
         DEST_FILE="${HOME}/.aws/credentials"
         echo "${RES}" > ${DEST_FILE}
@@ -688,7 +691,7 @@ init_master() {
     touch ${ID_RSA}
 
     URL="${TOAST_URL}/config/key/rsa_private_key"
-    RES=`curl -s --data "token=${TOKEN}" ${URL}`
+    RES=`curl -s --data "org=${ORG}&token=${TOKEN}" ${URL}`
 
     if [ "${RES}" != "" ]; then
         echo "${RES}" > ${ID_RSA}
@@ -700,7 +703,7 @@ init_master() {
     touch ${ID_RSA_PUB}
 
     URL="${TOAST_URL}/config/key/rsa_public_key"
-    RES=`curl -s --data "token=${TOKEN}" ${URL}`
+    RES=`curl -s --data "org=${ORG}&token=${TOKEN}" ${URL}`
 
     if [ "${RES}" != "" ]; then
         echo "${RES}" > ${ID_RSA_PUB}
@@ -714,7 +717,7 @@ init_slave() {
 
     if [ `cat ${AUTH_KEYS} | grep -c "toast@yanolja.in"` -eq 0 ]; then
         URL="${TOAST_URL}/config/key/rsa_public_key"
-        RES=`curl -s --data "token=${TOKEN}" ${URL}`
+        RES=`curl -s --data "org=${ORG}&token=${TOKEN}" ${URL}`
 
         if [ "${RES}" != "" ]; then
             echo "${RES}" >> ${AUTH_KEYS}
@@ -725,7 +728,7 @@ init_slave() {
 
 init_auto() {
     URL="${TOAST_URL}/fleet/apps/${PHASE}/${FLEET}"
-    RES=`curl -s --data "token=${TOKEN}" ${URL}`
+    RES=`curl -s --data "org=${ORG}&token=${TOKEN}" ${URL}`
     ARR=(${RES})
 
     for i in "${ARR[@]}"; do
@@ -1121,7 +1124,7 @@ version_next() {
     echo "version get..."
 
     URL="${TOAST_URL}/version/latest/${ARTIFACT_ID}"
-    RES=`curl -s --data "token=${TOKEN}" ${URL}`
+    RES=`curl -s --data "org=${ORG}&token=${TOKEN}" ${URL}`
     ARR=(${RES})
 
     if [ "${ARR[0]}" != "OK" ]; then
@@ -1156,13 +1159,12 @@ version_save() {
 
     echo "version save..."
 
-    if [ "${REPO_USER}" == "s3" ]; then
-        ARTIFACT_PATH="${GROUP_PATH}/${ARTIFACT_ID}/${VERSION}"
-        aws s3 sync ~/.m2/repository/${ARTIFACT_PATH}/ ${REPO_PATH}/${ARTIFACT_PATH}/
-    fi
+    ARTIFACT_PATH="${GROUP_PATH}/${ARTIFACT_ID}/${VERSION}"
+
+    aws s3 sync ~/.m2/repository/${ARTIFACT_PATH}/ ${REPO_PATH}/${ARTIFACT_PATH}/
 
     URL="${TOAST_URL}/version/build/${ARTIFACT_ID}/${VERSION}"
-    RES=`curl -s --data "token=${TOKEN}" ${URL}`
+    RES=`curl -s --data "org=${ORG}&token=${TOKEN}" ${URL}`
     ARR=(${RES})
 
     if [ "${ARR[0]}" != "OK" ]; then
@@ -1183,9 +1185,7 @@ version_remove() {
     GROUP_PATH=`echo "${GROUP_ID}" | sed "s/\./\//"`
     ARTIFACT_PATH="${GROUP_PATH}/${ARTIFACT_ID}/${VERSION}"
 
-    if [ "${REPO_USER}" == "s3" ]; then
-        aws s3 rm ${REPO_PATH}/${ARTIFACT_PATH} --recursive
-    fi
+    aws s3 rm ${REPO_PATH}/${ARTIFACT_PATH} --recursive
 
     rm -rf ~/.m2/repository/${ARTIFACT_PATH}
 }
@@ -1230,7 +1230,7 @@ lb_down() {
     service_ctl nginx reload
 }
 
-deploy_lb() {
+vhost_lb() {
     if [ ! -d ${NGINX_CONF_DIR} ]; then
         warning "not found nginx conf dir. [${NGINX_CONF_DIR}]"
         return 1
@@ -1241,7 +1241,9 @@ deploy_lb() {
     echo_bar
 }
 
-deploy_vhost() {
+vhost_domain() {
+    # "vhost domain deploy.yanolja.com"
+
     if [ "${OS_TYPE}" == "Ubuntu" ]; then
         HTTPD_CONF_DIR="/etc/apache2/sites-enabled"
     else
@@ -1254,35 +1256,90 @@ deploy_vhost() {
     fi
 
     echo_bar
-    echo "download vhost..."
+    echo "vhost..."
+
+    TOAST_APACHE="${HOME}/.toast_httpd"
+    if [ -f "${TOAST_APACHE}" ]; then
+        . ${TOAST_APACHE}
+    fi
+    if [ "${HTTPD_VERSION}" == "" ]; then
+        HTTPD_VERSION="24"
+    fi
+
+    echo "httpd version [${HTTPD_VERSION}]"
+
+    # localhost
+    TEMPLATE="${SHELL_DIR}/package/vhost/${HTTPD_VERSION}/localhost.conf"
+    if [ -f "${TEMPLATE}" ]; then
+        copy ${TEMPLATE} "${HTTPD_CONF_DIR}/localhost.conf" 644
+    fi
+
+    # vhost
+    TEMPLATE="${SHELL_DIR}/package/vhost/${HTTPD_VERSION}/vhost.conf"
+    TEMP_FILE="${TEMP_DIR}/toast-vhost.tmp"
+
+    DOM="${PARAM2}"
+
+    make_dir "${SITE_DIR}/${DOM}"
+
+    DEST_FILE="${HTTPD_CONF_DIR}/toast-${DOM}.conf"
+
+    echo "--> ${DEST_FILE}"
+
+    # vhost
+    sed "s/DOM/$DOM/g" ${TEMPLATE} > ${TEMP_FILE} && copy ${TEMP_FILE} ${DEST_FILE} 644
+
+    if [ "${OS_TYPE}" == "Ubuntu" ]; then
+        service_ctl apache2 graceful
+    else
+        service_ctl httpd graceful
+    fi
+
+    echo_bar
+}
+
+vhost_fleet() {
+    if [ "${OS_TYPE}" == "Ubuntu" ]; then
+        HTTPD_CONF_DIR="/etc/apache2/sites-enabled"
+    else
+        HTTPD_CONF_DIR="/etc/httpd/conf.d"
+    fi
+
+    if [ ! -d ${HTTPD_CONF_DIR} ]; then
+        echo "not found httpd conf dir. [${HTTPD_CONF_DIR}]"
+        return 1
+    fi
+
+    echo_bar
+    echo "vhost fleet..."
+
+    TOAST_APACHE="${HOME}/.toast_httpd"
+    if [ -f "${TOAST_APACHE}" ]; then
+        . ${TOAST_APACHE}
+    fi
+    if [ "${HTTPD_VERSION}" == "" ]; then
+        HTTPD_VERSION="24"
+    fi
+
+    echo "httpd version [${HTTPD_VERSION}]"
+
+    ${SUDO} rm -rf ${HTTPD_CONF_DIR}/localhost*
+    ${SUDO} rm -rf ${HTTPD_CONF_DIR}/toast*
+
+    # localhost
+    TEMPLATE="${SHELL_DIR}/package/vhost/${HTTPD_VERSION}/localhost.conf"
+    if [ -f "${TEMPLATE}" ]; then
+        copy ${TEMPLATE} "${HTTPD_CONF_DIR}/localhost.conf" 644
+    fi
 
     VHOST_LIST="${TEMP_DIR}/${FLEET}"
     rm -rf ${VHOST_LIST}
 
     URL="${TOAST_URL}/target/vhost/${PHASE}/${FLEET}"
-    wget -q -N --post-data "token=${TOKEN}" -P "${TEMP_DIR}" "${URL}"
+    wget -q -N --post-data "org=${ORG}&token=${TOKEN}" -P "${TEMP_DIR}" "${URL}"
 
     if [ -f ${VHOST_LIST} ]; then
         echo "placement vhost..."
-
-        ${SUDO} rm -rf ${HTTPD_CONF_DIR}/localhost*
-        ${SUDO} rm -rf ${HTTPD_CONF_DIR}/toast*
-
-        TOAST_APACHE="${HOME}/.toast_httpd"
-        if [ -f "${TOAST_APACHE}" ]; then
-            . ${TOAST_APACHE}
-        fi
-        if [ "${HTTPD_VERSION}" == "" ]; then
-            HTTPD_VERSION="24"
-        fi
-
-        echo "httpd version [${HTTPD_VERSION}]"
-
-        # localhost
-        TEMPLATE="${SHELL_DIR}/package/vhost/${HTTPD_VERSION}/localhost.conf"
-        if [ -f "${TEMPLATE}" ]; then
-            copy "${TEMPLATE}" "${HTTPD_CONF_DIR}/localhost.conf" 644
-        fi
 
         # vhost
         TEMPLATE="${SHELL_DIR}/package/vhost/${HTTPD_VERSION}/vhost.conf"
@@ -1301,14 +1358,14 @@ deploy_vhost() {
             echo "--> ${DEST_FILE}"
 
             # vhost
-            sed "s/DOM/$DOM/g" ${TEMPLATE} > ${TEMP_FILE} && copy ${TEMP_FILE} ${DEST_FILE}
+            sed "s/DOM/$DOM/g" ${TEMPLATE} > ${TEMP_FILE} && copy ${TEMP_FILE} ${DEST_FILE} 644
         done < ${VHOST_LIST}
+    fi
 
-        if [ "${OS_TYPE}" == "Ubuntu" ]; then
-            service_ctl apache2 graceful
-        else
-            service_ctl httpd graceful
-        fi
+    if [ "${OS_TYPE}" == "Ubuntu" ]; then
+        service_ctl apache2 graceful
+    else
+        service_ctl httpd graceful
     fi
 
     echo_bar
@@ -1359,8 +1416,6 @@ deploy_project() {
 }
 
 deploy_fleet() {
-    # "deploy fleet"
-
     echo_bar
     echo "download target..."
 
@@ -1368,7 +1423,7 @@ deploy_fleet() {
     rm -rf ${TARGET_FILE}
 
     URL="${TOAST_URL}/target/deploy/${PHASE}/${FLEET}"
-    wget -q -N --post-data "token=${TOKEN}" -P "${TEMP_DIR}" "${URL}"
+    wget -q -N --post-data "org=${ORG}&token=${TOKEN}" -P "${TEMP_DIR}" "${URL}"
 
     if [ -f ${TARGET_FILE} ]; then
         echo "download..."
@@ -1440,15 +1495,7 @@ download() {
         rm -rf "${FILEPATH}"
     fi
 
-    if [ "${REPO_USER}" == "s3" ]; then
-        aws s3 cp "${SOURCE}" "${TEMP_DIR}"
-    else
-        if [ "${REPO_USER}" == "" ] || [ "${REPO_PASS}" == "" ]; then
-            wget -q -N -P "${TEMP_DIR}" "${SOURCE}"
-        else
-            wget -q -N -P "${TEMP_DIR}" --user "${REPO_USER}" --password "${REPO_PASS}" "${SOURCE}"
-        fi
-    fi
+    aws s3 cp "${SOURCE}" "${TEMP_DIR}"
 
     if [ ! -f "${FILEPATH}" ]; then
         echo "deploy file does not exist. [${FILEPATH}]"
@@ -1531,7 +1578,7 @@ placement() {
 
     # version status
     URL="${TOAST_URL}/version/deploy/${PHASE}/${FLEET}/${ARTIFACT_ID}/${VERSION}"
-    RES=`curl -s --data "token=${TOKEN}" ${URL}`
+    RES=`curl -s --data "org=${ORG}&token=${TOKEN}" ${URL}`
     ARR=(${RES})
 
     if [ "${ARR[0]}" != "OK" ]; then
@@ -1546,7 +1593,7 @@ conn() {
     # phase
     if [ "${PHASE}" == "" ]; then
         URL="${TOAST_URL}/phase/conn"
-        wget -q -N --post-data "token=${TOKEN}" -P "${TEMP_DIR}" "${URL}"
+        wget -q -N --post-data "org=${ORG}&token=${TOKEN}" -P "${TEMP_DIR}" "${URL}"
 
         CONN_LIST="${TEMP_DIR}/conn"
 
@@ -1586,7 +1633,7 @@ conn() {
     # fleet
     if [ "${FLEET}" == "" ]; then
         URL="${TOAST_URL}/fleet/conn/${PHASE}"
-        wget -q -N --post-data "token=${TOKEN}" -P "${TEMP_DIR}" "${URL}"
+        wget -q -N --post-data "org=${ORG}&token=${TOKEN}" -P "${TEMP_DIR}" "${URL}"
 
         CONN_LIST="${TEMP_DIR}/${PHASE}"
 
@@ -1627,7 +1674,7 @@ conn() {
 
     # server
     URL="${TOAST_URL}/server/conn/${PHASE}/${FLEET}"
-    wget -q -N --post-data "token=${TOKEN}" -P "${TEMP_DIR}" "${URL}"
+    wget -q -N --post-data "org=${ORG}&token=${TOKEN}" -P "${TEMP_DIR}" "${URL}"
 
     CONN_LIST="${TEMP_DIR}/${FLEET}"
     CONN_PARAM=""
