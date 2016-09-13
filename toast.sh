@@ -609,6 +609,7 @@ init_profile() {
         echo "if [ -f ~/.toast_profile ]; then" >> ${BASHRC}
         echo "  . ~/.toast_profile" >> ${BASHRC}
         echo "fi" >> ${BASHRC}
+        echo "" >> ${BASHRC}
     fi
 
     # toast_profile
