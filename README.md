@@ -2,7 +2,7 @@
 
 ### Install
 ```
-curl -s http://toast.sh/install | bash
+curl -s toast.sh/install | bash
 
 ~/toaster/toast.sh auto {fleet} {phase} {org}
 ```
@@ -11,7 +11,7 @@ curl -s http://toast.sh/install | bash
 ```
 #!/bin/bash
 
-runuser -l ec2-user -c 'curl -s http://toast.sh/install | bash'
+runuser -l ec2-user -c 'curl -s toast.sh/install | bash'
 
 runuser -l ec2-user -c '~/toaster/toast.sh auto {fleet} {phase} {org}'
 ```
