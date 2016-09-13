@@ -348,7 +348,7 @@ health() {
     echo "server health..."
 
     URL="${TOAST_URL}/server/health/${SNO}"
-    RES=`curl -s --data "org=${ORG}" ${URL}`
+    RES=`curl -s --data "org=${ORG}&token=${TOKEN}" ${URL}`
 
     echo "${RES}"
 }
