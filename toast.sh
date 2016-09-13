@@ -639,7 +639,7 @@ init_profile() {
     fi
     if [ "${PARAM3}" != "" ]; then
         ORG="${PARAM3}"
-        echo "ORG=${ORG}" >> ${CONFIG}
+        echo "org=${ORG}" >> ${CONFIG}
     fi
 }
 
@@ -1336,7 +1336,7 @@ vhost_fleet() {
     rm -rf ${VHOST_LIST}
 
     URL="${TOAST_URL}/target/vhost/${PHASE}/${FLEET}"
-    wget -q -N --post-data "ORG=${ORG}&token=${TOKEN}" -P "${TEMP_DIR}" "${URL}"
+    wget -q -N --post-data "org=${ORG}&token=${TOKEN}" -P "${TEMP_DIR}" "${URL}"
 
     if [ -f ${VHOST_LIST} ]; then
         echo "placement vhost..."
@@ -1423,7 +1423,7 @@ deploy_fleet() {
     rm -rf ${TARGET_FILE}
 
     URL="${TOAST_URL}/target/deploy/${PHASE}/${FLEET}"
-    wget -q -N --post-data "ORG=${ORG}&token=${TOKEN}" -P "${TEMP_DIR}" "${URL}"
+    wget -q -N --post-data "org=${ORG}&token=${TOKEN}" -P "${TEMP_DIR}" "${URL}"
 
     if [ -f ${TARGET_FILE} ]; then
         echo "download..."
@@ -1593,7 +1593,7 @@ conn() {
     # phase
     if [ "${PHASE}" == "" ]; then
         URL="${TOAST_URL}/phase/conn"
-        wget -q -N --post-data "ORG=${ORG}&token=${TOKEN}" -P "${TEMP_DIR}" "${URL}"
+        wget -q -N --post-data "org=${ORG}&token=${TOKEN}" -P "${TEMP_DIR}" "${URL}"
 
         CONN_LIST="${TEMP_DIR}/conn"
 
@@ -1633,7 +1633,7 @@ conn() {
     # fleet
     if [ "${FLEET}" == "" ]; then
         URL="${TOAST_URL}/fleet/conn/${PHASE}"
-        wget -q -N --post-data "ORG=${ORG}&token=${TOKEN}" -P "${TEMP_DIR}" "${URL}"
+        wget -q -N --post-data "org=${ORG}&token=${TOKEN}" -P "${TEMP_DIR}" "${URL}"
 
         CONN_LIST="${TEMP_DIR}/${PHASE}"
 
@@ -1674,7 +1674,7 @@ conn() {
 
     # server
     URL="${TOAST_URL}/server/conn/${PHASE}/${FLEET}"
-    wget -q -N --post-data "ORG=${ORG}&token=${TOKEN}" -P "${TEMP_DIR}" "${URL}"
+    wget -q -N --post-data "org=${ORG}&token=${TOKEN}" -P "${TEMP_DIR}" "${URL}"
 
     CONN_LIST="${TEMP_DIR}/${FLEET}"
     CONN_PARAM=""
