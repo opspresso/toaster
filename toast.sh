@@ -639,7 +639,7 @@ init_profile() {
     fi
     if [ "${PARAM3}" != "" ]; then
         ORG="${PARAM3}"
-        echo "org=${ORG}" >> ${CONFIG}
+        echo "ORG=${ORG}" >> ${CONFIG}
     fi
 }
 
