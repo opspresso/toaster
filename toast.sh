@@ -101,20 +101,23 @@ toast() {
         i|init)
             init
             ;;
-        t|terminate)
-            terminate
-            ;;
         v|version)
             version
             ;;
         b|lb)
             lb
             ;;
+        h|vhost)
+            vhost
+            ;;
         d|deploy)
             deploy
             ;;
         h|health)
             health
+            ;;
+        t|terminate)
+            terminate
             ;;
         s|ssh)
             conn
@@ -167,8 +170,11 @@ usage() {
     echo " Usage: toast lb up"
     echo " Usage: toast lb down"
     echo_
+    echo " Usage: toast vhost"
+    echo " Usage: toast vhost fleet"
+    echo " Usage: toast vhost project"
+    echo_
     echo " Usage: toast deploy"
-    echo " Usage: toast deploy vhost"
     echo " Usage: toast deploy fleet"
     echo " Usage: toast deploy project"
     echo_
@@ -199,7 +205,7 @@ auto() {
     init_auto
 
     deploy_fleet
-    deploy_vhost
+    vhost_fleet
 }
 
 update() {
@@ -306,27 +312,30 @@ lb() {
             lb_down
             ;;
         *)
-            deploy_lb
+            vhost_lb
+    esac
+}
+
+vhost() {
+    case ${PARAM1} in
+        b|lb)
+            vhost_lb
+            ;;
+        d|domain)
+            vhost_domain
+            ;;
+        *)
+            vhost_fleet
     esac
 }
 
 deploy() {
     case ${PARAM1} in
-        b|lb)
-            deploy_lb
-            ;;
-        v|vhost)
-            deploy_vhost
-            ;;
-        f|fleet)
-            deploy_fleet
-            ;;
         p|project)
             deploy_project
             ;;
         *)
             deploy_fleet
-            deploy_vhost
     esac
 }
 
@@ -1220,7 +1229,7 @@ lb_down() {
     service_ctl nginx reload
 }
 
-deploy_lb() {
+vhost_lb() {
     if [ ! -d ${NGINX_CONF_DIR} ]; then
         warning "not found nginx conf dir. [${NGINX_CONF_DIR}]"
         return 1
@@ -1231,7 +1240,9 @@ deploy_lb() {
     echo_bar
 }
 
-deploy_vhost() {
+vhost_domain() {
+    # "vhost domain deploy.yanolja.com"
+
     if [ "${OS_TYPE}" == "Ubuntu" ]; then
         HTTPD_CONF_DIR="/etc/apache2/sites-enabled"
     else
@@ -1244,7 +1255,62 @@ deploy_vhost() {
     fi
 
     echo_bar
-    echo "download vhost..."
+    echo "vhost..."
+
+    TOAST_APACHE="${HOME}/.toast_httpd"
+    if [ -f "${TOAST_APACHE}" ]; then
+        . ${TOAST_APACHE}
+    fi
+    if [ "${HTTPD_VERSION}" == "" ]; then
+        HTTPD_VERSION="24"
+    fi
+
+    echo "httpd version [${HTTPD_VERSION}]"
+
+    # localhost
+    TEMPLATE="${SHELL_DIR}/package/vhost/${HTTPD_VERSION}/localhost.conf"
+    if [ -f "${TEMPLATE}" ]; then
+        copy "${TEMPLATE}" "${HTTPD_CONF_DIR}/localhost.conf" 644
+    fi
+
+    # vhost
+    TEMPLATE="${SHELL_DIR}/package/vhost/${HTTPD_VERSION}/vhost.conf"
+    TEMP_FILE="${TEMP_DIR}/toast-vhost.tmp"
+
+    DOM="${PARAM2}"
+
+    make_dir "${SITE_DIR}/${DOM}"
+
+    DEST_FILE="${HTTPD_CONF_DIR}/toast-${DOM}.conf"
+
+    echo "--> ${DEST_FILE}"
+
+    # vhost
+    sed "s/DOM/$DOM/g" ${TEMPLATE} > ${TEMP_FILE} && copy ${TEMP_FILE} ${DEST_FILE}
+
+    if [ "${OS_TYPE}" == "Ubuntu" ]; then
+        service_ctl apache2 graceful
+    else
+        service_ctl httpd graceful
+    fi
+
+    echo_bar
+}
+
+vhost_fleet() {
+    if [ "${OS_TYPE}" == "Ubuntu" ]; then
+        HTTPD_CONF_DIR="/etc/apache2/sites-enabled"
+    else
+        HTTPD_CONF_DIR="/etc/httpd/conf.d"
+    fi
+
+    if [ ! -d ${HTTPD_CONF_DIR} ]; then
+        echo "not found httpd conf dir. [${HTTPD_CONF_DIR}]"
+        return 1
+    fi
+
+    echo_bar
+    echo "vhost fleet..."
 
     VHOST_LIST="${TEMP_DIR}/${FLEET}"
     rm -rf ${VHOST_LIST}
@@ -1349,8 +1415,6 @@ deploy_project() {
 }
 
 deploy_fleet() {
-    # "deploy fleet"
-
     echo_bar
     echo "download target..."
 
