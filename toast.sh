@@ -1271,7 +1271,7 @@ vhost_domain() {
     # localhost
     TEMPLATE="${SHELL_DIR}/package/vhost/${HTTPD_VERSION}/localhost.conf"
     if [ -f "${TEMPLATE}" ]; then
-        copy "${TEMPLATE}" "${HTTPD_CONF_DIR}/localhost.conf" 644
+        copy ${TEMPLATE} "${HTTPD_CONF_DIR}/localhost.conf" 644
     fi
 
     # vhost
@@ -1287,7 +1287,7 @@ vhost_domain() {
     echo "--> ${DEST_FILE}"
 
     # vhost
-    sed "s/DOM/$DOM/g" ${TEMPLATE} > ${TEMP_FILE} && copy ${TEMP_FILE} ${DEST_FILE}
+    sed "s/DOM/$DOM/g" ${TEMPLATE} > ${TEMP_FILE} && copy ${TEMP_FILE} ${DEST_FILE} 644
 
     if [ "${OS_TYPE}" == "Ubuntu" ]; then
         service_ctl apache2 graceful
@@ -1329,7 +1329,7 @@ vhost_fleet() {
     # localhost
     TEMPLATE="${SHELL_DIR}/package/vhost/${HTTPD_VERSION}/localhost.conf"
     if [ -f "${TEMPLATE}" ]; then
-        copy "${TEMPLATE}" "${HTTPD_CONF_DIR}/localhost.conf" 644
+        copy ${TEMPLATE} "${HTTPD_CONF_DIR}/localhost.conf" 644
     fi
 
     VHOST_LIST="${TEMP_DIR}/${FLEET}"
@@ -1358,7 +1358,7 @@ vhost_fleet() {
             echo "--> ${DEST_FILE}"
 
             # vhost
-            sed "s/DOM/$DOM/g" ${TEMPLATE} > ${TEMP_FILE} && copy ${TEMP_FILE} ${DEST_FILE}
+            sed "s/DOM/$DOM/g" ${TEMPLATE} > ${TEMP_FILE} && copy ${TEMP_FILE} ${DEST_FILE} 644
         done < ${VHOST_LIST}
     fi
 
