@@ -1313,6 +1313,25 @@ vhost_fleet() {
     echo_bar
     echo "vhost fleet..."
 
+    TOAST_APACHE="${HOME}/.toast_httpd"
+    if [ -f "${TOAST_APACHE}" ]; then
+        . ${TOAST_APACHE}
+    fi
+    if [ "${HTTPD_VERSION}" == "" ]; then
+        HTTPD_VERSION="24"
+    fi
+
+    echo "httpd version [${HTTPD_VERSION}]"
+
+    ${SUDO} rm -rf ${HTTPD_CONF_DIR}/localhost*
+    ${SUDO} rm -rf ${HTTPD_CONF_DIR}/toast*
+
+    # localhost
+    TEMPLATE="${SHELL_DIR}/package/vhost/${HTTPD_VERSION}/localhost.conf"
+    if [ -f "${TEMPLATE}" ]; then
+        copy "${TEMPLATE}" "${HTTPD_CONF_DIR}/localhost.conf" 644
+    fi
+
     VHOST_LIST="${TEMP_DIR}/${FLEET}"
     rm -rf ${VHOST_LIST}
 
@@ -1321,25 +1340,6 @@ vhost_fleet() {
 
     if [ -f ${VHOST_LIST} ]; then
         echo "placement vhost..."
-
-        ${SUDO} rm -rf ${HTTPD_CONF_DIR}/localhost*
-        ${SUDO} rm -rf ${HTTPD_CONF_DIR}/toast*
-
-        TOAST_APACHE="${HOME}/.toast_httpd"
-        if [ -f "${TOAST_APACHE}" ]; then
-            . ${TOAST_APACHE}
-        fi
-        if [ "${HTTPD_VERSION}" == "" ]; then
-            HTTPD_VERSION="24"
-        fi
-
-        echo "httpd version [${HTTPD_VERSION}]"
-
-        # localhost
-        TEMPLATE="${SHELL_DIR}/package/vhost/${HTTPD_VERSION}/localhost.conf"
-        if [ -f "${TEMPLATE}" ]; then
-            copy "${TEMPLATE}" "${HTTPD_CONF_DIR}/localhost.conf" 644
-        fi
 
         # vhost
         TEMPLATE="${SHELL_DIR}/package/vhost/${HTTPD_VERSION}/vhost.conf"
@@ -1360,12 +1360,12 @@ vhost_fleet() {
             # vhost
             sed "s/DOM/$DOM/g" ${TEMPLATE} > ${TEMP_FILE} && copy ${TEMP_FILE} ${DEST_FILE}
         done < ${VHOST_LIST}
+    fi
 
-        if [ "${OS_TYPE}" == "Ubuntu" ]; then
-            service_ctl apache2 graceful
-        else
-            service_ctl httpd graceful
-        fi
+    if [ "${OS_TYPE}" == "Ubuntu" ]; then
+        service_ctl apache2 graceful
+    else
+        service_ctl httpd graceful
     fi
 
     echo_bar
