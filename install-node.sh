@@ -1,8 +1,8 @@
 #!/bin/bash
 
-OS_TYPE=`uname`
-if [ ${OS_TYPE} != 'Linux' ]; then
-    echo "Unsupported OS - $OS_TYPE"
+OS_NAME=`uname`
+if [ ${OS_NAME} != "Linux" ]; then
+    warning "Not supported OS - $OS_NAME"
     exit 1
 fi
 
