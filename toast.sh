@@ -1250,6 +1250,14 @@ vhost_lb() {
 vhost_domain() {
     # "vhost domain deploy.yanolja.com"
 
+    TOAST_APACHE="${HOME}/.toast_httpd"
+    if [ ! -f "${TOAST_APACHE}" ]; then
+        warning "not found httpd."
+        return 1
+    fi
+
+    . ${TOAST_APACHE}
+
     if [ "${OS_TYPE}" == "Ubuntu" ]; then
         HTTPD_CONF_DIR="/etc/apache2/sites-enabled"
     else
@@ -1264,10 +1272,6 @@ vhost_domain() {
     echo_bar
     echo "vhost..."
 
-    TOAST_APACHE="${HOME}/.toast_httpd"
-    if [ -f "${TOAST_APACHE}" ]; then
-        . ${TOAST_APACHE}
-    fi
     if [ "${HTTPD_VERSION}" == "" ]; then
         HTTPD_VERSION="24"
     fi
