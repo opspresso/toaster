@@ -1305,6 +1305,13 @@ vhost_domain() {
 }
 
 vhost_fleet() {
+    TOAST_APACHE="${HOME}/.toast_httpd"
+    if [ ! -f "${TOAST_APACHE}" ]; then
+        return 1
+    fi
+
+    . ${TOAST_APACHE}
+
     if [ "${OS_TYPE}" == "Ubuntu" ]; then
         HTTPD_CONF_DIR="/etc/apache2/sites-enabled"
     else
@@ -1319,10 +1326,6 @@ vhost_fleet() {
     echo_bar
     echo "vhost fleet..."
 
-    TOAST_APACHE="${HOME}/.toast_httpd"
-    if [ -f "${TOAST_APACHE}" ]; then
-        . ${TOAST_APACHE}
-    fi
     if [ "${HTTPD_VERSION}" == "" ]; then
         HTTPD_VERSION="24"
     fi
