@@ -587,12 +587,12 @@ init_slave() {
     echo "init slave..."
 
     # .ssh/authorized_keys
+    TARGET="${HOME}/.ssh/authorized_keys"
     if [ `cat ${TARGET} | grep -c "toast@yanolja.in"` -eq 0 ]; then
         URL="${TOAST_URL}/config/key/rsa_public_key"
         RES=`curl -s --data "org=${ORG}&token=${TOKEN}" ${URL}`
 
         if [ "${RES}" != "" ]; then
-            TARGET="${HOME}/.ssh/authorized_keys"
             echo "${RES}" >> ${TARGET}
             chmod 700 ${TARGET}
         fi
