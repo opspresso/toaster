@@ -30,7 +30,6 @@ SUDO="sudo"
 
 ################################################################################
 
-LOGIN_URL=
 TOAST_URL=
 REPO_PATH=
 ORG=
@@ -267,6 +266,8 @@ init() {
 }
 
 version() {
+    repo_path
+
     version_parse
 
     case ${PARAM1} in
@@ -309,6 +310,8 @@ vhost() {
 }
 
 deploy() {
+    repo_path
+
     case ${PARAM1} in
         p|project)
             deploy_project
@@ -464,7 +467,6 @@ config_save() {
     fi
 
     echo "# yanolja toast config" > ${CONFIG}
-    echo "LOGIN_URL=\"${LOGIN_URL}\"" >> ${CONFIG}
     echo "TOAST_URL=\"${TOAST_URL}\"" >> ${CONFIG}
     echo "REPO_PATH=\"${REPO_PATH}\"" >> ${CONFIG}
     echo "ORG=\"${ORG}\"" >> ${CONFIG}
@@ -560,16 +562,6 @@ init_master() {
 
     if [ "${RES}" != "" ]; then
         TARGET="${HOME}/.ssh/id_rsa.pub"
-        echo "${RES}" > ${TARGET}
-        chmod 644 ${TARGET}
-    fi
-
-    # .ssh/config
-    URL="${TOAST_URL}/config/key/ssh_config"
-    RES=`curl -s --data "org=${ORG}&token=${TOKEN}" ${URL}`
-
-    if [ "${RES}" != "" ]; then
-        TARGET="${HOME}/.ssh/config"
         echo "${RES}" > ${TARGET}
         chmod 644 ${TARGET}
     fi
@@ -1300,6 +1292,16 @@ vhost_fleet() {
     fi
 
     echo_bar
+}
+
+repo_path() {
+    # repo_path
+    URL="${TOAST_URL}/config/key/repo_path"
+    RES=`curl -s --data "org=${ORG}&token=${TOKEN}" ${URL}`
+
+    if [ "${RES}" != "" ]; then
+        REPO_PATH="${RES}"
+    fi
 }
 
 deploy_project() {
