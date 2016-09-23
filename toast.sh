@@ -450,7 +450,7 @@ config_auto() {
 }
 
 config_save() {
-    echo "server save..."
+    echo "config save..."
 
     URL="${TOAST_URL}/server/config"
     RES=`curl -s --data "token=${TOKEN}&no=${SNO}&org=${ORG}&phase=${PHASE}&fleet=${FLEET}&name=${NAME}&host=${HOST}&port=${PORT}&user=${USER}&id=${ID}" ${URL}`
@@ -512,6 +512,8 @@ config_cron() {
 }
 
 init_hosts() {
+    echo "init hosts..."
+
     URL="${TOAST_URL}/phase/hosts/${PHASE}"
     RES=`curl -s --data "org=${ORG}&token=${TOKEN}" ${URL}`
 
@@ -524,6 +526,8 @@ init_hosts() {
 }
 
 init_profile() {
+    echo "init profile..."
+
     # .bashrc
     BASHRC="${HOME}/.bashrc"
 
@@ -546,6 +550,8 @@ init_profile() {
 }
 
 init_master() {
+    echo "init master..."
+
     # .ssh/id_rsa
     URL="${TOAST_URL}/config/key/rsa_private_key"
     RES=`curl -s --data "org=${ORG}&token=${TOKEN}" ${URL}`
@@ -578,6 +584,8 @@ init_master() {
 }
 
 init_slave() {
+    echo "init slave..."
+
     # .ssh/authorized_keys
     if [ `cat ${TARGET} | grep -c "toast@yanolja.in"` -eq 0 ]; then
         URL="${TOAST_URL}/config/key/rsa_public_key"
@@ -612,6 +620,8 @@ init_slave() {
 }
 
 init_aws() {
+    echo "init aws..."
+
     # .aws/config
     TARGET="${HOME}/.aws/config"
     cp -rf ${SHELL_DIR}/package/aws/config.txt ${TARGET}
