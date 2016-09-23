@@ -186,9 +186,7 @@ auto() {
     prepare
 
     self_update
-
     config
-
     self_info
 
     init_profile
@@ -199,9 +197,7 @@ auto() {
     init_auto
 
     repo_path
-
     deploy_fleet
-
     vhost_fleet
 }
 
