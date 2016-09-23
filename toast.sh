@@ -105,7 +105,7 @@ toast() {
         b|lb)
             lb
             ;;
-        h|vhost)
+        o|vhost)
             vhost
             ;;
         d|deploy)
@@ -114,11 +114,14 @@ toast() {
         h|health)
             health
             ;;
+        n|launch)
+            launch
+            ;;
         t|terminate)
             terminate
             ;;
         s|ssh)
-            conn
+            connect
             ;;
         l|log)
             log
@@ -348,13 +351,38 @@ health() {
     echo "${RES}"
 }
 
+launch() {
+    if [ "${PARAM1}" == "" ]; then
+        warning "image-id does not exist."
+        return 1
+    fi
+    if [ "${PARAM2}" == "" ]; then
+        warning "instance-type does not exist."
+        return 1
+    fi
+    if [ "${PARAM3}" == "" ]; then
+        warning "key-name does not exist."
+        return 1
+    fi
+    if [ "${PARAM4}" == "" ]; then
+        warning "security-groups does not exist."
+        return 1
+    fi
+    if [ "${PARAM5}" == "" ]; then
+        warning "user-data does not exist."
+        return 1
+    fi
+
+    aws ec2 run-instances --count 1 --image-id ${PARAM1} --instance-type ${PARAM2} --key-name ${PARAM3} --security-groups ${PARAM4} --user-data ${PARAM5}
+}
+
 terminate() {
     if [ "${PARAM1}" == "" ]; then
         warning "instance-id does not exist."
         return 1
     fi
 
-    aws ec2 terminate-instances --instance-ids ${PARAM1} --region ap-northeast-2
+    aws ec2 terminate-instances --instance-ids ${PARAM1}
 }
 
 ################################################################################
@@ -1528,7 +1556,7 @@ placement() {
     fi
 }
 
-conn() {
+connect() {
     PHASE="${PARAM1}"
     FLEET="${PARAM2}"
 
