@@ -389,9 +389,9 @@ prepare() {
     make_dir ${LOGS_DIR}
     make_dir ${TEMP_DIR}
 
-    mkdir ${HOME}/.m2
-    mkdir ${HOME}/.aws
-    mkdir ${HOME}/.ssh
+    make_dir ${HOME}/.m2
+    make_dir ${HOME}/.aws
+    make_dir ${HOME}/.ssh
 
     # hosts
     copy ${SHELL_DIR}/package/linux/hosts.txt /etc/hosts 644
