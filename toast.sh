@@ -377,7 +377,7 @@ launch() {
         return 1
     fi
 
-    aws ec2 run-instances --count 1 --image-id ${PARAM1} --instance-type ${PARAM2} --key-name ${PARAM3} --security-groups ${PARAM4} --user-data ${PARAM5}
+    aws ec2 run-instances --image-id ${PARAM1} --instance-type ${PARAM2} --key-name ${PARAM3} --security-groups ${PARAM4} --user-data ${PARAM5}
 }
 
 terminate() {
