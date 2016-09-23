@@ -199,8 +199,8 @@ auto() {
 
     init_profile
     init_hosts
-    init_aws
     init_slave
+    init_aws
     init_epel
     init_auto
 
@@ -406,8 +406,9 @@ prepare() {
     make_dir ${LOGS_DIR}
     make_dir ${TEMP_DIR}
 
-    make_dir "${HOME}/.m2"
-    make_dir "${HOME}/.ssh"
+    mkdir ${HOME}/.m2
+    mkdir ${HOME}/.aws
+    mkdir ${HOME}/.ssh
 
     # hosts
     copy ${SHELL_DIR}/package/linux/hosts.txt /etc/hosts 644
@@ -432,7 +433,7 @@ prepare() {
 
     # ssh config
     TARGET_FILE="${HOME}/.ssh/config"
-    copy "${SHELL_DIR}/package/ssh/config" "${TARGET_FILE}" 600
+    copy ${SHELL_DIR}/package/ssh/config.txt ${TARGET_FILE} 600
 }
 
 login() {
@@ -461,6 +462,27 @@ config_auto() {
 
     ARR=(`${SUDO} netstat -anp | grep LISTEN | grep sshd | grep "0\.0\.0\.0"`)
     PORT=`echo "${ARR[3]}" | cut -d ":" -f 2`
+
+    # .toast
+    if [ ! -f "${CONFIG}" ]; then
+        copy ${SHELL_DIR}/package/toast.txt ${CONFIG} 644
+
+        . ${CONFIG}
+    fi
+
+    #  fleet phase org
+    if [ "${PARAM1}" != "" ]; then
+        FLEET="${PARAM1}"
+        echo "FLEET=${FLEET}" >> ${CONFIG}
+    fi
+    if [ "${PARAM2}" != "" ]; then
+        PHASE="${PARAM2}"
+        echo "PHASE=${PHASE}" >> ${CONFIG}
+    fi
+    if [ "${PARAM3}" != "" ]; then
+        ORG="${PARAM3}"
+        echo "ORG=${ORG}" >> ${CONFIG}
+    fi
 }
 
 config_read() {
@@ -606,7 +628,7 @@ init_hosts() {
 }
 
 init_profile() {
-    # bashrc
+    # .bashrc
     BASHRC="${HOME}/.bashrc"
 
     if [ `cat ${BASHRC} | grep -c "toast_profile"` -eq 0 ]; then
@@ -618,118 +640,120 @@ init_profile() {
         echo "" >> ${BASHRC}
     fi
 
-    # toast_profile
+    # .toast_profile
     URL="${TOAST_URL}/phase/profile/${PHASE}"
     RES=`curl -s --data "org=${ORG}&token=${TOKEN}" ${URL}`
 
     if [ "${RES}" != "" ]; then
         echo "${RES}" > ${HOME}/.toast_profile
     fi
+}
 
-    # toast config
-    if [ ! -f "${CONFIG}" ]; then
-        cp -rf "${SHELL_DIR}/package/toast.txt" ${CONFIG}
-        chmod 644 ${CONFIG}
+init_master() {
+    # .ssh/id_rsa
+    URL="${TOAST_URL}/config/key/rsa_private_key"
+    RES=`curl -s --data "org=${ORG}&token=${TOKEN}" ${URL}`
 
-        . ${CONFIG}
+    if [ "${RES}" != "" ]; then
+        TARGET="${HOME}/.ssh/id_rsa"
+        echo "${RES}" > ${TARGET}
+        chmod 600 ${TARGET}
     fi
 
-    #  fleet phase org
-    if [ "${PARAM1}" != "" ]; then
-        FLEET="${PARAM1}"
-        echo "FLEET=${FLEET}" >> ${CONFIG}
+    # .ssh/id_rsa.pub
+    URL="${TOAST_URL}/config/key/rsa_public_key"
+    RES=`curl -s --data "org=${ORG}&token=${TOKEN}" ${URL}`
+
+    if [ "${RES}" != "" ]; then
+        TARGET="${HOME}/.ssh/id_rsa.pub"
+        echo "${RES}" > ${TARGET}
+        chmod 644 ${TARGET}
     fi
-    if [ "${PARAM2}" != "" ]; then
-        PHASE="${PARAM2}"
-        echo "PHASE=${PHASE}" >> ${CONFIG}
+
+    # .ssh/config
+    URL="${TOAST_URL}/config/key/ssh_config"
+    RES=`curl -s --data "org=${ORG}&token=${TOKEN}" ${URL}`
+
+    if [ "${RES}" != "" ]; then
+        TARGET="${HOME}/.ssh/config"
+        echo "${RES}" > ${TARGET}
+        chmod 644 ${TARGET}
     fi
-    if [ "${PARAM3}" != "" ]; then
-        ORG="${PARAM3}"
-        echo "ORG=${ORG}" >> ${CONFIG}
+
+    # .aws/credentials
+    URL="${TOAST_URL}/config/key/aws_master"
+    RES=`curl -s --data "org=${ORG}&token=${TOKEN}" ${URL}`
+
+    if [ "${RES}" != "" ]; then
+        TARGET="${HOME}/.aws/credentials"
+        echo "${RES}" > ${TARGET}
+        chmod 600 ${TARGET}
+    fi
+}
+
+init_slave() {
+    # .ssh/authorized_keys
+    if [ `cat ${TARGET} | grep -c "toast@yanolja.in"` -eq 0 ]; then
+        URL="${TOAST_URL}/config/key/rsa_public_key"
+        RES=`curl -s --data "org=${ORG}&token=${TOKEN}" ${URL}`
+
+        if [ "${RES}" != "" ]; then
+            TARGET="${HOME}/.ssh/authorized_keys"
+            echo "${RES}" >> ${TARGET}
+            chmod 700 ${TARGET}
+        fi
+    fi
+
+    # .ssh/config
+    URL="${TOAST_URL}/config/key/ssh_config"
+    RES=`curl -s --data "org=${ORG}&token=${TOKEN}" ${URL}`
+
+    if [ "${RES}" != "" ]; then
+        TARGET="${HOME}/.ssh/config"
+        echo "${RES}" > ${TARGET}
+        chmod 644 ${TARGET}
+    fi
+
+    # .aws/credentials
+    URL="${TOAST_URL}/config/key/aws_slave"
+    RES=`curl -s --data "org=${ORG}&token=${TOKEN}" ${URL}`
+
+    if [ "${RES}" != "" ]; then
+        TARGET="${HOME}/.aws/credentials"
+        echo "${RES}" > ${TARGET}
+        chmod 600 ${TARGET}
     fi
 }
 
 init_aws() {
-    AWS_DIR="${HOME}/.aws"
-
-    if [ ! -d ${AWS_DIR} ]; then
-        mkdir ${AWS_DIR}
-    fi
-
     # .aws/config
-    DEST_FILE="${HOME}/.aws/config"
-    cp -rf ${SHELL_DIR}/package/aws/config.txt ${DEST_FILE}
-    chmod 600 ${DEST_FILE}
-
-    # .aws/credentials
-    URL="${TOAST_URL}/config/key/aws_credentials"
-    RES=`curl -s --data "org=${ORG}&token=${TOKEN}" ${URL}`
-    if [ "${RES}" != "" ]; then
-        DEST_FILE="${HOME}/.aws/credentials"
-        echo "${RES}" > ${DEST_FILE}
-        chmod 600 ${DEST_FILE}
-    fi
+    TARGET="${HOME}/.aws/config"
+    cp -rf ${SHELL_DIR}/package/aws/config.txt ${TARGET}
+    chmod 600 ${TARGET}
 
     # aws cli
     if [ ! -f "/usr/bin/aws" ]; then
-        if [ ! -f "${HOME}/.toast_awscli" ]; then
+        if [ ! -f ${HOME}/.toast_awscli ]; then
             echo "init aws cli..."
 
-            wget -q -N "https://s3.amazonaws.com/aws-cli/awscli-bundle.zip"
-            unzip awscli-bundle.zip
-            sudo ./awscli-bundle/install -i /usr/local/aws -b /usr/local/bin/aws
+            wget -q -N https://s3.amazonaws.com/aws-cli/awscli-bundle.zip
 
-            rm -rf awscli-bundle
-            rm -rf awscli-bundle.zip
+            if [ -f ${HOME}/awscli-bundle.zip ]; then
+                unzip awscli-bundle.zip
 
-            touch "${HOME}/.toast_awscli"
+                sudo ./awscli-bundle/install -i /usr/local/aws -b /usr/local/bin/aws
+
+                rm -rf awscli-bundle
+                rm -rf awscli-bundle.zip
+
+                touch ${HOME}/.toast_awscli
+            fi
         fi
     fi
 
     echo_bar
     aws --version
     echo_bar
-}
-
-init_master() {
-    # rsa private key
-    ID_RSA="${HOME}/.ssh/id_rsa"
-    touch ${ID_RSA}
-
-    URL="${TOAST_URL}/config/key/rsa_private_key"
-    RES=`curl -s --data "org=${ORG}&token=${TOKEN}" ${URL}`
-
-    if [ "${RES}" != "" ]; then
-        echo "${RES}" > ${ID_RSA}
-        chmod 600 ${ID_RSA}
-    fi
-
-    # rsa public key
-    ID_RSA_PUB="${HOME}/.ssh/id_rsa.pub"
-    touch ${ID_RSA_PUB}
-
-    URL="${TOAST_URL}/config/key/rsa_public_key"
-    RES=`curl -s --data "org=${ORG}&token=${TOKEN}" ${URL}`
-
-    if [ "${RES}" != "" ]; then
-        echo "${RES}" > ${ID_RSA_PUB}
-        chmod 644 ${ID_RSA_PUB}
-    fi
-}
-
-init_slave() {
-    AUTH_KEYS="${HOME}/.ssh/authorized_keys"
-    touch ${AUTH_KEYS}
-
-    if [ `cat ${AUTH_KEYS} | grep -c "toast@yanolja.in"` -eq 0 ]; then
-        URL="${TOAST_URL}/config/key/rsa_public_key"
-        RES=`curl -s --data "org=${ORG}&token=${TOKEN}" ${URL}`
-
-        if [ "${RES}" != "" ]; then
-            echo "${RES}" >> ${AUTH_KEYS}
-            chmod 700 ${AUTH_KEYS}
-        fi
-    fi
 }
 
 init_auto() {
