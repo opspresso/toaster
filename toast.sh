@@ -114,14 +114,14 @@ toast() {
         h|health)
             health
             ;;
+        s|ssh)
+            connect
+            ;;
         n|launch)
             launch
             ;;
         t|terminate)
             terminate
-            ;;
-        s|ssh)
-            connect
             ;;
         l|log)
             log
@@ -177,6 +177,10 @@ usage() {
     echo " Usage: toast deploy project"
     echo_
     echo " Usage: toast health"
+    echo_
+    echo " Usage: toast ssh"
+    echo_
+    echo " Usage: toast launch"
     echo_
     echo " Usage: toast terminate"
     echo_
