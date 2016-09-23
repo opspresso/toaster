@@ -186,9 +186,11 @@ auto() {
 
     prepare
 
-    update
+    self_update
 
     config
+
+    self_info
 
     init_profile
     init_hosts
