@@ -145,9 +145,6 @@ usage() {
     echo " Usage: toast update"
     echo_
     echo " Usage: toast config"
-    echo " Usage: toast config auto"
-    echo " Usage: toast config save"
-    echo " Usage: toast config info"
     echo_
     echo " Usage: toast init"
     echo " Usage: toast init master"
@@ -192,10 +189,7 @@ auto() {
 
     update
 
-    config_auto
-    config_save
-    config_info
-    config_cron
+    config
 
     init_profile
     init_hosts
@@ -213,6 +207,13 @@ update() {
     self_update
 
     #service_update
+}
+
+config() {
+    config_auto
+    config_save
+    config_info
+    config_cron
 }
 
 init() {
@@ -263,28 +264,6 @@ init() {
             self_info
             init_auto
     esac
-}
-
-config() {
-    case ${PARAM1} in
-        a|auto)
-            config_auto
-            config_save
-            ;;
-        s|save)
-            config_save
-            ;;
-        c|cron)
-            config_cron
-            ;;
-        i|info)
-            ;;
-        *)
-            config_read
-            config_save
-    esac
-
-    config_info
 }
 
 version() {
@@ -339,6 +318,19 @@ deploy() {
     esac
 }
 
+log() {
+    case ${PARAM1} in
+        t|tomcat)
+            log_tomcat
+            ;;
+        w|web)
+            log_webapp
+            ;;
+        *)
+            log_cron
+    esac
+}
+
 health() {
     if [ "${SNO}" == "" ]; then
         warning "Not configured server. [${SNO}]"
@@ -360,19 +352,6 @@ terminate() {
     fi
 
     aws ec2 terminate-instances --instance-ids ${PARAM1} --region ap-northeast-2
-}
-
-log() {
-    case ${PARAM1} in
-        t|tomcat)
-            log_tomcat
-            ;;
-        w|web)
-            log_webapp
-            ;;
-        *)
-            log_cron
-    esac
 }
 
 ################################################################################
@@ -430,29 +409,6 @@ prepare() {
     if [ -f "/usr/sbin/setenforce" ]; then
         ${SUDO} setenforce 0
     fi
-
-    # ssh config
-    TARGET_FILE="${HOME}/.ssh/config"
-    copy ${SHELL_DIR}/package/ssh/config.txt ${TARGET_FILE} 600
-}
-
-login() {
-    echo "Please input yanolja id."
-    read YAJA_ID
-
-    echo "Please input yanolja password."
-    read YAJA_PW
-
-    echo "yanolja login..."
-
-    RES=`curl -s --data "id=${YAJA_ID}&passwd=${YAJA_PW}" ${LOGIN_URL}`
-    ARR=(${RES})
-
-    if [ "${ARR[0]}" != "OK" ]; then
-        warning "Server Error. [${LOGIN_URL}][${RES}]"
-    else
-        TOKEN="${ARR[1]}"
-    fi
 }
 
 config_auto() {
@@ -470,7 +426,7 @@ config_auto() {
         . ${CONFIG}
     fi
 
-    #  fleet phase org
+    #  fleet phase org token
     if [ "${PARAM1}" != "" ]; then
         FLEET="${PARAM1}"
         echo "FLEET=${FLEET}" >> ${CONFIG}
@@ -483,83 +439,10 @@ config_auto() {
         ORG="${PARAM3}"
         echo "ORG=${ORG}" >> ${CONFIG}
     fi
-}
-
-config_read() {
-    if [ "${TOKEN}" == "" ]; then
-        login
-    else
-        echo "Do you want yanolja login? [yes/no] [default:no]"
-        read LOGIN_YN
-        if [ "${LOGIN_YN}" == "yes" ]; then
-            login
-        fi
+    if [ "${PARAM4}" != "" ]; then
+        TOKEN="${PARAM4}"
+        echo "TOKEN=${TOKEN}" >> ${CONFIG}
     fi
-
-    echo "Please input toast url. [default:${TOAST_URL}]"
-    read READ_TOAST_URL
-    if [ "${READ_TOAST_URL}" != "" ]; then
-        TOAST_URL=${READ_TOAST_URL}
-    fi
-
-    echo "Please input repository path. [default:${REPO_PATH}]"
-    read READ_REPO_PATH
-    if [ "${READ_REPO_PATH}" != "" ]; then
-        REPO_PATH=${READ_REPO_PATH}
-    fi
-
-    echo "Please input server org. [default:${ORG}]"
-    read READ_ORG
-    if [ "${READ_ORG}" != "" ]; then
-        ORG=${READ_ORG}
-    fi
-
-    echo "Please input server phase. [default:${PHASE}]"
-    read READ_PHASE
-    if [ "${READ_PHASE}" != "" ]; then
-        PHASE=${READ_PHASE}
-    fi
-
-    echo "Please input server fleet. [default:${FLEET}]"
-    read READ_FLEET
-    if [ "${READ_FLEET}" != "" ]; then
-        FLEET=${READ_FLEET}
-    fi
-
-    echo "Please input server name. [default:${NAME}]"
-    read READ_NAME
-    if [ "${READ_NAME}" != "" ]; then
-        NAME=${READ_NAME}
-    fi
-
-    echo "Please input server host. [default:${HOST}]"
-    read READ_HOST
-    if [ "${READ_HOST}" != "" ]; then
-        HOST=${READ_HOST}
-    fi
-
-    echo "Please input server port. [default:${PORT}]"
-    read READ_PORT
-    if [ "${READ_PORT}" != "" ]; then
-        PORT=${READ_PORT}
-    fi
-
-    echo "Please input server user. [default:${USER}]"
-    read READ_USER
-    if [ "${READ_USER}" != "" ]; then
-        USER=${READ_USER}
-    fi
-}
-
-config_info() {
-    if [ ! -f "${CONFIG}" ]; then
-        warning "Not exist file. [${CONFIG}]"
-        return 1
-    fi
-
-    echo_bar
-    cat ${CONFIG}
-    echo_bar
 }
 
 config_save() {
@@ -598,6 +481,17 @@ config_save() {
     chmod 644 ${CONFIG}
 
     echo "${RES}"
+}
+
+config_info() {
+    if [ ! -f "${CONFIG}" ]; then
+        warning "Not exist file. [${CONFIG}]"
+        return 1
+    fi
+
+    echo_bar
+    cat ${CONFIG}
+    echo_bar
 }
 
 config_cron() {
