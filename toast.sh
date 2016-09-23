@@ -198,7 +198,10 @@ auto() {
     init_epel
     init_auto
 
+    repo_path
+
     deploy_fleet
+
     vhost_fleet
 }
 
