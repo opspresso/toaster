@@ -31,7 +31,6 @@ SUDO="sudo"
 ################################################################################
 
 TOAST_URL=
-REPO_PATH=
 ORG=
 PHASE=
 FLEET=
@@ -470,7 +469,6 @@ config_save() {
 
     echo "# yanolja toast config" > ${CONFIG}
     echo "TOAST_URL=\"${TOAST_URL}\"" >> ${CONFIG}
-    echo "REPO_PATH=\"${REPO_PATH}\"" >> ${CONFIG}
     echo "ORG=\"${ORG}\"" >> ${CONFIG}
     echo "PHASE=\"${PHASE}\"" >> ${CONFIG}
     echo "FLEET=\"${FLEET}\"" >> ${CONFIG}
