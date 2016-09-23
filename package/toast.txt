@@ -1,7 +1,5 @@
 # toast.sh config
-LOGIN_URL=https://member.yanolja.com/ywt/loginToken
-TOAST_URL=http://deploy.yanolja.com
-REPO_PATH=s3://repo.yanolja.com/maven2
+TOAST_URL=http://toast.sh
 ORG=yanolja
 PHASE=dev
 FLEET=demo

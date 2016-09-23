@@ -2,7 +2,7 @@
 
 # root
 if [ "${HOME}" == "/root" ]; then
-    warning "Not supported ROOT"
+    warning "Not supported ROOT."
     exit 1
 fi
 
@@ -30,9 +30,7 @@ SUDO="sudo"
 
 ################################################################################
 
-LOGIN_URL=
 TOAST_URL=
-REPO_PATH=
 ORG=
 PHASE=
 FLEET=
@@ -145,9 +143,6 @@ usage() {
     echo " Usage: toast update"
     echo_
     echo " Usage: toast config"
-    echo " Usage: toast config auto"
-    echo " Usage: toast config save"
-    echo " Usage: toast config info"
     echo_
     echo " Usage: toast init"
     echo " Usage: toast init master"
@@ -190,20 +185,18 @@ auto() {
 
     prepare
 
-    update
-
-    config_auto
-    config_save
-    config_info
-    config_cron
+    self_update
+    config
+    self_info
 
     init_profile
     init_hosts
-    init_aws
     init_slave
+    init_aws
     init_epel
     init_auto
 
+    repo_path
     deploy_fleet
     vhost_fleet
 }
@@ -213,6 +206,13 @@ update() {
     self_update
 
     #service_update
+}
+
+config() {
+    config_auto
+    config_save
+    config_info
+    config_cron
 }
 
 init() {
@@ -265,29 +265,9 @@ init() {
     esac
 }
 
-config() {
-    case ${PARAM1} in
-        a|auto)
-            config_auto
-            config_save
-            ;;
-        s|save)
-            config_save
-            ;;
-        c|cron)
-            config_cron
-            ;;
-        i|info)
-            ;;
-        *)
-            config_read
-            config_save
-    esac
-
-    config_info
-}
-
 version() {
+    repo_path
+
     version_parse
 
     case ${PARAM1} in
@@ -330,12 +310,27 @@ vhost() {
 }
 
 deploy() {
+    repo_path
+
     case ${PARAM1} in
         p|project)
             deploy_project
             ;;
         *)
             deploy_fleet
+    esac
+}
+
+log() {
+    case ${PARAM1} in
+        t|tomcat)
+            log_tomcat
+            ;;
+        w|web)
+            log_webapp
+            ;;
+        *)
+            log_cron
     esac
 }
 
@@ -360,19 +355,6 @@ terminate() {
     fi
 
     aws ec2 terminate-instances --instance-ids ${PARAM1} --region ap-northeast-2
-}
-
-log() {
-    case ${PARAM1} in
-        t|tomcat)
-            log_tomcat
-            ;;
-        w|web)
-            log_webapp
-            ;;
-        *)
-            log_cron
-    esac
 }
 
 ################################################################################
@@ -406,8 +388,9 @@ prepare() {
     make_dir ${LOGS_DIR}
     make_dir ${TEMP_DIR}
 
-    make_dir "${HOME}/.m2"
-    make_dir "${HOME}/.ssh"
+    make_dir ${HOME}/.m2
+    make_dir ${HOME}/.aws
+    make_dir ${HOME}/.ssh
 
     # hosts
     copy ${SHELL_DIR}/package/linux/hosts.txt /etc/hosts 644
@@ -429,29 +412,6 @@ prepare() {
     if [ -f "/usr/sbin/setenforce" ]; then
         ${SUDO} setenforce 0
     fi
-
-    # ssh config
-    TARGET_FILE="${HOME}/.ssh/config"
-    copy "${SHELL_DIR}/package/ssh/config" "${TARGET_FILE}" 600
-}
-
-login() {
-    echo "Please input yanolja id."
-    read YAJA_ID
-
-    echo "Please input yanolja password."
-    read YAJA_PW
-
-    echo "yanolja login..."
-
-    RES=`curl -s --data "id=${YAJA_ID}&passwd=${YAJA_PW}" ${LOGIN_URL}`
-    ARR=(${RES})
-
-    if [ "${ARR[0]}" != "OK" ]; then
-        warning "Server Error. [${LOGIN_URL}][${RES}]"
-    else
-        TOKEN="${ARR[1]}"
-    fi
 }
 
 config_auto() {
@@ -461,87 +421,35 @@ config_auto() {
 
     ARR=(`${SUDO} netstat -anp | grep LISTEN | grep sshd | grep "0\.0\.0\.0"`)
     PORT=`echo "${ARR[3]}" | cut -d ":" -f 2`
-}
 
-config_read() {
-    if [ "${TOKEN}" == "" ]; then
-        login
-    else
-        echo "Do you want yanolja login? [yes/no] [default:no]"
-        read LOGIN_YN
-        if [ "${LOGIN_YN}" == "yes" ]; then
-            login
-        fi
-    fi
-
-    echo "Please input toast url. [default:${TOAST_URL}]"
-    read READ_TOAST_URL
-    if [ "${READ_TOAST_URL}" != "" ]; then
-        TOAST_URL=${READ_TOAST_URL}
-    fi
-
-    echo "Please input repository path. [default:${REPO_PATH}]"
-    read READ_REPO_PATH
-    if [ "${READ_REPO_PATH}" != "" ]; then
-        REPO_PATH=${READ_REPO_PATH}
-    fi
-
-    echo "Please input server org. [default:${ORG}]"
-    read READ_ORG
-    if [ "${READ_ORG}" != "" ]; then
-        ORG=${READ_ORG}
-    fi
-
-    echo "Please input server phase. [default:${PHASE}]"
-    read READ_PHASE
-    if [ "${READ_PHASE}" != "" ]; then
-        PHASE=${READ_PHASE}
-    fi
-
-    echo "Please input server fleet. [default:${FLEET}]"
-    read READ_FLEET
-    if [ "${READ_FLEET}" != "" ]; then
-        FLEET=${READ_FLEET}
-    fi
-
-    echo "Please input server name. [default:${NAME}]"
-    read READ_NAME
-    if [ "${READ_NAME}" != "" ]; then
-        NAME=${READ_NAME}
-    fi
-
-    echo "Please input server host. [default:${HOST}]"
-    read READ_HOST
-    if [ "${READ_HOST}" != "" ]; then
-        HOST=${READ_HOST}
-    fi
-
-    echo "Please input server port. [default:${PORT}]"
-    read READ_PORT
-    if [ "${READ_PORT}" != "" ]; then
-        PORT=${READ_PORT}
-    fi
-
-    echo "Please input server user. [default:${USER}]"
-    read READ_USER
-    if [ "${READ_USER}" != "" ]; then
-        USER=${READ_USER}
-    fi
-}
-
-config_info() {
+    # .toast
     if [ ! -f "${CONFIG}" ]; then
-        warning "Not exist file. [${CONFIG}]"
-        return 1
+        copy ${SHELL_DIR}/package/toast.txt ${CONFIG} 644
+
+        . ${CONFIG}
     fi
 
-    echo_bar
-    cat ${CONFIG}
-    echo_bar
+    #  fleet phase org token
+    if [ "${PARAM1}" != "" ]; then
+        FLEET="${PARAM1}"
+        echo "FLEET=${FLEET}" >> ${CONFIG}
+    fi
+    if [ "${PARAM2}" != "" ]; then
+        PHASE="${PARAM2}"
+        echo "PHASE=${PHASE}" >> ${CONFIG}
+    fi
+    if [ "${PARAM3}" != "" ]; then
+        ORG="${PARAM3}"
+        echo "ORG=${ORG}" >> ${CONFIG}
+    fi
+    if [ "${PARAM4}" != "" ]; then
+        TOKEN="${PARAM4}"
+        echo "TOKEN=${TOKEN}" >> ${CONFIG}
+    fi
 }
 
 config_save() {
-    echo "server save..."
+    echo "config save..."
 
     URL="${TOAST_URL}/server/config"
     RES=`curl -s --data "token=${TOKEN}&no=${SNO}&org=${ORG}&phase=${PHASE}&fleet=${FLEET}&name=${NAME}&host=${HOST}&port=${PORT}&user=${USER}&id=${ID}" ${URL}`
@@ -559,9 +467,7 @@ config_save() {
     fi
 
     echo "# yanolja toast config" > ${CONFIG}
-    echo "LOGIN_URL=\"${LOGIN_URL}\"" >> ${CONFIG}
     echo "TOAST_URL=\"${TOAST_URL}\"" >> ${CONFIG}
-    echo "REPO_PATH=\"${REPO_PATH}\"" >> ${CONFIG}
     echo "ORG=\"${ORG}\"" >> ${CONFIG}
     echo "PHASE=\"${PHASE}\"" >> ${CONFIG}
     echo "FLEET=\"${FLEET}\"" >> ${CONFIG}
@@ -578,12 +484,23 @@ config_save() {
     echo "${RES}"
 }
 
+config_info() {
+    if [ ! -f "${CONFIG}" ]; then
+        warning "Not exist file. [${CONFIG}]"
+        return 1
+    fi
+
+    echo_bar
+    cat ${CONFIG}
+    echo_bar
+}
+
 config_cron() {
     TEMP_FILE="${TEMP_DIR}/toast-cron.tmp"
 
     echo "# yanolja cron" > ${TEMP_FILE}
-    echo "* 1 * * * ${SHELL_DIR}/toast.sh log > /dev/null 2>&1" >> ${TEMP_FILE}
-    echo "* 5 * * * ${SHELL_DIR}/toast.sh update > /dev/null 2>&1" >> ${TEMP_FILE}
+    echo "0 1 * * * ${SHELL_DIR}/toast.sh log > /dev/null 2>&1" >> ${TEMP_FILE}
+    echo "0 5 * * * ${SHELL_DIR}/toast.sh update > /dev/null 2>&1" >> ${TEMP_FILE}
     echo "* * * * * ${SHELL_DIR}/toast.sh health > /dev/null 2>&1" >> ${TEMP_FILE}
 
     crontab ${TEMP_FILE}
@@ -594,6 +511,8 @@ config_cron() {
 }
 
 init_hosts() {
+    echo "init hosts..."
+
     URL="${TOAST_URL}/phase/hosts/${PHASE}"
     RES=`curl -s --data "org=${ORG}&token=${TOKEN}" ${URL}`
 
@@ -606,7 +525,9 @@ init_hosts() {
 }
 
 init_profile() {
-    # bashrc
+    echo "init profile..."
+
+    # .bashrc
     BASHRC="${HOME}/.bashrc"
 
     if [ `cat ${BASHRC} | grep -c "toast_profile"` -eq 0 ]; then
@@ -618,118 +539,116 @@ init_profile() {
         echo "" >> ${BASHRC}
     fi
 
-    # toast_profile
+    # .toast_profile
     URL="${TOAST_URL}/phase/profile/${PHASE}"
     RES=`curl -s --data "org=${ORG}&token=${TOKEN}" ${URL}`
 
     if [ "${RES}" != "" ]; then
         echo "${RES}" > ${HOME}/.toast_profile
     fi
+}
 
-    # toast config
-    if [ ! -f "${CONFIG}" ]; then
-        cp -rf "${SHELL_DIR}/package/toast.txt" ${CONFIG}
-        chmod 644 ${CONFIG}
+init_master() {
+    echo "init master..."
 
-        . ${CONFIG}
+    # .ssh/id_rsa
+    URL="${TOAST_URL}/config/key/rsa_private_key"
+    RES=`curl -s --data "org=${ORG}&token=${TOKEN}" ${URL}`
+
+    if [ "${RES}" != "" ]; then
+        TARGET="${HOME}/.ssh/id_rsa"
+        echo "${RES}" > ${TARGET}
+        chmod 600 ${TARGET}
     fi
 
-    #  fleet phase org
-    if [ "${PARAM1}" != "" ]; then
-        FLEET="${PARAM1}"
-        echo "FLEET=${FLEET}" >> ${CONFIG}
+    # .ssh/id_rsa.pub
+    URL="${TOAST_URL}/config/key/rsa_public_key"
+    RES=`curl -s --data "org=${ORG}&token=${TOKEN}" ${URL}`
+
+    if [ "${RES}" != "" ]; then
+        TARGET="${HOME}/.ssh/id_rsa.pub"
+        echo "${RES}" > ${TARGET}
+        chmod 644 ${TARGET}
     fi
-    if [ "${PARAM2}" != "" ]; then
-        PHASE="${PARAM2}"
-        echo "PHASE=${PHASE}" >> ${CONFIG}
+
+    # .aws/credentials
+    URL="${TOAST_URL}/config/key/aws_master"
+    RES=`curl -s --data "org=${ORG}&token=${TOKEN}" ${URL}`
+
+    if [ "${RES}" != "" ]; then
+        TARGET="${HOME}/.aws/credentials"
+        echo "${RES}" > ${TARGET}
+        chmod 600 ${TARGET}
     fi
-    if [ "${PARAM3}" != "" ]; then
-        ORG="${PARAM3}"
-        echo "ORG=${ORG}" >> ${CONFIG}
+}
+
+init_slave() {
+    echo "init slave..."
+
+    # .ssh/authorized_keys
+    TARGET="${HOME}/.ssh/authorized_keys"
+    if [ `cat ${TARGET} | grep -c "toast@yanolja.in"` -eq 0 ]; then
+        URL="${TOAST_URL}/config/key/rsa_public_key"
+        RES=`curl -s --data "org=${ORG}&token=${TOKEN}" ${URL}`
+
+        if [ "${RES}" != "" ]; then
+            echo "${RES}" >> ${TARGET}
+            chmod 700 ${TARGET}
+        fi
+    fi
+
+    # .ssh/config
+    URL="${TOAST_URL}/config/key/ssh_config"
+    RES=`curl -s --data "org=${ORG}&token=${TOKEN}" ${URL}`
+
+    if [ "${RES}" != "" ]; then
+        TARGET="${HOME}/.ssh/config"
+        echo "${RES}" > ${TARGET}
+        chmod 644 ${TARGET}
+    fi
+
+    # .aws/credentials
+    URL="${TOAST_URL}/config/key/aws_slave"
+    RES=`curl -s --data "org=${ORG}&token=${TOKEN}" ${URL}`
+
+    if [ "${RES}" != "" ]; then
+        TARGET="${HOME}/.aws/credentials"
+        echo "${RES}" > ${TARGET}
+        chmod 600 ${TARGET}
     fi
 }
 
 init_aws() {
-    AWS_DIR="${HOME}/.aws"
-
-    if [ ! -d ${AWS_DIR} ]; then
-        mkdir ${AWS_DIR}
-    fi
+    echo "init aws..."
 
     # .aws/config
-    DEST_FILE="${HOME}/.aws/config"
-    cp -rf ${SHELL_DIR}/package/aws/config.txt ${DEST_FILE}
-    chmod 600 ${DEST_FILE}
-
-    # .aws/credentials
-    URL="${TOAST_URL}/config/key/aws_credentials"
-    RES=`curl -s --data "org=${ORG}&token=${TOKEN}" ${URL}`
-    if [ "${RES}" != "" ]; then
-        DEST_FILE="${HOME}/.aws/credentials"
-        echo "${RES}" > ${DEST_FILE}
-        chmod 600 ${DEST_FILE}
-    fi
+    TARGET="${HOME}/.aws/config"
+    cp -rf ${SHELL_DIR}/package/aws/config.txt ${TARGET}
+    chmod 600 ${TARGET}
 
     # aws cli
     if [ ! -f "/usr/bin/aws" ]; then
-        if [ ! -f "${HOME}/.toast_awscli" ]; then
+        if [ ! -f ${HOME}/.toast_awscli ]; then
             echo "init aws cli..."
 
-            wget -q -N "https://s3.amazonaws.com/aws-cli/awscli-bundle.zip"
-            unzip awscli-bundle.zip
-            sudo ./awscli-bundle/install -i /usr/local/aws -b /usr/local/bin/aws
+            wget -q -N https://s3.amazonaws.com/aws-cli/awscli-bundle.zip
 
-            rm -rf awscli-bundle
-            rm -rf awscli-bundle.zip
+            if [ -f ${HOME}/awscli-bundle.zip ]; then
+                unzip awscli-bundle.zip
 
-            touch "${HOME}/.toast_awscli"
+                sudo ./awscli-bundle/install -i /usr/local/aws -b /usr/local/bin/aws
+
+                rm -rf awscli-bundle
+                rm -rf awscli-bundle.zip
+
+                touch ${HOME}/.toast_awscli
+            fi
         fi
     fi
 
     echo_bar
     aws --version
     echo_bar
-}
-
-init_master() {
-    # rsa private key
-    ID_RSA="${HOME}/.ssh/id_rsa"
-    touch ${ID_RSA}
-
-    URL="${TOAST_URL}/config/key/rsa_private_key"
-    RES=`curl -s --data "org=${ORG}&token=${TOKEN}" ${URL}`
-
-    if [ "${RES}" != "" ]; then
-        echo "${RES}" > ${ID_RSA}
-        chmod 600 ${ID_RSA}
-    fi
-
-    # rsa public key
-    ID_RSA_PUB="${HOME}/.ssh/id_rsa.pub"
-    touch ${ID_RSA_PUB}
-
-    URL="${TOAST_URL}/config/key/rsa_public_key"
-    RES=`curl -s --data "org=${ORG}&token=${TOKEN}" ${URL}`
-
-    if [ "${RES}" != "" ]; then
-        echo "${RES}" > ${ID_RSA_PUB}
-        chmod 644 ${ID_RSA_PUB}
-    fi
-}
-
-init_slave() {
-    AUTH_KEYS="${HOME}/.ssh/authorized_keys"
-    touch ${AUTH_KEYS}
-
-    if [ `cat ${AUTH_KEYS} | grep -c "toast@yanolja.in"` -eq 0 ]; then
-        URL="${TOAST_URL}/config/key/rsa_public_key"
-        RES=`curl -s --data "org=${ORG}&token=${TOKEN}" ${URL}`
-
-        if [ "${RES}" != "" ]; then
-            echo "${RES}" >> ${AUTH_KEYS}
-            chmod 700 ${AUTH_KEYS}
-        fi
-    fi
 }
 
 init_auto() {
@@ -1250,6 +1169,14 @@ vhost_lb() {
 vhost_domain() {
     # "vhost domain deploy.yanolja.com"
 
+    TOAST_APACHE="${HOME}/.toast_httpd"
+    if [ ! -f "${TOAST_APACHE}" ]; then
+        warning "not found httpd."
+        return 1
+    fi
+
+    . ${TOAST_APACHE}
+
     if [ "${OS_TYPE}" == "Ubuntu" ]; then
         HTTPD_CONF_DIR="/etc/apache2/sites-enabled"
     else
@@ -1264,10 +1191,6 @@ vhost_domain() {
     echo_bar
     echo "vhost..."
 
-    TOAST_APACHE="${HOME}/.toast_httpd"
-    if [ -f "${TOAST_APACHE}" ]; then
-        . ${TOAST_APACHE}
-    fi
     if [ "${HTTPD_VERSION}" == "" ]; then
         HTTPD_VERSION="24"
     fi
@@ -1305,6 +1228,13 @@ vhost_domain() {
 }
 
 vhost_fleet() {
+    TOAST_APACHE="${HOME}/.toast_httpd"
+    if [ ! -f "${TOAST_APACHE}" ]; then
+        return 1
+    fi
+
+    . ${TOAST_APACHE}
+
     if [ "${OS_TYPE}" == "Ubuntu" ]; then
         HTTPD_CONF_DIR="/etc/apache2/sites-enabled"
     else
@@ -1319,10 +1249,6 @@ vhost_fleet() {
     echo_bar
     echo "vhost fleet..."
 
-    TOAST_APACHE="${HOME}/.toast_httpd"
-    if [ -f "${TOAST_APACHE}" ]; then
-        . ${TOAST_APACHE}
-    fi
     if [ "${HTTPD_VERSION}" == "" ]; then
         HTTPD_VERSION="24"
     fi
@@ -1375,6 +1301,16 @@ vhost_fleet() {
     fi
 
     echo_bar
+}
+
+repo_path() {
+    # repo_path
+    URL="${TOAST_URL}/config/key/repo_path"
+    RES=`curl -s --data "org=${ORG}&token=${TOKEN}" ${URL}`
+
+    if [ "${RES}" != "" ]; then
+        REPO_PATH="${RES}"
+    fi
 }
 
 deploy_project() {

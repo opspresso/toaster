@@ -1,8 +1,0 @@
-Host github.com
-    StrictHostKeyChecking no
-Host 10.0.*
-    StrictHostKeyChecking no
-Host 11.0.*
-    StrictHostKeyChecking no
-Host 12.0.*
-    StrictHostKeyChecking no
