@@ -2,7 +2,7 @@
 
 # root
 if [ "${HOME}" == "/root" ]; then
-    warning "Not supported ROOT"
+    warning "Not supported ROOT."
     exit 1
 fi
 
