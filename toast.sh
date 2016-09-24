@@ -821,11 +821,13 @@ init_httpd() {
     make_dir "${SITE_DIR}/upload" 777
 
     echo_bar
+
     if [ "${OS_TYPE}" == "Ubuntu" ]; then
         apache2 -version
     else
         httpd -version
     fi
+
     echo_bar
 }
 
@@ -850,7 +852,15 @@ init_nginx () {
     make_dir "${SITE_DIR}/upload" 777
 
     echo_bar
-    ${NGINX} -v
+
+    if [ -f /usr/sbin/nginx ]; then
+        /usr/sbin/nginx -v
+    else
+        if [ -f /usr/local/nginx/sbin/nginx ]; then
+            /usr/local/nginx/sbin/nginx -v
+        fi
+    fi
+
     echo_bar
 }
 
