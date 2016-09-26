@@ -8,8 +8,6 @@ fi
 
 ################################################################################
 
-OS_NAME="linux"
-
 EXT="tar.gz"
 
 VERSION="1.11"
@@ -22,9 +20,9 @@ fi
 ################################################################################
 
 URL1="https://nginx.org/en/download.html"
-URL2=$(curl -s ${URL1} | egrep -o "https\:\/\/nginx\.org\/download\/nginx-${VERSION}.(.*).${EXT}")
+URL2=$(curl -s ${URL1} | egrep -o "\/download\/nginx-${VERSION}.(.*).${EXT}")
 
-# https://nginx.org/download/nginx-1.11.4.tar.gz
+# /download/nginx-1.11.4.tar.gz
 
 if [[ -z "$URL2" ]]; then
     echo "Could not get nginx url - $URL2"
@@ -33,7 +31,7 @@ fi
 
 URL3=$(echo ${URL2} | cut -d " " -f 1)
 
-NGINX=$(echo ${URL3} | cut -d "/" -f 5)
+NGINX=$(echo ${URL3} | cut -d "/" -f 3)
 
 if [[ -z "$NGINX" ]]; then
     echo "Could not get nginx - $NGINX"
