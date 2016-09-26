@@ -1280,7 +1280,15 @@ vhost_lb() {
     URL="${TOAST_URL}/fleet/lb/${FLEET}"
     RES=`curl -s --data "org=${ORG}&token=${TOKEN}" ${URL}`
 
-    sed "s/#TOAST_LB/$RES/g" ${TEMPLATE} > ${TEMP_FILE} && copy ${TEMP_FILE} ${TARGET} 644
+    CONF1="#TOAST_LB"
+
+    if [ "${RES}" == "" ]; then
+        CONF2="#TOAST_LB_EMPTY"
+    else
+        CONF2="${RES}"
+    fi
+
+    sed "s/$CONF1/$CONF2/g" ${TEMPLATE} > ${TEMP_FILE} && copy ${TEMP_FILE} ${TARGET} 644
     cat ${TARGET} | grep ":80"
     echo_bar
 
