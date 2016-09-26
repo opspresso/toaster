@@ -1180,6 +1180,11 @@ aws_terminate() {
 }
 
 nginx_conf() {
+    TOAST_NGINX="${HOME}/.toast_nginx"
+    if [ ! -f "${TOAST_NGINX}" ]; then
+        return 1
+    fi
+
     NGINX_CONF_DIR=""
 
     if [ -f "/usr/local/nginx/conf/nginx.conf" ]; then
@@ -1194,7 +1199,6 @@ nginx_conf() {
 httpd_conf() {
     TOAST_APACHE="${HOME}/.toast_httpd"
     if [ ! -f "${TOAST_APACHE}" ]; then
-        warning "not found httpd."
         return 1
     fi
 
