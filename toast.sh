@@ -1196,6 +1196,10 @@ httpd_conf() {
 
     . ${TOAST_APACHE}
 
+    if [ "${HTTPD_VERSION}" == "" ]; then
+        HTTPD_VERSION="24"
+    fi
+
     if [ "${OS_TYPE}" == "Ubuntu" ]; then
         HTTPD_CONF_DIR="/etc/apache2/sites-enabled"
     else
@@ -1271,12 +1275,6 @@ vhost_domain() {
     echo_bar
     echo "vhost..."
 
-    if [ "${HTTPD_VERSION}" == "" ]; then
-        HTTPD_VERSION="24"
-    fi
-
-    echo "httpd version [${HTTPD_VERSION}]"
-
     # localhost
     TEMPLATE="${SHELL_DIR}/package/vhost/${HTTPD_VERSION}/localhost.conf"
     if [ -f "${TEMPLATE}" ]; then
@@ -1317,12 +1315,6 @@ vhost_fleet() {
 
     echo_bar
     echo "vhost fleet..."
-
-    if [ "${HTTPD_VERSION}" == "" ]; then
-        HTTPD_VERSION="24"
-    fi
-
-    echo "httpd version [${HTTPD_VERSION}]"
 
     ${SUDO} rm -rf ${HTTPD_CONF_DIR}/localhost*
     ${SUDO} rm -rf ${HTTPD_CONF_DIR}/toast*
