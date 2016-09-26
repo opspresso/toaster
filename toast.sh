@@ -313,16 +313,7 @@ awscli() {
 }
 
 lb() {
-    case ${PARAM1} in
-        u|up)
-            lb_up
-            ;;
-        d|down)
-            lb_down
-            ;;
-        *)
-            vhost_lb
-    esac
+    vhost_lb
 }
 
 vhost() {
@@ -1221,48 +1212,6 @@ httpd_conf() {
     fi
 }
 
-lb_up() {
-    nginx_conf
-
-    if [ "${NGINX_CONF_DIR}" == "" ]; then
-        return 1
-    fi
-
-    echo "lb up... ${PARAM2}"
-
-    TEMP_FILE="${TEMP_DIR}/toast-nginx.tmp"
-    TARGET="${NGINX_CONF_DIR}/nginx.conf"
-
-    CONF1="\#server\s$PARAM2\:80"
-    CONF2=" server $PARAM2:80"
-
-    sed "s/$CONF1/$CONF2/g" ${TARGET} > ${TEMP_FILE} && copy ${TEMP_FILE} ${TARGET}
-    cat ${TARGET} | grep ":80"
-
-    #service_ctl nginx reload
-}
-
-lb_down() {
-    nginx_conf
-
-    if [ "${NGINX_CONF_DIR}" == "" ]; then
-        return 1
-    fi
-
-    echo "lb down... ${PARAM2}"
-
-    TEMP_FILE="${TEMP_DIR}/toast-nginx.tmp"
-    TARGET="${NGINX_CONF_DIR}/nginx.conf"
-
-    CONF1="\sserver\s$PARAM2\:80"
-    CONF2="#server $PARAM2:80"
-
-    sed "s/$CONF1/$CONF2/g" ${TARGET} > ${TEMP_FILE} && copy ${TEMP_FILE} ${TARGET}
-    cat ${TARGET} | grep ":80"
-
-    #service_ctl nginx reload
-}
-
 vhost_lb() {
     nginx_conf
 
@@ -1272,23 +1221,27 @@ vhost_lb() {
 
     TEMPLATE1="${SHELL_DIR}/package/vhost/nginx/nginx-lb-1.conf"
     TEMPLATE2="${SHELL_DIR}/package/vhost/nginx/nginx-lb-2.conf"
+    TEMP_FILE="${TEMP_DIR}/toast-lb.tmp"
     TARGET="${NGINX_CONF_DIR}/nginx.conf"
 
     echo_bar
-    echo "nginx lb..."
+    echo "vhost lb..."
 
     URL="${TOAST_URL}/fleet/lb/${FLEET}"
     RES=`curl -s --data "org=${ORG}&token=${TOKEN}" ${URL}`
 
-    echo "" > ${TARGET}
-    cat ${TEMPLATE1} >> ${TARGET}
-    echo "${RES}" >> ${TARGET}
-    cat ${TEMPLATE1} >> ${TARGET}
+    echo "${RES}"
 
-    cat ${TARGET} | grep ":80"
+    sudo echo "" > ${TEMP_FILE}
+    cat ${TEMPLATE1} >> ${TEMP_FILE}
+    echo "${RES}" >> ${TEMP_FILE}
+    cat ${TEMPLATE1} >> ${TEMP_FILE}
+
+    copy ${TEMP_FILE} ${TARGET} 644
+
+    service_ctl nginx restart
+
     echo_bar
-
-    #service_ctl nginx restart
 }
 
 vhost_domain() {
