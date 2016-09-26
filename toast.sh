@@ -31,6 +31,7 @@ SUDO="sudo"
 ################################################################################
 
 TOAST_URL=
+REPO_PATH=
 ORG=
 PHASE=
 FLEET=
@@ -56,6 +57,7 @@ fi
 ################################################################################
 
 CMD=$1
+OUT=
 
 PARAM1=$2
 PARAM2=$3
@@ -88,42 +90,52 @@ WEBAPP_DIR="${TOMCAT_DIR}/webapps"
 toast() {
     case ${CMD} in
         a|auto)
+            CMD="auto"
             auto
             ;;
         u|update)
+            CMD="update"
             update
             ;;
         c|config)
+            CMD="config"
             config
             ;;
         i|init)
+            CMD="init"
             init
             ;;
         v|version)
+            CMD="version"
             version
             ;;
+        w|aws)
+            CMD="aws"
+            OUT="json"
+            awscli
+            ;;
         b|lb)
+            CMD="lb"
             lb
             ;;
         o|vhost)
+            CMD="vhost"
             vhost
             ;;
         d|deploy)
+            CMD="deploy"
             deploy
             ;;
         h|health)
+            CMD="health"
             health
             ;;
         s|ssh)
+            CMD="ssh"
             connect
             ;;
-        n|launch)
-            launch
-            ;;
-        t|terminate)
-            terminate
-            ;;
         l|log)
+            CMD="log"
             log
             ;;
         *)
@@ -290,6 +302,17 @@ version() {
     esac
 }
 
+awscli() {
+    case ${PARAM1} in
+        a|launch)
+            aws_launch
+            ;;
+        t|terminate)
+            aws_terminate
+            ;;
+    esac
+}
+
 lb() {
     case ${PARAM1} in
         u|up)
@@ -353,40 +376,6 @@ health() {
     RES=`curl -s --data "org=${ORG}&token=${TOKEN}" ${URL}`
 
     echo "${RES}"
-}
-
-launch() {
-    if [ "${PARAM1}" == "" ]; then
-        warning "image-id does not exist."
-        return 1
-    fi
-    if [ "${PARAM2}" == "" ]; then
-        warning "instance-type does not exist."
-        return 1
-    fi
-    if [ "${PARAM3}" == "" ]; then
-        warning "key-name does not exist."
-        return 1
-    fi
-    if [ "${PARAM4}" == "" ]; then
-        warning "security-groups does not exist."
-        return 1
-    fi
-    if [ "${PARAM5}" == "" ]; then
-        warning "user-data does not exist."
-        return 1
-    fi
-
-    aws ec2 run-instances --image-id ${PARAM1} --instance-type ${PARAM2} --key-name ${PARAM3} --security-groups ${PARAM4} --user-data ${PARAM5}
-}
-
-terminate() {
-    if [ "${PARAM1}" == "" ]; then
-        warning "instance-id does not exist."
-        return 1
-    fi
-
-    aws ec2 terminate-instances --instance-ids ${PARAM1}
 }
 
 ################################################################################
@@ -1157,6 +1146,40 @@ version_remove() {
     rm -rf ~/.m2/repository/${ARTIFACT_PATH}
 }
 
+aws_launch() {
+    if [ "${PARAM2}" == "" ]; then
+        warning "image-id does not exist."
+        return 1
+    fi
+    if [ "${PARAM3}" == "" ]; then
+        warning "instance-type does not exist."
+        return 1
+    fi
+    if [ "${PARAM4}" == "" ]; then
+        warning "key-name does not exist."
+        return 1
+    fi
+    if [ "${PARAM5}" == "" ]; then
+        warning "security-groups does not exist."
+        return 1
+    fi
+    if [ "${PARAM6}" == "" ]; then
+        warning "user-data does not exist."
+        return 1
+    fi
+
+    aws ec2 run-instances --image-id ${PARAM2} --instance-type ${PARAM3} --key-name ${PARAM4} --security-groups ${PARAM5} --user-data ${PARAM6}
+}
+
+aws_terminate() {
+    if [ "${PARAM2}" == "" ]; then
+        warning "instance-id does not exist."
+        return 1
+    fi
+
+    aws ec2 terminate-instances --instance-ids ${PARAM2}
+}
+
 lb_up() {
     if [ ! -d ${NGINX_CONF_DIR} ]; then
         warning "not found nginx conf dir. [${NGINX_CONF_DIR}]"
@@ -1908,4 +1931,6 @@ warning() {
 toast
 
 # done
-success "done."
+if [ "${OUT}" != "json" ]; then
+    success "done."
+fi
