@@ -819,7 +819,7 @@ init_nginx () {
 
         ${SHELL_DIR}/install-nginx.sh
 
-        service_ctl nginx start on
+        ${SUDO} nginx
 
         touch "${HOME}/.toast_nginx"
     fi
@@ -1232,7 +1232,7 @@ vhost_lb() {
 
     copy ${TEMP_FILE} ${TARGET} 644
 
-    service_ctl nginx reload
+    ${SUDO} nginx -s reload
 
     echo_bar
 }
