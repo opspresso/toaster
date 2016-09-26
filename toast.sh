@@ -1280,7 +1280,7 @@ vhost_lb() {
     URL="${TOAST_URL}/fleet/lb/${FLEET}"
     RES=`curl -s --data "org=${ORG}&token=${TOKEN}" ${URL}`
 
-    CONF1="#TOAST_LB"
+    CONF1="\#TOAST_LB"
 
     if [ "${RES}" == "" ]; then
         CONF2="#TOAST_LB_EMPTY"
