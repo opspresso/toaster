@@ -29,7 +29,7 @@ if [[ -z "$URL2" ]]; then
     exit 1
 fi
 
-URL3=$(echo ${URL2} | cut -d " " -f 1)
+URL3=$(echo ${URL2} | cut -d "\"" -f 1)
 
 NGINX=$(echo ${URL3} | cut -d "/" -f 3)
 
@@ -38,9 +38,9 @@ if [[ -z "$NGINX" ]]; then
     exit 1
 fi
 
-echo ${URL3}
+echo "https://nginx.org/download/${NGINX}"
 echo ${NGINX}
 
 ################################################################################
 
-wget -q -N ${URL3}
+wget -q -N "https://nginx.org/download/${NGINX}"
