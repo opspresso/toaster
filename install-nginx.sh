@@ -44,3 +44,27 @@ echo ${NGINX}
 ################################################################################
 
 wget -q -N "https://nginx.org/download/${NGINX}"
+
+tar xzf ${NGINX}
+
+rm -rf ${NGINX}
+
+NGINX_DIR=$(echo ${NGINX} | egrep -o "nginx-${VERSION}.[0-9]+")
+
+pushd ${NGINX_DIR}
+
+# sudo yum install -y pcre-devel
+# sudo yum install -y openssl-devel
+
+./configure --prefix=/usr/local/nginx \
+            --sbin-path=/usr/sbin/nginx \
+            --conf-path=/usr/local/nginx/nginx.conf \
+            --lock-path=/var/run/nginx.lock \
+            --pid-path=/var/run/nginx.pid \
+            --with-http_ssl_module \
+            --with-threads \
+            --with-stream \
+            --with-http_slice_module
+
+make
+${SUDO} make install
