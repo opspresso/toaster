@@ -1182,7 +1182,7 @@ nginx_conf() {
         NGINX_CONF_DIR="/usr/local/nginx/conf"
     else
         if [ -f "/etc/nginx/nginx.conf" ]; then
-            NGINX_CONF_DIR="/etc/nginx"
+            NGINX_CONF_DIR="/etc/nginx/conf.d"
         fi
     fi
 }
@@ -1219,10 +1219,8 @@ vhost_lb() {
         return 1
     fi
 
-    TEMPLATE1="${SHELL_DIR}/package/vhost/nginx/nginx-lb-1.conf"
-    TEMPLATE2="${SHELL_DIR}/package/vhost/nginx/nginx-lb-2.conf"
     TEMP_FILE="${TEMP_DIR}/toast-lb.tmp"
-    TARGET="${NGINX_CONF_DIR}/nginx.conf"
+    TARGET="${NGINX_CONF_DIR}/vhost-toast.conf"
 
     echo_bar
     echo "vhost lb..."
@@ -1231,17 +1229,11 @@ vhost_lb() {
     RES=`curl -s --data "org=${ORG}&token=${TOKEN}" ${URL}`
 
     echo "${RES}"
-
-    sudo echo "" > ${TEMP_FILE}
-    cat ${TEMPLATE1} >> ${TEMP_FILE}
-    echo "" >> ${TEMP_FILE}
-    echo "${RES}" >> ${TEMP_FILE}
-    echo "" >> ${TEMP_FILE}
-    cat ${TEMPLATE2} >> ${TEMP_FILE}
+    echo "${RES}" > ${TEMP_FILE}
 
     copy ${TEMP_FILE} ${TARGET} 644
 
-    service_ctl nginx restart
+    service_ctl nginx reload
 
     echo_bar
 }
