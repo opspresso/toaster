@@ -1208,8 +1208,9 @@ vhost_lb() {
         return 1
     fi
 
+    TEMPLATE="${SHELL_DIR}/package/vhost/nginx/nginx-lb.conf"
     TEMP_FILE="${TEMP_DIR}/toast-lb.tmp"
-    TARGET="${NGINX_CONF_DIR}/vhost-toast.conf"
+    TARGET="${NGINX_CONF_DIR}/nginx.conf"
 
     echo_bar
     echo "vhost lb..."
@@ -1218,7 +1219,9 @@ vhost_lb() {
     RES=`curl -s --data "org=${ORG}&token=${TOKEN}" ${URL}`
 
     echo "${RES}"
-    echo "${RES}" > ${TEMP_FILE}
+
+    cat ${TEMPLATE} > ${TEMP_FILE}
+    echo "${RES}" >> ${TEMP_FILE}
 
     copy ${TEMP_FILE} ${TARGET} 644
 
