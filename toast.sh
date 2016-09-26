@@ -79,9 +79,6 @@ TEMP_DIR="/tmp/deploy"
 
 HTTPD_VERSION="24"
 
-NGINX="/usr/local/nginx/sbin/nginx"
-NGINX_CONF_DIR="/usr/local/nginx/conf"
-
 TOMCAT_DIR="${APPS_DIR}/tomcat8"
 WEBAPP_DIR="${TOMCAT_DIR}/webapps"
 
@@ -217,6 +214,8 @@ auto() {
 
     repo_path
     deploy_fleet
+
+    vhost_lb
     vhost_fleet
 }
 
@@ -812,9 +811,9 @@ init_httpd() {
     echo_bar
 
     if [ "${OS_TYPE}" == "Ubuntu" ]; then
-        apache2 -version
+        /usr/sbin/apache2 -version
     else
-        httpd -version
+        /usr/sbin/httpd -version
     fi
 
     echo_bar
@@ -1180,87 +1179,121 @@ aws_terminate() {
     aws ec2 terminate-instances --instance-ids ${PARAM2}
 }
 
+nginx_conf() {
+    TOAST_NGINX="${HOME}/.toast_nginx"
+    if [ ! -f "${TOAST_NGINX}" ]; then
+        return 1
+    fi
+
+    NGINX_CONF_DIR=""
+
+    if [ -f "/usr/local/nginx/conf/nginx.conf" ]; then
+        NGINX_CONF_DIR="/usr/local/nginx/conf"
+    else
+        if [ -f "/etc/nginx/nginx.conf" ]; then
+            NGINX_CONF_DIR="/etc/nginx"
+        fi
+    fi
+}
+
+httpd_conf() {
+    TOAST_APACHE="${HOME}/.toast_httpd"
+    if [ ! -f "${TOAST_APACHE}" ]; then
+        return 1
+    fi
+
+    . ${TOAST_APACHE}
+
+    if [ "${HTTPD_VERSION}" == "" ]; then
+        HTTPD_VERSION="24"
+    fi
+
+    HTTPD_CONF_DIR=""
+
+    if [ "${OS_TYPE}" == "Ubuntu" ]; then
+        if [ -d "/etc/apache2/sites-enabled" ]; then
+            HTTPD_CONF_DIR="/etc/apache2/sites-enabled"
+        fi
+    else
+        if [ -d "/etc/httpd/conf.d" ]; then
+            HTTPD_CONF_DIR="/etc/httpd/conf.d"
+        fi
+    fi
+}
+
 lb_up() {
-    if [ ! -d ${NGINX_CONF_DIR} ]; then
-        warning "not found nginx conf dir. [${NGINX_CONF_DIR}]"
+    nginx_conf
+
+    if [ "${NGINX_CONF_DIR}" == "" ]; then
         return 1
     fi
 
     echo "lb up... ${PARAM2}"
 
     TEMP_FILE="${TEMP_DIR}/toast-nginx.tmp"
-    NGINX_CONF="${NGINX_CONF_DIR}/nginx.conf"
+    TARGET="${NGINX_CONF_DIR}/nginx.conf"
 
     CONF1="\#server\s$PARAM2\:80"
     CONF2=" server $PARAM2:80"
 
-    sed "s/$CONF1/$CONF2/g" ${NGINX_CONF} > ${TEMP_FILE} && copy ${TEMP_FILE} ${NGINX_CONF}
-    cat ${NGINX_CONF} | grep ":80"
+    sed "s/$CONF1/$CONF2/g" ${TARGET} > ${TEMP_FILE} && copy ${TEMP_FILE} ${TARGET}
+    cat ${TARGET} | grep ":80"
 
-    service_ctl nginx reload
+    #service_ctl nginx reload
 }
 
 lb_down() {
-    if [ ! -d ${NGINX_CONF_DIR} ]; then
-        warning "not found nginx conf dir. [${NGINX_CONF_DIR}]"
+    nginx_conf
+
+    if [ "${NGINX_CONF_DIR}" == "" ]; then
         return 1
     fi
 
     echo "lb down... ${PARAM2}"
 
     TEMP_FILE="${TEMP_DIR}/toast-nginx.tmp"
-    NGINX_CONF="${NGINX_CONF_DIR}/nginx.conf"
+    TARGET="${NGINX_CONF_DIR}/nginx.conf"
 
     CONF1="\sserver\s$PARAM2\:80"
     CONF2="#server $PARAM2:80"
 
-    sed "s/$CONF1/$CONF2/g" ${NGINX_CONF} > ${TEMP_FILE} && copy ${TEMP_FILE} ${NGINX_CONF}
-    cat ${NGINX_CONF} | grep ":80"
+    sed "s/$CONF1/$CONF2/g" ${TARGET} > ${TEMP_FILE} && copy ${TEMP_FILE} ${TARGET}
+    cat ${TARGET} | grep ":80"
 
-    service_ctl nginx reload
+    #service_ctl nginx reload
 }
 
 vhost_lb() {
-    if [ ! -d ${NGINX_CONF_DIR} ]; then
-        warning "not found nginx conf dir. [${NGINX_CONF_DIR}]"
+    nginx_conf
+
+    if [ "${NGINX_CONF_DIR}" == "" ]; then
         return 1
     fi
 
+    TEMPLATE="${SHELL_DIR}/package/vhost/nginx/nginx-lb.conf"
+    TEMP_FILE="${TEMP_DIR}/toast-nginx.tmp"
+    TARGET="${NGINX_CONF_DIR}/nginx.conf"
+
     echo_bar
-    cat ${NGINX_CONF} | grep ":80"
+    echo "nginx lb..."
+
+    copy ${TEMPLATE} ${TARGET} 644
+
+    cat ${TARGET} | grep ":80"
     echo_bar
+
+    #service_ctl nginx restart
 }
 
 vhost_domain() {
-    # "vhost domain deploy.yanolja.com"
+    httpd_conf
 
-    TOAST_APACHE="${HOME}/.toast_httpd"
-    if [ ! -f "${TOAST_APACHE}" ]; then
-        warning "not found httpd."
-        return 1
-    fi
-
-    . ${TOAST_APACHE}
-
-    if [ "${OS_TYPE}" == "Ubuntu" ]; then
-        HTTPD_CONF_DIR="/etc/apache2/sites-enabled"
-    else
-        HTTPD_CONF_DIR="/etc/httpd/conf.d"
-    fi
-
-    if [ ! -d ${HTTPD_CONF_DIR} ]; then
-        echo "not found httpd conf dir. [${HTTPD_CONF_DIR}]"
+    if [ "${HTTPD_CONF_DIR}" == "" ]; then
         return 1
     fi
 
     echo_bar
     echo "vhost..."
-
-    if [ "${HTTPD_VERSION}" == "" ]; then
-        HTTPD_VERSION="24"
-    fi
-
-    echo "httpd version [${HTTPD_VERSION}]"
 
     # localhost
     TEMPLATE="${SHELL_DIR}/package/vhost/${HTTPD_VERSION}/localhost.conf"
@@ -1293,32 +1326,14 @@ vhost_domain() {
 }
 
 vhost_fleet() {
-    TOAST_APACHE="${HOME}/.toast_httpd"
-    if [ ! -f "${TOAST_APACHE}" ]; then
-        return 1
-    fi
+    httpd_conf
 
-    . ${TOAST_APACHE}
-
-    if [ "${OS_TYPE}" == "Ubuntu" ]; then
-        HTTPD_CONF_DIR="/etc/apache2/sites-enabled"
-    else
-        HTTPD_CONF_DIR="/etc/httpd/conf.d"
-    fi
-
-    if [ ! -d ${HTTPD_CONF_DIR} ]; then
-        echo "not found httpd conf dir. [${HTTPD_CONF_DIR}]"
+    if [ "${HTTPD_CONF_DIR}" == "" ]; then
         return 1
     fi
 
     echo_bar
     echo "vhost fleet..."
-
-    if [ "${HTTPD_VERSION}" == "" ]; then
-        HTTPD_VERSION="24"
-    fi
-
-    echo "httpd version [${HTTPD_VERSION}]"
 
     ${SUDO} rm -rf ${HTTPD_CONF_DIR}/localhost*
     ${SUDO} rm -rf ${HTTPD_CONF_DIR}/toast*
@@ -1344,9 +1359,9 @@ vhost_fleet() {
 
         while read line
         do
-            TARGET=(${line})
+            ARR=(${line})
 
-            DOM="${TARGET[0]}"
+            DOM="${ARR[0]}"
 
             make_dir "${SITE_DIR}/${DOM}"
 
@@ -1437,7 +1452,7 @@ deploy_fleet() {
 
         while read line
         do
-            TARGET=(${line})
+            ARR=(${line})
 
             deploy_value
 
@@ -1465,12 +1480,12 @@ deploy_fleet() {
 }
 
 deploy_value() {
-    RANDOM="${TARGET[0]}"
-    GROUP_ID="${TARGET[1]}"
-    ARTIFACT_ID="${TARGET[2]}"
-    VERSION="${TARGET[3]}"
-    TYPE="${TARGET[4]}"
-    DOMAIN="${TARGET[5]}"
+    RANDOM="${ARR[0]}"
+    GROUP_ID="${ARR[1]}"
+    ARTIFACT_ID="${ARR[2]}"
+    VERSION="${ARR[3]}"
+    TYPE="${ARR[4]}"
+    DOMAIN="${ARR[5]}"
 
     GROUP_PATH=`echo "${GROUP_ID}" | sed "s/\./\//"`
 
