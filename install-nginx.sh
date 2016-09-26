@@ -58,9 +58,6 @@ pushd ${NGINX_DIR}
 
 ./configure --prefix=/usr/local/nginx \
             --sbin-path=/usr/sbin/nginx \
-            --conf-path=/usr/local/nginx/nginx.conf \
-            --lock-path=/var/run/nginx.lock \
-            --pid-path=/var/run/nginx.pid \
             --with-http_ssl_module \
             --with-threads \
             --with-stream \

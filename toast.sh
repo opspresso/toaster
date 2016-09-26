@@ -1183,10 +1183,6 @@ nginx_conf() {
 
     if [ -f "/usr/local/nginx/conf/nginx.conf" ]; then
         NGINX_CONF_DIR="/usr/local/nginx/conf"
-    else
-        if [ -f "/etc/nginx/nginx.conf" ]; then
-            NGINX_CONF_DIR="/etc/nginx/conf.d"
-        fi
     fi
 }
 
