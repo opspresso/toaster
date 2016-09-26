@@ -791,8 +791,10 @@ init_httpd() {
     fi
 
     if [ -d "/var/www/html" ]; then
-        copy "${SHELL_DIR}/package/health.txt" "/var/www/html/index.html"
-        copy "${SHELL_DIR}/package/health.txt" "/var/www/html/health.html"
+        TEMP_FILE="${TEMP_DIR}/toast-health.tmp"
+        echo "OK ${NAME}" > ${TEMP_FILE}
+        copy ${TEMP_FILE} "/var/www/html/index.html" 644
+        copy ${TEMP_FILE} "/var/www/html/health.html" 644
     fi
 
     make_dir "${SITE_DIR}"
@@ -823,8 +825,10 @@ init_nginx () {
     fi
 
     if [ -d "/usr/local/nginx/html" ]; then
-        copy "${SHELL_DIR}/package/health.txt" "/usr/local/nginx/html/index.html"
-        copy "${SHELL_DIR}/package/health.txt" "/usr/local/nginx/html/health.html"
+        TEMP_FILE="${TEMP_DIR}/toast-health.tmp"
+        echo "OK ${NAME}" > ${TEMP_FILE}
+        copy ${TEMP_FILE} "/usr/local/nginx/html/index.html" 644
+        copy ${TEMP_FILE} "/usr/local/nginx/html/health.html" 644
     fi
 
     make_dir "${SITE_DIR}"
@@ -908,8 +912,8 @@ init_java8() {
 
         echo "JAVA_HOME=${JAVA_HOME}"
 
-        copy "${SHELL_DIR}/package/jce8/local_policy.jar.bin" "${JAVA_HOME}/jre/lib/security/local_policy.jar"
-        copy "${SHELL_DIR}/package/jce8/US_export_policy.jar.bin" "${JAVA_HOME}/jre/lib/security/US_export_policy.jar"
+        copy "${SHELL_DIR}/package/jce8/local_policy.jar.bin" "${JAVA_HOME}/jre/lib/security/local_policy.jar" 644
+        copy "${SHELL_DIR}/package/jce8/US_export_policy.jar.bin" "${JAVA_HOME}/jre/lib/security/US_export_policy.jar" 644
 
         touch "${HOME}/.toast_java"
     fi
@@ -1014,11 +1018,11 @@ init_php_ini() {
 
         # short_open_tag = On
         sed "s/short\_open\_tag\ \=\ Off/short\_open\_tag\ \=\ On/g" ${PHP_INI} > ${TEMP_FILE}
-        copy ${TEMP_FILE} ${PHP_INI}
+        copy ${TEMP_FILE} ${PHP_INI} 644
 
         # date.timezone = Asia/Seoul
         sed "s/\;date\.timezone\ \=/date\.timezone\ \=\ Asia\/Seoul/g" ${PHP_INI} > ${TEMP_FILE}
-        copy ${TEMP_FILE} ${PHP_INI}
+        copy ${TEMP_FILE} ${PHP_INI} 644
     fi
 }
 
