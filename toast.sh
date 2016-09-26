@@ -1228,11 +1228,6 @@ lb_up() {
         return 1
     fi
 
-    if [ ! -d ${NGINX_CONF_DIR} ]; then
-        warning "not found nginx conf dir. [${NGINX_CONF_DIR}]"
-        return 1
-    fi
-
     echo "lb up... ${PARAM2}"
 
     TEMP_FILE="${TEMP_DIR}/toast-nginx.tmp"
@@ -1251,11 +1246,6 @@ lb_down() {
     nginx_conf
 
     if [ "${NGINX_CONF_DIR}" == "" ]; then
-        return 1
-    fi
-
-    if [ ! -d ${NGINX_CONF_DIR} ]; then
-        warning "not found nginx conf dir. [${NGINX_CONF_DIR}]"
         return 1
     fi
 
@@ -1280,11 +1270,6 @@ vhost_lb() {
         return 1
     fi
 
-    if [ ! -d ${NGINX_CONF_DIR} ]; then
-        warning "not found nginx conf dir. [${NGINX_CONF_DIR}]"
-        return 1
-    fi
-
     TEMPLATE="${SHELL_DIR}/package/vhost/nginx/nginx-lb.conf"
     TEMP_FILE="${TEMP_DIR}/toast-nginx.tmp"
     TARGET="${NGINX_CONF_DIR}/nginx.conf"
@@ -1306,11 +1291,6 @@ vhost_domain() {
     httpd_conf
 
     if [ "${HTTPD_CONF_DIR}" == "" ]; then
-        return 1
-    fi
-
-    if [ ! -d ${HTTPD_CONF_DIR} ]; then
-        echo "not found httpd conf dir. [${HTTPD_CONF_DIR}]"
         return 1
     fi
 
@@ -1351,11 +1331,6 @@ vhost_fleet() {
     httpd_conf
 
     if [ "${HTTPD_CONF_DIR}" == "" ]; then
-        return 1
-    fi
-
-    if [ ! -d ${HTTPD_CONF_DIR} ]; then
-        echo "not found httpd conf dir. [${HTTPD_CONF_DIR}]"
         return 1
     fi
 
