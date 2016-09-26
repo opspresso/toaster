@@ -1270,14 +1270,20 @@ vhost_lb() {
         return 1
     fi
 
-    TEMPLATE="${SHELL_DIR}/package/vhost/nginx/nginx-lb.conf"
-    TEMP_FILE="${TEMP_DIR}/toast-nginx.tmp"
+    TEMPLATE1="${SHELL_DIR}/package/vhost/nginx/nginx-lb-1.conf"
+    TEMPLATE2="${SHELL_DIR}/package/vhost/nginx/nginx-lb-2.conf"
     TARGET="${NGINX_CONF_DIR}/nginx.conf"
 
     echo_bar
     echo "nginx lb..."
 
-    copy ${TEMPLATE} ${TARGET} 644
+    URL="${TOAST_URL}/fleet/lb/${FLEET}"
+    RES=`curl -s --data "org=${ORG}&token=${TOKEN}" ${URL}`
+
+    echo "" > ${TARGET}
+    cat ${TEMPLATE1} >> ${TARGET}
+    echo "${RES}" >> ${TARGET}
+    cat ${TEMPLATE1} >> ${TARGET}
 
     cat ${TARGET} | grep ":80"
     echo_bar
