@@ -1225,10 +1225,12 @@ vhost_lb() {
     TARGET="${NGINX_CONF_DIR}/nginx.conf"
 
     echo_bar
-    echo "nginx lb..."
+    echo "vhost lb..."
 
     URL="${TOAST_URL}/fleet/lb/${FLEET}"
     RES=`curl -s --data "org=${ORG}&token=${TOKEN}" ${URL}`
+
+    echo "${RES}"
 
     sudo echo "" > ${TEMP_FILE}
     cat ${TEMPLATE1} >> ${TEMP_FILE}
@@ -1237,10 +1239,9 @@ vhost_lb() {
 
     copy ${TEMP_FILE} ${TARGET} 644
 
-    cat ${TARGET} | grep ":80"
-    echo_bar
+    service_ctl nginx restart
 
-    #service_ctl nginx restart
+    echo_bar
 }
 
 vhost_domain() {
