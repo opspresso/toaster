@@ -1281,9 +1281,9 @@ vhost_lb() {
     RES=`curl -s --data "org=${ORG}&token=${TOKEN}" ${URL}`
 
     echo "" > ${TARGET}
-    echo "${TEMPLATE1}" >> ${TARGET}
+    cat ${TEMPLATE1} >> ${TARGET}
     echo "${RES}" >> ${TARGET}
-    echo "${TEMPLATE1}" >> ${TARGET}
+    cat ${TEMPLATE1} >> ${TARGET}
 
     cat ${TARGET} | grep ":80"
     echo_bar
