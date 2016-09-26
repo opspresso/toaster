@@ -79,9 +79,6 @@ TEMP_DIR="/tmp/deploy"
 
 HTTPD_VERSION="24"
 
-NGINX="/usr/local/nginx/sbin/nginx"
-NGINX_CONF_DIR="/usr/local/nginx/conf"
-
 TOMCAT_DIR="${APPS_DIR}/tomcat8"
 WEBAPP_DIR="${TOMCAT_DIR}/webapps"
 
@@ -314,6 +311,8 @@ awscli() {
 }
 
 lb() {
+    nginx_conf
+
     case ${PARAM1} in
         u|up)
             lb_up
@@ -812,9 +811,9 @@ init_httpd() {
     echo_bar
 
     if [ "${OS_TYPE}" == "Ubuntu" ]; then
-        apache2 -version
+        /usr/sbin/apache2 -version
     else
-        httpd -version
+        /usr/sbin/httpd -version
     fi
 
     echo_bar
@@ -1180,6 +1179,14 @@ aws_terminate() {
     aws ec2 terminate-instances --instance-ids ${PARAM2}
 }
 
+nginx_conf() {
+    if [ -f "/usr/local/nginx/conf/nginx.conf" ]; then
+        NGINX_CONF_DIR="/usr/local/nginx/conf"
+    else
+        NGINX_CONF_DIR="/etc/nginx"
+    fi
+}
+
 lb_up() {
     if [ ! -d ${NGINX_CONF_DIR} ]; then
         warning "not found nginx conf dir. [${NGINX_CONF_DIR}]"
@@ -1344,9 +1351,9 @@ vhost_fleet() {
 
         while read line
         do
-            TARGET=(${line})
+            ARR=(${line})
 
-            DOM="${TARGET[0]}"
+            DOM="${ARR[0]}"
 
             make_dir "${SITE_DIR}/${DOM}"
 
@@ -1437,7 +1444,7 @@ deploy_fleet() {
 
         while read line
         do
-            TARGET=(${line})
+            ARR=(${line})
 
             deploy_value
 
@@ -1465,12 +1472,12 @@ deploy_fleet() {
 }
 
 deploy_value() {
-    RANDOM="${TARGET[0]}"
-    GROUP_ID="${TARGET[1]}"
-    ARTIFACT_ID="${TARGET[2]}"
-    VERSION="${TARGET[3]}"
-    TYPE="${TARGET[4]}"
-    DOMAIN="${TARGET[5]}"
+    RANDOM="${ARR[0]}"
+    GROUP_ID="${ARR[1]}"
+    ARTIFACT_ID="${ARR[2]}"
+    VERSION="${ARR[3]}"
+    TYPE="${ARR[4]}"
+    DOMAIN="${ARR[5]}"
 
     GROUP_PATH=`echo "${GROUP_ID}" | sed "s/\./\//"`
 
