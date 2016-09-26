@@ -1232,13 +1232,13 @@ lb_up() {
     echo "lb up... ${PARAM2}"
 
     TEMP_FILE="${TEMP_DIR}/toast-nginx.tmp"
-    NGINX_CONF="${NGINX_CONF_DIR}/nginx.conf"
+    TARGET="${NGINX_CONF_DIR}/nginx.conf"
 
     CONF1="\#server\s$PARAM2\:80"
     CONF2=" server $PARAM2:80"
 
-    sed "s/$CONF1/$CONF2/g" ${NGINX_CONF} > ${TEMP_FILE} && copy ${TEMP_FILE} ${NGINX_CONF}
-    cat ${NGINX_CONF} | grep ":80"
+    sed "s/$CONF1/$CONF2/g" ${TARGET} > ${TEMP_FILE} && copy ${TEMP_FILE} ${TARGET}
+    cat ${TARGET} | grep ":80"
 
     service_ctl nginx reload
 }
@@ -1258,13 +1258,13 @@ lb_down() {
     echo "lb down... ${PARAM2}"
 
     TEMP_FILE="${TEMP_DIR}/toast-nginx.tmp"
-    NGINX_CONF="${NGINX_CONF_DIR}/nginx.conf"
+    TARGET="${NGINX_CONF_DIR}/nginx.conf"
 
     CONF1="\sserver\s$PARAM2\:80"
     CONF2="#server $PARAM2:80"
 
-    sed "s/$CONF1/$CONF2/g" ${NGINX_CONF} > ${TEMP_FILE} && copy ${TEMP_FILE} ${NGINX_CONF}
-    cat ${NGINX_CONF} | grep ":80"
+    sed "s/$CONF1/$CONF2/g" ${TARGET} > ${TEMP_FILE} && copy ${TEMP_FILE} ${TARGET}
+    cat ${TARGET} | grep ":80"
 
     service_ctl nginx reload
 }
@@ -1281,9 +1281,16 @@ vhost_lb() {
         return 1
     fi
 
+    TEMP_FILE="${TEMP_DIR}/toast-nginx.tmp"
+    TARGET="${NGINX_CONF_DIR}/nginx.conf"
+
+    # replace
+
     echo_bar
-    cat ${NGINX_CONF} | grep ":80"
+    cat ${TARGET} | grep ":80"
     echo_bar
+
+    service_ctl nginx reload
 }
 
 vhost_domain() {
