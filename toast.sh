@@ -1240,7 +1240,7 @@ lb_up() {
     sed "s/$CONF1/$CONF2/g" ${TARGET} > ${TEMP_FILE} && copy ${TEMP_FILE} ${TARGET}
     cat ${TARGET} | grep ":80"
 
-    service_ctl nginx reload
+    #service_ctl nginx reload
 }
 
 lb_down() {
@@ -1266,7 +1266,7 @@ lb_down() {
     sed "s/$CONF1/$CONF2/g" ${TARGET} > ${TEMP_FILE} && copy ${TEMP_FILE} ${TARGET}
     cat ${TARGET} | grep ":80"
 
-    service_ctl nginx reload
+    #service_ctl nginx reload
 }
 
 vhost_lb() {
@@ -1281,16 +1281,21 @@ vhost_lb() {
         return 1
     fi
 
+    TEMPLATE="${SHELL_DIR}/package/vhost/nginx/nginx-lb.conf"
     TEMP_FILE="${TEMP_DIR}/toast-nginx.tmp"
     TARGET="${NGINX_CONF_DIR}/nginx.conf"
 
     # replace
 
     echo_bar
+    echo "nginx lb..."
+
+    copy ${TEMPLATE} ${TARGET} 644
+
     cat ${TARGET} | grep ":80"
     echo_bar
 
-    service_ctl nginx reload
+    #service_ctl nginx restart
 }
 
 vhost_domain() {
