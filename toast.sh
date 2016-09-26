@@ -214,6 +214,8 @@ auto() {
 
     repo_path
     deploy_fleet
+
+    vhost_lb
     vhost_fleet
 }
 
@@ -311,8 +313,6 @@ awscli() {
 }
 
 lb() {
-    nginx_conf
-
     case ${PARAM1} in
         u|up)
             lb_up
@@ -1187,7 +1187,25 @@ nginx_conf() {
     fi
 }
 
+httpd_conf() {
+    TOAST_APACHE="${HOME}/.toast_httpd"
+    if [ ! -f "${TOAST_APACHE}" ]; then
+        warning "not found httpd."
+        return 1
+    fi
+
+    . ${TOAST_APACHE}
+
+    if [ "${OS_TYPE}" == "Ubuntu" ]; then
+        HTTPD_CONF_DIR="/etc/apache2/sites-enabled"
+    else
+        HTTPD_CONF_DIR="/etc/httpd/conf.d"
+    fi
+}
+
 lb_up() {
+    nginx_conf
+
     if [ ! -d ${NGINX_CONF_DIR} ]; then
         warning "not found nginx conf dir. [${NGINX_CONF_DIR}]"
         return 1
@@ -1208,6 +1226,8 @@ lb_up() {
 }
 
 lb_down() {
+    nginx_conf
+
     if [ ! -d ${NGINX_CONF_DIR} ]; then
         warning "not found nginx conf dir. [${NGINX_CONF_DIR}]"
         return 1
@@ -1228,6 +1248,8 @@ lb_down() {
 }
 
 vhost_lb() {
+    nginx_conf
+
     if [ ! -d ${NGINX_CONF_DIR} ]; then
         warning "not found nginx conf dir. [${NGINX_CONF_DIR}]"
         return 1
@@ -1239,21 +1261,7 @@ vhost_lb() {
 }
 
 vhost_domain() {
-    # "vhost domain deploy.yanolja.com"
-
-    TOAST_APACHE="${HOME}/.toast_httpd"
-    if [ ! -f "${TOAST_APACHE}" ]; then
-        warning "not found httpd."
-        return 1
-    fi
-
-    . ${TOAST_APACHE}
-
-    if [ "${OS_TYPE}" == "Ubuntu" ]; then
-        HTTPD_CONF_DIR="/etc/apache2/sites-enabled"
-    else
-        HTTPD_CONF_DIR="/etc/httpd/conf.d"
-    fi
+    httpd_conf
 
     if [ ! -d ${HTTPD_CONF_DIR} ]; then
         echo "not found httpd conf dir. [${HTTPD_CONF_DIR}]"
@@ -1300,18 +1308,7 @@ vhost_domain() {
 }
 
 vhost_fleet() {
-    TOAST_APACHE="${HOME}/.toast_httpd"
-    if [ ! -f "${TOAST_APACHE}" ]; then
-        return 1
-    fi
-
-    . ${TOAST_APACHE}
-
-    if [ "${OS_TYPE}" == "Ubuntu" ]; then
-        HTTPD_CONF_DIR="/etc/apache2/sites-enabled"
-    else
-        HTTPD_CONF_DIR="/etc/httpd/conf.d"
-    fi
+    httpd_conf
 
     if [ ! -d ${HTTPD_CONF_DIR} ]; then
         echo "not found httpd conf dir. [${HTTPD_CONF_DIR}]"
