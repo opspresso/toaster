@@ -1235,7 +1235,7 @@ vhost_lb() {
     sudo echo "" > ${TEMP_FILE}
     cat ${TEMPLATE1} >> ${TEMP_FILE}
     echo "${RES}" >> ${TEMP_FILE}
-    cat ${TEMPLATE1} >> ${TEMP_FILE}
+    cat ${TEMPLATE2} >> ${TEMP_FILE}
 
     copy ${TEMP_FILE} ${TARGET} 644
 
