@@ -822,9 +822,9 @@ init_nginx () {
         touch "${HOME}/.toast_nginx"
     fi
 
-    if [ -d "/usr/share/nginx/html" ]; then
-        copy "${SHELL_DIR}/package/health.txt" "/usr/share/nginx/html/index.html"
-        copy "${SHELL_DIR}/package/health.txt" "/usr/share/nginx/html/health.html"
+    if [ -d "/usr/local/nginx/html" ]; then
+        copy "${SHELL_DIR}/package/health.txt" "/usr/local/nginx/html/index.html"
+        copy "${SHELL_DIR}/package/health.txt" "/usr/local/nginx/html/health.html"
     fi
 
     make_dir "${SITE_DIR}"
