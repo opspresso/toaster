@@ -1274,8 +1274,6 @@ vhost_lb() {
     TEMP_FILE="${TEMP_DIR}/toast-nginx.tmp"
     TARGET="${NGINX_CONF_DIR}/nginx.conf"
 
-    # replace
-
     echo_bar
     echo "nginx lb..."
 
