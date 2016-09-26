@@ -1277,8 +1277,10 @@ vhost_lb() {
     echo_bar
     echo "nginx lb..."
 
-    copy ${TEMPLATE} ${TARGET} 644
+    URL="${TOAST_URL}/fleet/lb/${FLEET}"
+    RES=`curl -s --data "org=${ORG}&token=${TOKEN}" ${URL}`
 
+    sed "s/#TOAST_LB/$RES/g" ${TEMPLATE} > ${TEMP_FILE} && copy ${TEMP_FILE} ${TARGET} 644
     cat ${TARGET} | grep ":80"
     echo_bar
 
