@@ -383,7 +383,7 @@ self_info() {
 }
 
 self_update() {
-    pushd "${SHELL_DIR}"
+    pushd ${SHELL_DIR}
     git pull
     popd
 }
@@ -411,7 +411,7 @@ prepare() {
         ${SUDO} rm -rf /etc/localtime
         ${SUDO} ln -sf /usr/share/zoneinfo/Asia/Seoul /etc/localtime
 
-        touch "${HOME}/.toast_time"
+        touch ${HOME}/.toast_time
     fi
 
     # i18n & selinux
@@ -814,7 +814,10 @@ init_nginx () {
     if [ ! -f "${HOME}/.toast_nginx" ]; then
         echo "init nginx..."
 
-        service_install nginx
+        service_install pcre-devel
+        service_install openssl-devel
+
+        ${SHELL_DIR}/install-nginx.sh
 
         service_ctl nginx start on
 
@@ -1180,10 +1183,6 @@ nginx_conf() {
 
     if [ -f "/usr/local/nginx/conf/nginx.conf" ]; then
         NGINX_CONF_DIR="/usr/local/nginx/conf"
-    else
-        if [ -f "/etc/nginx/nginx.conf" ]; then
-            NGINX_CONF_DIR="/etc/nginx/conf.d"
-        fi
     fi
 }
 
