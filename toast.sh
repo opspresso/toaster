@@ -57,6 +57,7 @@ fi
 ################################################################################
 
 CMD=$1
+OUT=
 
 PARAM1=$2
 PARAM2=$3
@@ -110,6 +111,7 @@ toast() {
             ;;
         w|aws)
             CMD="aws"
+            OUT="json"
             awscli
             ;;
         b|lb)
@@ -1929,6 +1931,6 @@ warning() {
 toast
 
 # done
-if [ "${CMD}" != "aws" ]; then
+if [ "${OUT}" != "json" ]; then
     success "done."
 fi
