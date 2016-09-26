@@ -1347,7 +1347,7 @@ deploy_fleet() {
 
         while read line
         do
-            TARGET=(${line})
+            ARR=(${line})
 
             deploy_value
 
