@@ -1180,10 +1180,14 @@ aws_terminate() {
 }
 
 nginx_conf() {
+    NGINX_CONF_DIR=""
+
     if [ -f "/usr/local/nginx/conf/nginx.conf" ]; then
         NGINX_CONF_DIR="/usr/local/nginx/conf"
     else
-        NGINX_CONF_DIR="/etc/nginx"
+        if [ -f "/etc/nginx/nginx.conf" ]; then
+            NGINX_CONF_DIR="/etc/nginx"
+        fi
     fi
 }
 
@@ -1200,15 +1204,25 @@ httpd_conf() {
         HTTPD_VERSION="24"
     fi
 
+    HTTPD_CONF_DIR=""
+
     if [ "${OS_TYPE}" == "Ubuntu" ]; then
-        HTTPD_CONF_DIR="/etc/apache2/sites-enabled"
+        if [ -d "/etc/apache2/sites-enabled" ]; then
+            HTTPD_CONF_DIR="/etc/apache2/sites-enabled"
+        fi
     else
-        HTTPD_CONF_DIR="/etc/httpd/conf.d"
+        if [ -d "/etc/httpd/conf.d" ]; then
+            HTTPD_CONF_DIR="/etc/httpd/conf.d"
+        fi
     fi
 }
 
 lb_up() {
     nginx_conf
+
+    if [ "${NGINX_CONF_DIR}" == "" ]; then
+        return 1
+    fi
 
     if [ ! -d ${NGINX_CONF_DIR} ]; then
         warning "not found nginx conf dir. [${NGINX_CONF_DIR}]"
@@ -1232,6 +1246,10 @@ lb_up() {
 lb_down() {
     nginx_conf
 
+    if [ "${NGINX_CONF_DIR}" == "" ]; then
+        return 1
+    fi
+
     if [ ! -d ${NGINX_CONF_DIR} ]; then
         warning "not found nginx conf dir. [${NGINX_CONF_DIR}]"
         return 1
@@ -1254,6 +1272,10 @@ lb_down() {
 vhost_lb() {
     nginx_conf
 
+    if [ "${NGINX_CONF_DIR}" == "" ]; then
+        return 1
+    fi
+
     if [ ! -d ${NGINX_CONF_DIR} ]; then
         warning "not found nginx conf dir. [${NGINX_CONF_DIR}]"
         return 1
@@ -1266,6 +1288,10 @@ vhost_lb() {
 
 vhost_domain() {
     httpd_conf
+
+    if [ "${HTTPD_CONF_DIR}" == "" ]; then
+        return 1
+    fi
 
     if [ ! -d ${HTTPD_CONF_DIR} ]; then
         echo "not found httpd conf dir. [${HTTPD_CONF_DIR}]"
@@ -1307,6 +1333,10 @@ vhost_domain() {
 
 vhost_fleet() {
     httpd_conf
+
+    if [ "${HTTPD_CONF_DIR}" == "" ]; then
+        return 1
+    fi
 
     if [ ! -d ${HTTPD_CONF_DIR} ]; then
         echo "not found httpd conf dir. [${HTTPD_CONF_DIR}]"
