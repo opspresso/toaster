@@ -63,5 +63,5 @@ pushd ${NGINX_DIR}
             --with-stream \
             --with-http_slice_module
 
-make
+make -s
 ${SUDO} make install
