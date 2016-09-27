@@ -324,8 +324,10 @@ health() {
 
     echo "server health..."
 
+    UPTIME=`uptime`
+
     URL="${TOAST_URL}/server/health/${SNO}"
-    RES=`curl -s --data "org=${ORG}&token=${TOKEN}" ${URL}`
+    RES=`curl -s --data "org=${ORG}&token=${TOKEN}&uptime=${UPTIME}" ${URL}`
 
     echo "${RES}"
 }
@@ -1157,6 +1159,7 @@ vhost_lb() {
     echo "${RES}"
 
     cat ${TEMPLATE} > ${TEMP_FILE}
+    echo "" >> ${TEMP_FILE}
     echo "${RES}" >> ${TEMP_FILE}
 
     copy ${TEMP_FILE} ${TARGET} 644
