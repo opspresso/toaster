@@ -363,7 +363,6 @@ prepare() {
     make_dir ${LOGS_DIR}
     make_dir ${TEMP_DIR}
 
-    make_dir ${HOME}/.m2
     make_dir ${HOME}/.aws
     make_dir ${HOME}/.ssh
 
