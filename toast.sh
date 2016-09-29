@@ -511,7 +511,15 @@ init_profile() {
         cp ${TARGET} "${TARGET}_toast"
     fi
 
-    # .phase profile
+    # default profile
+    URL="${TOAST_URL}/config/key/profile"
+    RES=`curl -s --data "org=${ORG}&token=${TOKEN}" ${URL}`
+
+    if [ "${RES}" != "" ]; then
+        echo "${RES}" >> ${TARGET}
+    fi
+
+    # phase profile
     URL="${TOAST_URL}/phase/profile/${PHASE}"
     RES=`curl -s --data "org=${ORG}&token=${TOKEN}" ${URL}`
 
@@ -519,7 +527,7 @@ init_profile() {
         echo "${RES}" >> ${TARGET}
     fi
 
-    # .fleet profile
+    # fleet profile
     URL="${TOAST_URL}/fleet/profile/${PHASE}/${FLEET}"
     RES=`curl -s --data "org=${ORG}&token=${TOKEN}" ${URL}`
 
