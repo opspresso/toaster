@@ -516,6 +516,9 @@ init_profile() {
     RES=`curl -s --data "org=${ORG}&token=${TOKEN}" ${URL}`
 
     if [ "${RES}" != "" ]; then
+        echo "" >> ${TARGET}
+        echo "# toast default profile" >> ${TARGET}
+        echo "" >> ${TARGET}
         echo "${RES}" >> ${TARGET}
     fi
 
@@ -524,6 +527,9 @@ init_profile() {
     RES=`curl -s --data "org=${ORG}&token=${TOKEN}" ${URL}`
 
     if [ "${RES}" != "" ]; then
+        echo "" >> ${TARGET}
+        echo "# toast ${PHASE} profile" >> ${TARGET}
+        echo "" >> ${TARGET}
         echo "${RES}" >> ${TARGET}
     fi
 
@@ -532,6 +538,9 @@ init_profile() {
     RES=`curl -s --data "org=${ORG}&token=${TOKEN}" ${URL}`
 
     if [ "${RES}" != "" ]; then
+        echo "" >> ${TARGET}
+        echo "# toast ${FLEET} profile" >> ${TARGET}
+        echo "" >> ${TARGET}
         echo "${RES}" >> ${TARGET}
     fi
 }
