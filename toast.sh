@@ -909,7 +909,6 @@ init_tomcat8() {
         CATALINA_HOME="${APPS_DIR}/tomcat8"
 
         add_env "CATALINA_HOME" "${CATALINA_HOME}"
-        add_env "CATALINA_OPTS" "-Dproject.profile=${PHASE}"
 
         echo "CATALINA_HOME=${CATALINA_HOME}" > "${HOME}/.toast_tomcat"
     fi
