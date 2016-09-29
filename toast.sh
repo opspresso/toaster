@@ -507,7 +507,9 @@ init_profile() {
     TARGET="${HOME}/.bash_profile"
     touch ${TARGET}
 
-    if [ ! -f "${TARGET}_toast" ]; then
+    if [ -f "${TARGET}_toast" ]; then
+        cp "${TARGET}_toast" ${TARGET}
+    else
         cp ${TARGET} "${TARGET}_toast"
     fi
 
