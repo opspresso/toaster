@@ -864,7 +864,7 @@ init_node4() {
 
         echo "NODE_HOME=${NODE_HOME}"
 
-        touch "${HOME}/.toast_node"
+        echo "NODE_HOME=${NODE_HOME}" > "${HOME}/.toast_node"
     fi
 
     echo_bar
@@ -882,14 +882,13 @@ init_java8() {
         JAVA_HOME=$(dirname $(dirname $(readlink -f $(which java))))
 
         add_env "JAVA_HOME" "${JAVA_HOME}"
-        add_env "CATALINA_OPTS" "-Dproject.profile=${PHASE}"
 
         echo "JAVA_HOME=${JAVA_HOME}"
 
         copy "${SHELL_DIR}/package/jce8/local_policy.jar.bin" "${JAVA_HOME}/jre/lib/security/local_policy.jar" 644
         copy "${SHELL_DIR}/package/jce8/US_export_policy.jar.bin" "${JAVA_HOME}/jre/lib/security/US_export_policy.jar" 644
 
-        touch "${HOME}/.toast_java"
+        echo "JAVA_HOME=${JAVA_HOME}" > "${HOME}/.toast_java"
     fi
 
     make_dir "${APPS_DIR}"
@@ -907,7 +906,12 @@ init_tomcat8() {
 
         ${SHELL_DIR}/install-tomcat.sh "${APPS_DIR}"
 
-        touch "${HOME}/.toast_tomcat"
+        CATALINA_HOME="${APPS_DIR}/tomcat8"
+
+        add_env "CATALINA_HOME" "${CATALINA_HOME}"
+        add_env "CATALINA_OPTS" "-Dproject.profile=${PHASE}"
+
+        echo "CATALINA_HOME=${CATALINA_HOME}" > "${HOME}/.toast_tomcat"
     fi
 }
 
