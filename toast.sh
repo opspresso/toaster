@@ -373,11 +373,11 @@ prepare() {
     copy ${SHELL_DIR}/package/linux/hosts.txt /etc/hosts 644
 
     # timezone
-    if [ ! -f "${SHELL_DIR}/.toast_time" ]; then
+    if [ ! -f "${SHELL_DIR}/.config_time" ]; then
         ${SUDO} rm -rf /etc/localtime
         ${SUDO} ln -sf /usr/share/zoneinfo/Asia/Seoul /etc/localtime
 
-        touch "${SHELL_DIR}/.toast_time"
+        touch "${SHELL_DIR}/.config_time"
     fi
 
     # i18n & selinux
@@ -651,7 +651,7 @@ init_aws() {
 
     # aws cli
     if [ ! -f "/usr/bin/aws" ]; then
-        if [ ! -f "${SHELL_DIR}/.toast_aws_cli" ]; then
+        if [ ! -f "${SHELL_DIR}/.config_aws_cli" ]; then
             echo "init aws cli..."
 
             wget -q -N https://s3.amazonaws.com/aws-cli/awscli-bundle.zip
@@ -664,7 +664,7 @@ init_aws() {
                 rm -rf awscli-bundle
                 rm -rf awscli-bundle.zip
 
-                touch "${SHELL_DIR}/.toast_aws_cli"
+                touch "${SHELL_DIR}/.config_aws_cli"
             fi
         fi
     fi
@@ -726,7 +726,7 @@ init_epel() {
         return 1
     fi
 
-    if [ -f "${SHELL_DIR}/.toast_epel" ]; then
+    if [ -f "${SHELL_DIR}/.config_epel" ]; then
         return 1
     fi
 
@@ -742,7 +742,7 @@ init_epel() {
 
     ${SUDO} yum-config-manager --enable epel
 
-    touch "${SHELL_DIR}/.toast_epel"
+    touch "${SHELL_DIR}/.config_epel"
 }
 
 init_webtatic() {
@@ -750,7 +750,7 @@ init_webtatic() {
         return 1
     fi
 
-    if [ -f "${SHELL_DIR}/.toast_webtatic" ]; then
+    if [ -f "${SHELL_DIR}/.config_webtatic" ]; then
         return 1
     fi
 
@@ -764,11 +764,11 @@ init_webtatic() {
         fi
     fi
 
-    touch "${SHELL_DIR}/.toast_webtatic"
+    touch "${SHELL_DIR}/.config_webtatic"
 }
 
 init_httpd() {
-    if [ ! -f "${SHELL_DIR}/.toast_httpd" ]; then
+    if [ ! -f "${SHELL_DIR}/.config_httpd" ]; then
         echo "init httpd..."
 
         if [ "${OS_TYPE}" == "Ubuntu" ]; then
@@ -799,7 +799,7 @@ init_httpd() {
             service_ctl httpd start on
         fi
 
-        echo "HTTPD_VERSION=${HTTPD_VERSION}" > "${SHELL_DIR}/.toast_httpd"
+        echo "HTTPD_VERSION=${HTTPD_VERSION}" > "${SHELL_DIR}/.config_httpd"
     fi
 
     if [ -d "/var/www/html" ]; then
@@ -823,7 +823,7 @@ init_httpd() {
 }
 
 init_nginx () {
-    if [ ! -f "${SHELL_DIR}/.toast_nginx" ]; then
+    if [ ! -f "${SHELL_DIR}/.config_nginx" ]; then
         echo "init nginx..."
 
         service_install pcre-devel
@@ -833,7 +833,7 @@ init_nginx () {
 
         ${SUDO} nginx
 
-        touch "${SHELL_DIR}/.toast_nginx"
+        touch "${SHELL_DIR}/.config_nginx"
     fi
 
     if [ -d "/usr/local/nginx/html" ]; then
@@ -853,7 +853,7 @@ init_nginx () {
 }
 
 init_php() {
-    if [ ! -f "${SHELL_DIR}/.toast_php" ]; then
+    if [ ! -f "${SHELL_DIR}/.config_php" ]; then
         if [ "${OS_TYPE}" == "Ubuntu" ]; then
             VERSION="5.6"
 
@@ -878,7 +878,7 @@ init_php() {
 
         init_php_ini
 
-        echo "PHP_VERSION=${VERSION}" > "${SHELL_DIR}/.toast_php"
+        echo "PHP_VERSION=${VERSION}" > "${SHELL_DIR}/.config_php"
     fi
 
     echo_bar
@@ -891,7 +891,7 @@ init_php() {
 }
 
 init_node4() {
-    if [ ! -f "${SHELL_DIR}/.toast_node" ]; then
+    if [ ! -f "${SHELL_DIR}/.config_node" ]; then
         echo "init node..."
 
         ${SHELL_DIR}/install-node.sh
@@ -902,7 +902,7 @@ init_node4() {
 
         echo "NODE_HOME=${NODE_HOME}"
 
-        echo "NODE_HOME=${NODE_HOME}" > "${SHELL_DIR}/.toast_node"
+        echo "NODE_HOME=${NODE_HOME}" > "${SHELL_DIR}/.config_node"
     fi
 
     echo_bar
@@ -912,7 +912,7 @@ init_node4() {
 }
 
 init_java8() {
-    if [ ! -f "${SHELL_DIR}/.toast_java" ]; then
+    if [ ! -f "${SHELL_DIR}/.config_java" ]; then
         echo "init java..."
 
         ${SHELL_DIR}/install-java.sh
@@ -926,7 +926,7 @@ init_java8() {
         copy "${SHELL_DIR}/package/jce8/local_policy.jar.bin" "${JAVA_HOME}/jre/lib/security/local_policy.jar" 644
         copy "${SHELL_DIR}/package/jce8/US_export_policy.jar.bin" "${JAVA_HOME}/jre/lib/security/US_export_policy.jar" 644
 
-        echo "JAVA_HOME=${JAVA_HOME}" > "${SHELL_DIR}/.toast_java"
+        echo "JAVA_HOME=${JAVA_HOME}" > "${SHELL_DIR}/.config_java"
     fi
 
     make_dir "${APPS_DIR}"
@@ -937,7 +937,7 @@ init_java8() {
 }
 
 init_tomcat8() {
-    if [ ! -f "${SHELL_DIR}/.toast_tomcat" ]; then
+    if [ ! -f "${SHELL_DIR}/.config_tomcat" ]; then
         echo "init tomcat..."
 
         make_dir "${APPS_DIR}"
@@ -948,48 +948,48 @@ init_tomcat8() {
 
         add_env "CATALINA_HOME" "${CATALINA_HOME}"
 
-        echo "CATALINA_HOME=${CATALINA_HOME}" > "${SHELL_DIR}/.toast_tomcat"
+        echo "CATALINA_HOME=${CATALINA_HOME}" > "${SHELL_DIR}/.config_tomcat"
     fi
 }
 
 init_mysql55() {
-    if [ ! -f "${SHELL_DIR}/.toast_mysql" ]; then
+    if [ ! -f "${SHELL_DIR}/.config_mysql" ]; then
         echo "init mysql55..."
 
         service_install mysql55-server
 
         service_ctl mysqld start on
 
-        touch "${SHELL_DIR}/.toast_mysql"
+        touch "${SHELL_DIR}/.config_mysql"
     fi
 }
 
 init_mysql56() {
-    if [ ! -f "${SHELL_DIR}/.toast_mysql" ]; then
+    if [ ! -f "${SHELL_DIR}/.config_mysql" ]; then
         echo "init mysql56..."
 
         service_install mysql56-server
 
         service_ctl mysqld start on
 
-        touch "${SHELL_DIR}/.toast_mysql"
+        touch "${SHELL_DIR}/.config_mysql"
     fi
 }
 
 init_redis() {
-    if [ ! -f "${SHELL_DIR}/.toast_redis" ]; then
+    if [ ! -f "${SHELL_DIR}/.config_redis" ]; then
         echo "init redis..."
 
         service_install redis
 
         service_ctl redis start on
 
-        touch "${SHELL_DIR}/.toast_redis"
+        touch "${SHELL_DIR}/.config_redis"
     fi
 }
 
 init_rabbitmq() {
-    if [ ! -f "${SHELL_DIR}/.toast_rabbitmq" ]; then
+    if [ ! -f "${SHELL_DIR}/.config_rabbitmq" ]; then
         echo "init rabbitmq..."
 
         #wget -q -N -P "${HOME}" https://packages.erlang-solutions.com/erlang/esl-erlang/FLAVOUR_1_general/esl-erlang_19.0~centos~6_amd64.rpm
@@ -999,19 +999,19 @@ init_rabbitmq() {
 
         service_ctl rabbitmq-server restart on
 
-        touch "${SHELL_DIR}/.toast_rabbitmq"
+        touch "${SHELL_DIR}/.config_rabbitmq"
     fi
 }
 
 init_munin() {
-    if [ ! -f "${SHELL_DIR}/.toast_munin" ]; then
+    if [ ! -f "${SHELL_DIR}/.config_munin" ]; then
         echo "init munin..."
 
         service_install munin
 
         service_ctl munin-node restart on
 
-        touch "${SHELL_DIR}/.toast_munin"
+        touch "${SHELL_DIR}/.config_munin"
     fi
 }
 
@@ -1149,7 +1149,7 @@ version_remove() {
 }
 
 nginx_conf() {
-    TOAST_NGINX="${SHELL_DIR}/.toast_nginx"
+    TOAST_NGINX="${SHELL_DIR}/.config_nginx"
     if [ ! -f "${TOAST_NGINX}" ]; then
         return 1
     fi
@@ -1162,7 +1162,7 @@ nginx_conf() {
 }
 
 httpd_conf() {
-    TOAST_APACHE="${SHELL_DIR}/.toast_httpd"
+    TOAST_APACHE="${SHELL_DIR}/.config_httpd"
     if [ ! -f "${TOAST_APACHE}" ]; then
         return 1
     fi
