@@ -30,4 +30,5 @@ target/
 build/
 
 # local
+.config_*
 .toast_*
