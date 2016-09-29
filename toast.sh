@@ -212,6 +212,9 @@ config() {
 
 init() {
     case ${PARAM1} in
+        profile)
+            init_profile
+            ;;
         master)
             init_master
             ;;
@@ -500,24 +503,28 @@ init_hosts() {
 init_profile() {
     echo "init profile..."
 
-    # .bashrc
-    BASHRC="${HOME}/.bashrc"
+    # .bash_profile
+    TARGET="${HOME}/.bash_profile"
+    touch ${TARGET}
 
-    if [ `cat ${BASHRC} | grep -c "toast_profile"` -eq 0 ]; then
-        echo "" >> ${BASHRC}
-        echo "# toast_profile" >> ${BASHRC}
-        echo "if [ -f ~/.toast_profile ]; then" >> ${BASHRC}
-        echo "  . ~/.toast_profile" >> ${BASHRC}
-        echo "fi" >> ${BASHRC}
-        echo "" >> ${BASHRC}
+    if [ ! -f "${TARGET}_toast" ]; then
+        cp ${TARGET} "${TARGET}_toast"
     fi
 
-    # .toast_profile
+    # .phase profile
     URL="${TOAST_URL}/phase/profile/${PHASE}"
     RES=`curl -s --data "org=${ORG}&token=${TOKEN}" ${URL}`
 
     if [ "${RES}" != "" ]; then
-        echo "${RES}" > ${HOME}/.toast_profile
+        echo "${RES}" >> ${TARGET}
+    fi
+
+    # .fleet profile
+    URL="${TOAST_URL}/fleet/profile/${PHASE}/${FLEET}"
+    RES=`curl -s --data "org=${ORG}&token=${TOKEN}" ${URL}`
+
+    if [ "${RES}" != "" ]; then
+        echo "${RES}" >> ${TARGET}
     fi
 }
 
@@ -857,7 +864,7 @@ init_node4() {
 
         echo "NODE_HOME=${NODE_HOME}"
 
-        touch "${HOME}/.toast_node"
+        echo "NODE_HOME=${NODE_HOME}" > "${HOME}/.toast_node"
     fi
 
     echo_bar
@@ -875,14 +882,13 @@ init_java8() {
         JAVA_HOME=$(dirname $(dirname $(readlink -f $(which java))))
 
         add_env "JAVA_HOME" "${JAVA_HOME}"
-        add_env "CATALINA_OPTS" "-Dproject.profile=${PHASE}"
 
         echo "JAVA_HOME=${JAVA_HOME}"
 
         copy "${SHELL_DIR}/package/jce8/local_policy.jar.bin" "${JAVA_HOME}/jre/lib/security/local_policy.jar" 644
         copy "${SHELL_DIR}/package/jce8/US_export_policy.jar.bin" "${JAVA_HOME}/jre/lib/security/US_export_policy.jar" 644
 
-        touch "${HOME}/.toast_java"
+        echo "JAVA_HOME=${JAVA_HOME}" > "${HOME}/.toast_java"
     fi
 
     make_dir "${APPS_DIR}"
@@ -900,7 +906,12 @@ init_tomcat8() {
 
         ${SHELL_DIR}/install-tomcat.sh "${APPS_DIR}"
 
-        touch "${HOME}/.toast_tomcat"
+        CATALINA_HOME="${APPS_DIR}/tomcat8"
+
+        add_env "CATALINA_HOME" "${CATALINA_HOME}"
+        add_env "CATALINA_OPTS" "-Dproject.profile=${PHASE}"
+
+        echo "CATALINA_HOME=${CATALINA_HOME}" > "${HOME}/.toast_tomcat"
     fi
 }
 
