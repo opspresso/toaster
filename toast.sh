@@ -500,24 +500,28 @@ init_hosts() {
 init_profile() {
     echo "init profile..."
 
-    # .bashrc
-    BASHRC="${HOME}/.bashrc"
+    # .bash_profile
+    TARGET="${HOME}/.bash_profile"
+    touch ${TARGET}
 
-    if [ `cat ${BASHRC} | grep -c "toast_profile"` -eq 0 ]; then
-        echo "" >> ${BASHRC}
-        echo "# toast_profile" >> ${BASHRC}
-        echo "if [ -f ~/.toast_profile ]; then" >> ${BASHRC}
-        echo "  . ~/.toast_profile" >> ${BASHRC}
-        echo "fi" >> ${BASHRC}
-        echo "" >> ${BASHRC}
+    if [ ! -f "${TARGET}_toast" ]; then
+        cp ${TARGET} "${TARGET}_toast"
     fi
 
-    # .toast_profile
+    # .phase profile
     URL="${TOAST_URL}/phase/profile/${PHASE}"
     RES=`curl -s --data "org=${ORG}&token=${TOKEN}" ${URL}`
 
     if [ "${RES}" != "" ]; then
-        echo "${RES}" > ${HOME}/.toast_profile
+        echo "${RES}" >> ${TARGET}
+    fi
+
+    # .fleet profile
+    URL="${TOAST_URL}/fleet/profile/${PHASE}/${FLEET}"
+    RES=`curl -s --data "org=${ORG}&token=${TOKEN}" ${URL}`
+
+    if [ "${RES}" != "" ]; then
+        echo "${RES}" >> ${TARGET}
     fi
 }
 
