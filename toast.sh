@@ -513,6 +513,8 @@ init_hosts() {
         ${SUDO} echo "" >> /etc/hosts
         ${SUDO} echo "${RES}" >> /etc/hosts
     fi
+
+    ${SUDO} echo "" >> /etc/hosts
 }
 
 init_profile() {
@@ -560,6 +562,8 @@ init_profile() {
         echo "" >> ${TARGET}
         echo "${RES}" >> ${TARGET}
     fi
+
+    echo "" >> ${TARGET}
 }
 
 init_master() {
