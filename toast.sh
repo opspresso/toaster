@@ -489,13 +489,28 @@ config_cron() {
 init_hosts() {
     echo "init hosts..."
 
+    ${SUDO} echo "# toast default hosts" > /etc/hosts
+    ${SUDO} echo "" >> /etc/hosts
+    ${SUDO} echo "127.0.0.1 ${NAME}" >> /etc/hosts
+    ${SUDO} echo "127.0.0.1 localhost localhost.localdomain" >> /etc/hosts
+
     URL="${TOAST_URL}/phase/hosts/${PHASE}"
     RES=`curl -s --data "org=${ORG}&token=${TOKEN}" ${URL}`
 
     if [ "${RES}" != "" ]; then
-        ${SUDO} echo "# yanolja hosts" > /etc/hosts
-        ${SUDO} echo "127.0.0.1 ${NAME}" >> /etc/hosts
-        ${SUDO} echo "127.0.0.1 localhost localhost.localdomain" >> /etc/hosts
+        ${SUDO} echo "" >> /etc/hosts
+        ${SUDO} echo "# toast phase hosts" >> /etc/hosts
+        ${SUDO} echo "" >> /etc/hosts
+        ${SUDO} echo "${RES}" >> /etc/hosts
+    fi
+
+    URL="${TOAST_URL}/fleet/hosts/${PHASE}/${FLEET}"
+    RES=`curl -s --data "org=${ORG}&token=${TOKEN}" ${URL}`
+
+    if [ "${RES}" != "" ]; then
+        ${SUDO} echo "" >> /etc/hosts
+        ${SUDO} echo "# toast fleet hosts" >> /etc/hosts
+        ${SUDO} echo "" >> /etc/hosts
         ${SUDO} echo "${RES}" >> /etc/hosts
     fi
 }
