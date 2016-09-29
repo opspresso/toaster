@@ -257,6 +257,9 @@ init() {
         rabbitmq)
             init_rabbitmq
             ;;
+        munin)
+            init_munin
+            ;;
         *)
             self_info
             init_auto
