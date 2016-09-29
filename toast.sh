@@ -212,6 +212,9 @@ config() {
 
 init() {
     case ${PARAM1} in
+        profile)
+            init_profile
+            ;;
         master)
             init_master
             ;;
