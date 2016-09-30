@@ -1126,7 +1126,7 @@ version_next() {
 
     TEMP_FILE="${TEMP_DIR}/toast-pom.tmp"
 
-    if [ -f ${DEST_FILE} -a -r ${DEST_FILE} ]; then
+    if [ -f ${DEST_FILE} ]; then
         sed "s/$VER1/$VER2/;10q;" ${DEST_FILE} > ${TEMP_FILE}
         sed "1,10d" ${DEST_FILE} >> ${TEMP_FILE}
 
