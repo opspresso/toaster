@@ -187,8 +187,8 @@ auto() {
     config
     self_info
 
-    init_profile
     init_hosts
+    init_profile
     init_slave
     init_aws
     init_epel
@@ -217,6 +217,9 @@ config() {
 
 init() {
     case ${PARAM1} in
+        hosts)
+            init_hosts
+            ;;
         profile)
             init_profile
             ;;
@@ -497,32 +500,48 @@ config_cron() {
 init_hosts() {
     echo "init hosts..."
 
-    ${SUDO} echo "# toast default hosts" > /etc/hosts
-    ${SUDO} echo "" >> /etc/hosts
-    ${SUDO} echo "127.0.0.1 ${NAME}" >> /etc/hosts
-    ${SUDO} echo "127.0.0.1 localhost localhost.localdomain" >> /etc/hosts
+    TARGET="/etc/hosts"
 
+    if [ -f "${TARGET}_toast" ]; then
+        copy "${TARGET}_toast" ${TARGET}
+    else
+        copy ${TARGET} "${TARGET}_toast"
+    fi
+
+    # default hosts
+    URL="${TOAST_URL}/config/key/hosts"
+    RES=`curl -s --data "org=${ORG}&token=${TOKEN}" ${URL}`
+
+    if [ "${RES}" != "" ]; then
+        ${SUDO} echo "" >> ${TARGET}
+        ${SUDO} echo "# toast default hosts" >> ${TARGET}
+        ${SUDO} echo "" >> ${TARGET}
+        ${SUDO} echo "${RES}" >> ${TARGET}
+    fi
+
+    # phase hosts
     URL="${TOAST_URL}/phase/hosts/${PHASE}"
     RES=`curl -s --data "org=${ORG}&token=${TOKEN}" ${URL}`
 
     if [ "${RES}" != "" ]; then
-        ${SUDO} echo "" >> /etc/hosts
-        ${SUDO} echo "# toast phase hosts" >> /etc/hosts
-        ${SUDO} echo "" >> /etc/hosts
-        ${SUDO} echo "${RES}" >> /etc/hosts
+        ${SUDO} echo "" >> ${TARGET}
+        ${SUDO} echo "# toast phase hosts" >> ${TARGET}
+        ${SUDO} echo "" >> ${TARGET}
+        ${SUDO} echo "${RES}" >> ${TARGET}
     fi
 
+    # fleet hosts
     URL="${TOAST_URL}/fleet/hosts/${PHASE}/${FLEET}"
     RES=`curl -s --data "org=${ORG}&token=${TOKEN}" ${URL}`
 
     if [ "${RES}" != "" ]; then
-        ${SUDO} echo "" >> /etc/hosts
-        ${SUDO} echo "# toast fleet hosts" >> /etc/hosts
-        ${SUDO} echo "" >> /etc/hosts
-        ${SUDO} echo "${RES}" >> /etc/hosts
+        ${SUDO} echo "" >> ${TARGET}
+        ${SUDO} echo "# toast fleet hosts" >> ${TARGET}
+        ${SUDO} echo "" >> ${TARGET}
+        ${SUDO} echo "${RES}" >> ${TARGET}
     fi
 
-    ${SUDO} echo "" >> /etc/hosts
+    ${SUDO} echo "" >> ${TARGET}
 }
 
 init_profile() {
