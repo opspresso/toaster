@@ -30,6 +30,8 @@ SUDO="sudo"
 
 ################################################################################
 
+SHELL_DIR=$(dirname $0)
+
 TOAST_URL=
 REPO_PATH=
 ORG=
@@ -43,15 +45,18 @@ USER=
 TOKEN=
 SNO=
 
-SHELL_DIR=$(dirname $0)
+if [ "${USER}" == "" ]; then
+    USER=`whoami`
+fi
 
 CONFIG="${HOME}/.toast"
 if [ -f "${CONFIG}" ]; then
     . ${CONFIG}
 fi
 
-if [ "${USER}" == "" ]; then
-    USER=`whoami`
+PROFILE="${HOME}/.bash_profile"
+if [ -f "${PROFILE}" ]; then
+    . ${PROFILE}
 fi
 
 ################################################################################
