@@ -18,7 +18,7 @@ fi
 
 # linux
 OS_NAME=`uname`
-if [ ${OS_NAME} == "Linux" ]; then
+if [ "${OS_NAME}" == "Linux" ]; then
     OS_FULL=`uname -a`
     if [ `echo ${OS_FULL} | grep -c "Ubuntu"` -gt 0 ]; then
         OS_TYPE="Ubuntu"
@@ -30,10 +30,10 @@ if [ ${OS_NAME} == "Linux" ]; then
         fi
     fi
 else
-    if [ ${OS_NAME} == "Darwin" ]; then
-        OS_TYPE="Darwin"
+    if [ "${OS_NAME}" == "Darwin" ]; then
+        OS_TYPE="${OS_NAME}"
     else
-        warning "Not supported OS - $OS_NAME"
+        warning "Not supported OS - ${OS_NAME}"
         exit 1
     fi
 fi
@@ -136,10 +136,6 @@ toast() {
         *)
             usage
     esac
-
-    if [ ! -f "${CONFIG}" ]; then
-        auto
-    fi
 }
 
 usage() {
@@ -192,6 +188,8 @@ usage() {
 }
 
 auto() {
+    not_darwin
+
     echo_toast
 
     prepare
@@ -1902,6 +1900,13 @@ echo_bar() {
 
 echo_() {
     echo ""
+}
+
+not_darwin() {
+    if [ "${OS_TYPE}" == "Darwin" ]; then
+        warning "Not supported OS - ${OS_TYPE}"
+        exit 1
+    fi
 }
 
 ################################################################################
