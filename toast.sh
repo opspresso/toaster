@@ -1,5 +1,15 @@
 #!/bin/bash
 
+success() {
+    echo "$(tput setaf 2)$1$(tput sgr0)"
+}
+
+warning() {
+    echo "$(tput setaf 1)$1$(tput sgr0)"
+}
+
+################################################################################
+
 # root
 if [ "${HOME}" == "/root" ]; then
     warning "Not supported ROOT."
@@ -8,20 +18,23 @@ fi
 
 # linux
 OS_NAME=`uname`
-if [ ${OS_NAME} != "Linux" ]; then
-    warning "Not supported OS - $OS_NAME"
-    exit 1
-fi
-
-# el or ubuntu
-OS_FULL=`uname -a`
-if [ `echo ${OS_FULL} | grep -c "Ubuntu"` -gt 0 ]; then
-    OS_TYPE="Ubuntu"
-else
-    if [ `echo ${OS_FULL} | grep -c "el7"` -gt 0 ]; then
-        OS_TYPE="el7"
+if [ "${OS_NAME}" == "Linux" ]; then
+    OS_FULL=`uname -a`
+    if [ `echo ${OS_FULL} | grep -c "Ubuntu"` -gt 0 ]; then
+        OS_TYPE="Ubuntu"
     else
-        OS_TYPE="el6"
+        if [ `echo ${OS_FULL} | grep -c "el7"` -gt 0 ]; then
+            OS_TYPE="el7"
+        else
+            OS_TYPE="el6"
+        fi
+    fi
+else
+    if [ "${OS_NAME}" == "Darwin" ]; then
+        OS_TYPE="${OS_NAME}"
+    else
+        warning "Not supported OS - ${OS_NAME}"
+        exit 1
     fi
 fi
 
@@ -79,7 +92,7 @@ DATA_DIR="/data"
 APPS_DIR="${DATA_DIR}/apps"
 LOGS_DIR="${DATA_DIR}/logs"
 SITE_DIR="${DATA_DIR}/site"
-TEMP_DIR="/tmp/deploy"
+TEMP_DIR="/tmp"
 
 HTTPD_VERSION="24"
 
@@ -123,10 +136,6 @@ toast() {
         *)
             usage
     esac
-
-    if [ ! -f "${CONFIG}" ]; then
-        auto
-    fi
 }
 
 usage() {
@@ -179,6 +188,8 @@ usage() {
 }
 
 auto() {
+    not_darwin
+
     echo_toast
 
     prepare
@@ -632,6 +643,8 @@ init_slave() {
 
     # .ssh/authorized_keys
     TARGET="${HOME}/.ssh/authorized_keys"
+    touch ${TARGET}
+
     if [ `cat ${TARGET} | grep -c "toast@yanolja.in"` -eq 0 ]; then
         URL="${TOAST_URL}/config/key/rsa_public_key"
         RES=`curl -s --data "org=${ORG}&token=${TOKEN}" ${URL}`
@@ -1577,6 +1590,11 @@ connect() {
 
         CONN_LIST="${TEMP_DIR}/conn"
 
+        if [ ! -f ${CONN_LIST} ]; then
+            warning "Not exist file. [${CONN_LIST}]"
+            exit 1
+        fi
+
         echo_bar
         echo "# phase list"
         cat ${CONN_LIST}
@@ -1616,6 +1634,11 @@ connect() {
         wget -q -N --post-data "org=${ORG}&token=${TOKEN}" -P "${TEMP_DIR}" "${URL}"
 
         CONN_LIST="${TEMP_DIR}/${PHASE}"
+
+        if [ ! -f ${CONN_LIST} ]; then
+            warning "Not exist file. [${CONN_LIST}]"
+            exit 1
+        fi
 
         echo_bar
         echo "# fleet list"
@@ -1658,6 +1681,11 @@ connect() {
 
     CONN_LIST="${TEMP_DIR}/${FLEET}"
     CONN_PARAM=""
+
+    if [ ! -f ${CONN_LIST} ]; then
+        warning "Not exist file. [${CONN_LIST}]"
+        exit 1
+    fi
 
     echo_bar
     echo "# server list"
@@ -1891,12 +1919,11 @@ echo_() {
     echo ""
 }
 
-success() {
-    echo "$(tput setaf 2)$1$(tput sgr0)"
-}
-
-warning() {
-    echo "$(tput setaf 1)$1$(tput sgr0)"
+not_darwin() {
+    if [ "${OS_TYPE}" == "Darwin" ]; then
+        warning "Not supported OS - ${OS_TYPE}"
+        exit 1
+    fi
 }
 
 ################################################################################
