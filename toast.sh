@@ -1590,6 +1590,11 @@ connect() {
 
         CONN_LIST="${TEMP_DIR}/conn"
 
+        if [ ! -f ${CONN_LIST} ]; then
+            warning "Not exist file. [${CONN_LIST}]"
+            exit 1
+        fi
+
         echo_bar
         echo "# phase list"
         cat ${CONN_LIST}
@@ -1629,6 +1634,11 @@ connect() {
         wget -q -N --post-data "org=${ORG}&token=${TOKEN}" -P "${TEMP_DIR}" "${URL}"
 
         CONN_LIST="${TEMP_DIR}/${PHASE}"
+
+        if [ ! -f ${CONN_LIST} ]; then
+            warning "Not exist file. [${CONN_LIST}]"
+            exit 1
+        fi
 
         echo_bar
         echo "# fleet list"
@@ -1671,6 +1681,11 @@ connect() {
 
     CONN_LIST="${TEMP_DIR}/${FLEET}"
     CONN_PARAM=""
+
+    if [ ! -f ${CONN_LIST} ]; then
+        warning "Not exist file. [${CONN_LIST}]"
+        exit 1
+    fi
 
     echo_bar
     echo "# server list"
