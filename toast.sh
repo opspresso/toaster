@@ -18,20 +18,23 @@ fi
 
 # linux
 OS_NAME=`uname`
-if [ ${OS_NAME} != "Linux" ]; then
-    warning "Not supported OS - $OS_NAME"
-    exit 1
-fi
-
-# el or ubuntu
-OS_FULL=`uname -a`
-if [ `echo ${OS_FULL} | grep -c "Ubuntu"` -gt 0 ]; then
-    OS_TYPE="Ubuntu"
-else
-    if [ `echo ${OS_FULL} | grep -c "el7"` -gt 0 ]; then
-        OS_TYPE="el7"
+if [ ${OS_NAME} == "Linux" ]; then
+    OS_FULL=`uname -a`
+    if [ `echo ${OS_FULL} | grep -c "Ubuntu"` -gt 0 ]; then
+        OS_TYPE="Ubuntu"
     else
-        OS_TYPE="el6"
+        if [ `echo ${OS_FULL} | grep -c "el7"` -gt 0 ]; then
+            OS_TYPE="el7"
+        else
+            OS_TYPE="el6"
+        fi
+    fi
+else
+    if [ ${OS_NAME} == "Darwin" ]; then
+        OS_TYPE="Darwin"
+    else
+        warning "Not supported OS - $OS_NAME"
+        exit 1
     fi
 fi
 
