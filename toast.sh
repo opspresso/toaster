@@ -92,7 +92,7 @@ DATA_DIR="/data"
 APPS_DIR="${DATA_DIR}/apps"
 LOGS_DIR="${DATA_DIR}/logs"
 SITE_DIR="${DATA_DIR}/site"
-TEMP_DIR="/tmp/deploy"
+TEMP_DIR="/tmp"
 
 HTTPD_VERSION="24"
 
