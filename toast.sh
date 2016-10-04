@@ -643,6 +643,8 @@ init_slave() {
 
     # .ssh/authorized_keys
     TARGET="${HOME}/.ssh/authorized_keys"
+    touch ${TARGET}
+
     if [ `cat ${TARGET} | grep -c "toast@yanolja.in"` -eq 0 ]; then
         URL="${TOAST_URL}/config/key/rsa_public_key"
         RES=`curl -s --data "org=${ORG}&token=${TOKEN}" ${URL}`
