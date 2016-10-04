@@ -1,5 +1,15 @@
 #!/bin/bash
 
+success() {
+    echo "$(tput setaf 2)$1$(tput sgr0)"
+}
+
+warning() {
+    echo "$(tput setaf 1)$1$(tput sgr0)"
+}
+
+################################################################################
+
 # root
 if [ "${HOME}" == "/root" ]; then
     warning "Not supported ROOT."
@@ -1889,14 +1899,6 @@ echo_bar() {
 
 echo_() {
     echo ""
-}
-
-success() {
-    echo "$(tput setaf 2)$1$(tput sgr0)"
-}
-
-warning() {
-    echo "$(tput setaf 1)$1$(tput sgr0)"
 }
 
 ################################################################################
