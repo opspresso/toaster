@@ -180,10 +180,6 @@ usage() {
     echo_
     echo " Usage: toast ssh"
     echo_
-    echo " Usage: toast launch"
-    echo_
-    echo " Usage: toast terminate"
-    echo_
     echo_bar
 }
 
