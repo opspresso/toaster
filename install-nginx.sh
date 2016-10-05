@@ -61,10 +61,10 @@ pushd ${NGINX_DIR}
             --with-http_ssl_module \
             --with-http_realip_module \
             --with-http_stub_status_module \
-            --with-threads \
+            --with-http_slice_module \
             --with-stream \
             --with-stream_ssl_module \
-            --with-http_slice_module
+            --with-threads
 
 make -s
 ${SUDO} make install
