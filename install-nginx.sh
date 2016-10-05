@@ -59,8 +59,11 @@ pushd ${NGINX_DIR}
 ./configure --prefix=/usr/local/nginx \
             --sbin-path=/usr/sbin/nginx \
             --with-http_ssl_module \
+            --with-http_realip_module \
+            --with-http_stub_status_module \
             --with-threads \
             --with-stream \
+            --with-stream_ssl_module \
             --with-http_slice_module
 
 make -s
