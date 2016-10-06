@@ -239,6 +239,9 @@ init() {
         aws)
             init_aws
             ;;
+        certificate)
+            init_certificate
+            ;;
         httpd)
             init_httpd
             ;;
@@ -710,6 +713,37 @@ init_aws() {
     echo_bar
 }
 
+init_certificate() {
+    echo "init certificate..."
+
+    CERTIFICATE="${TEMP_DIR}/${PARAM2}"
+
+    URL="${TOAST_URL}/certificate/name/${PARAM2}"
+    wget -q -N --post-data "org=${ORG}&token=${TOKEN}" -P "${TEMP_DIR}" "${URL}"
+
+    if [ -f ${CERTIFICATE} ]; then
+        echo "save certificate..."
+
+        BASE_DIR="/data/conf"
+        make_dir ${BASE_DIR}
+
+        TARGET="${BASE_DIR}/tmp"
+        new ${TARGET} 600
+
+        while read line
+        do
+            ARR=(${line})
+
+            if [ "${ARR[0]}" == "#" ]; then
+                TARGET="${BASE_DIR}/${ARR[1]}"
+                new ${TARGET} 600
+            else
+                echo "${line}" >> ${TARGET}
+            fi
+        done < ${CERTIFICATE}
+    fi
+}
+
 init_auto() {
     URL="${TOAST_URL}/fleet/apps/${PHASE}/${FLEET}"
     RES=`curl -s --data "org=${ORG}&token=${TOKEN}" ${URL}`
@@ -840,7 +874,7 @@ init_httpd() {
 
     if [ -d "/var/www/html" ]; then
         TEMP_FILE="${TEMP_DIR}/toast-health.tmp"
-        echo "OK ${NAME}" > ${TEMP_FILE}
+        echo "OK ${HOST}" > ${TEMP_FILE}
         copy ${TEMP_FILE} "/var/www/html/index.html" 644
         copy ${TEMP_FILE} "/var/www/html/health.html" 644
     fi
@@ -1843,10 +1877,7 @@ process_start() {
 
 add_env() {
     TARGET="${HOME}/.bashrc"
-
-    if [ ! -f "${TARGET}" ]; then
-        touch ${TARGET}
-    fi
+    touch ${TARGET}
 
     KEY=$1
     VAL=$2
@@ -1878,6 +1909,19 @@ copy() {
 
     if [ "${USER}" != "" ]; then
         ${SUDO} chown ${USER}.${USER} $2
+    fi
+}
+
+new() {
+    ${SUDO} rm -rf $1
+    ${SUDO} touch $1
+
+    if [ "$2" != "" ]; then
+        ${SUDO} chmod $2 $1
+    fi
+
+    if [ "${USER}" != "" ]; then
+        ${SUDO} chown ${USER}.${USER} $1
     fi
 }
 
