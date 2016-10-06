@@ -874,7 +874,7 @@ init_httpd() {
 
     if [ -d "/var/www/html" ]; then
         TEMP_FILE="${TEMP_DIR}/toast-health.tmp"
-        echo "OK ${NAME}" > ${TEMP_FILE}
+        echo "OK ${HOST}" > ${TEMP_FILE}
         copy ${TEMP_FILE} "/var/www/html/index.html" 644
         copy ${TEMP_FILE} "/var/www/html/health.html" 644
     fi
