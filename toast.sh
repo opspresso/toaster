@@ -728,6 +728,7 @@ init_certificate() {
         make_dir ${BASE_DIR}
 
         TARGET="${BASE_DIR}/tmp"
+        new ${TARGET} 400
 
         while read line
         do
@@ -735,7 +736,7 @@ init_certificate() {
 
             if [ "${ARR[0]}" == "#" ]; then
                 TARGET="${BASE_DIR}/${ARR[1]}"
-                echo "" > ${TARGET}
+                new ${TARGET} 400
             else
                 echo "${line}" >> ${TARGET}
             fi
@@ -1876,10 +1877,7 @@ process_start() {
 
 add_env() {
     TARGET="${HOME}/.bashrc"
-
-    if [ ! -f "${TARGET}" ]; then
-        touch ${TARGET}
-    fi
+    touch ${TARGET}
 
     KEY=$1
     VAL=$2
@@ -1911,6 +1909,19 @@ copy() {
 
     if [ "${USER}" != "" ]; then
         ${SUDO} chown ${USER}.${USER} $2
+    fi
+}
+
+new() {
+    ${SUDO} rm -rf $1
+    ${SUDO} touch $1
+
+    if [ "$2" != "" ]; then
+        ${SUDO} chmod $2 $1
+    fi
+
+    if [ "${USER}" != "" ]; then
+        ${SUDO} chown ${USER}.${USER} $1
     fi
 }
 
