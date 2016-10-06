@@ -728,7 +728,7 @@ init_certificate() {
         make_dir ${BASE_DIR}
 
         TARGET="${BASE_DIR}/tmp"
-        new ${TARGET} 400
+        new ${TARGET} 600
 
         while read line
         do
@@ -736,7 +736,7 @@ init_certificate() {
 
             if [ "${ARR[0]}" == "#" ]; then
                 TARGET="${BASE_DIR}/${ARR[1]}"
-                new ${TARGET} 400
+                new ${TARGET} 600
             else
                 echo "${line}" >> ${TARGET}
             fi
