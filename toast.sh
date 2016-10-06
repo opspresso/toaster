@@ -239,6 +239,9 @@ init() {
         aws)
             init_aws
             ;;
+        certificate)
+            init_certificate
+            ;;
         httpd)
             init_httpd
             ;;
@@ -708,6 +711,36 @@ init_aws() {
     echo_bar
     aws --version
     echo_bar
+}
+
+init_certificate() {
+    echo "init certificate..."
+
+    CERTIFICATE="${TEMP_DIR}/${PARAM2}"
+
+    URL="${TOAST_URL}/certificate/name/${PARAM2}"
+    wget -q -N --post-data "org=${ORG}&token=${TOKEN}" -P "${TEMP_DIR}" "${URL}"
+
+    if [ -f ${CERTIFICATE} ]; then
+        echo "save certificate..."
+
+        BASE_DIR="/data/conf"
+        make_dir ${BASE_DIR}
+
+        TARGET="${BASE_DIR}/tmp"
+
+        while read line
+        do
+            ARR=(${line})
+
+            if [ "${ARR[0]}" == "#" ]; then
+                TARGET="${BASE_DIR}/${ARR[1]}"
+                echo "" > ${TARGET}
+            else
+                echo "${line}" >> ${TARGET}
+            fi
+        done < ${CERTIFICATE}
+    fi
 }
 
 init_auto() {
