@@ -377,11 +377,7 @@ self_update() {
 }
 
 prepare() {
-    service_install git
-    service_install gcc
-    service_install curl
-    service_install wget
-    service_install unzip
+    service_install "gcc curl wget unzip vim git"
 
     make_dir ${DATA_DIR}
     make_dir ${LOGS_DIR}
@@ -841,6 +837,8 @@ init_httpd() {
     if [ ! -f "${SHELL_DIR}/.config_httpd" ]; then
         echo "init httpd..."
 
+        service_install "openssl openssl-devel"
+
         if [ "${OS_TYPE}" == "Ubuntu" ]; then
             service_install apache2
 
@@ -849,9 +847,9 @@ init_httpd() {
             status=`${SUDO} yum list | grep httpd24 | wc -l | awk '{print $1}'`
 
             if [ ${status} -ge 1 ]; then
-                service_install httpd24
+                service_install "httpd24 httpd24-devel"
             else
-                service_install httpd
+                service_install "httpd httpd-devel"
             fi
 
             VERSION=$(httpd -version | egrep -o "Apache\/2.4")
@@ -896,8 +894,7 @@ init_nginx () {
     if [ ! -f "${SHELL_DIR}/.config_nginx" ]; then
         echo "init nginx..."
 
-        service_install pcre-devel
-        service_install openssl-devel
+        service_install "pcre pcre-devel openssl openssl-devel"
 
         ${SHELL_DIR}/install-nginx.sh
 
@@ -1783,12 +1780,10 @@ service_update() {
 }
 
 service_install() {
-    if [ ! -f "/usr/bin/$1" ]; then
-        if [ "${OS_TYPE}" == "Ubuntu" ]; then
-            ${SUDO} apt-get install -y $1
-        else
-            ${SUDO} yum install -y $1
-        fi
+    if [ "${OS_TYPE}" == "Ubuntu" ]; then
+        ${SUDO} apt-get install -y $1
+    else
+        ${SUDO} yum install -y $1
     fi
 }
 
