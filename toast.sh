@@ -1334,7 +1334,7 @@ vhost_lb() {
 
                 echo "    }" >> ${TEMP_HTTP}
 
-                TEMPLATE="${SHELL_DIR}/package/vhost/nginx/nginx-http-port.conf"
+                TEMPLATE="${SHELL_DIR}/package/vhost/nginx/nginx-http-server.conf"
                 sed "s/PORT/$PORT/g" ${TEMPLATE} >> ${TEMP_HTTP}
             fi
 
@@ -1348,7 +1348,7 @@ vhost_lb() {
             if [ "${ARR[0]}" == "TCP" ]; then
                 PORT="${ARR[1]}"
 
-                echo "    upstream yanolja {" >> ${TEMP_TCP}
+                echo "    upstream yanolja_${PORT} {" >> ${TEMP_TCP}
 
                 for i in "${HOST_ARR[@]}"
                 do
@@ -1357,35 +1357,43 @@ vhost_lb() {
 
                 echo "    }" >> ${TEMP_TCP}
 
-                TEMPLATE="${SHELL_DIR}/package/vhost/nginx/nginx-tcp-port.conf"
+                TEMPLATE="${SHELL_DIR}/package/vhost/nginx/nginx-tcp-server.conf"
                 sed "s/PORT/$PORT/g" ${TEMPLATE} >> ${TEMP_TCP}
             fi
         done < ${LB_CONF}
 
         # default
-        TEMPLATE="${SHELL_DIR}/package/vhost/nginx/nginx-http.conf"
+        TEMPLATE="${SHELL_DIR}/package/vhost/nginx/nginx-default.conf"
         cat ${TEMPLATE} >> ${TEMP_FILE}
 
         # http
         if [ -f ${TEMP_HTTP} ]; then
-            TEMPLATE="${SHELL_DIR}/package/vhost/nginx/nginx-http.conf"
+            echo "http {" >> ${TEMP_FILE}
 
-            HTTP=`cat ${TEMP_HTTP}`
-            sed "s/HTTP/$HTTP/g" ${TEMPLATE} > ${TEMP_HTTP}
+            TEMPLATE="${SHELL_DIR}/package/vhost/nginx/nginx-http-default.conf"
+            cat ${TEMPLATE} >> ${TEMP_FILE}
+
+            # http
+            cat ${TEMP_HTTP} >> ${TEMP_FILE}
 
             # https
             if [ -f ${TEMP_SSL} ]; then
-                SSL=`cat ${TEMP_SSL}`
-
-                sed "s/SSL/$SSL/g" ${TEMP_HTTP} >> ${TEMP_FILE}
-            else
-                cat ${TEMP_HTTP} >> ${TEMP_FILE}
+                cat ${TEMP_SSL} >> ${TEMP_FILE}
             fi
+
+            echo "}" >> ${TEMP_FILE}
         fi
 
         # tcp
         if [ -f ${TEMP_TCP} ]; then
-            cat ${TEMP_HTTP} >> ${TEMP_FILE}
+            echo "stream {" >> ${TEMP_FILE}
+
+            TEMPLATE="${SHELL_DIR}/package/vhost/nginx/nginx-tcp-default.conf"
+            cat ${TEMPLATE} >> ${TEMP_FILE}
+
+            cat ${TEMP_TCP} >> ${TEMP_FILE}
+
+            echo "}" >> ${TEMP_FILE}
         fi
 
         # done
