@@ -1327,19 +1327,22 @@ vhost_lb() {
             if [ "${ARR[0]}" == "HTTP" ]; then
                 TEMPLATE="${SHELL_DIR}/package/vhost/nginx/nginx-http-port.conf"
 
-                sed "s/PORT/$ARR[1]/g" ${TEMPLATE} > ${TEMP_HTTP}
+                PORT="${ARR[1]}"
+                sed "s/PORT/$PORT/g" ${TEMPLATE} > ${TEMP_HTTP}
             fi
 
             if [ "${ARR[0]}" == "SSL" ]; then
                 TEMPLATE="${SHELL_DIR}/package/vhost/nginx/nginx-http-ssl.conf"
 
-                sed "s/PORT/$ARR[1]/g" ${TEMPLATE} > ${TEMP_SSL}
+                PORT="${ARR[1]}"
+                sed "s/PORT/$PORT/g" ${TEMPLATE} > ${TEMP_SSL}
             fi
 
             if [ "${ARR[0]}" == "TCP" ]; then
                 TEMPLATE="${SHELL_DIR}/package/vhost/nginx/nginx-tcp-port.conf"
 
-                sed "s/PORT/$ARR[1]/g" ${TEMPLATE} >> ${TEMP_TCP}
+                PORT="${ARR[1]}"
+                sed "s/PORT/$PORT/g" ${TEMPLATE} >> ${TEMP_TCP}
             fi
         done < ${LB_CONF}
 
