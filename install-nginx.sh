@@ -68,3 +68,7 @@ pushd ${NGINX_DIR}
 
 make -s
 ${SUDO} make install
+
+popd
+
+rm -rf ${NGINX_DIR}
