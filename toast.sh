@@ -1310,8 +1310,6 @@ vhost_lb() {
 
         rm -rf ${TEMP_HTTP} ${TEMP_SSL} ${TEMP_TCP}
 
-        HOST_LIST=
-
         while read line
         do
             ARR=(${line})
@@ -1321,32 +1319,77 @@ vhost_lb() {
             fi
 
             if [ "${ARR[0]}" == "HOST" ]; then
-                HOST_LIST="${line:5}"
+                HOST_ARR=("${line:5}")
             fi
 
             if [ "${ARR[0]}" == "HTTP" ]; then
-                TEMPLATE="${SHELL_DIR}/package/vhost/nginx/nginx-http-port.conf"
-
                 PORT="${ARR[1]}"
-                sed "s/PORT/$PORT/g" ${TEMPLATE} > ${TEMP_HTTP}
+
+                echo "    upstream yanolja {" >> ${TEMP_HTTP}
+
+                for i in "${HOST_ARR[@]}"
+                do
+                   echo "        server ${i}:${PORT} max_fails=3 fail_timeout=10s;" >> ${TEMP_HTTP}
+                done
+
+                echo "    }" >> ${TEMP_HTTP}
+
+                TEMPLATE="${SHELL_DIR}/package/vhost/nginx/nginx-http-port.conf"
+                sed "s/PORT/$PORT/g" ${TEMPLATE} >> ${TEMP_HTTP}
             fi
 
             if [ "${ARR[0]}" == "SSL" ]; then
-                TEMPLATE="${SHELL_DIR}/package/vhost/nginx/nginx-http-ssl.conf"
-
                 PORT="${ARR[1]}"
+
+                TEMPLATE="${SHELL_DIR}/package/vhost/nginx/nginx-http-ssl.conf"
                 sed "s/PORT/$PORT/g" ${TEMPLATE} > ${TEMP_SSL}
             fi
 
             if [ "${ARR[0]}" == "TCP" ]; then
-                TEMPLATE="${SHELL_DIR}/package/vhost/nginx/nginx-tcp-port.conf"
-
                 PORT="${ARR[1]}"
+
+                echo "    upstream yanolja {" >> ${TEMP_TCP}
+
+                for i in "${HOST_ARR[@]}"
+                do
+                   echo "        server ${i}:${PORT} max_fails=3 fail_timeout=10s;" >> ${TEMP_TCP}
+                done
+
+                echo "    }" >> ${TEMP_TCP}
+
+                TEMPLATE="${SHELL_DIR}/package/vhost/nginx/nginx-tcp-port.conf"
                 sed "s/PORT/$PORT/g" ${TEMPLATE} >> ${TEMP_TCP}
             fi
         done < ${LB_CONF}
 
-        #copy ${TEMP_FILE} ${TARGET} 644
+        # default
+        TEMPLATE="${SHELL_DIR}/package/vhost/nginx/nginx-http.conf"
+        cat ${TEMPLATE} >> ${TEMP_FILE}
+
+        # http
+        if [ -f ${TEMP_HTTP} ]; then
+            TEMPLATE="${SHELL_DIR}/package/vhost/nginx/nginx-http.conf"
+
+            HTTP=`cat ${TEMP_HTTP}`
+            sed "s/HTTP/$HTTP/g" ${TEMPLATE} > ${TEMP_HTTP}
+
+            # https
+            if [ -f ${TEMP_SSL} ]; then
+                SSL=`cat ${TEMP_SSL}`
+
+                sed "s/SSL/$SSL/g" ${TEMP_HTTP} >> ${TEMP_FILE}
+            else
+                cat ${TEMP_HTTP} >> ${TEMP_FILE}
+            fi
+        fi
+
+        # tcp
+        if [ -f ${TEMP_TCP} ]; then
+            cat ${TEMP_HTTP} >> ${TEMP_FILE}
+        fi
+
+        # done
+        copy ${TEMP_FILE} ${TARGET} 644
 
         #${SUDO} nginx -s reload
     fi
