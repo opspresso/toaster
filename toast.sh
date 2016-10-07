@@ -1304,6 +1304,8 @@ vhost_lb() {
     wget -q -N --post-data "org=${ORG}&token=${TOKEN}" -P "${TEMP_DIR}" "${URL}"
 
     if [ -f ${LB_CONF} ]; then
+        cat ${LB_CONF}
+
         TEMP_HTTP="${TEMP_DIR}/toast-lb-http.tmp"
         TEMP_SSL="${TEMP_DIR}/toast-lb-ssl.tmp"
         TEMP_TCP="${TEMP_DIR}/toast-lb-tcp.tmp"
