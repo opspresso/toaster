@@ -712,31 +712,55 @@ init_aws() {
 init_certificate() {
     echo "init certificate..."
 
-    CERTIFICATE="${TEMP_DIR}/${PARAM2}"
+    if [ "$1" != "" ]; then
+        PARAM="$1"
+    else
+        if [ "${PARAM2}" != "" ]; then
+            PARAM="${PARAM2}"
+        else
+            return
+        fi
+    fi
 
-    URL="${TOAST_URL}/certificate/name/${PARAM2}"
+    SSL_DIR="/data/conf"
+    make_dir ${SSL_DIR}
+
+    SSL_NAME=
+    SSL_INFO="${SSL_DIR}/info"
+
+    if [ -f ${SSL_INFO} ]; then
+        . ${SSL_INFO}
+    fi
+
+    if [ "${PARAM}" == "${SSL_NAME}" ]; then
+        return
+    fi
+
+    CERTIFICATE="${TEMP_DIR}/${PARAM}"
+
+    URL="${TOAST_URL}/certificate/name/${PARAM}"
     wget -q -N --post-data "org=${ORG}&token=${TOKEN}" -P "${TEMP_DIR}" "${URL}"
 
     if [ -f ${CERTIFICATE} ]; then
         echo "save certificate..."
 
-        BASE_DIR="/data/conf"
-        make_dir ${BASE_DIR}
-
-        TARGET="${BASE_DIR}/tmp"
-        new ${TARGET} 600
+        TARGET=
 
         while read line
         do
             ARR=(${line})
 
             if [ "${ARR[0]}" == "#" ]; then
-                TARGET="${BASE_DIR}/${ARR[1]}"
-                new ${TARGET} 600
+                TARGET="${SSL_DIR}/${ARR[1]}"
+                empty ${TARGET} 600
             else
-                echo "${line}" >> ${TARGET}
+                if [ -w ${TARGET} ]; then
+                    echo "${line}" >> ${TARGET}
+                fi
             fi
         done < ${CERTIFICATE}
+
+        echo "SSL_NAME=${PARAM}" > ${SSL_INFO}
     fi
 }
 
@@ -890,7 +914,7 @@ init_httpd() {
     echo_bar
 }
 
-init_nginx () {
+init_nginx() {
     if [ ! -f "${SHELL_DIR}/.config_nginx" ]; then
         echo "init nginx..."
 
@@ -922,7 +946,15 @@ init_nginx () {
 init_php() {
     if [ ! -f "${SHELL_DIR}/.config_php" ]; then
         if [ "${OS_TYPE}" == "Ubuntu" ]; then
-            VERSION="5.6"
+            if [ "$1" == "70" ]; then
+                VERSION="7.0"
+            else
+                if [ "$1" == "55" ]; then
+                    VERSION="5.5"
+                else
+                    VERSION="5.6"
+                fi
+            fi
 
             echo "init php${VERSION}..."
 
@@ -1260,25 +1292,61 @@ vhost_lb() {
         return 1
     fi
 
-    TEMPLATE="${SHELL_DIR}/package/vhost/nginx/nginx-lb.conf"
     TEMP_FILE="${TEMP_DIR}/toast-lb.tmp"
     TARGET="${NGINX_CONF_DIR}/nginx.conf"
 
     echo_bar
     echo "vhost lb..."
 
+    LB_CONF="${TEMP_DIR}/${FLEET}"
+
     URL="${TOAST_URL}/fleet/lb/${FLEET}"
-    RES=`curl -s --data "org=${ORG}&token=${TOKEN}" ${URL}`
+    wget -q -N --post-data "org=${ORG}&token=${TOKEN}" -P "${TEMP_DIR}" "${URL}"
 
-    echo "${RES}"
+    if [ -f ${LB_CONF} ]; then
+        TEMP_HTTP="${TEMP_DIR}/toast-lb-http.tmp"
+        TEMP_SSL="${TEMP_DIR}/toast-lb-ssl.tmp"
+        TEMP_TCP="${TEMP_DIR}/toast-lb-tcp.tmp"
 
-    cat ${TEMPLATE} > ${TEMP_FILE}
-    echo "" >> ${TEMP_FILE}
-    echo "${RES}" >> ${TEMP_FILE}
+        rm -rf ${TEMP_HTTP} ${TEMP_SSL} ${TEMP_TCP}
 
-    copy ${TEMP_FILE} ${TARGET} 644
+        HOST_LIST=
 
-    ${SUDO} nginx -s reload
+        while read line
+        do
+            ARR=(${line})
+
+            if [ "${ARR[0]}" == "SSL" ]; then
+                init_certificate "${ARR[1]}"
+            fi
+
+            if [ "${ARR[0]}" == "HOST" ]; then
+                HOST_LIST="${line:5}"
+            fi
+
+            if [ "${ARR[0]}" == "HTTP" ]; then
+                TEMPLATE="${SHELL_DIR}/package/vhost/nginx/nginx-http-port.conf"
+
+                sed "s/PORT/$ARR[1]/g" ${TEMPLATE} > ${TEMP_HTTP}
+            fi
+
+            if [ "${ARR[0]}" == "SSL" ]; then
+                TEMPLATE="${SHELL_DIR}/package/vhost/nginx/nginx-http-ssl.conf"
+
+                sed "s/PORT/$ARR[1]/g" ${TEMPLATE} > ${TEMP_SSL}
+            fi
+
+            if [ "${ARR[0]}" == "TCP" ]; then
+                TEMPLATE="${SHELL_DIR}/package/vhost/nginx/nginx-tcp-port.conf"
+
+                sed "s/PORT/$ARR[1]/g" ${TEMPLATE} >> ${TEMP_TCP}
+            fi
+        done < ${LB_CONF}
+
+        #copy ${TEMP_FILE} ${TARGET} 644
+
+        #${SUDO} nginx -s reload
+    fi
 
     echo_bar
 }
@@ -1907,7 +1975,7 @@ copy() {
     fi
 }
 
-new() {
+empty() {
     ${SUDO} rm -rf $1
     ${SUDO} touch $1
 
