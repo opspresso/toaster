@@ -1308,7 +1308,7 @@ vhost_lb() {
         TEMP_SSL="${TEMP_DIR}/toast-lb-ssl.tmp"
         TEMP_TCP="${TEMP_DIR}/toast-lb-tcp.tmp"
 
-        rm -rf ${TEMP_HTTP} ${TEMP_SSL} ${TEMP_TCP}
+        rm -rf ${TEMP_FILE} ${TEMP_HTTP} ${TEMP_SSL} ${TEMP_TCP}
 
         while read line
         do
