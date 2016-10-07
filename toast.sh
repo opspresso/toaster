@@ -1403,7 +1403,7 @@ vhost_lb() {
         # done
         copy ${TEMP_FILE} ${TARGET} 644
 
-        #${SUDO} nginx -s reload
+        ${SUDO} nginx -s reload
     fi
 
     echo_bar
