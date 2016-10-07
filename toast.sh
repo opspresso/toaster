@@ -380,8 +380,7 @@ prepare() {
     service_install "gcc curl wget unzip vim git"
 
     make_dir ${DATA_DIR}
-    make_dir ${LOGS_DIR}
-    make_dir ${TEMP_DIR}
+    make_dir ${LOGS_DIR} 777
 
     make_dir ${HOME}/.aws
     make_dir ${HOME}/.ssh
@@ -1894,10 +1893,8 @@ log_webapp() {
 }
 
 log_cron() {
-    LOG_DIR="/data/logs"
-
-    find ${LOG_DIR}/** -type f -mtime +5 | xargs gzip
-    find ${LOG_DIR}/** -type f -mtime +9 | xargs rm -rf
+    find ${LOGS_DIR}/** -type f -mtime +5 | xargs gzip
+    find ${LOGS_DIR}/** -type f -mtime +9 | xargs rm -rf
 }
 
 service_update() {
