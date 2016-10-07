@@ -1304,11 +1304,13 @@ vhost_lb() {
     wget -q -N --post-data "org=${ORG}&token=${TOKEN}" -P "${TEMP_DIR}" "${URL}"
 
     if [ -f ${LB_CONF} ]; then
+        cat ${LB_CONF}
+
         TEMP_HTTP="${TEMP_DIR}/toast-lb-http.tmp"
         TEMP_SSL="${TEMP_DIR}/toast-lb-ssl.tmp"
         TEMP_TCP="${TEMP_DIR}/toast-lb-tcp.tmp"
 
-        rm -rf ${TEMP_HTTP} ${TEMP_SSL} ${TEMP_TCP}
+        rm -rf ${TEMP_FILE} ${TEMP_HTTP} ${TEMP_SSL} ${TEMP_TCP}
 
         while read line
         do
@@ -1361,6 +1363,8 @@ vhost_lb() {
                 sed "s/PORT/$PORT/g" ${TEMPLATE} >> ${TEMP_TCP}
             fi
         done < ${LB_CONF}
+
+        echo "assemble..."
 
         # default
         TEMPLATE="${SHELL_DIR}/package/vhost/nginx/nginx-default.conf"
