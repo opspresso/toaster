@@ -1372,16 +1372,19 @@ vhost_lb() {
 
         # http
         if [ -f ${TEMP_HTTP} ]; then
+            echo "" >> ${TEMP_FILE}
             echo "http {" >> ${TEMP_FILE}
 
             TEMPLATE="${SHELL_DIR}/package/vhost/nginx/nginx-http-default.conf"
             cat ${TEMPLATE} >> ${TEMP_FILE}
 
             # http
+            echo "" >> ${TEMP_FILE}
             cat ${TEMP_HTTP} >> ${TEMP_FILE}
 
             # https
             if [ -f ${TEMP_SSL} ]; then
+                echo "" >> ${TEMP_FILE}
                 cat ${TEMP_SSL} >> ${TEMP_FILE}
             fi
 
@@ -1395,6 +1398,7 @@ vhost_lb() {
             TEMPLATE="${SHELL_DIR}/package/vhost/nginx/nginx-tcp-default.conf"
             cat ${TEMPLATE} >> ${TEMP_FILE}
 
+            echo "" >> ${TEMP_FILE}
             cat ${TEMP_TCP} >> ${TEMP_FILE}
 
             echo "}" >> ${TEMP_FILE}
