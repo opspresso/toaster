@@ -1362,6 +1362,8 @@ vhost_lb() {
             fi
         done < ${LB_CONF}
 
+        echo "assemble..."
+
         # default
         TEMPLATE="${SHELL_DIR}/package/vhost/nginx/nginx-default.conf"
         cat ${TEMPLATE} >> ${TEMP_FILE}
