@@ -1319,7 +1319,7 @@ vhost_lb() {
             fi
 
             if [ "${ARR[0]}" == "HOST" ]; then
-                HOST_ARR=("${line:5}")
+                HOST_ARR=(${line:5})
             fi
 
             if [ "${ARR[0]}" == "HTTP" ]; then
@@ -1338,7 +1338,7 @@ vhost_lb() {
                 sed "s/PORT/$PORT/g" ${TEMPLATE} >> ${TEMP_HTTP}
             fi
 
-            if [ "${ARR[0]}" == "SSL" ]; then
+            if [ "${ARR[0]}" == "HTTPS" ]; then
                 PORT="${ARR[1]}"
 
                 TEMPLATE="${SHELL_DIR}/package/vhost/nginx/nginx-http-ssl.conf"
