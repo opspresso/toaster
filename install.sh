@@ -15,11 +15,11 @@ if [ "${HOME}" == "/root" ]; then
 fi
 
 # git
-if [ ! -f "/usr/bin/git" ]; then
+if [ ! -x "/usr/bin/git" ]; then
     # linux
     OS_NAME=`uname`
     if [ ${OS_NAME} != "Linux" ]; then
-        warning "Not supported OS - $OS_NAME"
+        warning "Not supported OS - [${OS_NAME}]"
         exit 1
     fi
 
@@ -40,6 +40,11 @@ if [ ! -f "/usr/bin/git" ]; then
     else
         sudo yum install -y git
     fi
+fi
+
+if [ -d "${HOME}/toaster" ]; then
+    warning "Already exists toast.sh - [${HOME}/toaster]"
+    exit 1
 fi
 
 USER=$1
