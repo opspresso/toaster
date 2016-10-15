@@ -917,7 +917,7 @@ init_nginx() {
     if [ ! -f "${SHELL_DIR}/.config_nginx" ]; then
         echo "init nginx..."
 
-        service_install "pcre pcre-devel openssl openssl-devel"
+        service_install "pcre pcre-devel zlib zlib-devel openssl openssl-devel"
 
         ${SHELL_DIR}/install-nginx.sh
 
