@@ -450,15 +450,15 @@ config_save() {
     RES=`curl -s --data "token=${TOKEN}&no=${SNO}&org=${ORG}&phase=${PHASE}&fleet=${FLEET}&name=${NAME}&host=${HOST}&port=${PORT}&user=${USER}&id=${ID}" ${URL}`
     ARR=(${RES})
 
-    if [ "${ARR[0]}" != "OK" ]; then
+    if [ "${ARR[0]}" == "OK" ]; then
+        if [ "${ARR[1]}" != "" ]; then
+            SNO="${ARR[1]}"
+        fi
+        if [ "${ARR[2]}" != "" ]; then
+            HOST="${ARR[2]}"
+        fi
+    else
         echo "Server Error. [${URL}][${RES}]"
-    fi
-
-    if [ "${ARR[1]}" != "" ]; then
-        SNO="${ARR[1]}"
-    fi
-    if [ "${ARR[2]}" != "" ]; then
-        HOST="${ARR[2]}"
     fi
 
     echo "# yanolja toast config" > ${CONFIG}
