@@ -278,6 +278,9 @@ init() {
         munin)
             init_munin
             ;;
+        tyk)
+            init_tyk
+            ;;
         *)
             self_info
             init_auto
@@ -499,6 +502,18 @@ config_cron() {
 
     echo_bar
     crontab -l
+    echo_bar
+}
+
+init_eip() {
+    # http://docs.aws.amazon.com/cli/latest/reference/ec2/index.html
+    # http://docs.aws.amazon.com/cli/latest/reference/ec2/allocate-address.html
+    # http://docs.aws.amazon.com/cli/latest/reference/ec2/associate-address.html
+    # http://docs.aws.amazon.com/cli/latest/reference/ec2/disassociate-address.html
+    # http://docs.aws.amazon.com/cli/latest/reference/ec2/release-address.html
+
+    echo_bar
+    echo "eip"
     echo_bar
 }
 
@@ -917,7 +932,7 @@ init_nginx() {
     if [ ! -f "${SHELL_DIR}/.config_nginx" ]; then
         echo "init nginx..."
 
-        service_install "pcre pcre-devel openssl openssl-devel"
+        service_install "pcre pcre-devel zlib zlib-devel openssl openssl-devel"
 
         ${SHELL_DIR}/install-nginx.sh
 
@@ -1110,6 +1125,17 @@ init_munin() {
         service_ctl munin-node restart on
 
         touch "${SHELL_DIR}/.config_munin"
+    fi
+}
+
+init_tyk() {
+    if [ ! -f "${SHELL_DIR}/.config_tyk" ]; then
+        echo "init tyk..."
+
+        service_install pygpgme
+
+
+
     fi
 }
 
