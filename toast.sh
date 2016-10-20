@@ -278,9 +278,6 @@ init() {
         munin)
             init_munin
             ;;
-        tyk)
-            init_tyk
-            ;;
         *)
             self_info
             init_auto
@@ -1125,17 +1122,6 @@ init_munin() {
         service_ctl munin-node restart on
 
         touch "${SHELL_DIR}/.config_munin"
-    fi
-}
-
-init_tyk() {
-    if [ ! -f "${SHELL_DIR}/.config_tyk" ]; then
-        echo "init tyk..."
-
-        service_install pygpgme
-
-
-
     fi
 }
 
