@@ -65,26 +65,8 @@ ${SUDO} rm -rf "${NODE_HOME}"
 ${SUDO} mv ${NODE_DIR} /usr/local/
 
 ${SUDO} rm -f /usr/local/node
-${SUDO} ln -s "${NODE_DIR}" /usr/local/node
-
-${SUDO} rm -f /usr/bin/node
-${SUDO} ln -s "${NODE_HOME}/bin/node" /usr/bin/node
-
-${SUDO} rm -f /usr/bin/npm
-${SUDO} ln -s "${NODE_HOME}/bin/npm" /usr/bin/npm
-
-${SUDO} rm -f /usr/bin/bower
-${SUDO} ln -s "${NODE_HOME}/bin/bower" /usr/bin/bower
-
-${SUDO} rm -f /usr/bin/typings
-${SUDO} ln -s "${NODE_HOME}/bin/typings" /usr/bin/typings
-
-${SUDO} rm -f /usr/bin/grunt
-${SUDO} ln -s "${NODE_HOME}/bin/grunt" /usr/bin/grunt
+${SUDO} ln -s ${NODE_DIR} /usr/local/node
 
 ${SUDO} npm install -g pm2
-
-${SUDO} rm -f /usr/bin/pm2
-${SUDO} ln -s "${NODE_HOME}/lib/node_modules/pm2/bin/pm2" /usr/bin/pm2
 
 echo "NODE_HOME=${NODE_HOME}"

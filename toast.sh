@@ -1009,6 +1009,7 @@ init_node4() {
 
         NODE_HOME=$(dirname $(dirname $(readlink -f $(which node))))
 
+        add_path "${NODE_HOME}/bin"
         add_env "NODE_HOME" "${NODE_HOME}"
 
         echo "NODE_HOME=${NODE_HOME}"
@@ -1030,6 +1031,7 @@ init_java8() {
 
         JAVA_HOME=$(dirname $(dirname $(readlink -f $(which java))))
 
+        add_path "${JAVA_HOME}/bin"
         add_env "JAVA_HOME" "${JAVA_HOME}"
 
         echo "JAVA_HOME=${JAVA_HOME}"
@@ -2008,6 +2010,14 @@ process_start() {
     if [ "${PID}" != "" ]; then
         echo "startup (${PID})"
     fi
+}
+
+add_path() {
+    TARGET="/etc/profile"
+
+    VAL=$1
+
+    ${SUDO} echo "export PATH=\"\$PATH:${VAL}\"" >> ${TARGET}
 }
 
 add_env() {
