@@ -73,6 +73,15 @@ ${SUDO} ln -s "${NODE_HOME}/bin/node" /usr/bin/node
 ${SUDO} rm -f /usr/bin/npm
 ${SUDO} ln -s "${NODE_HOME}/bin/npm" /usr/bin/npm
 
+${SUDO} rm -f /usr/bin/bower
+${SUDO} ln -s "${NODE_HOME}/bin/bower" /usr/bin/bower
+
+${SUDO} rm -f /usr/bin/typings
+${SUDO} ln -s "${NODE_HOME}/bin/typings" /usr/bin/typings
+
+${SUDO} rm -f /usr/bin/grunt
+${SUDO} ln -s "${NODE_HOME}/bin/grunt" /usr/bin/grunt
+
 ${SUDO} npm install -g pm2
 
 ${SUDO} rm -f /usr/bin/pm2
