@@ -386,9 +386,6 @@ prepare() {
     make_dir ${HOME}/.aws
     make_dir ${HOME}/.ssh
 
-    # hosts
-    copy ${SHELL_DIR}/package/linux/hosts.txt /etc/hosts 644
-
     # timezone
     if [ ! -f "${SHELL_DIR}/.config_time" ]; then
         ${SUDO} rm -rf /etc/localtime
@@ -530,8 +527,7 @@ init_hosts() {
     URL="${TOAST_URL}/config/key/hosts"
     RES=`curl -s --data "org=${ORG}&token=${TOKEN}" ${URL}`
 
-    ${SUDO} echo "" >> ${TARGET}
-    ${SUDO} echo "# toast default hosts" >> ${TARGET}
+    ${SUDO} echo "# toast default hosts" > ${TARGET}
     ${SUDO} echo "" >> ${TARGET}
     ${SUDO} echo "${RES}" >> ${TARGET}
 
@@ -1534,7 +1530,7 @@ repo_path() {
 }
 
 deploy_project() {
-    # "deploy project com.yanolja yanolja.deploy 0.0.2 php deploy.yanolja.com"
+    # "deploy project com.yanolja yanolja.demo 0.0.0 php demo.yanolja.com"
 
     GROUP_ID="${PARAM2}"
     ARTIFACT_ID="${PARAM3}"
