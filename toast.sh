@@ -530,12 +530,10 @@ init_hosts() {
     URL="${TOAST_URL}/config/key/hosts"
     RES=`curl -s --data "org=${ORG}&token=${TOKEN}" ${URL}`
 
-    if [ "${RES}" != "" ]; then
-        ${SUDO} echo "" >> ${TARGET}
-        ${SUDO} echo "# toast default hosts" >> ${TARGET}
-        ${SUDO} echo "" >> ${TARGET}
-        ${SUDO} echo "${RES}" >> ${TARGET}
-    fi
+    ${SUDO} echo "" >> ${TARGET}
+    ${SUDO} echo "# toast default hosts" >> ${TARGET}
+    ${SUDO} echo "" >> ${TARGET}
+    ${SUDO} echo "${RES}" >> ${TARGET}
 
     # phase hosts
     URL="${TOAST_URL}/phase/hosts/${PHASE}"
