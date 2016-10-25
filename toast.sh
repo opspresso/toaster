@@ -530,12 +530,10 @@ init_hosts() {
     URL="${TOAST_URL}/config/key/hosts"
     RES=`curl -s --data "org=${ORG}&token=${TOKEN}" ${URL}`
 
-    if [ "${RES}" != "" ]; then
-        ${SUDO} echo "" >> ${TARGET}
-        ${SUDO} echo "# toast default hosts" >> ${TARGET}
-        ${SUDO} echo "" >> ${TARGET}
-        ${SUDO} echo "${RES}" >> ${TARGET}
-    fi
+    ${SUDO} echo "" >> ${TARGET}
+    ${SUDO} echo "# toast default hosts" >> ${TARGET}
+    ${SUDO} echo "" >> ${TARGET}
+    ${SUDO} echo "${RES}" >> ${TARGET}
 
     # phase hosts
     URL="${TOAST_URL}/phase/hosts/${PHASE}"
@@ -543,7 +541,7 @@ init_hosts() {
 
     if [ "${RES}" != "" ]; then
         ${SUDO} echo "" >> ${TARGET}
-        ${SUDO} echo "# toast phase hosts" >> ${TARGET}
+        ${SUDO} echo "# toast ${PHASE} hosts" >> ${TARGET}
         ${SUDO} echo "" >> ${TARGET}
         ${SUDO} echo "${RES}" >> ${TARGET}
     fi
@@ -554,7 +552,7 @@ init_hosts() {
 
     if [ "${RES}" != "" ]; then
         ${SUDO} echo "" >> ${TARGET}
-        ${SUDO} echo "# toast fleet hosts" >> ${TARGET}
+        ${SUDO} echo "# toast ${FLEET} hosts" >> ${TARGET}
         ${SUDO} echo "" >> ${TARGET}
         ${SUDO} echo "${RES}" >> ${TARGET}
     fi
@@ -1009,6 +1007,7 @@ init_node4() {
 
         NODE_HOME=$(dirname $(dirname $(readlink -f $(which node))))
 
+        add_path "${NODE_HOME}/bin"
         add_env "NODE_HOME" "${NODE_HOME}"
 
         echo "NODE_HOME=${NODE_HOME}"
@@ -1030,6 +1029,7 @@ init_java8() {
 
         JAVA_HOME=$(dirname $(dirname $(readlink -f $(which java))))
 
+        add_path "${JAVA_HOME}/bin"
         add_env "JAVA_HOME" "${JAVA_HOME}"
 
         echo "JAVA_HOME=${JAVA_HOME}"
@@ -2008,6 +2008,14 @@ process_start() {
     if [ "${PID}" != "" ]; then
         echo "startup (${PID})"
     fi
+}
+
+add_path() {
+    TARGET="/etc/profile"
+
+    VAL=$1
+
+    ${SUDO} echo "export PATH=\"\$PATH:${VAL}\"" >> ${TARGET}
 }
 
 add_env() {
