@@ -1530,7 +1530,7 @@ repo_path() {
 }
 
 deploy_project() {
-    # "deploy project com.yanolja yanolja.deploy 0.0.2 php deploy.yanolja.com"
+    # "deploy project com.yanolja yanolja.demo 0.0.0 php demo.yanolja.com"
 
     GROUP_ID="${PARAM2}"
     ARTIFACT_ID="${PARAM3}"
