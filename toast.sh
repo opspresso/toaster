@@ -543,7 +543,7 @@ init_hosts() {
 
     if [ "${RES}" != "" ]; then
         ${SUDO} echo "" >> ${TARGET}
-        ${SUDO} echo "# toast phase hosts" >> ${TARGET}
+        ${SUDO} echo "# toast ${PHASE} hosts" >> ${TARGET}
         ${SUDO} echo "" >> ${TARGET}
         ${SUDO} echo "${RES}" >> ${TARGET}
     fi
@@ -554,7 +554,7 @@ init_hosts() {
 
     if [ "${RES}" != "" ]; then
         ${SUDO} echo "" >> ${TARGET}
-        ${SUDO} echo "# toast fleet hosts" >> ${TARGET}
+        ${SUDO} echo "# toast ${FLEET} hosts" >> ${TARGET}
         ${SUDO} echo "" >> ${TARGET}
         ${SUDO} echo "${RES}" >> ${TARGET}
     fi
