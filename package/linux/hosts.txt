@@ -1,6 +1,0 @@
-# toast default hosts
-
-127.0.0.1 localhost localhost.localdomain
-
-10.0.0.22 toast.yanolja.com
-10.0.0.22 deploy.yanolja.com
