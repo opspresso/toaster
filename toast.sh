@@ -2016,11 +2016,15 @@ process_start() {
 }
 
 add_path() {
-    TARGET="/etc/profile"
+    TARGET="${HOME}/.bashrc"
+    touch ${TARGET}
 
     VAL=$1
 
-    ${SUDO} echo "export PATH=\"\$PATH:${VAL}\"" >> ${TARGET}
+    echo "" >> ${TARGET}
+    echo "export PATH=\"\$PATH:${VAL}\"" >> ${TARGET}
+
+    source ${PROFILE}
 }
 
 add_env() {
@@ -2042,10 +2046,11 @@ add_env() {
     done < ${TARGET}
 
     if [ "${HAS_KEY}" == "false" ]; then
+        echo "" >> ${TARGET}
         echo "export ${KEY}=\"${VAL}\"" >> ${TARGET}
     fi
 
-    source ${TARGET}
+    source ${PROFILE}
 }
 
 copy() {
