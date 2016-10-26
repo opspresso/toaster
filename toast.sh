@@ -526,6 +526,7 @@ init_hosts() {
     echo "init hosts..."
 
     TARGET="/etc/hosts"
+    TEMP_FILE="${TEMP_DIR}/toast-hosts.tmp"
 
     if [ -f "${TARGET}_toast" ]; then
         copy "${TARGET}_toast" ${TARGET}
@@ -537,19 +538,20 @@ init_hosts() {
     URL="${TOAST_URL}/config/key/hosts"
     RES=`curl -s --data "org=${ORG}&token=${TOKEN}" ${URL}`
 
-    ${SUDO} echo "# toast default hosts" > ${TARGET}
-    ${SUDO} echo "" >> ${TARGET}
-    ${SUDO} echo "${RES}" >> ${TARGET}
+    echo "# toast default hosts" >> ${TEMP_FILE}
+    echo "" >> ${TEMP_FILE}
+    echo "${RES}" >> ${TEMP_FILE}
+    echo "127.0.0.1 ${NAME}" >> ${TEMP_FILE}
 
     # phase hosts
     URL="${TOAST_URL}/phase/hosts/${PHASE}"
     RES=`curl -s --data "org=${ORG}&token=${TOKEN}" ${URL}`
 
     if [ "${RES}" != "" ]; then
-        ${SUDO} echo "" >> ${TARGET}
-        ${SUDO} echo "# toast ${PHASE} hosts" >> ${TARGET}
-        ${SUDO} echo "" >> ${TARGET}
-        ${SUDO} echo "${RES}" >> ${TARGET}
+        echo "" >> ${TEMP_FILE}
+        echo "# toast ${PHASE} hosts" >> ${TEMP_FILE}
+        echo "" >> ${TEMP_FILE}
+        echo "${RES}" >> ${TEMP_FILE}
     fi
 
     # fleet hosts
@@ -557,13 +559,13 @@ init_hosts() {
     RES=`curl -s --data "org=${ORG}&token=${TOKEN}" ${URL}`
 
     if [ "${RES}" != "" ]; then
-        ${SUDO} echo "" >> ${TARGET}
-        ${SUDO} echo "# toast ${FLEET} hosts" >> ${TARGET}
-        ${SUDO} echo "" >> ${TARGET}
-        ${SUDO} echo "${RES}" >> ${TARGET}
+        echo "" >> ${TEMP_FILE}
+        echo "# toast ${FLEET} hosts" >> ${TEMP_FILE}
+        echo "" >> ${TEMP_FILE}
+        echo "${RES}" >> ${TEMP_FILE}
     fi
 
-    ${SUDO} echo "" >> ${TARGET}
+    copy ${TEMP_FILE} ${TARGET}
 }
 
 init_profile() {
