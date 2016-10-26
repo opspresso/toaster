@@ -62,14 +62,14 @@ if [ "${USER}" == "" ]; then
     USER=`whoami`
 fi
 
-CONFIG="${HOME}/.toast"
-if [ -f "${CONFIG}" ]; then
-    . ${CONFIG}
-fi
-
 PROFILE="${HOME}/.bash_profile"
 if [ -f "${PROFILE}" ]; then
-    . ${PROFILE}
+    source ${PROFILE}
+fi
+
+CONFIG="${HOME}/.toast"
+if [ -f "${CONFIG}" ]; then
+    source ${CONFIG}
 fi
 
 ################################################################################
@@ -416,7 +416,7 @@ config_auto() {
     # .toast
     if [ ! -f "${CONFIG}" ]; then
         copy ${SHELL_DIR}/package/toast.txt ${CONFIG} 644
-        . ${CONFIG}
+        source ${CONFIG}
     fi
 
     #  fleet phase org token
@@ -470,6 +470,8 @@ config_save() {
     echo "SNO=${SNO}" >> ${CONFIG}
 
     chmod 644 ${CONFIG}
+
+    source ${CONFIG}
 
     echo "${RES}"
 }
@@ -735,7 +737,7 @@ init_certificate() {
     SSL_INFO="${SSL_DIR}/info"
 
     if [ -f ${SSL_INFO} ]; then
-        . ${SSL_INFO}
+        source ${SSL_INFO}
     fi
 
     if [ "${PARAM}" == "${SSL_NAME}" ]; then
@@ -1274,7 +1276,7 @@ httpd_conf() {
         return 1
     fi
 
-    . ${TOAST_APACHE}
+    source ${TOAST_APACHE}
 
     if [ "${HTTPD_VERSION}" == "" ]; then
         HTTPD_VERSION="24"
