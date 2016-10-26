@@ -1011,13 +1011,12 @@ init_node4() {
 
         ${SHELL_DIR}/install-node.sh
 
-        NODE_HOME=$(dirname $(dirname $(readlink -f $(which node))))
+        NODE_HOME="/usr/local/node"
 
         add_path "${NODE_HOME}/bin"
         add_env "NODE_HOME" "${NODE_HOME}"
 
         echo "NODE_HOME=${NODE_HOME}"
-
         echo "NODE_HOME=${NODE_HOME}" > "${SHELL_DIR}/.config_node"
     fi
 
@@ -1033,16 +1032,15 @@ init_java8() {
 
         ${SHELL_DIR}/install-java.sh
 
-        JAVA_HOME=$(dirname $(dirname $(readlink -f $(which java))))
+        JAVA_HOME="/usr/local/java"
 
         add_path "${JAVA_HOME}/bin"
         add_env "JAVA_HOME" "${JAVA_HOME}"
 
-        echo "JAVA_HOME=${JAVA_HOME}"
-
         copy "${SHELL_DIR}/package/jce8/local_policy.jar.bin" "${JAVA_HOME}/jre/lib/security/local_policy.jar" 644
         copy "${SHELL_DIR}/package/jce8/US_export_policy.jar.bin" "${JAVA_HOME}/jre/lib/security/US_export_policy.jar" 644
 
+        echo "JAVA_HOME=${JAVA_HOME}"
         echo "JAVA_HOME=${JAVA_HOME}" > "${SHELL_DIR}/.config_java"
     fi
 
@@ -1065,6 +1063,7 @@ init_tomcat8() {
 
         add_env "CATALINA_HOME" "${CATALINA_HOME}"
 
+        echo "CATALINA_HOME=${CATALINA_HOME}"
         echo "CATALINA_HOME=${CATALINA_HOME}" > "${SHELL_DIR}/.config_tomcat"
     fi
 }

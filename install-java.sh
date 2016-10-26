@@ -77,19 +77,10 @@ VS2="${VS1/u/.0_}"
 JAVA_DIR="jdk1.${VS2}"
 JAVA_HOME="/usr/local/${JAVA_DIR}"
 
-${SUDO} rm -rf "${JAVA_HOME}"
+${SUDO} rm -rf ${JAVA_HOME}
 ${SUDO} mv ${JAVA_DIR} /usr/local/
 
-${SUDO} rm -f /usr/local/java
-${SUDO} ln -s "${JAVA_HOME}" /usr/local/java
-
-${SUDO} rm -f /usr/bin/java
-${SUDO} ln -s "${JAVA_HOME}/bin/java" /usr/bin/java
-
-${SUDO} rm -f /usr/bin/javac
-${SUDO} ln -s "${JAVA_HOME}/bin/javac" /usr/bin/javac
-
-${SUDO} rm -f /usr/bin/jar
-${SUDO} ln -s "${JAVA_HOME}/bin/jar" /usr/bin/jar
+${SUDO} rm -rf /usr/local/java
+${SUDO} ln -s ${JAVA_HOME} /usr/local/java
 
 echo "JAVA_HOME=${JAVA_HOME}"
