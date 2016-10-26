@@ -712,7 +712,7 @@ init_aws() {
             if [ -f "${HOME}/awscli-bundle.zip" ]; then
                 unzip awscli-bundle.zip
 
-                sudo ./awscli-bundle/install -i /usr/local/aws -b /usr/local/bin/aws
+                ${SUDO} ./awscli-bundle/install -i /usr/local/aws -b /usr/local/bin/aws
 
                 rm -rf awscli-bundle
                 rm -rf awscli-bundle.zip
