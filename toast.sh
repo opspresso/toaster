@@ -439,7 +439,7 @@ config_auto() {
 }
 
 config_save() {
-    echo "config save..."
+    echo "config save... [${ID}][${SNO}]"
 
     URL="${TOAST_URL}/server/config"
     RES=`curl -s --data "org=${ORG}&token=${TOKEN}&phase=${PHASE}&fleet=${FLEET}&id=${ID}&name=${NAME}&host=${HOST}&port=${PORT}&user=${USER}&no=${SNO}" ${URL}`
