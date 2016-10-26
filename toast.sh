@@ -2092,6 +2092,21 @@ make_dir() {
     fi
 }
 
+not_darwin() {
+    if [ "${OS_TYPE}" == "Darwin" ]; then
+        warning "Not supported OS - ${OS_TYPE}"
+        exit 1
+    fi
+}
+
+echo_() {
+    echo ""
+}
+
+echo_bar() {
+    echo "================================================================================"
+}
+
 echo_toast() {
     echo_bar
     echo "                              _  _          _                  _        "
@@ -2102,21 +2117,6 @@ echo_toast() {
     echo "      |___/                   |__/                                      "
     echo "                                                         by nalbam      "
     echo_bar
-}
-
-echo_bar() {
-    echo "================================================================================"
-}
-
-echo_() {
-    echo ""
-}
-
-not_darwin() {
-    if [ "${OS_TYPE}" == "Darwin" ]; then
-        warning "Not supported OS - ${OS_TYPE}"
-        exit 1
-    fi
 }
 
 ################################################################################
