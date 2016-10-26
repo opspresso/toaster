@@ -410,8 +410,11 @@ config_auto() {
 
     NAME=`hostname`
 
-    ARR=(`${SUDO} netstat -anp | grep LISTEN | grep sshd | grep "0\.0\.0\.0"`)
-    PORT=`echo "${ARR[3]}" | cut -d ":" -f 2`
+    SSH=`${SUDO} cat /etc/ssh/sshd_config | egrep ^\#?Port`
+    if [ "${SSH}" != "" ]; then
+        ARR=(${SSH})
+        PORT="${ARR[1]}"
+    fi
 
     # .toast
     if [ ! -f "${CONFIG}" ]; then
