@@ -80,7 +80,7 @@ JAVA_HOME="/usr/local/${JAVA_DIR}"
 ${SUDO} rm -rf ${JAVA_HOME}
 ${SUDO} mv ${JAVA_DIR} /usr/local/
 
-${SUDO} rm -f /usr/local/java
+${SUDO} rm -rf /usr/local/java
 ${SUDO} ln -s ${JAVA_HOME} /usr/local/java
 
 echo "JAVA_HOME=${JAVA_HOME}"

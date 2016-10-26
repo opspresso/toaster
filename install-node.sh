@@ -64,7 +64,7 @@ NODE_HOME="/usr/local/${NODE_DIR}"
 ${SUDO} rm -rf ${NODE_HOME}
 ${SUDO} mv ${NODE_DIR} /usr/local/
 
-${SUDO} rm -f /usr/local/node
+${SUDO} rm -rf /usr/local/node
 ${SUDO} ln -s ${NODE_HOME} /usr/local/node
 
 echo "NODE_HOME=${NODE_HOME}"
