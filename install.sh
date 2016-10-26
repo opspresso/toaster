@@ -44,6 +44,11 @@ fi
 
 if [ -d "${HOME}/toaster" ]; then
     warning "Already exists toast.sh - [${HOME}/toaster]"
+
+    if [ -f "${HOME}/toaster/toast.sh" ]; then
+        ${HOME}/toaster/toast.sh u
+    fi
+
     exit 1
 fi
 
