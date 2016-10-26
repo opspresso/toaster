@@ -526,6 +526,7 @@ init_hosts() {
     echo "init hosts..."
 
     TARGET="/etc/hosts"
+    TEMP_FILE="${TEMP_DIR}/toast-hosts.tmp"
 
     if [ -f "${TARGET}_toast" ]; then
         copy "${TARGET}_toast" ${TARGET}
@@ -537,19 +538,20 @@ init_hosts() {
     URL="${TOAST_URL}/config/key/hosts"
     RES=`curl -s --data "org=${ORG}&token=${TOKEN}" ${URL}`
 
-    ${SUDO} echo "# toast default hosts" > ${TARGET}
-    ${SUDO} echo "" >> ${TARGET}
-    ${SUDO} echo "${RES}" >> ${TARGET}
+    echo "# toast default hosts" >> ${TEMP_FILE}
+    echo "" >> ${TEMP_FILE}
+    echo "${RES}" >> ${TEMP_FILE}
+    echo "127.0.0.1 ${NAME}" >> ${TEMP_FILE}
 
     # phase hosts
     URL="${TOAST_URL}/phase/hosts/${PHASE}"
     RES=`curl -s --data "org=${ORG}&token=${TOKEN}" ${URL}`
 
     if [ "${RES}" != "" ]; then
-        ${SUDO} echo "" >> ${TARGET}
-        ${SUDO} echo "# toast ${PHASE} hosts" >> ${TARGET}
-        ${SUDO} echo "" >> ${TARGET}
-        ${SUDO} echo "${RES}" >> ${TARGET}
+        echo "" >> ${TEMP_FILE}
+        echo "# toast ${PHASE} hosts" >> ${TEMP_FILE}
+        echo "" >> ${TEMP_FILE}
+        echo "${RES}" >> ${TEMP_FILE}
     fi
 
     # fleet hosts
@@ -557,13 +559,13 @@ init_hosts() {
     RES=`curl -s --data "org=${ORG}&token=${TOKEN}" ${URL}`
 
     if [ "${RES}" != "" ]; then
-        ${SUDO} echo "" >> ${TARGET}
-        ${SUDO} echo "# toast ${FLEET} hosts" >> ${TARGET}
-        ${SUDO} echo "" >> ${TARGET}
-        ${SUDO} echo "${RES}" >> ${TARGET}
+        echo "" >> ${TEMP_FILE}
+        echo "# toast ${FLEET} hosts" >> ${TEMP_FILE}
+        echo "" >> ${TEMP_FILE}
+        echo "${RES}" >> ${TEMP_FILE}
     fi
 
-    ${SUDO} echo "" >> ${TARGET}
+    copy ${TEMP_FILE} ${TARGET}
 }
 
 init_profile() {
@@ -710,7 +712,7 @@ init_aws() {
             if [ -f "${HOME}/awscli-bundle.zip" ]; then
                 unzip awscli-bundle.zip
 
-                sudo ./awscli-bundle/install -i /usr/local/aws -b /usr/local/bin/aws
+                ${SUDO} ./awscli-bundle/install -i /usr/local/aws -b /usr/local/bin/aws
 
                 rm -rf awscli-bundle
                 rm -rf awscli-bundle.zip
@@ -2092,6 +2094,21 @@ make_dir() {
     fi
 }
 
+not_darwin() {
+    if [ "${OS_TYPE}" == "Darwin" ]; then
+        warning "Not supported OS - ${OS_TYPE}"
+        exit 1
+    fi
+}
+
+echo_() {
+    echo ""
+}
+
+echo_bar() {
+    echo "================================================================================"
+}
+
 echo_toast() {
     echo_bar
     echo "                              _  _          _                  _        "
@@ -2102,21 +2119,6 @@ echo_toast() {
     echo "      |___/                   |__/                                      "
     echo "                                                         by nalbam      "
     echo_bar
-}
-
-echo_bar() {
-    echo "================================================================================"
-}
-
-echo_() {
-    echo ""
-}
-
-not_darwin() {
-    if [ "${OS_TYPE}" == "Darwin" ]; then
-        warning "Not supported OS - ${OS_TYPE}"
-        exit 1
-    fi
 }
 
 ################################################################################
