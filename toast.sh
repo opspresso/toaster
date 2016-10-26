@@ -442,7 +442,7 @@ config_save() {
     echo "config save..."
 
     URL="${TOAST_URL}/server/config"
-    RES=`curl -s --data "token=${TOKEN}&no=${SNO}&org=${ORG}&phase=${PHASE}&fleet=${FLEET}&name=${NAME}&host=${HOST}&port=${PORT}&user=${USER}&id=${ID}" ${URL}`
+    RES=`curl -s --data "org=${ORG}&token=${TOKEN}&phase=${PHASE}&fleet=${FLEET}&id=${ID}&name=${NAME}&host=${HOST}&port=${PORT}&user=${USER}&no=${SNO}" ${URL}`
     ARR=(${RES})
 
     if [ "${ARR[0]}" == "OK" ]; then
@@ -451,6 +451,12 @@ config_save() {
         fi
         if [ "${ARR[2]}" != "" ]; then
             HOST="${ARR[2]}"
+        fi
+        if [ "${ARR[3]}" != "" ]; then
+            PHASE="${ARR[3]}"
+        fi
+        if [ "${ARR[4]}" != "" ]; then
+            FLEET="${ARR[4]}"
         fi
     else
         echo "Server Error. [${URL}][${RES}]"
@@ -470,7 +476,6 @@ config_save() {
     echo "SNO=${SNO}" >> ${CONFIG}
 
     chmod 644 ${CONFIG}
-
     source ${CONFIG}
 
     echo "${RES}"
