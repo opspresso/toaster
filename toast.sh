@@ -2024,7 +2024,7 @@ add_path() {
     echo "" >> ${TARGET}
     echo "export PATH=\"\$PATH:${VAL}\"" >> ${TARGET}
 
-    source ${TARGET}
+    source ${PROFILE}
 }
 
 add_env() {
@@ -2050,7 +2050,7 @@ add_env() {
         echo "export ${KEY}=\"${VAL}\"" >> ${TARGET}
     fi
 
-    source ${TARGET}
+    source ${PROFILE}
 }
 
 copy() {
