@@ -62,14 +62,14 @@ if [ "${USER}" == "" ]; then
     USER=`whoami`
 fi
 
-CONFIG="${HOME}/.toast"
-if [ -f "${CONFIG}" ]; then
-    . ${CONFIG}
-fi
-
 PROFILE="${HOME}/.bash_profile"
 if [ -f "${PROFILE}" ]; then
-    . ${PROFILE}
+    source ${PROFILE}
+fi
+
+CONFIG="${HOME}/.toast"
+if [ -f "${CONFIG}" ]; then
+    source ${CONFIG}
 fi
 
 ################################################################################
@@ -416,7 +416,7 @@ config_auto() {
     # .toast
     if [ ! -f "${CONFIG}" ]; then
         copy ${SHELL_DIR}/package/toast.txt ${CONFIG} 644
-        . ${CONFIG}
+        source ${CONFIG}
     fi
 
     #  fleet phase org token
@@ -442,7 +442,7 @@ config_save() {
     echo "config save..."
 
     URL="${TOAST_URL}/server/config"
-    RES=`curl -s --data "token=${TOKEN}&no=${SNO}&org=${ORG}&phase=${PHASE}&fleet=${FLEET}&name=${NAME}&host=${HOST}&port=${PORT}&user=${USER}&id=${ID}" ${URL}`
+    RES=`curl -s --data "org=${ORG}&token=${TOKEN}&phase=${PHASE}&fleet=${FLEET}&id=${ID}&name=${NAME}&host=${HOST}&port=${PORT}&user=${USER}&no=${SNO}" ${URL}`
     ARR=(${RES})
 
     if [ "${ARR[0]}" == "OK" ]; then
@@ -451,6 +451,12 @@ config_save() {
         fi
         if [ "${ARR[2]}" != "" ]; then
             HOST="${ARR[2]}"
+        fi
+        if [ "${ARR[3]}" != "" ]; then
+            PHASE="${ARR[3]}"
+        fi
+        if [ "${ARR[4]}" != "" ]; then
+            FLEET="${ARR[4]}"
         fi
     else
         echo "Server Error. [${URL}][${RES}]"
@@ -470,6 +476,7 @@ config_save() {
     echo "SNO=${SNO}" >> ${CONFIG}
 
     chmod 644 ${CONFIG}
+    source ${CONFIG}
 
     echo "${RES}"
 }
@@ -735,7 +742,7 @@ init_certificate() {
     SSL_INFO="${SSL_DIR}/info"
 
     if [ -f ${SSL_INFO} ]; then
-        . ${SSL_INFO}
+        source ${SSL_INFO}
     fi
 
     if [ "${PARAM}" == "${SSL_NAME}" ]; then
@@ -1274,7 +1281,7 @@ httpd_conf() {
         return 1
     fi
 
-    . ${TOAST_APACHE}
+    source ${TOAST_APACHE}
 
     if [ "${HTTPD_VERSION}" == "" ]; then
         HTTPD_VERSION="24"
