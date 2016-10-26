@@ -1063,6 +1063,7 @@ init_tomcat8() {
 
         add_env "CATALINA_HOME" "${CATALINA_HOME}"
 
+        echo "CATALINA_HOME=${CATALINA_HOME}"
         echo "CATALINA_HOME=${CATALINA_HOME}" > "${SHELL_DIR}/.config_tomcat"
     fi
 }
