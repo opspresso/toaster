@@ -258,7 +258,7 @@ init() {
             init_php 70
             ;;
         node|node4)
-            init_node4
+            init_node
             ;;
         java|java8)
             init_java8
@@ -805,7 +805,7 @@ init_auto() {
                 init_php 70
                 ;;
             node|node4)
-                init_node4
+                init_node
                 ;;
             java|java8)
                 init_java8
@@ -1007,7 +1007,7 @@ init_php() {
     echo_bar
 }
 
-init_node4() {
+init_node() {
     if [ ! -f "${SHELL_DIR}/.config_node" ]; then
         echo "init node..."
 
