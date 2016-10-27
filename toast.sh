@@ -110,6 +110,9 @@ toast() {
         u|update)
             update
             ;;
+        e|eip)
+            eip
+            ;;
         c|config)
             config
             ;;
@@ -218,6 +221,19 @@ update() {
     self_update
 
     #service_update
+}
+
+eip() {
+    case ${PARAM1} in
+        a|allocate)
+            eip_allocate
+            ;;
+        r|release)
+            eip_release
+            ;;
+        *)
+            eip_allocate
+    esac
 }
 
 config() {
