@@ -430,7 +430,7 @@ eip_allocate() {
     EIP=`aws ec2 describe-addresses --filters "Name=instance-id,Values=${ID}" | grep "InstanceId"`
 
     if [ "${EIP}" == "" ]; then
-        EIP=`aws ec2 allocate-address | grep "AllocationId" | sed "s/\"//g"`
+        EIP=`aws ec2 allocate-address | grep "AllocationId" | sed "s/\"//g" | sed "s/\,//g"`
         ARR=(${EIP})
         AID="${ARR[1]}"
 
@@ -450,7 +450,7 @@ eip_release() {
 
     if [ "${ARR[0]}" == "OK" ]; then
         if [ "${ARR[1]}" == "" ]; then
-            EIP=`aws ec2 describe-addresses --filters "Name=instance-id,Values=${ID}" | grep "AllocationId" | sed "s/\"//g"`
+            EIP=`aws ec2 describe-addresses --filters "Name=instance-id,Values=${ID}" | grep "AllocationId" | sed "s/\"//g" | sed "s/\,//g"`
             ARR=(${EIP})
             AID="${ARR[1]}"
 
