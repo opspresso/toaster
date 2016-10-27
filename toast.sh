@@ -64,12 +64,12 @@ fi
 
 PROFILE="${HOME}/.bash_profile"
 if [ -f "${PROFILE}" ]; then
-    source ${PROFILE}
+    . ${PROFILE}
 fi
 
 CONFIG="${HOME}/.toast"
 if [ -f "${CONFIG}" ]; then
-    source ${CONFIG}
+    . ${CONFIG}
 fi
 
 ################################################################################
@@ -419,7 +419,7 @@ config_auto() {
     # .toast
     if [ ! -f "${CONFIG}" ]; then
         copy ${SHELL_DIR}/package/toast.txt ${CONFIG} 644
-        source ${CONFIG}
+        . ${CONFIG}
     fi
 
     #  fleet phase org token
@@ -479,7 +479,7 @@ config_save() {
     echo "SNO=${SNO}" >> ${CONFIG}
 
     chmod 644 ${CONFIG}
-    source ${CONFIG}
+    . ${CONFIG}
 
     echo "${RES}"
 }
@@ -747,7 +747,7 @@ init_certificate() {
     SSL_INFO="${SSL_DIR}/info"
 
     if [ -f ${SSL_INFO} ]; then
-        source ${SSL_INFO}
+        . ${SSL_INFO}
     fi
 
     if [ "${PARAM}" == "${SSL_NAME}" ]; then
@@ -1285,7 +1285,7 @@ httpd_conf() {
         return 1
     fi
 
-    source ${TOAST_APACHE}
+    . ${TOAST_APACHE}
 
     if [ "${HTTPD_VERSION}" == "" ]; then
         HTTPD_VERSION="24"
@@ -2026,7 +2026,7 @@ add_path() {
     echo "" >> ${TARGET}
     echo "export PATH=\"\$PATH:${VAL}\"" >> ${TARGET}
 
-    source ${PROFILE}
+    . ${HOME}/.bash_profile
 }
 
 add_env() {
@@ -2052,7 +2052,7 @@ add_env() {
         echo "export ${KEY}=\"${VAL}\"" >> ${TARGET}
     fi
 
-    source ${PROFILE}
+    . ${HOME}/.bash_profile
 }
 
 copy() {
