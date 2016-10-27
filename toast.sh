@@ -430,7 +430,7 @@ eip_allocate() {
     URL="${TOAST_URL}/server/eip/${ID}"
     RES=`curl -s --data "org=${ORG}&token=${TOKEN}" ${URL}`
 
-    if [ "${RES}" == "" ]; then
+    if [ "${RES}" != "public" ]; then
         EIP=`aws ec2 describe-addresses --filters "Name=instance-id,Values=${ID}" | grep "InstanceId"`
 
         if [ "${EIP}" == "" ]; then
@@ -452,7 +452,7 @@ eip_release() {
     URL="${TOAST_URL}/server/eip/${ID}"
     RES=`curl -s --data "org=${ORG}&token=${TOKEN}" ${URL}`
 
-    if [ "${RES}" == "" ]; then
+    if [ "${RES}" != "elastic" ]; then
         EIP=`aws ec2 describe-addresses --filters "Name=instance-id,Values=${ID}" | grep "AllocationId" | sed "s/\"//g" | sed "s/\,//g"`
         ARR=(${EIP})
         AID="${ARR[1]}"
