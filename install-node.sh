@@ -12,8 +12,6 @@ OS_NAME="linux"
 
 EXT="tar.xz"
 
-VERSION="4"
-
 SUDO=""
 if [ "${HOME}" != "/root" ]; then
     SUDO="sudo"
@@ -29,8 +27,11 @@ fi
 ################################################################################
 
 URL1="https://nodejs.org/en/download/"
-URL2=$(curl -s ${URL1} | egrep -o "https\:\/\/nodejs\.org\/dist\/v${VERSION}.(.*)\/node-v${VERSION}.(.*)-${OS_NAME}-${OS_BIT}.${EXT}")
+URL2=$(curl -s ${URL1} | egrep -o "https\:\/\/nodejs\.org\/dist\/v[0-9]+.[0-9]+.[0-9]+\/node-v[0-9]+.[0-9]+.[0-9]+-${OS_NAME}-${OS_BIT}.${EXT}")
 
+# curl -s https://nodejs.org/en/download/ | egrep -o "https\:\/\/nodejs\.org\/dist\/v[0-9]+.[0-9]+.[0-9]+\/node-v[0-9]+.[0-9]+.[0-9]+-linux-x64.tar.xz"
+
+# https://nodejs.org/dist/v6.9.1/node-v6.9.1-linux-x64.tar.xz
 # https://nodejs.org/dist/v4.4.7/node-v4.4.7-linux-x64.tar.xz
 
 if [[ -z "$URL2" ]]; then
@@ -58,7 +59,7 @@ tar xf ${NODE}
 
 rm -rf ${NODE}
 
-NODE_DIR=$(echo ${NODE} | egrep -o "node-v${VERSION}.(.*)-${OS_NAME}-${OS_BIT}")
+NODE_DIR=$(echo ${NODE} | egrep -o "node-v[0-9]+.[0-9]+.[0-9]+-${OS_NAME}-${OS_BIT}")
 NODE_HOME="/usr/local/${NODE_DIR}"
 
 ${SUDO} rm -rf ${NODE_HOME}
