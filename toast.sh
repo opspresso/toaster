@@ -257,7 +257,7 @@ init() {
         php7|php70)
             init_php 70
             ;;
-        node)
+        node|node4)
             init_node
             ;;
         java|java8)
@@ -804,7 +804,7 @@ init_auto() {
             php7|php70)
                 init_php 70
                 ;;
-            node)
+            node|node4)
                 init_node
                 ;;
             java|java8)
