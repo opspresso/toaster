@@ -444,8 +444,21 @@ eip_allocate() {
 }
 
 eip_release() {
-    echo "${ID}"
+    URL="${TOAST_URL}/server/eip/${SNO}"
+    RES=`curl -s --data "org=${ORG}&token=${TOKEN}" ${URL}`
+    ARR=(${RES})
 
+    if [ "${ARR[0]}" == "OK" ]; then
+        if [ "${ARR[1]}" == "" ]; then
+            EIP=`aws ec2 describe-addresses --filters "Name=instance-id,Values=${ID}" | grep "AllocationId" | sed "s/\"//g"`
+            ARR=(${EIP})
+            AID="${ARR[1]}"
+
+            if [ "${AID}" != "" ]; then
+                aws ec2 release-address --allocation-id "${AID}"
+            fi
+        fi
+    fi
 }
 
 config_auto() {
