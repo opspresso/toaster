@@ -58,10 +58,6 @@ USER=
 TOKEN=
 SNO=
 
-if [ "${USER}" == "" ]; then
-    USER=`whoami`
-fi
-
 PROFILE="${HOME}/.bash_profile"
 if [ -f "${PROFILE}" ]; then
     . ${PROFILE}
@@ -71,6 +67,11 @@ CONFIG="${HOME}/.toast"
 if [ -f "${CONFIG}" ]; then
     . ${CONFIG}
 fi
+
+ID=`curl -s http://instance-data/latest/meta-data/instance-id`
+
+NAME=`hostname`
+USER=`whoami`
 
 ################################################################################
 
@@ -188,6 +189,8 @@ auto() {
 
     echo_toast
 
+    eip_allocate
+
     prepare
 
     self_update
@@ -200,6 +203,8 @@ auto() {
     init_aws
     init_epel
     init_auto
+
+    eip_release
 
     repo_path
     deploy_fleet
@@ -405,11 +410,29 @@ prepare() {
     fi
 }
 
+eip_allocate() {
+    EIP=`aws ec2 describe-addresses | grep "${ID}"`
+
+    if [ "${EIP}" == "" ]; then
+        EIP=`aws ec2 allocate-address | grep "AllocationId" | sed "s/\"//"`
+        ARR=(${EIP})
+        AID="${ARR[1]}"
+
+        if [ "${AID}" == "" ]; then
+            warning "Can not allocate address. [${EIP}]"
+            exit 1
+        fi
+
+        aws ec2 associate-address --allocation-id "${AID}" --instance-id "${ID}"
+    fi
+}
+
+eip_release() {
+    echo "${ID}"
+
+}
+
 config_auto() {
-    ID=`curl -s http://instance-data/latest/meta-data/instance-id`
-
-    NAME=`hostname`
-
     SSH=`${SUDO} cat /etc/ssh/sshd_config | egrep ^\#?Port`
     if [ "${SSH}" != "" ]; then
         ARR=(${SSH})
