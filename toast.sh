@@ -411,10 +411,10 @@ prepare() {
 }
 
 eip_allocate() {
-    EIP=`aws ec2 describe-addresses | grep "${ID}"`
+    EIP=`aws ec2 describe-addresses --filters "Name=instance-id,Values=${ID}" | grep "InstanceId"`
 
     if [ "${EIP}" == "" ]; then
-        EIP=`aws ec2 allocate-address | grep "AllocationId" | sed "s/\"//"`
+        EIP=`aws ec2 allocate-address | grep "AllocationId" | sed "s/\"//g"`
         ARR=(${EIP})
         AID="${ARR[1]}"
 
@@ -530,18 +530,6 @@ config_cron() {
 
     echo_bar
     crontab -l
-    echo_bar
-}
-
-init_eip() {
-    # http://docs.aws.amazon.com/cli/latest/reference/ec2/index.html
-    # http://docs.aws.amazon.com/cli/latest/reference/ec2/allocate-address.html
-    # http://docs.aws.amazon.com/cli/latest/reference/ec2/associate-address.html
-    # http://docs.aws.amazon.com/cli/latest/reference/ec2/disassociate-address.html
-    # http://docs.aws.amazon.com/cli/latest/reference/ec2/release-address.html
-
-    echo_bar
-    echo "eip"
     echo_bar
 }
 
