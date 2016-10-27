@@ -13,9 +13,6 @@ OS_NAME="linux"
 EXT="tar.gz"
 
 VERSION="8"
-if [ "$1" == "7" ]; then
-    VERSION="7"
-fi
 
 SUDO=""
 if [ "${HOME}" != "/root" ]; then
