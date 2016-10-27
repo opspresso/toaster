@@ -427,36 +427,38 @@ prepare() {
 }
 
 eip_allocate() {
-    EIP=`aws ec2 describe-addresses --filters "Name=instance-id,Values=${ID}" | grep "InstanceId"`
+    URL="${TOAST_URL}/server/eip/${ID}"
+    RES=`curl -s --data "org=${ORG}&token=${TOKEN}" ${URL}`
 
-    if [ "${EIP}" == "" ]; then
-        EIP=`aws ec2 allocate-address | grep "AllocationId" | sed "s/\"//g" | sed "s/\,//g"`
-        ARR=(${EIP})
-        AID="${ARR[1]}"
+    if [ "${RES}" == "" ]; then
+        EIP=`aws ec2 describe-addresses --filters "Name=instance-id,Values=${ID}" | grep "InstanceId"`
 
-        if [ "${AID}" == "" ]; then
-            warning "Can not allocate address. [${EIP}]"
-            exit 1
+        if [ "${EIP}" == "" ]; then
+            EIP=`aws ec2 allocate-address | grep "AllocationId" | sed "s/\"//g" | sed "s/\,//g"`
+            ARR=(${EIP})
+            AID="${ARR[1]}"
+
+            if [ "${AID}" == "" ]; then
+                warning "Can not allocate address. [${EIP}]"
+                exit 1
+            fi
+
+            aws ec2 associate-address --allocation-id "${AID}" --instance-id "${ID}"
         fi
-
-        aws ec2 associate-address --allocation-id "${AID}" --instance-id "${ID}"
     fi
 }
 
 eip_release() {
-    URL="${TOAST_URL}/server/eip/${SNO}"
+    URL="${TOAST_URL}/server/eip/${ID}"
     RES=`curl -s --data "org=${ORG}&token=${TOKEN}" ${URL}`
-    ARR=(${RES})
 
-    if [ "${ARR[0]}" == "OK" ]; then
-        if [ "${ARR[1]}" == "" ]; then
-            EIP=`aws ec2 describe-addresses --filters "Name=instance-id,Values=${ID}" | grep "AllocationId" | sed "s/\"//g" | sed "s/\,//g"`
-            ARR=(${EIP})
-            AID="${ARR[1]}"
+    if [ "${RES}" == "" ]; then
+        EIP=`aws ec2 describe-addresses --filters "Name=instance-id,Values=${ID}" | grep "AllocationId" | sed "s/\"//g" | sed "s/\,//g"`
+        ARR=(${EIP})
+        AID="${ARR[1]}"
 
-            if [ "${AID}" != "" ]; then
-                aws ec2 release-address --allocation-id "${AID}"
-            fi
+        if [ "${AID}" != "" ]; then
+            aws ec2 release-address --allocation-id "${AID}"
         fi
     fi
 }
