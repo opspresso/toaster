@@ -210,6 +210,8 @@ auto() {
 
     vhost_lb
     vhost_fleet
+
+    eip_release
 }
 
 update() {
