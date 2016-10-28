@@ -710,6 +710,14 @@ init_slave() {
         fi
     fi
 
+    # .ssh/id_rsa
+    TARGET="${HOME}/.ssh/id_rsa"
+    rm -rf ${TARGET}
+
+    # .ssh/id_rsa.pub
+    TARGET="${HOME}/.ssh/id_rsa.pub"
+    rm -rf ${TARGET}
+
     # .ssh/config
     URL="${TOAST_URL}/config/key/ssh_config"
     RES=`curl -s --data "org=${ORG}&token=${TOKEN}" ${URL}`
@@ -717,7 +725,7 @@ init_slave() {
     if [ "${RES}" != "" ]; then
         TARGET="${HOME}/.ssh/config"
         echo "${RES}" > ${TARGET}
-        chmod 644 ${TARGET}
+        chmod 600 ${TARGET}
     fi
 
     # .aws/credentials
