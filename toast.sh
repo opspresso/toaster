@@ -717,7 +717,7 @@ init_slave() {
     if [ "${RES}" != "" ]; then
         TARGET="${HOME}/.ssh/config"
         echo "${RES}" > ${TARGET}
-        chmod 644 ${TARGET}
+        chmod 600 ${TARGET}
     fi
 
     # .aws/credentials
