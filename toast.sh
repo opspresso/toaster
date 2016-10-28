@@ -192,8 +192,6 @@ auto() {
 
     echo_toast
 
-    eip_allocate
-
     prepare
 
     self_update
@@ -206,8 +204,6 @@ auto() {
     init_aws
     init_epel
     init_auto
-
-    eip_release
 
     repo_path
     deploy_fleet
