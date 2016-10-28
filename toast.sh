@@ -192,8 +192,6 @@ auto() {
 
     echo_toast
 
-    eip_allocate
-
     prepare
 
     self_update
@@ -207,13 +205,13 @@ auto() {
     init_epel
     init_auto
 
-    eip_release
-
     repo_path
     deploy_fleet
 
     vhost_lb
     vhost_fleet
+
+    eip_release
 }
 
 update() {
