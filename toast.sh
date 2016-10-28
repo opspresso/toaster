@@ -425,7 +425,7 @@ prepare() {
 }
 
 eip_allocate() {
-    URL="${TOAST_URL}/server/eip/${ID}"
+    URL="${TOAST_URL}/server/eip/${ID}/allocate"
     RES=`curl -s --data "org=${ORG}&token=${TOKEN}" ${URL}`
 
     if [ "${RES}" != "public" ]; then
@@ -447,7 +447,7 @@ eip_allocate() {
 }
 
 eip_release() {
-    URL="${TOAST_URL}/server/eip/${ID}"
+    URL="${TOAST_URL}/server/eip/${ID}/release"
     RES=`curl -s --data "org=${ORG}&token=${TOKEN}" ${URL}`
 
     if [ "${RES}" != "elastic" ]; then
