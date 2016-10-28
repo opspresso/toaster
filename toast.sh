@@ -50,7 +50,7 @@ REPO_PATH=
 ORG=
 PHASE=
 FLEET=
-ID=
+UUID=
 NAME=
 HOST=
 PORT=
@@ -68,8 +68,7 @@ if [ -f "${CONFIG}" ]; then
     . ${CONFIG}
 fi
 
-ID=`curl -s http://instance-data/latest/meta-data/instance-id`
-
+UUID=`curl -s http://instance-data/latest/meta-data/instance-id`
 NAME=`hostname`
 USER=`whoami`
 
@@ -371,7 +370,7 @@ health() {
     UPTIME=`uptime`
 
     URL="${TOAST_URL}/server/health/${SNO}"
-    RES=`curl -s --data "org=${ORG}&token=${TOKEN}&id=${ID}&uname=${UNAME}&uptime=${UPTIME}" ${URL}`
+    RES=`curl -s --data "org=${ORG}&token=${TOKEN}&id=${UUID}&uname=${UNAME}&uptime=${UPTIME}" ${URL}`
 
     echo "${RES}"
 }
@@ -425,19 +424,19 @@ prepare() {
 }
 
 eip_allocate() {
-    echo "eip allocate... [${ID}]"
+    echo "eip allocate... [${UUID}]"
 
     URL="${TOAST_URL}/server/eip/allocate"
-    RES=`curl -s --data "org=${ORG}&token=${TOKEN}&id=${ID}" ${URL}`
+    RES=`curl -s --data "org=${ORG}&token=${TOKEN}&id=${UUID}" ${URL}`
 
     echo "eip allocate [${RES}]"
 }
 
 eip_release() {
-    echo "eip release... [${ID}]"
+    echo "eip release... [${UUID}]"
 
     URL="${TOAST_URL}/server/eip/release"
-    RES=`curl -s --data "org=${ORG}&token=${TOKEN}&id=${ID}" ${URL}`
+    RES=`curl -s --data "org=${ORG}&token=${TOKEN}&id=${UUID}" ${URL}`
 
     echo "eip release [${RES}]"
 }
@@ -475,10 +474,10 @@ config_auto() {
 }
 
 config_save() {
-    echo "config save... [${ID}][${SNO}]"
+    echo "config save... [${UUID}][${SNO}]"
 
     URL="${TOAST_URL}/server/config"
-    RES=`curl -s --data "org=${ORG}&token=${TOKEN}&phase=${PHASE}&fleet=${FLEET}&id=${ID}&name=${NAME}&host=${HOST}&port=${PORT}&user=${USER}&no=${SNO}" ${URL}`
+    RES=`curl -s --data "org=${ORG}&token=${TOKEN}&phase=${PHASE}&fleet=${FLEET}&id=${UUID}&name=${NAME}&host=${HOST}&port=${PORT}&user=${USER}&no=${SNO}" ${URL}`
     ARR=(${RES})
 
     if [ "${ARR[0]}" == "OK" ]; then
@@ -503,7 +502,7 @@ config_save() {
     echo "ORG=${ORG}" >> ${CONFIG}
     echo "PHASE=${PHASE}" >> ${CONFIG}
     echo "FLEET=${FLEET}" >> ${CONFIG}
-    echo "ID=${ID}" >> ${CONFIG}
+    echo "UUID=${UUID}" >> ${CONFIG}
     echo "NAME=${NAME}" >> ${CONFIG}
     echo "HOST=${HOST}" >> ${CONFIG}
     echo "PORT=${PORT}" >> ${CONFIG}
