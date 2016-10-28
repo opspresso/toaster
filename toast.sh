@@ -425,15 +425,15 @@ prepare() {
 }
 
 eip_allocate() {
-    URL="${TOAST_URL}/server/eip/${ID}/allocate"
-    RES=`curl -s --data "org=${ORG}&token=${TOKEN}" ${URL}`
+    URL="${TOAST_URL}/server/eip/allocate"
+    RES=`curl -s --data "org=${ORG}&token=${TOKEN}&id=${ID}" ${URL}`
 
     echo "eip allocate [${RES}]"
 }
 
 eip_release() {
-    URL="${TOAST_URL}/server/eip/${ID}/release"
-    RES=`curl -s --data "org=${ORG}&token=${TOKEN}" ${URL}`
+    URL="${TOAST_URL}/server/eip/release"
+    RES=`curl -s --data "org=${ORG}&token=${TOKEN}&id=${ID}" ${URL}`
 
     echo "eip release [${RES}]"
 }
