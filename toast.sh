@@ -373,7 +373,7 @@ health() {
     UPTIME=`uptime`
 
     URL="${TOAST_URL}/server/health/${SNO}"
-    RES=`curl -s --data "org=${ORG}&token=${TOKEN}&uname=${UNAME}&uptime=${UPTIME}" ${URL}`
+    RES=`curl -s --data "org=${ORG}&token=${TOKEN}&id=${ID}&uname=${UNAME}&uptime=${UPTIME}" ${URL}`
 
     echo "${RES}"
 }
