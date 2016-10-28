@@ -428,37 +428,14 @@ eip_allocate() {
     URL="${TOAST_URL}/server/eip/${ID}/allocate"
     RES=`curl -s --data "org=${ORG}&token=${TOKEN}" ${URL}`
 
-    if [ "${RES}" != "public" ]; then
-        EIP=`aws ec2 describe-addresses --filters "Name=instance-id,Values=${ID}" | grep "InstanceId"`
-
-        if [ "${EIP}" == "" ]; then
-            EIP=`aws ec2 allocate-address | grep "AllocationId" | sed "s/\"//g" | sed "s/\,//g"`
-            ARR=(${EIP})
-            AID="${ARR[1]}"
-
-            if [ "${AID}" == "" ]; then
-                warning "Can not allocate address. [${EIP}]"
-                exit 1
-            fi
-
-            aws ec2 associate-address --allocation-id "${AID}" --instance-id "${ID}"
-        fi
-    fi
+    echo "eip allocate [${RES}]"
 }
 
 eip_release() {
     URL="${TOAST_URL}/server/eip/${ID}/release"
     RES=`curl -s --data "org=${ORG}&token=${TOKEN}" ${URL}`
 
-    if [ "${RES}" != "elastic" ]; then
-        EIP=`aws ec2 describe-addresses --filters "Name=instance-id,Values=${ID}" | grep "AllocationId" | sed "s/\"//g" | sed "s/\,//g"`
-        ARR=(${EIP})
-        AID="${ARR[1]}"
-
-        if [ "${AID}" != "" ]; then
-            aws ec2 release-address --allocation-id "${AID}"
-        fi
-    fi
+    echo "eip release [${RES}]"
 }
 
 config_auto() {
