@@ -425,6 +425,8 @@ prepare() {
 }
 
 eip_allocate() {
+    echo "eip allocate... [${ID}]"
+
     URL="${TOAST_URL}/server/eip/allocate"
     RES=`curl -s --data "org=${ORG}&token=${TOKEN}&id=${ID}" ${URL}`
 
@@ -432,6 +434,8 @@ eip_allocate() {
 }
 
 eip_release() {
+    echo "eip release... [${ID}]"
+
     URL="${TOAST_URL}/server/eip/release"
     RES=`curl -s --data "org=${ORG}&token=${TOKEN}&id=${ID}" ${URL}`
 
