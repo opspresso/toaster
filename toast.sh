@@ -1181,6 +1181,10 @@ init_php_ini() {
         sed "s/short\_open\_tag\ \=\ Off/short\_open\_tag\ \=\ On/g" ${PHP_INI} > ${TEMP_FILE}
         copy ${TEMP_FILE} ${PHP_INI} 644
 
+        # expose_php = Off
+        sed "s/expose\_php\ \=\ On/expose\_php\ \=\ Off/g" ${PHP_INI} > ${TEMP_FILE}
+        copy ${TEMP_FILE} ${PHP_INI} 644
+
         # date.timezone = Asia/Seoul
         sed "s/\;date\.timezone\ \=/date\.timezone\ \=\ Asia\/Seoul/g" ${PHP_INI} > ${TEMP_FILE}
         copy ${TEMP_FILE} ${PHP_INI} 644
