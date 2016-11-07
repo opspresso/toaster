@@ -368,10 +368,11 @@ health() {
 
     UNAME=`uname -a`
     UPTIME=`uptime`
-    CPU=`top -n 1 | grep -i cpu\(s\)| awk '{print $5}' | tr -d "%id," | awk '{print 100-$1}'`
+    STAT=(`mpstat | tail -1`)
+    IDLE=${STAT[-1]}
 
     URL="${TOAST_URL}/server/health/${SNO}"
-    RES=`curl -s --data "org=${ORG}&token=${TOKEN}&id=${UUID}&cpu=${CPU}&uname=${UNAME}&uptime=${UPTIME}" ${URL}`
+    RES=`curl -s --data "org=${ORG}&token=${TOKEN}&id=${UUID}&idle=${IDLE}&uname=${UNAME}&uptime=${UPTIME}" ${URL}`
 
     echo "${RES}"
 }
