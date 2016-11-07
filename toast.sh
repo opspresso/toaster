@@ -1332,6 +1332,10 @@ httpd_conf() {
     else
         if [ -d "/etc/httpd/conf.d" ]; then
             HTTPD_CONF_DIR="/etc/httpd/conf.d"
+        else
+            if [ -d "/usr/local/apache/conf" ]; then
+                HTTPD_CONF_DIR="/usr/local/apache/conf"
+            fi
         fi
     fi
 }
