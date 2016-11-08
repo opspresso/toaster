@@ -368,8 +368,9 @@ health() {
 
     UNAME=`uname -a`
     UPTIME=`uptime`
-    STAT=(`mpstat | tail -1`)
-    IDLE=${STAT[-1]}
+    STAT=`mpstat | tail -1`
+    ARR=(${STAT})
+    IDLE=${ARR[-1]}
 
     echo "server idle [[${IDLE}]]"
 
