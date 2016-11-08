@@ -933,6 +933,8 @@ init_httpd() {
             fi
         fi
 
+        init_httpd_conf
+
         if [ "${OS_TYPE}" == "Ubuntu" ]; then
             service_ctl apache2 start on
         else
@@ -1160,6 +1162,34 @@ init_munin() {
         service_ctl munin-node restart on
 
         touch "${SHELL_DIR}/.config_munin"
+    fi
+}
+
+init_httpd_conf() {
+    HTTPD_CONF="/etc/httpd/conf/httpd.conf"
+
+    if [ "${OS_TYPE}" == "Ubuntu" ]; then
+        if [ -f "/etc/apache2/sites-enabled" ]; then
+            HTTPD_CONF="/etc/apache2/sites-enabled"
+        fi
+    else
+        if [ -f "/usr/local/apache/conf/httpd.conf" ]; then
+            HTTPD_CONF="/usr/local/apache/conf/httpd.conf"
+        fi
+    fi
+
+    if [ -f ${HTTPD_CONF} ]; then
+        echo "${HTTPD_CONF}"
+
+        TEMP_FILE="${TEMP_DIR}/toast-httpd-conf.tmp"
+
+        # User apache
+        sed "s/User\ apache/User\ $USER/g" ${HTTPD_CONF} > ${TEMP_FILE}
+        copy ${TEMP_FILE} ${HTTPD_CONF} 644
+
+        # Group apache
+        sed "s/Group\ apache/Group\ $USER/g" ${HTTPD_CONF} > ${TEMP_FILE}
+        copy ${TEMP_FILE} ${HTTPD_CONF} 644
     fi
 }
 
