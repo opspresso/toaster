@@ -368,14 +368,12 @@ health() {
 
     UNAME=`uname -a`
     UPTIME=`uptime`
-    STAT=`mpstat | tail -1`
-    ARR=(${STAT})
-    IDLE=${ARR[-1]}
+    CPU=`grep 'cpu ' /proc/stat | awk '{usage=($2+$4)*100/($2+$4+$5)} END {print usage}'`
 
-    echo "server idle [[${IDLE}]]"
+    echo "server cpu usage [[${CPU}]]"
 
     URL="${TOAST_URL}/server/health/${SNO}"
-    RES=`curl -s --data "org=${ORG}&token=${TOKEN}&id=${UUID}&idle=${IDLE}&uname=${UNAME}&uptime=${UPTIME}" ${URL}`
+    RES=`curl -s --data "org=${ORG}&token=${TOKEN}&id=${UUID}&cpu=${CPU}&uname=${UNAME}&uptime=${UPTIME}" ${URL}`
 
     echo "${RES}"
 }
