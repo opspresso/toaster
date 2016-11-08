@@ -800,7 +800,7 @@ init_certificate() {
 
             if [ "${ARR[0]}" == "#" ]; then
                 TARGET="${SSL_DIR}/${ARR[1]}"
-                empty ${TARGET} 600
+                new_file ${TARGET} 600
             else
                 if [ -w ${TARGET} ]; then
                     echo "${line}" >> ${TARGET}
@@ -1169,8 +1169,8 @@ init_httpd_conf() {
     HTTPD_CONF="/etc/httpd/conf/httpd.conf"
 
     if [ "${OS_TYPE}" == "Ubuntu" ]; then
-        if [ -f "/etc/apache2/sites-enabled" ]; then
-            HTTPD_CONF="/etc/apache2/sites-enabled"
+        if [ -f "/etc/apache2/httpd.conf" ]; then
+            HTTPD_CONF="/etc/apache2/httpd.conf"
         fi
     else
         if [ -f "/usr/local/apache/conf/httpd.conf" ]; then
@@ -2135,7 +2135,7 @@ copy() {
     fi
 }
 
-empty() {
+new_file() {
     ${SUDO} rm -rf $1
     ${SUDO} touch $1
 
