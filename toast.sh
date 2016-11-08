@@ -374,6 +374,9 @@ health() {
     URL="${TOAST_URL}/server/health/${SNO}"
     RES=`curl -s --data "org=${ORG}&token=${TOKEN}&id=${UUID}&idle=${IDLE}&uname=${UNAME}&uptime=${UPTIME}" ${URL}`
 
+    echo "server health stat [[${STAT}]]"
+    echo "server health idle [[${IDLE}]]"
+
     echo "${RES}"
 }
 
