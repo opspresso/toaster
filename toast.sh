@@ -371,11 +371,10 @@ health() {
     STAT=(`mpstat | tail -1`)
     IDLE=${STAT[-1]}
 
+    echo "server idle [[${IDLE}]]"
+
     URL="${TOAST_URL}/server/health/${SNO}"
     RES=`curl -s --data "org=${ORG}&token=${TOKEN}&id=${UUID}&idle=${IDLE}&uname=${UNAME}&uptime=${UPTIME}" ${URL}`
-
-    echo "server health stat [[${STAT}]]"
-    echo "server health idle [[${IDLE}]]"
 
     echo "${RES}"
 }
@@ -401,7 +400,7 @@ self_update() {
 }
 
 prepare() {
-    service_install "gcc curl wget unzip vim git"
+    service_install "gcc curl wget unzip vim git sysstat"
 
     make_dir ${DATA_DIR}
     make_dir ${LOGS_DIR} 777
