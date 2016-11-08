@@ -1609,7 +1609,7 @@ repo_path() {
 }
 
 deploy_project() {
-    # "deploy project com.yanolja yanolja.demo 0.0.0 php demo.yanolja.com"
+    echo "deploy project..."
 
     GROUP_ID="${PARAM2}"
     ARTIFACT_ID="${PARAM3}"
@@ -1654,7 +1654,7 @@ deploy_project() {
 
 deploy_fleet() {
     echo_bar
-    echo "download target..."
+    echo "deploy fleet..."
 
     TARGET_FILE="${TEMP_DIR}/${FLEET}"
     rm -rf ${TARGET_FILE}
