@@ -193,7 +193,6 @@ auto() {
 
     prepare
 
-    self_update
     config
     self_info
 
