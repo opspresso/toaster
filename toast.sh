@@ -370,7 +370,7 @@ health() {
     UPTIME=`uptime`
     CPU=`grep 'cpu ' /proc/stat | awk '{usage=($2+$4)*100/($2+$4+$5)} END {print usage}'`
 
-    echo "server cpu usage [[${CPU}]]"
+    echo "server cpu usage [${CPU}]"
 
     URL="${TOAST_URL}/server/health/${SNO}"
     RES=`curl -s --data "org=${ORG}&token=${TOKEN}&id=${UUID}&cpu=${CPU}&uname=${UNAME}&uptime=${UPTIME}" ${URL}`
