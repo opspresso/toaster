@@ -1095,6 +1095,8 @@ init_tomcat8() {
 
         CATALINA_HOME="${APPS_DIR}/tomcat8"
 
+        copy "${SHELL_DIR}/package/tomcat/web.xml" "${CATALINA_HOME}/conf/web.xml" 644
+
         add_env "CATALINA_HOME" "${CATALINA_HOME}"
 
         echo "CATALINA_HOME=${CATALINA_HOME}"
