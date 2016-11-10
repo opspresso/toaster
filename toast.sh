@@ -1593,9 +1593,9 @@ vhost_fleet() {
     fi
 
     if [ "${OS_TYPE}" == "Ubuntu" ]; then
-        service_ctl apache2 graceful
+        service_ctl apache2 restart
     else
-        service_ctl httpd graceful
+        service_ctl httpd restart
     fi
 
     echo_bar
