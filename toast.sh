@@ -341,6 +341,7 @@ deploy() {
             ;;
         *)
             deploy_fleet
+            vhost_fleet
     esac
 }
 
@@ -1592,9 +1593,9 @@ vhost_fleet() {
     fi
 
     if [ "${OS_TYPE}" == "Ubuntu" ]; then
-        service_ctl apache2 restart
+        service_ctl apache2 graceful
     else
-        service_ctl httpd restart
+        service_ctl httpd graceful
     fi
 
     echo_bar
