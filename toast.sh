@@ -551,6 +551,8 @@ init_hosts() {
     TARGET="/etc/hosts"
     TEMP_FILE="${TEMP_DIR}/toast-hosts.tmp"
 
+    new_file ${TEMP_FILE}
+
     if [ -f "${TARGET}_toast" ]; then
         copy "${TARGET}_toast" ${TARGET}
     else
