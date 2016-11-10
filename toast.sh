@@ -335,6 +335,9 @@ vhost() {
 deploy() {
     repo_path
 
+    init_hosts
+    init_profile
+
     case ${PARAM1} in
         p|project)
             deploy_project
