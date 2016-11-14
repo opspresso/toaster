@@ -1448,7 +1448,7 @@ nginx_lb() {
                 if [ "${CUSTOM}" == "" ]; then
                     sed "s/PORT/$PORT/g" ${TEMPLATE} > ${TEMP_HTTP}
                 else
-                    sed "s/PORT/$PORT/;4q;" ${TEMPLATE} >> ${TEMP_HTTP}
+                    sed "s/PORT/$PORT/;5q;" ${TEMPLATE} >> ${TEMP_HTTP}
                     echo "${CUSTOM}" >> ${TEMP_HTTP}
                     sed "1,10d" ${TEMPLATE} >> ${TEMP_HTTP}
                 fi
@@ -1458,7 +1458,13 @@ nginx_lb() {
                 PORT="${ARR[1]}"
 
                 TEMPLATE="${SHELL_DIR}/package/nginx/nginx-http-ssl.conf"
-                sed "s/PORT/$PORT/g" ${TEMPLATE} > ${TEMP_SSL}
+                if [ "${CUSTOM}" == "" ]; then
+                    sed "s/PORT/$PORT/g" ${TEMPLATE} > ${TEMP_SSL}
+                else
+                    sed "s/PORT/$PORT/;5q;" ${TEMPLATE} >> ${TEMP_SSL}
+                    echo "${CUSTOM}" >> ${TEMP_SSL}
+                    sed "1,10d" ${TEMPLATE} >> ${TEMP_SSL}
+                fi
             fi
 
             if [ "${ARR[0]}" == "TCP" ]; then
