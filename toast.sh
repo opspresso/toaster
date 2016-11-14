@@ -206,7 +206,7 @@ auto() {
     repo_path
     deploy_fleet
 
-    vhost_lb
+    nginx_lb
     vhost_fleet
 
     eip_release
@@ -322,7 +322,7 @@ version() {
 vhost() {
     case ${PARAM1} in
         b|lb)
-            vhost_lb
+            nginx_lb
             ;;
         d|domain)
             vhost_domain
@@ -1380,18 +1380,18 @@ httpd_conf() {
     fi
 }
 
-vhost_lb() {
+nginx_lb() {
     nginx_conf
 
     if [ "${NGINX_CONF_DIR}" == "" ]; then
-        return 1
+        return
     fi
 
     TEMP_FILE="${TEMP_DIR}/toast-lb.tmp"
     TARGET="${NGINX_CONF_DIR}/nginx.conf"
 
     echo_bar
-    echo "vhost lb..."
+    echo "nginx lb..."
 
     LB_CONF="${TEMP_DIR}/${FLEET}"
 
@@ -1411,12 +1411,25 @@ vhost_lb() {
         do
             ARR=(${line})
 
+            if [ "${ARR[0]}" == "NO" ]; then
+                FNO="${ARR[1]}"
+            fi
+
             if [ "${ARR[0]}" == "SSL" ]; then
                 init_certificate "${ARR[1]}"
             fi
 
             if [ "${ARR[0]}" == "HOST" ]; then
                 HOST_ARR=(${line:5})
+            fi
+
+            if [ "${ARR[0]}" == "CUSTOM" ]; then
+                URL="${TOAST_URL}/fleet/custom/${FNO}"
+                RES=`curl -s --data "org=${ORG}&token=${TOKEN}" ${URL}`
+
+                if [ "${RES}" != "" ]; then
+                    CUSTOM="${RES}"
+                fi
             fi
 
             if [ "${ARR[0]}" == "HTTP" ]; then
@@ -1431,14 +1444,20 @@ vhost_lb() {
 
                 echo "    }" >> ${TEMP_HTTP}
 
-                TEMPLATE="${SHELL_DIR}/package/vhost/nginx/nginx-http-server.conf"
-                sed "s/PORT/$PORT/g" ${TEMPLATE} >> ${TEMP_HTTP}
+                TEMPLATE="${SHELL_DIR}/package/nginx/nginx-http-server.conf"
+                if [ "${CUSTOM}" == "" ]; then
+                    sed "s/PORT/$PORT/g" ${TEMPLATE} > ${TEMP_HTTP}
+                else
+                    sed "s/PORT/$PORT/;4q;" ${TEMPLATE} >> ${TEMP_HTTP}
+                    echo "${CUSTOM}" >> ${TEMP_HTTP}
+                    sed "1,10d" ${TEMPLATE} >> ${TEMP_HTTP}
+                fi
             fi
 
             if [ "${ARR[0]}" == "HTTPS" ]; then
                 PORT="${ARR[1]}"
 
-                TEMPLATE="${SHELL_DIR}/package/vhost/nginx/nginx-http-ssl.conf"
+                TEMPLATE="${SHELL_DIR}/package/nginx/nginx-http-ssl.conf"
                 sed "s/PORT/$PORT/g" ${TEMPLATE} > ${TEMP_SSL}
             fi
 
@@ -1454,7 +1473,7 @@ vhost_lb() {
 
                 echo "    }" >> ${TEMP_TCP}
 
-                TEMPLATE="${SHELL_DIR}/package/vhost/nginx/nginx-tcp-server.conf"
+                TEMPLATE="${SHELL_DIR}/package/nginx/nginx-tcp-server.conf"
                 sed "s/PORT/$PORT/g" ${TEMPLATE} >> ${TEMP_TCP}
             fi
         done < ${LB_CONF}
@@ -1462,7 +1481,7 @@ vhost_lb() {
         echo "assemble..."
 
         # default
-        TEMPLATE="${SHELL_DIR}/package/vhost/nginx/nginx-default.conf"
+        TEMPLATE="${SHELL_DIR}/package/nginx/nginx-default.conf"
         cat ${TEMPLATE} >> ${TEMP_FILE}
 
         # http
@@ -1470,7 +1489,7 @@ vhost_lb() {
             echo "" >> ${TEMP_FILE}
             echo "http {" >> ${TEMP_FILE}
 
-            TEMPLATE="${SHELL_DIR}/package/vhost/nginx/nginx-http-default.conf"
+            TEMPLATE="${SHELL_DIR}/package/nginx/nginx-http-default.conf"
             cat ${TEMPLATE} >> ${TEMP_FILE}
 
             # http
@@ -1490,7 +1509,7 @@ vhost_lb() {
         if [ -f ${TEMP_TCP} ]; then
             echo "stream {" >> ${TEMP_FILE}
 
-            TEMPLATE="${SHELL_DIR}/package/vhost/nginx/nginx-tcp-default.conf"
+            TEMPLATE="${SHELL_DIR}/package/nginx/nginx-tcp-default.conf"
             cat ${TEMPLATE} >> ${TEMP_FILE}
 
             echo "" >> ${TEMP_FILE}
@@ -1512,20 +1531,19 @@ vhost_domain() {
     httpd_conf
 
     if [ "${HTTPD_CONF_DIR}" == "" ]; then
-        return 1
+        return
     fi
 
     echo_bar
-    echo "vhost..."
+    echo "apache..."
 
     # localhost
-    TEMPLATE="${SHELL_DIR}/package/vhost/${HTTPD_VERSION}/localhost.conf"
+    TEMPLATE="${SHELL_DIR}/package/apache/${HTTPD_VERSION}/localhost.conf"
     if [ -f "${TEMPLATE}" ]; then
         copy ${TEMPLATE} "${HTTPD_CONF_DIR}/localhost.conf" 644
     fi
 
-    # vhost
-    TEMPLATE="${SHELL_DIR}/package/vhost/${HTTPD_VERSION}/vhost.conf"
+    TEMPLATE="${SHELL_DIR}/package/apache/${HTTPD_VERSION}/vhost.conf"
     TEMP_FILE="${TEMP_DIR}/toast-vhost.tmp"
 
     DOM="${PARAM2}"
@@ -1536,7 +1554,6 @@ vhost_domain() {
 
     echo "--> ${DEST_FILE}"
 
-    # vhost
     sed "s/DOM/$DOM/g" ${TEMPLATE} > ${TEMP_FILE} && copy ${TEMP_FILE} ${DEST_FILE} 644
 
     if [ "${OS_TYPE}" == "Ubuntu" ]; then
@@ -1552,17 +1569,17 @@ vhost_fleet() {
     httpd_conf
 
     if [ "${HTTPD_CONF_DIR}" == "" ]; then
-        return 1
+        return
     fi
 
     echo_bar
-    echo "vhost fleet..."
+    echo "apache fleet..."
 
     ${SUDO} rm -rf ${HTTPD_CONF_DIR}/localhost*
     ${SUDO} rm -rf ${HTTPD_CONF_DIR}/toast*
 
     # localhost
-    TEMPLATE="${SHELL_DIR}/package/vhost/${HTTPD_VERSION}/localhost.conf"
+    TEMPLATE="${SHELL_DIR}/package/apache/${HTTPD_VERSION}/localhost.conf"
     if [ -f "${TEMPLATE}" ]; then
         copy ${TEMPLATE} "${HTTPD_CONF_DIR}/localhost.conf" 644
     fi
@@ -1574,10 +1591,9 @@ vhost_fleet() {
     wget -q -N --post-data "org=${ORG}&token=${TOKEN}" -P "${TEMP_DIR}" "${URL}"
 
     if [ -f ${VHOST_LIST} ]; then
-        echo "placement vhost..."
+        echo "placement apache..."
 
-        # vhost
-        TEMPLATE="${SHELL_DIR}/package/vhost/${HTTPD_VERSION}/vhost.conf"
+        TEMPLATE="${SHELL_DIR}/package/apache/${HTTPD_VERSION}/vhost.conf"
         TEMP_FILE="${TEMP_DIR}/toast-vhost.tmp"
 
         while read line
@@ -1592,7 +1608,6 @@ vhost_fleet() {
 
             echo "--> ${DEST_FILE}"
 
-            # vhost
             sed "s/DOM/$DOM/g" ${TEMPLATE} > ${TEMP_FILE} && copy ${TEMP_FILE} ${DEST_FILE} 644
         done < ${VHOST_LIST}
     fi
