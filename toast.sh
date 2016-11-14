@@ -1450,7 +1450,7 @@ nginx_lb() {
                 else
                     sed "s/PORT/$PORT/;5q;" ${TEMPLATE} >> ${TEMP_HTTP}
                     echo "${CUSTOM}" >> ${TEMP_HTTP}
-                    sed "1,10d" ${TEMPLATE} >> ${TEMP_HTTP}
+                    sed "1,9d" ${TEMPLATE} >> ${TEMP_HTTP}
                 fi
             fi
 
@@ -1461,9 +1461,9 @@ nginx_lb() {
                 if [ "${CUSTOM}" == "" ]; then
                     sed "s/PORT/$PORT/g" ${TEMPLATE} > ${TEMP_SSL}
                 else
-                    sed "s/PORT/$PORT/;5q;" ${TEMPLATE} >> ${TEMP_SSL}
+                    sed "s/PORT/$PORT/;4q;" ${TEMPLATE} >> ${TEMP_SSL}
                     echo "${CUSTOM}" >> ${TEMP_SSL}
-                    sed "1,10d" ${TEMPLATE} >> ${TEMP_SSL}
+                    sed "1,8d" ${TEMPLATE} >> ${TEMP_SSL}
                 fi
             fi
 
