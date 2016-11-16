@@ -1074,6 +1074,8 @@ init_java8() {
     if [ ! -f "${SHELL_DIR}/.config_java" ]; then
         echo "init java..."
 
+        service_remove "java-1.8.0-openjdk-headless"
+
         ${SHELL_DIR}/install-java.sh
 
         JAVA_HOME="/usr/local/java"
@@ -2038,6 +2040,14 @@ service_install() {
         ${SUDO} apt-get install -y $1
     else
         ${SUDO} yum install -y $1
+    fi
+}
+
+service_remove() {
+    if [ "${OS_TYPE}" == "Ubuntu" ]; then
+        ${SUDO} apt-get remove -y $1
+    else
+        ${SUDO} yum remove -y $1
     fi
 }
 
