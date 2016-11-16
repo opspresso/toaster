@@ -1174,15 +1174,17 @@ init_munin() {
 }
 
 init_httpd_conf() {
-    HTTPD_CONF="/etc/httpd/conf/httpd.conf"
-
-    if [ "${OS_TYPE}" == "Ubuntu" ]; then
-        if [ -f "/etc/apache2/httpd.conf" ]; then
-            HTTPD_CONF="/etc/apache2/httpd.conf"
-        fi
+    if [ -f "/etc/httpd/conf/httpd.conf" ]; then
+        HTTPD_CONF="/etc/httpd/conf/httpd.conf"
     else
-        if [ -f "/usr/local/apache/conf/httpd.conf" ]; then
-            HTTPD_CONF="/usr/local/apache/conf/httpd.conf"
+        if [ "${OS_TYPE}" == "Ubuntu" ]; then
+            if [ -f "/etc/apache2/httpd.conf" ]; then
+                HTTPD_CONF="/etc/apache2/httpd.conf"
+            fi
+        else
+            if [ -f "/usr/local/apache/conf/httpd.conf" ]; then
+                HTTPD_CONF="/usr/local/apache/conf/httpd.conf"
+            fi
         fi
     fi
 
@@ -1202,14 +1204,18 @@ init_httpd_conf() {
 }
 
 init_php_ini() {
-    if [ "${OS_TYPE}" == "Ubuntu" ]; then
-        PHP_INI="/etc/php/5.6/apache2/php.ini"
-
-        if [ ! -f ${PHP_INI} ]; then
-            PHP_INI="/etc/php/7.0/apache2/php.ini"
-        fi
-    else
+    if [ -f "/etc/php.ini" ]; then
         PHP_INI="/etc/php.ini"
+    else
+        if [ "${OS_TYPE}" == "Ubuntu" ]; then
+            if [ -f "/etc/php/5.6/apache2/php.ini" ]; then
+                PHP_INI="/etc/php/5.6/apache2/php.ini"
+            else
+                if [ -f "/etc/php/7.0/apache2/php.ini" ]; then
+                    PHP_INI="/etc/php/7.0/apache2/php.ini"
+                fi
+            fi
+        fi
     fi
 
     if [ -f ${PHP_INI} ]; then
