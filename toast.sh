@@ -926,12 +926,14 @@ init_httpd() {
 
             HTTPD_VERSION="ubuntu"
         else
+            service_install "centos-release-scl"
+
             status=`${SUDO} yum list | grep httpd24 | wc -l | awk '{print $1}'`
 
             if [ ${status} -ge 1 ]; then
-                service_install "httpd24 httpd24-devel"
+                service_install "httpd24"
             else
-                service_install "httpd httpd-devel"
+                service_install "httpd"
             fi
 
             VERSION=$(httpd -version | egrep -o "Apache\/2.4")
