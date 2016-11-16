@@ -926,7 +926,7 @@ init_httpd() {
 
             HTTPD_VERSION="ubuntu"
         else
-            service_install "centos-release-scl"
+            #service_install "centos-release-scl"
 
             status=`${SUDO} yum list | grep httpd24 | wc -l | awk '{print $1}'`
 
