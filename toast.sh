@@ -1074,7 +1074,7 @@ init_java8() {
     if [ ! -f "${SHELL_DIR}/.config_java" ]; then
         echo "init java..."
 
-        service_remove "java-1.8.0-openjdk-headless"
+        service_remove "java-1.8.0-openjdk java-1.8.0-openjdk-devel java-1.8.0-openjdk-headless"
 
         ${SHELL_DIR}/install-java.sh
 
