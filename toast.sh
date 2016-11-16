@@ -748,7 +748,11 @@ init_aws() {
             if [ -f "${HOME}/awscli-bundle.zip" ]; then
                 unzip awscli-bundle.zip
 
-                ${SUDO} ./awscli-bundle/install -i /usr/local/aws -b /usr/local/bin/aws
+                AWS_HOME="/usr/local/aws"
+
+                ${SUDO} ./awscli-bundle/install -i ${AWS_HOME} -b /usr/bin/aws
+
+                add_path "${AWS_HOME}/bin"
 
                 rm -rf awscli-bundle
                 rm -rf awscli-bundle.zip
