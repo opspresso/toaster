@@ -1771,7 +1771,7 @@ download() {
         rm -rf "${FILEPATH}"
     fi
 
-    aws s3 cp "${SOURCE}" "${TEMP_DIR}"
+    aws s3 cp "${SOURCE}" "${TEMP_DIR}" --quiet
 
     if [ ! -f "${FILEPATH}" ]; then
         echo "deploy file does not exist. [${FILEPATH}]"
