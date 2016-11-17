@@ -1319,9 +1319,10 @@ version_save() {
         return 1
     fi
 
-    echo "version save..."
-
     ARTIFACT_PATH="${GROUP_PATH}/${ARTIFACT_ID}/${VERSION}"
+
+    echo "version save..."
+    echo "--> from: ${REPO_PATH}/${ARTIFACT_PATH}"
 
     aws s3 sync ~/.m2/repository/${ARTIFACT_PATH}/ ${REPO_PATH}/${ARTIFACT_PATH}/ --quiet
 
@@ -1342,10 +1343,11 @@ version_remove() {
         return 1
     fi
 
-    echo "version remove..."
-
     GROUP_PATH=`echo "${GROUP_ID}" | sed "s/\./\//"`
     ARTIFACT_PATH="${GROUP_PATH}/${ARTIFACT_ID}/${VERSION}"
+
+    echo "version remove..."
+    echo "--> from: ${REPO_PATH}/${ARTIFACT_PATH}"
 
     aws s3 rm ${REPO_PATH}/${ARTIFACT_PATH} --recursive
 
