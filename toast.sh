@@ -1323,7 +1323,7 @@ version_save() {
 
     ARTIFACT_PATH="${GROUP_PATH}/${ARTIFACT_ID}/${VERSION}"
 
-    aws s3 sync ~/.m2/repository/${ARTIFACT_PATH}/ ${REPO_PATH}/${ARTIFACT_PATH}/
+    aws s3 sync ~/.m2/repository/${ARTIFACT_PATH}/ ${REPO_PATH}/${ARTIFACT_PATH}/ --quiet
 
     URL="${TOAST_URL}/version/build/${ARTIFACT_ID}/${VERSION}"
     RES=`curl -s --data "org=${ORG}&token=${TOKEN}" ${URL}`
