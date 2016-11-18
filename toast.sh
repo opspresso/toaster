@@ -1462,7 +1462,7 @@ nginx_lb() {
 
                 TEMPLATE="${SHELL_DIR}/package/nginx/nginx-http-server.conf"
                 if [ "${CUSTOM}" == "" ]; then
-                    sed "s/PORT/$PORT/g" ${TEMPLATE} > ${TEMP_HTTP}
+                    sed "s/PORT/$PORT/g" ${TEMPLATE} >> ${TEMP_HTTP}
                 else
                     sed "s/PORT/$PORT/;5q;" ${TEMPLATE} >> ${TEMP_HTTP}
                     echo "${CUSTOM}" >> ${TEMP_HTTP}
