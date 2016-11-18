@@ -2092,7 +2092,7 @@ tomcat_start() {
         status=`ps -ef | grep catalina | grep java | grep -v grep | wc -l | awk '{print $1}'`
         count=0
         while [ ${status} -ge 1 ]; do
-            echo "sleep..."
+            echo "wait..."
             sleep 3
 
             if [ ${count} -ge 5 ]; then
