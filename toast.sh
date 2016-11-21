@@ -2147,7 +2147,9 @@ add_path() {
     echo "" >> ${TARGET}
     echo "export PATH=\"\$PATH:${VAL}\"" >> ${TARGET}
 
-    . ${HOME}/.bash_profile
+    if [ -f "${PROFILE}" ]; then
+        . ${PROFILE}
+    fi
 }
 
 add_env() {
@@ -2173,7 +2175,9 @@ add_env() {
         echo "export ${KEY}=\"${VAL}\"" >> ${TARGET}
     fi
 
-    . ${HOME}/.bash_profile
+    if [ -f "${PROFILE}" ]; then
+        . ${PROFILE}
+    fi
 }
 
 copy() {
