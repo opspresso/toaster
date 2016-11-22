@@ -60,12 +60,12 @@ SNO=
 
 PROFILE="${HOME}/.bash_profile"
 if [ -f "${PROFILE}" ]; then
-    . ${PROFILE}
+    source ${PROFILE}
 fi
 
 CONFIG="${HOME}/.toast"
 if [ -f "${CONFIG}" ]; then
-    . ${CONFIG}
+    source ${CONFIG}
 fi
 
 UUID=`curl -s http://instance-data/latest/meta-data/instance-id`
@@ -234,9 +234,6 @@ eip() {
 
 config() {
     config_auto
-    config_save
-    config_info
-    config_cron
 }
 
 init() {
@@ -364,7 +361,7 @@ log() {
 health() {
     if [ "${SNO}" == "" ]; then
         warning "Not configured server. [${SNO}]"
-        return 1
+        return
     fi
 
     echo "server health..."
@@ -377,8 +374,15 @@ health() {
 
     URL="${TOAST_URL}/server/health/${SNO}"
     RES=`curl -s --data "org=${ORG}&token=${TOKEN}&id=${UUID}&cpu=${CPU}&uname=${UNAME}&uptime=${UPTIME}" ${URL}`
+    ARR=(${RES})
 
-    echo "${RES}"
+    if [ "${ARR[0]}" == "OK" ]; then
+        if [ "${ARR[2]}" != "" ]; then
+            if [ "${NAME}" != "${ARR[2]}" ]; then
+                init_hostname "${ARR[2]}"
+            fi
+        fi
+    fi
 }
 
 ################################################################################
@@ -457,26 +461,26 @@ config_auto() {
     # .toast
     if [ ! -f "${CONFIG}" ]; then
         copy ${SHELL_DIR}/package/toast.txt ${CONFIG} 644
-        . ${CONFIG}
+        source ${CONFIG}
     fi
 
     #  fleet phase org token
     if [ "${PARAM1}" != "" ]; then
         FLEET="${PARAM1}"
-        echo "FLEET=${FLEET}" >> ${CONFIG}
     fi
     if [ "${PARAM2}" != "" ]; then
         PHASE="${PARAM2}"
-        echo "PHASE=${PHASE}" >> ${CONFIG}
     fi
     if [ "${PARAM3}" != "" ]; then
         ORG="${PARAM3}"
-        echo "ORG=${ORG}" >> ${CONFIG}
     fi
     if [ "${PARAM4}" != "" ]; then
         TOKEN="${PARAM4}"
-        echo "TOKEN=${TOKEN}" >> ${CONFIG}
     fi
+
+    config_save
+    config_info
+    config_cron
 }
 
 config_save() {
@@ -499,9 +503,15 @@ config_save() {
         if [ "${ARR[4]}" != "" ]; then
             FLEET="${ARR[4]}"
         fi
+
+        config_local
     else
         echo "Server Error. [${URL}][${RES}]"
     fi
+}
+
+config_local() {
+    echo "config local... [${SNO}][${NAME}]"
 
     echo "# yanolja toast config" > ${CONFIG}
     echo "TOAST_URL=${TOAST_URL}" >> ${CONFIG}
@@ -517,15 +527,13 @@ config_save() {
     echo "SNO=${SNO}" >> ${CONFIG}
 
     chmod 644 ${CONFIG}
-    . ${CONFIG}
-
-    echo "${RES}"
+    source ${CONFIG}
 }
 
 config_info() {
     if [ ! -f "${CONFIG}" ]; then
         warning "Not exist file. [${CONFIG}]"
-        return 1
+        return
     fi
 
     echo_bar
@@ -787,7 +795,7 @@ init_certificate() {
     SSL_INFO="${SSL_DIR}/info"
 
     if [ -f ${SSL_INFO} ]; then
-        . ${SSL_INFO}
+        source ${SSL_INFO}
     fi
 
     if [ "${PARAM}" == "${SSL_NAME}" ]; then
@@ -1181,6 +1189,26 @@ init_munin() {
     fi
 }
 
+init_hostname() {
+    if [ "$1" == "" ]; then
+        return
+    fi
+
+    NAME="$1"
+
+    if [ "${OS_TYPE}" == "Ubuntu" ]; then
+        ${SUDO} echo "${NAME}" > /etc/hostname
+    else
+        if [ "${OS_TYPE}" == "el7" ]; then
+            ${SUDO} hostnamectl set-hostname "${NAME}"
+        else
+            ${SUDO} hostname "${NAME}"
+        fi
+    fi
+
+    config_local
+}
+
 init_httpd_conf() {
     if [ -f "/etc/httpd/conf/httpd.conf" ]; then
         HTTPD_CONF="/etc/httpd/conf/httpd.conf"
@@ -1373,7 +1401,7 @@ httpd_conf() {
         return 1
     fi
 
-    . ${TOAST_APACHE}
+    source ${TOAST_APACHE}
 
     if [ "${HTTPD_VERSION}" == "" ]; then
         HTTPD_VERSION="24"
@@ -2148,7 +2176,7 @@ add_path() {
     echo "export PATH=\"\$PATH:${VAL}\"" >> ${TARGET}
 
     if [ -f "${PROFILE}" ]; then
-        . ${PROFILE}
+        source ${PROFILE}
     fi
 }
 
@@ -2176,7 +2204,7 @@ add_env() {
     fi
 
     if [ -f "${PROFILE}" ]; then
-        . ${PROFILE}
+        source ${PROFILE}
     fi
 }
 
