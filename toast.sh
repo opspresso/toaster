@@ -2243,7 +2243,7 @@ mod() {
     fi
 
     if [ "${USER}" != "" ]; then
-        ${SUDO} chown ${USER} $1
+        ${SUDO} chown ${USER}.${USER} $1
     fi
 
     if [ "$2" != "" ]; then
