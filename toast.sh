@@ -579,7 +579,10 @@ init_hosts() {
     echo "# toast default hosts" >> ${TEMP_FILE}
     echo "" >> ${TEMP_FILE}
     echo "${RES}" >> ${TEMP_FILE}
-    echo "127.0.0.1 ${NAME}" >> ${TEMP_FILE}
+
+    if [ "${NAME}" != "" ]; then
+        echo "127.0.0.1 ${NAME}" >> ${TEMP_FILE}
+    fi
 
     # phase hosts
     URL="${TOAST_URL}/phase/hosts/${PHASE}"
