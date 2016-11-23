@@ -2241,14 +2241,13 @@ mod() {
     if [ "$1" == "" ]; then
         return
     fi
-    if [ "$2" == "" ]; then
-        return
-    fi
-
-    ${SUDO} chmod $2 $1
 
     if [ "${USER}" != "" ]; then
         ${SUDO} chown ${USER} $1
+    fi
+
+    if [ "$2" != "" ]; then
+        ${SUDO} chmod $2 $1
     fi
 }
 
