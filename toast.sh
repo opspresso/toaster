@@ -69,7 +69,6 @@ if [ -f "${CONFIG}" ]; then
 fi
 
 UUID=`curl -s http://instance-data/latest/meta-data/instance-id`
-NAME=`hostname`
 USER=`whoami`
 
 ################################################################################
@@ -381,7 +380,7 @@ health() {
 
     if [ "${ARR[0]}" == "OK" ]; then
         if [ "${ARR[2]}" != "" ]; then
-            if [ "${NAME}" != "${ARR[2]}" ]; then
+            if [ "${ARR[2]}" != "${NAME}" ]; then
                 init_name "${ARR[2]}"
             fi
         fi
