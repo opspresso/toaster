@@ -250,6 +250,9 @@ init() {
         slave)
             init_slave
             ;;
+        name)
+            init_name
+            ;;
         aws)
             init_aws
             ;;
@@ -379,7 +382,7 @@ health() {
     if [ "${ARR[0]}" == "OK" ]; then
         if [ "${ARR[2]}" != "" ]; then
             if [ "${NAME}" != "${ARR[2]}" ]; then
-                init_hostname "${ARR[2]}"
+                init_name "${ARR[2]}"
             fi
         fi
     fi
@@ -773,6 +776,30 @@ init_aws() {
     echo_bar
     aws --version
     echo_bar
+}
+
+init_name() {
+    if [ "$1" == "" ]; then
+        return
+    fi
+
+    NAME="$1"
+
+    echo "init hostname... [${NAME}]"
+
+    if [ "${OS_TYPE}" == "Ubuntu" ]; then
+        ${SUDO} echo "${NAME}" > /etc/hostname
+    else
+        if [ "${OS_TYPE}" == "el7" ]; then
+            ${SUDO} hostnamectl set-hostname "${NAME}"
+        else
+            ${SUDO} hostname "${NAME}"
+
+            mod_conf /etc/sysconfig/network "HOSTNAME" "${NAME}"
+        fi
+    fi
+
+    config_local
 }
 
 init_certificate() {
@@ -1187,26 +1214,6 @@ init_munin() {
 
         touch "${SHELL_DIR}/.config_munin"
     fi
-}
-
-init_hostname() {
-    if [ "$1" == "" ]; then
-        return
-    fi
-
-    NAME="$1"
-
-    if [ "${OS_TYPE}" == "Ubuntu" ]; then
-        ${SUDO} echo "${NAME}" > /etc/hostname
-    else
-        if [ "${OS_TYPE}" == "el7" ]; then
-            ${SUDO} hostnamectl set-hostname "${NAME}"
-        else
-            ${SUDO} hostname "${NAME}"
-        fi
-    fi
-
-    config_local
 }
 
 init_httpd_conf() {
@@ -2170,10 +2177,11 @@ add_path() {
     TARGET="${HOME}/.bashrc"
     touch ${TARGET}
 
-    VAL=$1
+    if [ "$1" == "" ]; then
+        return
+    fi
 
-    echo "" >> ${TARGET}
-    echo "export PATH=\"\$PATH:${VAL}\"" >> ${TARGET}
+    echo "export PATH=\"\$PATH:$1\"" >> ${TARGET}
 
     if [ -f "${PROFILE}" ]; then
         source ${PROFILE}
@@ -2184,8 +2192,30 @@ add_env() {
     TARGET="${HOME}/.bashrc"
     touch ${TARGET}
 
-    KEY=$1
-    VAL=$2
+    if [ "$1" == "" ]; then
+        return
+    fi
+
+    mod_conf ${TARGET} "export $1" "$2"
+
+    if [ -f "${PROFILE}" ]; then
+        source ${PROFILE}
+    fi
+}
+
+mod_conf() {
+    TARGET=$1
+
+    if [ ! -w ${TARGET} ]; then
+        return
+    fi
+
+    if [ "$2" == "" ]; then
+        return
+    fi
+
+    KEY=$2
+    VAL=$3
 
     HAS_KEY="false"
 
@@ -2193,58 +2223,70 @@ add_env() {
     do
         KEY1=$(echo ${LINE} | cut -d "=" -f 1)
 
-        if [ "${KEY1}" == "export ${KEY}" ]; then
+        if [ "${KEY1}" == "${KEY}" ]; then
             HAS_KEY="true"
         fi
     done < ${TARGET}
 
-    if [ "${HAS_KEY}" == "false" ]; then
-        echo "" >> ${TARGET}
-        echo "export ${KEY}=\"${VAL}\"" >> ${TARGET}
+    if [ "${HAS_KEY}" == "true" ]; then
+        TEMP_FILE="${TEMP_DIR}/toast-replace.tmp"
+
+        sed "s/${KEY}\=/\#${KEY}\=/g" ${TARGET} > ${TEMP_FILE}
+        copy ${TEMP_FILE} ${TARGET} 600
     fi
 
-    if [ -f "${PROFILE}" ]; then
-        source ${PROFILE}
+    echo "${KEY}=\"${VAL}\"" >> ${TARGET}
+}
+
+mod() {
+    if [ "$1" == "" ]; then
+        return
+    fi
+    if [ "$2" == "" ]; then
+        return
+    fi
+
+    ${SUDO} chmod $2 $1
+
+    if [ "${USER}" != "" ]; then
+        ${SUDO} chown ${USER} $1
     fi
 }
 
 copy() {
+    if [ "$1" == "" ]; then
+        return
+    fi
+    if [ "$2" == "" ]; then
+        return
+    fi
+
     ${SUDO} cp -rf $1 $2
 
-    if [ "$3" != "" ]; then
-        ${SUDO} chmod $3 $2
-    fi
-
-    if [ "${USER}" != "" ]; then
-        ${SUDO} chown ${USER}.${USER} $2
-    fi
+    mod $2 $3
 }
 
 new_file() {
+    if [ "$1" == "" ]; then
+        return
+    fi
+
     ${SUDO} rm -rf $1
     ${SUDO} touch $1
 
-    if [ "$2" != "" ]; then
-        ${SUDO} chmod $2 $1
-    fi
-
-    if [ "${USER}" != "" ]; then
-        ${SUDO} chown ${USER}.${USER} $1
-    fi
+    mod $1 $2
 }
 
 make_dir() {
+    if [ "$1" == "" ]; then
+        return
+    fi
+
     if [ ! -d $1 ] && [ ! -f $1 ]; then
         ${SUDO} mkdir $1
     fi
 
-    if [ "$2" != "" ]; then
-        ${SUDO} chmod $2 $1
-    fi
-
-    if [ "${USER}" != "" ]; then
-        ${SUDO} chown ${USER}.${USER} $1
-    fi
+    mod $1 $2
 }
 
 not_darwin() {
