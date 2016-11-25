@@ -2192,8 +2192,6 @@ add_path() {
     fi
 
     add_env "PATH" "\$PATH:$1"
-
-    export PATH="$PATH:$1"
 }
 
 mod_conf() {
