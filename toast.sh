@@ -2171,6 +2171,14 @@ process_start() {
     fi
 }
 
+add_path() {
+    if [ "$1" == "" ]; then
+        return
+    fi
+
+    add_env "PATH" "\$PATH:$1"
+}
+
 add_env() {
     if [ "$1" == "" ]; then
         return
@@ -2181,17 +2189,7 @@ add_env() {
 
     mod_conf ${TARGET} "export $1" "$2"
 
-    if [ -f "${PROFILE}" ]; then
-        source ${PROFILE}
-    fi
-}
-
-add_path() {
-    if [ "$1" == "" ]; then
-        return
-    fi
-
-    add_env "PATH" "\$PATH:$1"
+    source ${TARGET}
 }
 
 mod_conf() {
