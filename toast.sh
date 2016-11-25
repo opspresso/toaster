@@ -249,14 +249,14 @@ init() {
         slave)
             init_slave
             ;;
-        name)
-            init_name
-            ;;
         aws)
             init_aws
             ;;
+        name)
+            init_name "${PARAM2}"
+            ;;
         certificate)
-            init_certificate
+            init_certificate "${PARAM2}"
             ;;
         httpd)
             init_httpd
@@ -805,17 +805,13 @@ init_name() {
 }
 
 init_certificate() {
-    echo "init certificate..."
-
-    if [ "$1" != "" ]; then
-        PARAM="$1"
-    else
-        if [ "${PARAM2}" != "" ]; then
-            PARAM="${PARAM2}"
-        else
-            return
-        fi
+    if [ "$1" == "" ]; then
+        return
     fi
+
+    PARAM="$1"
+
+    echo "init certificate... [${PARAM}]"
 
     SSL_DIR="/data/conf"
     make_dir ${SSL_DIR}
