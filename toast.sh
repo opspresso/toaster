@@ -2199,7 +2199,7 @@ add_path() {
 mod_conf() {
     TARGET=$1
 
-    if [ ! -w ${TARGET} ]; then
+    if [ ! -f ${TARGET} ]; then
         return
     fi
 
