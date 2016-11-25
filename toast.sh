@@ -58,11 +58,6 @@ USER=
 TOKEN=
 SNO=
 
-PROFILE="${HOME}/.bash_profile"
-if [ -f "${PROFILE}" ]; then
-    source ${PROFILE}
-fi
-
 CONFIG="${HOME}/.toast"
 if [ -f "${CONFIG}" ]; then
     source ${CONFIG}
@@ -610,15 +605,12 @@ init_hosts() {
 init_profile() {
     echo "init profile..."
 
-    # .bash_profile
-    TARGET="${HOME}/.bash_profile"
-    touch ${TARGET}
+    # .bash_toast
+    TARGET="${HOME}/.toast_profile"
 
-    if [ -f "${TARGET}_toast" ]; then
-        cp "${TARGET}_toast" ${TARGET}
-    else
-        cp ${TARGET} "${TARGET}_toast"
-    fi
+    add_source ${TARGET}
+
+    echo "# toast profile" > ${TARGET}
 
     # default profile
     URL="${TOAST_URL}/config/key/profile"
@@ -1093,7 +1085,7 @@ init_node() {
         NODE_HOME="/usr/local/node"
 
         add_path "${NODE_HOME}/bin"
-        add_env "NODE_HOME" "${NODE_HOME}"
+        mod_env "NODE_HOME" "${NODE_HOME}"
 
         echo "NODE_HOME=${NODE_HOME}"
         echo "NODE_HOME=${NODE_HOME}" > "${SHELL_DIR}/.config_node"
@@ -1116,7 +1108,7 @@ init_java8() {
         JAVA_HOME="/usr/local/java"
 
         add_path "${JAVA_HOME}/bin"
-        add_env "JAVA_HOME" "${JAVA_HOME}"
+        mod_env "JAVA_HOME" "${JAVA_HOME}"
 
         copy "${SHELL_DIR}/package/jce8/local_policy.jar.bin" "${JAVA_HOME}/jre/lib/security/local_policy.jar" 644
         copy "${SHELL_DIR}/package/jce8/US_export_policy.jar.bin" "${JAVA_HOME}/jre/lib/security/US_export_policy.jar" 644
@@ -1144,7 +1136,7 @@ init_tomcat8() {
 
         copy "${SHELL_DIR}/package/tomcat/web.xml" "${CATALINA_HOME}/conf/web.xml" 644
 
-        add_env "CATALINA_HOME" "${CATALINA_HOME}"
+        mod_env "CATALINA_HOME" "${CATALINA_HOME}"
 
         echo "CATALINA_HOME=${CATALINA_HOME}"
         echo "CATALINA_HOME=${CATALINA_HOME}" > "${SHELL_DIR}/.config_tomcat"
@@ -2171,26 +2163,54 @@ process_start() {
     fi
 }
 
+add_source() {
+    if [ "$1" == "" ]; then
+        return
+    fi
+
+    touch $1
+
+    TARGET="${HOME}/.bashrc"
+    touch ${TARGET}
+
+    VAL="source $1"
+
+    HAS_KEY="false"
+
+    while read LINE
+    do
+        if [ "${LINE}" == "${VAL}" ]; then
+            HAS_KEY="true"
+        fi
+    done < ${TARGET}
+
+    if [ "${HAS_KEY}" == "false" ]; then
+        echo "${VAL}" >> ${TARGET}
+    fi
+}
+
 add_path() {
     if [ "$1" == "" ]; then
         return
     fi
 
-    TARGET="${HOME}/.bashrc"
-    touch ${TARGET}
+    TARGET="${HOME}/.toast_base"
+
+    add_source ${TARGET}
 
     echo "export PATH=\"\$PATH:$1\"" >> ${TARGET}
 
     source ${TARGET}
 }
 
-add_env() {
+mod_env() {
     if [ "$1" == "" ]; then
         return
     fi
 
-    TARGET="${HOME}/.bashrc"
-    touch ${TARGET}
+    TARGET="${HOME}/.toast_base"
+
+    add_source ${TARGET}
 
     mod_conf ${TARGET} "export $1" "$2"
 
