@@ -2176,7 +2176,12 @@ add_path() {
         return
     fi
 
-    add_env "PATH" "\$PATH:$1"
+    TARGET="${HOME}/.bashrc"
+    touch ${TARGET}
+
+    echo "export PATH=\"\$PATH:$1\"" >> ${TARGET}
+
+    source ${TARGET}
 }
 
 add_env() {
