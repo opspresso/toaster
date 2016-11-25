@@ -2170,8 +2170,8 @@ add_source() {
 
     touch $1
 
-    TARGET="${HOME}/.bashrc"
-    touch ${TARGET}
+    BASHRC="${HOME}/.bashrc"
+    touch ${BASHRC}
 
     VAL="source $1"
 
@@ -2182,10 +2182,10 @@ add_source() {
         if [ "${LINE}" == "${VAL}" ]; then
             HAS_KEY="true"
         fi
-    done < ${TARGET}
+    done < ${BASHRC}
 
     if [ "${HAS_KEY}" == "false" ]; then
-        echo "${VAL}" >> ${TARGET}
+        echo "${VAL}" >> ${BASHRC}
     fi
 }
 
