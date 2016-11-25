@@ -654,6 +654,8 @@ init_profile() {
     fi
 
     echo "" >> ${TARGET}
+
+    source ${TARGET}
 }
 
 init_master() {
@@ -2169,34 +2171,27 @@ process_start() {
     fi
 }
 
-add_path() {
-    TARGET="${HOME}/.bashrc"
-    touch ${TARGET}
-
-    if [ "$1" == "" ]; then
-        return
-    fi
-
-    echo "export PATH=\"\$PATH:$1\"" >> ${TARGET}
-
-    if [ -f "${PROFILE}" ]; then
-        source ${PROFILE}
-    fi
-}
-
 add_env() {
-    TARGET="${HOME}/.bashrc"
-    touch ${TARGET}
-
     if [ "$1" == "" ]; then
         return
     fi
+
+    TARGET="${HOME}/.bashrc"
+    touch ${TARGET}
 
     mod_conf ${TARGET} "export $1" "$2"
 
     if [ -f "${PROFILE}" ]; then
         source ${PROFILE}
     fi
+}
+
+add_path() {
+    if [ "$1" == "" ]; then
+        return
+    fi
+
+    add_env "PATH" "$PATH:$1"
 }
 
 mod_conf() {
