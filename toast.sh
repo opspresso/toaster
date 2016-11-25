@@ -605,6 +605,11 @@ init_hosts() {
 init_profile() {
     echo "init profile..."
 
+    # TODO remove
+    if [ -f "${HOME}/.bash_profile_toast" ]; then
+        mv -f ${HOME}/.bash_profile_toast ${HOME}/.bash_profile
+    fi
+
     # .bash_toast
     TARGET="${HOME}/.toast_profile"
 
