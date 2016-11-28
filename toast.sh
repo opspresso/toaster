@@ -188,6 +188,7 @@ auto() {
     prepare
 
     config
+
     self_info
 
     init_hosts
@@ -205,6 +206,8 @@ auto() {
 }
 
 update() {
+    config_save
+
     self_info
     self_update
 
