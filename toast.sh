@@ -507,6 +507,8 @@ config_save() {
     else
         echo "Server Error. [${URL}][${RES}]"
     fi
+
+    echo_bar
 }
 
 config_local() {
