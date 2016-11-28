@@ -482,6 +482,7 @@ config_auto() {
 }
 
 config_save() {
+    echo_bar
     echo "config save... [${UUID}][${SNO}]"
 
     URL="${TOAST_URL}/server/config"
@@ -506,6 +507,8 @@ config_save() {
     else
         echo "Server Error. [${URL}][${RES}]"
     fi
+
+    echo_bar
 }
 
 config_local() {
