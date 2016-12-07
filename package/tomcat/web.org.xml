@@ -4117,20 +4117,6 @@
         <mime-type>application/vnd.handheld-entertainment+xml</mime-type>
     </mime-mapping>
 
-    <!-- ==================== Default Welcome File List ===================== -->
-    <!-- When a request URI refers to a directory, the default servlet looks  -->
-    <!-- for a "welcome file" within that directory and, if present, to the   -->
-    <!-- corresponding resource URI for display.                              -->
-    <!-- If no welcome files are present, the default servlet either serves a -->
-    <!-- directory listing (see default servlet configuration on how to       -->
-    <!-- customize) or returns a 404 status, depending on the value of the    -->
-    <!-- listings setting.                                                    -->
-    <!--                                                                      -->
-    <!-- If you define welcome files in your own application's web.xml        -->
-    <!-- deployment descriptor, that list *replaces* the list configured      -->
-    <!-- here, so be sure to include any of the default values that you wish  -->
-    <!-- to use within your application.                                       -->
-
     <welcome-file-list>
         <welcome-file>index.html</welcome-file>
         <welcome-file>index.htm</welcome-file>
