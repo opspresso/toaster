@@ -7,8 +7,8 @@ PROJECT=$1
 if [ -d "~/.jenkins/workspace/${PROJECT}" ]; then
     WORK="~/.jenkins/workspace/${PROJECT}"
 else
-    if [ -d "/var/lib/jenkins/jobs/${PROJECT}" ]; then
-        WORK="/var/lib/jenkins/jobs/${PROJECT}"
+    if [ -d "/var/lib/jenkins/jobs/${PROJECT}/workspace" ]; then
+        WORK="/var/lib/jenkins/jobs/${PROJECT}/workspace"
     fi
 fi
 if [ "WORK" == "" ]; then
