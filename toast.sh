@@ -1334,7 +1334,7 @@ version_next() {
 
     echo "${NEXT_VERSION}"
 
-    git tag -a "${NEXT_VERSION}"
+    git tag -am "${NEXT_VERSION}" "v${NEXT_VERSION}"
 
     VER1="<version>[\.0-9a-zA-Z]\+<\/version>"
     VER2="<version>${NEXT_VERSION}<\/version>"
