@@ -4,8 +4,16 @@ PHP="/usr/bin/php"
 PHPMD="~/.composer/vendor/bin/phpmd"
 
 PROJECT=$1
-WORK="~/.jenkins/workspace/${PROJECT}"
-
+if [ -d "~/.jenkins/workspace/${PROJECT}" ]; then
+    WORK="~/.jenkins/workspace/${PROJECT}"
+else
+    if [ -d "/var/lib/jenkins/jobs/${PROJECT}" ]; then
+        WORK="/var/lib/jenkins/jobs/${PROJECT}"
+    fi
+fi
+if [ "WORK" == "" ]; then
+    exit 1
+fi
 CONFIG="cleancode,codesize,controversial,design,naming,unusedcode"
 
 ${PHP} ${PHPMD} ${WORK} xml ${CONFIG} --reportfile phpmd.xml | echo 1

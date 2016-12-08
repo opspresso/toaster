@@ -4,7 +4,16 @@ PHP="/usr/bin/php"
 COMPOSER="/usr/local/bin/composer"
 
 PROJECT=$1
-WORK="~/.jenkins/workspace/${PROJECT}"
+if [ -d "~/.jenkins/workspace/${PROJECT}" ]; then
+    WORK="~/.jenkins/workspace/${PROJECT}"
+else
+    if [ -d "/var/lib/jenkins/jobs/${PROJECT}" ]; then
+        WORK="/var/lib/jenkins/jobs/${PROJECT}"
+    fi
+fi
+if [ "WORK" == "" ]; then
+    exit 1
+fi
 TARGET="${WORK}/src/main/webapp"
 VENDOR="${TARGET}/vendor"
 
