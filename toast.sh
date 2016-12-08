@@ -1334,7 +1334,9 @@ version_next() {
 
     echo "${NEXT_VERSION}"
 
-    git tag -a "${NEXT_VERSION}" -m "v${NEXT_VERSION}"
+    DATE=`date +%Y-%m-%d" "%H:%M`
+
+    git tag -a "${NEXT_VERSION}" -m "at ${DATE} by toast"
     git push origin "${NEXT_VERSION}"
 
     VER1="<version>[\.0-9a-zA-Z]\+<\/version>"
