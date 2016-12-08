@@ -404,7 +404,7 @@ self_update() {
 }
 
 prepare() {
-    service_install "gcc curl wget unzip vim git sysstat"
+    service_install "gcc curl wget unzip vim git httpie"
 
     make_dir ${DATA_DIR}
     make_dir ${LOGS_DIR} 777
