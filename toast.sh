@@ -1365,7 +1365,21 @@ version_save() {
     echo "version save..."
     echo "--> from: ${REPO_PATH}/${ARTIFACT_PATH}"
 
-    aws s3 sync ~/.m2/repository/${ARTIFACT_PATH}/ ${REPO_PATH}/${ARTIFACT_PATH}/ --quiet
+    PACKAGE_PATH=""
+    if [ -d "target" ]; then
+        if [ -f "target/${ARTIFACT_ID}-${VERSION}.war" ]; then
+            PACKAGE_PATH="target/${ARTIFACT_ID}-${VERSION}.war"
+        fi
+        if [ -f "target/${ARTIFACT_ID}-${VERSION}.jar" ]; then
+            PACKAGE_PATH="target/${ARTIFACT_ID}-${VERSION}.jar"
+        fi
+    fi
+
+    if [ "${PACKAGE_PATH}" == "" ]; then
+        aws s3 sync ~/.m2/repository/${ARTIFACT_PATH}/ ${REPO_PATH}/${ARTIFACT_PATH}/ --quiet
+    else
+        aws s3 sync ${PACKAGE_PATH} ${REPO_PATH}/${ARTIFACT_PATH}/ --quiet
+    fi
 
     URL="${TOAST_URL}/version/build/${ARTIFACT_ID}/${VERSION}"
     RES=`curl -s --data "org=${ORG}&token=${TOKEN}" ${URL}`
