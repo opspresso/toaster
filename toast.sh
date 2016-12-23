@@ -1378,7 +1378,7 @@ version_save() {
     if [ "${PACKAGE_PATH}" == "" ]; then
         aws s3 sync ~/.m2/repository/${ARTIFACT_PATH}/ ${REPO_PATH}/${ARTIFACT_PATH}/ --quiet
     else
-        aws s3 sync ${PACKAGE_PATH} ${REPO_PATH}/${ARTIFACT_PATH}/ --quiet
+        aws s3 cp ${PACKAGE_PATH} ${REPO_PATH}/${ARTIFACT_PATH}/ --quiet
     fi
 
     URL="${TOAST_URL}/version/build/${ARTIFACT_ID}/${VERSION}"
