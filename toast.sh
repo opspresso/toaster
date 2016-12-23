@@ -1900,8 +1900,8 @@ placement() {
     fi
 
     # version status
-    URL="${TOAST_URL}/version/deploy/${PHASE}/${FLEET}/${ARTIFACT_ID}/${VERSION}"
-    RES=`curl -s --data "org=${ORG}&token=${TOKEN}" ${URL}`
+    URL="${TOAST_URL}/version/deploy/${ARTIFACT_ID}/${VERSION}"
+    RES=`curl -s --data "org=${ORG}&token=${TOKEN}&phase=${PHASE}&fleet=${FLEET}&name=${NAME}" ${URL}`
     ARR=(${RES})
 
     if [ "${ARR[0]}" != "OK" ]; then
