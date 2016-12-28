@@ -30,7 +30,7 @@ fi
 cd ${TARGET}
 
 if [ -d "${VENDOR}" ]; then
-  ${PHP} ${COMPOSER} update
+    ${PHP} ${COMPOSER} update
 else
-  ${PHP} ${COMPOSER} install
+    ${PHP} ${COMPOSER} install
 fi
