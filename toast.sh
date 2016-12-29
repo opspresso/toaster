@@ -514,7 +514,7 @@ config_save() {
 config_local() {
     echo "config local... [${SNO}][${NAME}]"
 
-    echo "# yanolja toast config" > ${CONFIG}
+    echo "# toast config" > ${CONFIG}
     echo "TOAST_URL=${TOAST_URL}" >> ${CONFIG}
     echo "ORG=${ORG}" >> ${CONFIG}
     echo "PHASE=${PHASE}" >> ${CONFIG}
@@ -545,7 +545,7 @@ config_info() {
 config_cron() {
     TEMP_FILE="${TEMP_DIR}/toast-cron.tmp"
 
-    echo "# yanolja cron" > ${TEMP_FILE}
+    echo "# toast cron" > ${TEMP_FILE}
     echo "0 1 * * * ${SHELL_DIR}/toast.sh log > /dev/null 2>&1" >> ${TEMP_FILE}
     echo "0 5 * * * ${SHELL_DIR}/toast.sh update > /dev/null 2>&1" >> ${TEMP_FILE}
     echo "* * * * * ${SHELL_DIR}/toast.sh health > /dev/null 2>&1" >> ${TEMP_FILE}
@@ -1506,7 +1506,7 @@ nginx_lb() {
             if [ "${ARR[0]}" == "HTTP" ]; then
                 PORT="${ARR[1]}"
 
-                echo "    upstream yanolja {" >> ${TEMP_HTTP}
+                echo "    upstream toast {" >> ${TEMP_HTTP}
 
                 for i in "${HOST_ARR[@]}"
                 do
@@ -1541,7 +1541,7 @@ nginx_lb() {
             if [ "${ARR[0]}" == "TCP" ]; then
                 PORT="${ARR[1]}"
 
-                echo "    upstream yanolja_${PORT} {" >> ${TEMP_TCP}
+                echo "    upstream toast_${PORT} {" >> ${TEMP_TCP}
 
                 for i in "${HOST_ARR[@]}"
                 do
