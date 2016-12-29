@@ -36,6 +36,3 @@ fi
 COMMAND="~/toaster/toast.sh ${CMD} ${SUB} ${PARAM1} ${PARAM2} ${PARAM3} ${PARAM4} ${PARAM5}"
 
 ssh -t ${USER}@${HOST} -p ${PORT} "${COMMAND}"
-
-# ~/toaster/remote.sh user host port deploy fleet
-# ~/toaster/remote.sh user host port deploy project com.yanolja yanolja.demo 0.0.0 php demo.yanolja.com
