@@ -5,7 +5,12 @@
 PHP="/usr/bin/php"
 SWAGGER="~/.composer/vendor/bin/swagger"
 
+warning() {
+    echo "$(tput setaf 1)$1$(tput sgr0)"
+}
+
 if [ ! -f ${SWAGGER} ]; then
+    warning "Not exist swagger file. [${SWAGGER}]"
     exit 1
 fi
 
@@ -23,6 +28,7 @@ else
 fi
 
 if [ "${WORK}" == "" ]; then
+    warning "Not exist work directory. [${WORK}]"
     exit 1
 fi
 
@@ -30,6 +36,7 @@ TARGET="${WORK}/src/main/webapp/application"
 DEST="${WORK}/src/main/webapp/apidoc"
 
 if [ ! -d ${TARGET} ]; then
+    warning "Not exist target directory. [${TARGET}]"
     exit 1
 fi
 

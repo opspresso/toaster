@@ -2,10 +2,15 @@
 
 # composer global require phpmd/phpmd
 
+warning() {
+    echo "$(tput setaf 1)$1$(tput sgr0)"
+}
+
 PHP="/usr/bin/php"
 PHPMD="~/.composer/vendor/bin/phpmd"
 
 if [ ! -f ${PHPMD} ]; then
+    warning "Not exist phpmd file. [${PHPMD}]"
     exit 1
 fi
 
@@ -23,6 +28,7 @@ else
 fi
 
 if [ "${WORK}" == "" ]; then
+    warning "Not exist work directory. [${WORK}]"
     exit 1
 fi
 

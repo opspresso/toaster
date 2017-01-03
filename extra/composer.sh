@@ -3,10 +3,15 @@
 # curl -sS https://getcomposer.org/installer | php
 # mv composer.phar /usr/local/bin/composer
 
+warning() {
+    echo "$(tput setaf 1)$1$(tput sgr0)"
+}
+
 PHP="/usr/bin/php"
 COMPOSER="/usr/local/bin/composer"
 
 if [ ! -f ${COMPOSER} ]; then
+    warning "Not exist composer file. [${COMPOSER}]"
     exit 1
 fi
 
@@ -24,6 +29,7 @@ else
 fi
 
 if [ "${WORK}" == "" ]; then
+    warning "Not exist work directory. [${WORK}]"
     exit 1
 fi
 
@@ -31,6 +37,7 @@ TARGET="${WORK}/src/main/webapp"
 VENDOR="${TARGET}/vendor"
 
 if [ ! -d ${TARGET} ]; then
+    warning "Not exist target directory. [${TARGET}]"
     exit 1
 fi
 
