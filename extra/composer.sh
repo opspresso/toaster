@@ -11,7 +11,7 @@ PHP="/usr/bin/php"
 COMPOSER="/usr/local/bin/composer"
 
 if [ ! -f ${COMPOSER} ]; then
-    warning "Not exist composer file. [${COMPOSER}]"
+    warning "Not exist composer. [${COMPOSER}]"
     exit 1
 fi
 

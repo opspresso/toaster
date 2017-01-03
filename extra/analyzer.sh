@@ -7,11 +7,11 @@ warning() {
 }
 
 PHP="/usr/bin/php"
+COMPOSER="/usr/local/bin/composer"
 PHPMD="${HOME}/.composer/vendor/bin/phpmd"
 
 if [ ! -f ${PHPMD} ]; then
-    warning "Not exist phpmd file. [${PHPMD}]"
-    exit 1
+    ${COMPOSER} global require phpmd/phpmd
 fi
 
 PROJECT=$1
