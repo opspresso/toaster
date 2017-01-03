@@ -6,6 +6,10 @@
 PHP="/usr/bin/php"
 COMPOSER="/usr/local/bin/composer"
 
+if [ ! -f ${COMPOSER} ]; then
+    exit 1
+fi
+
 PROJECT=$1
 if [ "${PROJECT}" == "" ]; then
     WORK="."
