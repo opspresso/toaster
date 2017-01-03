@@ -5,6 +5,10 @@
 PHP="/usr/bin/php"
 SWAGGER="~/.composer/vendor/bin/swagger"
 
+if [ ! -f ${SWAGGER} ]; then
+    exit 1
+fi
+
 PROJECT=$1
 if [ "${PROJECT}" == "" ]; then
     WORK="."
