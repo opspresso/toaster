@@ -1,5 +1,7 @@
 #!/bin/bash
 
+# composer global require phpmd/phpmd
+
 PHP="/usr/bin/php"
 PHPMD="~/.composer/vendor/bin/phpmd"
 
