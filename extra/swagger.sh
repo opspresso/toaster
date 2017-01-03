@@ -3,7 +3,7 @@
 # composer global require zircote/swagger-php
 
 PHP="/usr/bin/php"
-SWAGGER="~/.composer/vendor/bin/swagger"
+SWAGGER="${HOME}/.composer/vendor/bin/swagger"
 
 warning() {
     echo "$(tput setaf 1)$1$(tput sgr0)"
