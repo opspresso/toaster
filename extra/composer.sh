@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # curl -sS https://getcomposer.org/installer | php
-# mv composer.phar /usr/local/bin/composer
+# sudo mv composer.phar /usr/local/bin/composer
 
 warning() {
     echo "$(tput setaf 1)$1$(tput sgr0)"
