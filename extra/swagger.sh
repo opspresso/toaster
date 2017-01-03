@@ -1,5 +1,7 @@
 #!/bin/bash
 
+# composer global require zircote/swagger-php
+
 PHP="/usr/bin/php"
 SWAGGER="~/.composer/vendor/bin/swagger"
 

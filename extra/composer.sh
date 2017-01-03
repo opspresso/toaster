@@ -1,5 +1,8 @@
 #!/bin/bash
 
+# curl -sS https://getcomposer.org/installer | php
+# mv composer.phar /usr/local/bin/composer
+
 PHP="/usr/bin/php"
 COMPOSER="/usr/local/bin/composer"
 
