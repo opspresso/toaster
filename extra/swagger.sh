@@ -2,16 +2,16 @@
 
 # composer global require zircote/swagger-php
 
-PHP="/usr/bin/php"
-SWAGGER="${HOME}/.composer/vendor/bin/swagger"
-
 warning() {
     echo "$(tput setaf 1)$1$(tput sgr0)"
 }
 
+PHP="/usr/bin/php"
+COMPOSER="/usr/local/bin/composer"
+SWAGGER="${HOME}/.composer/vendor/bin/swagger"
+
 if [ ! -f ${SWAGGER} ]; then
-    warning "Not exist swagger file. [${SWAGGER}]"
-    exit 1
+    ${COMPOSER} global require zircote/swagger-php
 fi
 
 PROJECT=$1
