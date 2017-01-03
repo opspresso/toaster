@@ -7,7 +7,7 @@ warning() {
 }
 
 PHP="/usr/bin/php"
-PHPMD="~/.composer/vendor/bin/phpmd"
+PHPMD="${HOME}/.composer/vendor/bin/phpmd"
 
 if [ ! -f ${PHPMD} ]; then
     warning "Not exist phpmd file. [${PHPMD}]"
