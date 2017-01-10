@@ -1145,6 +1145,7 @@ init_tomcat8() {
 
         CATALINA_HOME="${APPS_DIR}/tomcat8"
 
+        copy "${CATALINA_HOME}/conf/web.xml" "${CATALINA_HOME}/conf/web.org.xml" 644
         copy "${SHELL_DIR}/package/tomcat/web.xml" "${CATALINA_HOME}/conf/web.xml" 644
 
         mod_env "CATALINA_HOME" "${CATALINA_HOME}"
