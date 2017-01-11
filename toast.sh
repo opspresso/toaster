@@ -306,9 +306,6 @@ version() {
         s|save)
             version_save
             ;;
-        d|remove)
-            version_remove
-            ;;
     esac
 }
 
@@ -506,7 +503,7 @@ config_save() {
 
         config_local
     else
-        echo "Server Error. [${URL}][${RES}]"
+        warning "Server Error. [${URL}][${RES}]"
     fi
 
     echo_bar
@@ -1287,7 +1284,7 @@ version_parse() {
     DEST_FILE="./pom.xml"
 
     if [ ! -f "${DEST_FILE}" ]; then
-        echo "Not exist file. [${DEST_FILE}]"
+        warning "Not exist file. [${DEST_FILE}]"
         return 1
     fi
 
@@ -1296,11 +1293,11 @@ version_parse() {
     ARR_VERSION=($(cat ${DEST_FILE} | grep -oP '(?<=version>)[^<]+'))
 
     if [ "${ARR_GROUP[0]}" == "" ]; then
-        echo "groupId does not exist. [${ARR_GROUP[0]}]"
+        warning "groupId does not exist. [${ARR_GROUP[0]}]"
         exit 1
     fi
     if [ "${ARR_ARTIFACT[0]}" == "" ]; then
-        echo "artifactId does not exist. [${ARR_ARTIFACT[0]}]"
+        warning "artifactId does not exist. [${ARR_ARTIFACT[0]}]"
         exit 1
     fi
 
@@ -1328,7 +1325,7 @@ version_next() {
     ARR=(${RES})
 
     if [ "${ARR[0]}" != "OK" ]; then
-        echo "Server Error. [${URL}][${RES}]"
+        warning "Server Error. [${URL}][${RES}]"
         return 1
     fi
 
@@ -1388,27 +1385,10 @@ version_save() {
     ARR=(${RES})
 
     if [ "${ARR[0]}" != "OK" ]; then
-        echo "Server Error. [${URL}][${RES}]"
+        warning "Server Error. [${URL}][${RES}]"
     else
         echo "${ARR[1]}"
     fi
-}
-
-version_remove() {
-    if [ "${ARTIFACT_ID}" == "" ]; then
-        warning "Not set artifact_id. [${ARTIFACT_ID}]"
-        return 1
-    fi
-
-    GROUP_PATH=`echo "${GROUP_ID}" | sed "s/\./\//"`
-    ARTIFACT_PATH="${GROUP_PATH}/${ARTIFACT_ID}/${VERSION}"
-
-    echo "version remove..."
-    echo "--> from: ${REPO_PATH}/${ARTIFACT_PATH}"
-
-    aws s3 rm ${REPO_PATH}/${ARTIFACT_PATH} --recursive
-
-    rm -rf ~/.m2/repository/${ARTIFACT_PATH}
 }
 
 nginx_conf() {
@@ -1705,9 +1685,12 @@ repo_path() {
     URL="${TOAST_URL}/config/key/repo_path"
     RES=`curl -s --data "org=${ORG}&token=${TOKEN}" ${URL}`
 
-    if [ "${RES}" != "" ]; then
-        REPO_PATH="${RES}"
+    if [ "${RES}" == "" ]; then
+        warning "Not set repo_path. [${RES}]"
+        return 1
     fi
+
+    REPO_PATH="${RES}"
 }
 
 deploy_project() {
@@ -1878,7 +1861,7 @@ download() {
     aws s3 cp "${SOURCE}" "${TEMP_DIR}" --quiet
 
     if [ ! -f "${FILEPATH}" ]; then
-        echo "deploy file does not exist. [${FILEPATH}]"
+        warning "deploy file does not exist. [${FILEPATH}]"
     else
         # war (for tomcat stop/start)
         if [ "${TYPE}" == "war" ]; then
@@ -1897,7 +1880,7 @@ download() {
             fi
 
             if [ -d "${UNZIP_DIR}" ] || [ -f "${UNZIP_DIR}" ]; then
-                echo "deploy file can not unzip. [${UNZIP_DIR}]"
+                warning "deploy file can not unzip. [${UNZIP_DIR}]"
             else
                 unzip -q "${FILEPATH}" -d "${UNZIP_DIR}"
 
@@ -1921,7 +1904,7 @@ placement() {
         fi
 
         if [ -d "${DEPLOY_PATH}" ] || [ -f "${DEPLOY_PATH}" ]; then
-            echo "deploy dir can not copy. [${DEPLOY_PATH}]"
+            warning "deploy dir can not copy. [${DEPLOY_PATH}]"
         else
             mv -f "${UNZIP_DIR}" "${DEPLOY_PATH}"
         fi
@@ -1935,7 +1918,7 @@ placement() {
         rm -rf "${DEST_WAR}"
 
         if [ -d "${DEST_WAR}" ] || [ -f "${DEST_WAR}" ]; then
-            echo "deploy file can not copy. [${DEST_WAR}]"
+            warning "deploy file can not copy. [${DEST_WAR}]"
         else
             cp -rf "${FILEPATH}" "${DEST_WAR}"
         fi
@@ -1948,7 +1931,7 @@ placement() {
         rm -rf "${DEST_WAR}"
 
         if [ -d "${DEST_WAR}" ] || [ -f "${DEST_WAR}" ]; then
-            echo "deploy file can not copy. [${DEST_WAR}]"
+            warning "deploy file can not copy. [${DEST_WAR}]"
         else
             process_stop
             cp -rf "${FILEPATH}" "${DEST_WAR}"
