@@ -26,6 +26,7 @@ cat /var/log/cloud-init-output.log
 ~/toaster/toast.sh init httpd
 ~/toaster/toast.sh init java
 ~/toaster/toast.sh deploy fleet
+~/toaster/toast.sh deploy target 10
 ~/toaster/toast.sh deploy project com.yanolja yanolja.api 0.0.0 war
 ~/toaster/toast.sh deploy project com.yanolja yanolja.web 0.0.0 php web.yanolja.com
 ```
@@ -36,6 +37,7 @@ cat /var/log/cloud-init-output.log
 ~/toaster/remote.sh user ip port init httpd
 ~/toaster/remote.sh user ip port init java
 ~/toaster/remote.sh user ip port deploy fleet
+~/toaster/remote.sh user ip port deploy target 10
 ~/toaster/remote.sh user ip port deploy project com.yanolja yanolja.api 0.0.0 war
 ~/toaster/remote.sh user ip port deploy project com.yanolja yanolja.web 0.0.0 php web.yanolja.com
 ```

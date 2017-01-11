@@ -76,8 +76,6 @@ PARAM3=$4
 PARAM4=$5
 PARAM5=$6
 PARAM6=$7
-PARAM7=$8
-PARAM8=$9
 
 HAS_WAR="FALSE"
 HAS_JAR="FALSE"
@@ -336,6 +334,9 @@ deploy() {
     case ${PARAM1} in
         p|project)
             deploy_project
+            ;;
+        t|target)
+            deploy_target
             ;;
         *)
             deploy_fleet
@@ -1749,6 +1750,47 @@ deploy_project() {
     placement
 
     tomcat_start
+
+    echo_bar
+}
+
+deploy_target() {
+    echo_bar
+    echo "deploy target..."
+
+    TARGET_FILE="${TEMP_DIR}/${PARAM2}"
+    rm -rf ${TARGET_FILE}
+
+    URL="${TOAST_URL}/target/deploy/${PHASE}/${FLEET}/${PARAM2}"
+    wget -q -N --post-data "org=${ORG}&token=${TOKEN}" -P "${TEMP_DIR}" "${URL}"
+
+    if [ -f ${TARGET_FILE} ]; then
+        echo "download..."
+
+        while read line
+        do
+            ARR=(${line})
+
+            deploy_value
+
+            download
+        done < ${TARGET_FILE}
+
+        tomcat_stop
+
+        echo "placement..."
+
+        while read line
+        do
+            ARR=(${line})
+
+            deploy_value
+
+            placement
+        done < ${TARGET_FILE}
+
+        tomcat_start
+    fi
 
     echo_bar
 }
