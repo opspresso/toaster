@@ -49,7 +49,7 @@ if [ -d "${HOME}/toaster" ]; then
         ${HOME}/toaster/toast.sh u
     fi
 
-    exit 1
+    exit 0
 fi
 
 USER=$1
