@@ -16,13 +16,13 @@ HOST=${2}
 PORT=${3}
 
 CMD=${4}
-SUB=${5}
 
-PARAM1=${6}
-PARAM2=${7}
-PARAM3=${8}
-PARAM4=${9}
-PARAM5=${10}
+PARAM1=${5}
+PARAM2=${6}
+PARAM3=${7}
+PARAM4=${8}
+PARAM5=${9}
+PARAM6=${10}
 
 if [ "${HOST}" == "" ]; then
   usage
@@ -33,6 +33,6 @@ if [ "${PORT}" == "" ]; then
   PORT=22
 fi
 
-COMMAND="~/toaster/toast.sh ${CMD} ${SUB} ${PARAM1} ${PARAM2} ${PARAM3} ${PARAM4} ${PARAM5}"
+COMMAND="~/toaster/toast.sh ${CMD} ${PARAM1} ${PARAM2} ${PARAM3} ${PARAM4} ${PARAM5} ${PARAM6}"
 
 ssh -t ${USER}@${HOST} -p ${PORT} "${COMMAND}"
