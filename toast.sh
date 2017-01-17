@@ -1741,11 +1741,11 @@ deploy_target() {
     echo_bar
     echo "deploy target..."
 
-    TARGET_FILE="${TEMP_DIR}/${PARAM2}"
+    TARGET_FILE="${TEMP_DIR}/${FLEET}"
     rm -rf ${TARGET_FILE}
 
-    URL="${TOAST_URL}/target/deploy/${PHASE}/${FLEET}/${PARAM2}"
-    wget -q -N --post-data "org=${ORG}&token=${TOKEN}&no=${SNO}" -P "${TEMP_DIR}" "${URL}"
+    URL="${TOAST_URL}/target/deploy/${PHASE}/${FLEET}"
+    wget -q -N --post-data "org=${ORG}&token=${TOKEN}&no=${SNO}&t_no=${PARAM2}" -P "${TEMP_DIR}" "${URL}"
 
     if [ -f ${TARGET_FILE} ]; then
         echo "download..."
