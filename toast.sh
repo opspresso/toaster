@@ -1821,7 +1821,7 @@ deploy_fleet() {
 }
 
 deploy_value() {
-    RANDOM="${ARR[0]}"
+    TNO="${ARR[0]}"
     GROUP_ID="${ARR[1]}"
     ARTIFACT_ID="${ARR[2]}"
     VERSION="${ARR[3]}"
@@ -1845,7 +1845,7 @@ deploy_value() {
     FILENAME="${ARTIFACT_ID}-${VERSION}.${PACKAGING}"
     FILEPATH="${TEMP_DIR}/${FILENAME}"
 
-    UNZIP_DIR="${TEMP_DIR}/${RANDOM}"
+    UNZIP_DIR="${TEMP_DIR}/${TNO}"
 }
 
 download() {
@@ -1941,7 +1941,7 @@ placement() {
 
     # version status
     URL="${TOAST_URL}/version/deploy/${ARTIFACT_ID}/${VERSION}"
-    RES=`curl -s --data "org=${ORG}&token=${TOKEN}&phase=${PHASE}&fleet=${FLEET}&name=${NAME}&no=${SNO}" ${URL}`
+    RES=`curl -s --data "org=${ORG}&token=${TOKEN}&phase=${PHASE}&fleet=${FLEET}&name=${NAME}&no=${SNO}&t_no=${TNO}" ${URL}`
     ARR=(${RES})
 
     if [ "${ARR[0]}" != "OK" ]; then
