@@ -571,7 +571,7 @@ init_hosts() {
 
     # default hosts
     URL="${TOAST_URL}/config/key/hosts"
-    RES=`curl -s --data "org=${ORG}&token=${TOKEN}" ${URL}`
+    RES=`curl -s --data "org=${ORG}&token=${TOKEN}&no=${SNO}" ${URL}`
 
     echo "# toast default hosts" >> ${TEMP_FILE}
     echo "" >> ${TEMP_FILE}
@@ -583,7 +583,7 @@ init_hosts() {
 
     # phase hosts
     URL="${TOAST_URL}/phase/hosts/${PHASE}"
-    RES=`curl -s --data "org=${ORG}&token=${TOKEN}" ${URL}`
+    RES=`curl -s --data "org=${ORG}&token=${TOKEN}&no=${SNO}" ${URL}`
 
     if [ "${RES}" != "" ]; then
         echo "" >> ${TEMP_FILE}
@@ -594,7 +594,7 @@ init_hosts() {
 
     # fleet hosts
     URL="${TOAST_URL}/fleet/hosts/${PHASE}/${FLEET}"
-    RES=`curl -s --data "org=${ORG}&token=${TOKEN}" ${URL}`
+    RES=`curl -s --data "org=${ORG}&token=${TOKEN}&no=${SNO}" ${URL}`
 
     if [ "${RES}" != "" ]; then
         echo "" >> ${TEMP_FILE}
@@ -623,7 +623,7 @@ init_profile() {
 
     # default profile
     URL="${TOAST_URL}/config/key/profile"
-    RES=`curl -s --data "org=${ORG}&token=${TOKEN}" ${URL}`
+    RES=`curl -s --data "org=${ORG}&token=${TOKEN}&no=${SNO}" ${URL}`
 
     if [ "${RES}" != "" ]; then
         echo "" >> ${TARGET}
@@ -634,7 +634,7 @@ init_profile() {
 
     # phase profile
     URL="${TOAST_URL}/phase/profile/${PHASE}"
-    RES=`curl -s --data "org=${ORG}&token=${TOKEN}" ${URL}`
+    RES=`curl -s --data "org=${ORG}&token=${TOKEN}&no=${SNO}" ${URL}`
 
     if [ "${RES}" != "" ]; then
         echo "" >> ${TARGET}
@@ -645,7 +645,7 @@ init_profile() {
 
     # fleet profile
     URL="${TOAST_URL}/fleet/profile/${PHASE}/${FLEET}"
-    RES=`curl -s --data "org=${ORG}&token=${TOKEN}" ${URL}`
+    RES=`curl -s --data "org=${ORG}&token=${TOKEN}&no=${SNO}" ${URL}`
 
     if [ "${RES}" != "" ]; then
         echo "" >> ${TARGET}
@@ -664,7 +664,7 @@ init_master() {
 
     # .ssh/id_rsa
     URL="${TOAST_URL}/config/key/rsa_private_key"
-    RES=`curl -s --data "org=${ORG}&token=${TOKEN}" ${URL}`
+    RES=`curl -s --data "org=${ORG}&token=${TOKEN}&no=${SNO}" ${URL}`
 
     if [ "${RES}" != "" ]; then
         TARGET="${HOME}/.ssh/id_rsa"
@@ -674,7 +674,7 @@ init_master() {
 
     # .ssh/id_rsa.pub
     URL="${TOAST_URL}/config/key/rsa_public_key"
-    RES=`curl -s --data "org=${ORG}&token=${TOKEN}" ${URL}`
+    RES=`curl -s --data "org=${ORG}&token=${TOKEN}&no=${SNO}" ${URL}`
 
     if [ "${RES}" != "" ]; then
         TARGET="${HOME}/.ssh/id_rsa.pub"
@@ -684,7 +684,7 @@ init_master() {
 
     # .aws/credentials
     URL="${TOAST_URL}/config/key/aws_master"
-    RES=`curl -s --data "org=${ORG}&token=${TOKEN}" ${URL}`
+    RES=`curl -s --data "org=${ORG}&token=${TOKEN}&no=${SNO}" ${URL}`
 
     if [ "${RES}" != "" ]; then
         TARGET="${HOME}/.aws/credentials"
@@ -702,7 +702,7 @@ init_slave() {
 
     if [ `cat ${TARGET} | grep -c "toast@yanolja.in"` -eq 0 ]; then
         URL="${TOAST_URL}/config/key/rsa_public_key"
-        RES=`curl -s --data "org=${ORG}&token=${TOKEN}" ${URL}`
+        RES=`curl -s --data "org=${ORG}&token=${TOKEN}&no=${SNO}" ${URL}`
 
         if [ "${RES}" != "" ]; then
             echo "${RES}" >> ${TARGET}
@@ -720,7 +720,7 @@ init_slave() {
 
     # .ssh/config
     URL="${TOAST_URL}/config/key/ssh_config"
-    RES=`curl -s --data "org=${ORG}&token=${TOKEN}" ${URL}`
+    RES=`curl -s --data "org=${ORG}&token=${TOKEN}&no=${SNO}" ${URL}`
 
     if [ "${RES}" != "" ]; then
         TARGET="${HOME}/.ssh/config"
@@ -730,7 +730,7 @@ init_slave() {
 
     # .aws/credentials
     URL="${TOAST_URL}/config/key/aws_slave"
-    RES=`curl -s --data "org=${ORG}&token=${TOKEN}" ${URL}`
+    RES=`curl -s --data "org=${ORG}&token=${TOKEN}&no=${SNO}" ${URL}`
 
     if [ "${RES}" != "" ]; then
         TARGET="${HOME}/.aws/credentials"
@@ -744,7 +744,7 @@ init_aws() {
 
     # .aws/config
     URL="${TOAST_URL}/config/key/aws_config"
-    RES=`curl -s --data "org=${ORG}&token=${TOKEN}" ${URL}`
+    RES=`curl -s --data "org=${ORG}&token=${TOKEN}&no=${SNO}" ${URL}`
 
     if [ "${RES}" != "" ]; then
         TARGET="${HOME}/.aws/config"
@@ -831,7 +831,7 @@ init_certificate() {
     CERTIFICATE="${TEMP_DIR}/${PARAM}"
 
     URL="${TOAST_URL}/certificate/name/${PARAM}"
-    wget -q -N --post-data "org=${ORG}&token=${TOKEN}" -P "${TEMP_DIR}" "${URL}"
+    wget -q -N --post-data "org=${ORG}&token=${TOKEN}&no=${SNO}" -P "${TEMP_DIR}" "${URL}"
 
     if [ -f ${CERTIFICATE} ]; then
         echo "save certificate..."
@@ -858,7 +858,7 @@ init_certificate() {
 
 init_auto() {
     URL="${TOAST_URL}/fleet/apps/${PHASE}/${FLEET}"
-    RES=`curl -s --data "org=${ORG}&token=${TOKEN}" ${URL}`
+    RES=`curl -s --data "org=${ORG}&token=${TOKEN}&no=${SNO}" ${URL}`
     ARR=(${RES})
 
     for i in "${ARR[@]}"; do
@@ -1321,7 +1321,7 @@ version_next() {
     echo "version get..."
 
     URL="${TOAST_URL}/version/latest/${ARTIFACT_ID}"
-    RES=`curl -s --data "org=${ORG}&token=${TOKEN}" ${URL}`
+    RES=`curl -s --data "org=${ORG}&token=${TOKEN}&no=${SNO}" ${URL}`
     ARR=(${RES})
 
     if [ "${ARR[0]}" != "OK" ]; then
@@ -1381,7 +1381,7 @@ version_save() {
     fi
 
     URL="${TOAST_URL}/version/build/${ARTIFACT_ID}/${VERSION}"
-    RES=`curl -s --data "org=${ORG}&token=${TOKEN}" ${URL}`
+    RES=`curl -s --data "org=${ORG}&token=${TOKEN}&no=${SNO}" ${URL}`
     ARR=(${RES})
 
     if [ "${ARR[0]}" != "OK" ]; then
@@ -1449,7 +1449,7 @@ nginx_lb() {
     LB_CONF="${TEMP_DIR}/${FLEET}"
 
     URL="${TOAST_URL}/fleet/lb/${FLEET}"
-    wget -q -N --post-data "org=${ORG}&token=${TOKEN}" -P "${TEMP_DIR}" "${URL}"
+    wget -q -N --post-data "org=${ORG}&token=${TOKEN}&no=${SNO}" -P "${TEMP_DIR}" "${URL}"
 
     if [ -f ${LB_CONF} ]; then
         cat ${LB_CONF}
@@ -1478,7 +1478,7 @@ nginx_lb() {
 
             if [ "${ARR[0]}" == "CUSTOM" ]; then
                 URL="${TOAST_URL}/fleet/custom/${FNO}"
-                RES=`curl -s --data "org=${ORG}&token=${TOKEN}" ${URL}`
+                RES=`curl -s --data "org=${ORG}&token=${TOKEN}&no=${SNO}" ${URL}`
 
                 if [ "${RES}" != "" ]; then
                     CUSTOM="${RES}"
@@ -1647,7 +1647,7 @@ vhost_fleet() {
     rm -rf ${VHOST_LIST}
 
     URL="${TOAST_URL}/target/vhost/${PHASE}/${FLEET}"
-    wget -q -N --post-data "org=${ORG}&token=${TOKEN}" -P "${TEMP_DIR}" "${URL}"
+    wget -q -N --post-data "org=${ORG}&token=${TOKEN}&no=${SNO}" -P "${TEMP_DIR}" "${URL}"
 
     if [ -f ${VHOST_LIST} ]; then
         echo "placement apache..."
@@ -1683,7 +1683,7 @@ vhost_fleet() {
 repo_path() {
     # repo_path
     URL="${TOAST_URL}/config/key/repo_path"
-    RES=`curl -s --data "org=${ORG}&token=${TOKEN}" ${URL}`
+    RES=`curl -s --data "org=${ORG}&token=${TOKEN}&no=${SNO}" ${URL}`
 
     if [ "${RES}" == "" ]; then
         warning "Not set repo_path. [${RES}]"
@@ -1745,7 +1745,7 @@ deploy_target() {
     rm -rf ${TARGET_FILE}
 
     URL="${TOAST_URL}/target/deploy/${PHASE}/${FLEET}/${PARAM2}"
-    wget -q -N --post-data "org=${ORG}&token=${TOKEN}" -P "${TEMP_DIR}" "${URL}"
+    wget -q -N --post-data "org=${ORG}&token=${TOKEN}&no=${SNO}" -P "${TEMP_DIR}" "${URL}"
 
     if [ -f ${TARGET_FILE} ]; then
         echo "download..."
@@ -1786,7 +1786,7 @@ deploy_fleet() {
     rm -rf ${TARGET_FILE}
 
     URL="${TOAST_URL}/target/deploy/${PHASE}/${FLEET}"
-    wget -q -N --post-data "org=${ORG}&token=${TOKEN}" -P "${TEMP_DIR}" "${URL}"
+    wget -q -N --post-data "org=${ORG}&token=${TOKEN}&no=${SNO}" -P "${TEMP_DIR}" "${URL}"
 
     if [ -f ${TARGET_FILE} ]; then
         echo "download..."
@@ -1941,7 +1941,7 @@ placement() {
 
     # version status
     URL="${TOAST_URL}/version/deploy/${ARTIFACT_ID}/${VERSION}"
-    RES=`curl -s --data "org=${ORG}&token=${TOKEN}&phase=${PHASE}&fleet=${FLEET}&name=${NAME}" ${URL}`
+    RES=`curl -s --data "org=${ORG}&token=${TOKEN}&phase=${PHASE}&fleet=${FLEET}&name=${NAME}&no=${SNO}" ${URL}`
     ARR=(${RES})
 
     if [ "${ARR[0]}" != "OK" ]; then
@@ -1956,7 +1956,7 @@ connect() {
     # phase
     if [ "${PHASE}" == "" ]; then
         URL="${TOAST_URL}/phase/conn"
-        wget -q -N --post-data "org=${ORG}&token=${TOKEN}" -P "${TEMP_DIR}" "${URL}"
+        wget -q -N --post-data "org=${ORG}&token=${TOKEN}&no=${SNO}" -P "${TEMP_DIR}" "${URL}"
 
         CONN_LIST="${TEMP_DIR}/conn"
 
@@ -2001,7 +2001,7 @@ connect() {
     # fleet
     if [ "${FLEET}" == "" ]; then
         URL="${TOAST_URL}/fleet/conn/${PHASE}"
-        wget -q -N --post-data "org=${ORG}&token=${TOKEN}" -P "${TEMP_DIR}" "${URL}"
+        wget -q -N --post-data "org=${ORG}&token=${TOKEN}&no=${SNO}" -P "${TEMP_DIR}" "${URL}"
 
         CONN_LIST="${TEMP_DIR}/${PHASE}"
 
@@ -2047,7 +2047,7 @@ connect() {
 
     # server
     URL="${TOAST_URL}/server/conn/${PHASE}/${FLEET}"
-    wget -q -N --post-data "org=${ORG}&token=${TOKEN}" -P "${TEMP_DIR}" "${URL}"
+    wget -q -N --post-data "org=${ORG}&token=${TOKEN}&no=${SNO}" -P "${TEMP_DIR}" "${URL}"
 
     CONN_LIST="${TEMP_DIR}/${FLEET}"
     CONN_PARAM=""
