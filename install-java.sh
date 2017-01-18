@@ -43,6 +43,7 @@ URL3="$(echo ${URL0}${URL2} | awk -F\" {'print $1'})"
 URL4=$(curl -s ${URL3} | egrep -o "http\:\/\/download\.oracle\.com\/otn-pub\/java\/jdk\/${VERSION}u(.*)\/server-jre-${VERSION}u(.*)-${OS_NAME}-${OS_BIT}.${EXT}")
 
 # http://download.oracle.com/otn-pub/java/jdk/8u101-b13/server-jre-8u101-linux-x64.tar.gz
+# http://download.oracle.com/otn-pub/java/jdk/8u121-b13/e9e7ea248e2c4826b92b3f075a80e441/server-jre-8u121-linux-x64.tar.gz
 
 if [[ -z "$URL4" ]]; then
     echo "Could not get java url - $URL4"
@@ -51,7 +52,7 @@ fi
 
 URL5=$(echo ${URL4} | cut -d " " -f 1)
 
-JAVA=$(echo ${URL5} | cut -d "/" -f 8)
+JAVA=$(echo ${URL5} | cut -d "/" -f 9)
 if [[ -z "$JAVA" ]]; then
     echo "Could not get java - $JAVA"
     exit 1
