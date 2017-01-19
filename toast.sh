@@ -513,17 +513,17 @@ config_local() {
     echo "config local... [${SNO}][${NAME}]"
 
     echo "# toast config" > ${CONFIG}
-    echo "TOAST_URL=${TOAST_URL}" >> ${CONFIG}
-    echo "ORG=${ORG}" >> ${CONFIG}
-    echo "PHASE=${PHASE}" >> ${CONFIG}
-    echo "FLEET=${FLEET}" >> ${CONFIG}
-    echo "UUID=${UUID}" >> ${CONFIG}
-    echo "NAME=${NAME}" >> ${CONFIG}
-    echo "HOST=${HOST}" >> ${CONFIG}
-    echo "PORT=${PORT}" >> ${CONFIG}
-    echo "USER=${USER}" >> ${CONFIG}
-    echo "TOKEN=${TOKEN}" >> ${CONFIG}
-    echo "SNO=${SNO}" >> ${CONFIG}
+    echo "TOAST_URL=\"${TOAST_URL}\"" >> ${CONFIG}
+    echo "ORG=\"${ORG}\"" >> ${CONFIG}
+    echo "PHASE=\"${PHASE}\"" >> ${CONFIG}
+    echo "FLEET=\"${FLEET}\"" >> ${CONFIG}
+    echo "UUID=\"${UUID}\"" >> ${CONFIG}
+    echo "NAME=\"${NAME}\"" >> ${CONFIG}
+    echo "HOST=\"${HOST}\"" >> ${CONFIG}
+    echo "PORT=\"${PORT}\"" >> ${CONFIG}
+    echo "USER=\"${USER}\"" >> ${CONFIG}
+    echo "TOKEN=\"${TOKEN}\"" >> ${CONFIG}
+    echo "SNO=\"${SNO}\"" >> ${CONFIG}
 
     chmod 644 ${CONFIG}
     source ${CONFIG}
