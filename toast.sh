@@ -1282,16 +1282,16 @@ init_php_ini() {
 }
 
 version_parse() {
-    DEST_FILE="./pom.xml"
+    POM_FILE="./pom.xml"
 
-    if [ ! -f "${DEST_FILE}" ]; then
-        warning "Not exist file. [${DEST_FILE}]"
+    if [ ! -f "${POM_FILE}" ]; then
+        warning "Not exist file. [${POM_FILE}]"
         return 1
     fi
 
-    ARR_GROUP=($(cat ${DEST_FILE} | grep -oP '(?<=groupId>)[^<]+'))
-    ARR_ARTIFACT=($(cat ${DEST_FILE} | grep -oP '(?<=artifactId>)[^<]+'))
-    ARR_VERSION=($(cat ${DEST_FILE} | grep -oP '(?<=version>)[^<]+'))
+    ARR_GROUP=($(cat ${POM_FILE} | grep -oP '(?<=groupId>)[^<]+'))
+    ARR_ARTIFACT=($(cat ${POM_FILE} | grep -oP '(?<=artifactId>)[^<]+'))
+    ARR_VERSION=($(cat ${POM_FILE} | grep -oP '(?<=version>)[^<]+'))
 
     if [ "${ARR_GROUP[0]}" == "" ]; then
         warning "groupId does not exist. [${ARR_GROUP[0]}]"
@@ -1344,11 +1344,11 @@ version_next() {
 
     TEMP_FILE="${TEMP_DIR}/toast-pom.tmp"
 
-    if [ -f ${DEST_FILE} ]; then
-        sed "s/$VER1/$VER2/;10q;" ${DEST_FILE} > ${TEMP_FILE}
-        sed "1,10d" ${DEST_FILE} >> ${TEMP_FILE}
+    if [ -f ${POM_FILE} ]; then
+        sed "s/$VER1/$VER2/;10q;" ${POM_FILE} > ${TEMP_FILE}
+        sed "1,10d" ${POM_FILE} >> ${TEMP_FILE}
 
-        cp -rf ${TEMP_FILE} ${DEST_FILE}
+        cp -rf ${TEMP_FILE} ${POM_FILE}
     fi
 
     VERSION=NEXT_VERSION
