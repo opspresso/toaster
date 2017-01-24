@@ -1292,6 +1292,7 @@ version_parse() {
     ARR_GROUP=($(cat ${POM_FILE} | grep -oP '(?<=groupId>)[^<]+'))
     ARR_ARTIFACT=($(cat ${POM_FILE} | grep -oP '(?<=artifactId>)[^<]+'))
     ARR_VERSION=($(cat ${POM_FILE} | grep -oP '(?<=version>)[^<]+'))
+    ARR_PACKAGE=($(cat ${POM_FILE} | grep -oP '(?<=packaging>)[^<]+'))
 
     if [ "${ARR_GROUP[0]}" == "" ]; then
         warning "groupId does not exist. [${ARR_GROUP[0]}]"
@@ -1305,10 +1306,12 @@ version_parse() {
     echo "groupId=${ARR_GROUP[0]}"
     echo "artifactId=${ARR_ARTIFACT[0]}"
     echo "version=${ARR_VERSION[0]}"
+    echo "packaging=${ARR_PACKAGE[0]}"
 
     GROUP_ID=${ARR_GROUP[0]}
     ARTIFACT_ID=${ARR_ARTIFACT[0]}
     VERSION=${ARR_VERSION[0]}
+    PACKAGE=${ARR_PACKAGE[0]}
 
     GROUP_PATH=`echo "${GROUP_ID}" | sed "s/\./\//"`
 }
@@ -1322,7 +1325,7 @@ version_next() {
     echo "version get..."
 
     URL="${TOAST_URL}/version/latest/${ARTIFACT_ID}"
-    RES=`curl -s --data "org=${ORG}&token=${TOKEN}&no=${SNO}" ${URL}`
+    RES=`curl -s --data "org=${ORG}&token=${TOKEN}&groupId=${GROUP_ID}&artifactId=${ARTIFACT_ID}&packaging=${PACKAGE}&no=${SNO}" ${URL}`
     ARR=(${RES})
 
     if [ "${ARR[0]}" != "OK" ]; then
@@ -1382,7 +1385,7 @@ version_save() {
     fi
 
     URL="${TOAST_URL}/version/build/${ARTIFACT_ID}/${VERSION}"
-    RES=`curl -s --data "org=${ORG}&token=${TOKEN}&no=${SNO}" ${URL}`
+    RES=`curl -s --data "org=${ORG}&token=${TOKEN}&groupId=${GROUP_ID}&artifactId=${ARTIFACT_ID}&packaging=${PACKAGE}&no=${SNO}" ${URL}`
     ARR=(${RES})
 
     if [ "${ARR[0]}" != "OK" ]; then
