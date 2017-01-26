@@ -300,11 +300,14 @@ version() {
     version_parse
 
     case ${PARAM1} in
-        n|next)
-            version_next
-            ;;
         s|save)
             version_save
+            ;;
+        m|n|master|next)
+            version_master
+            ;;
+        *)
+            version_increase
             ;;
     esac
 }
@@ -1316,7 +1319,24 @@ version_parse() {
     GROUP_PATH=`echo "${GROUP_ID}" | sed "s/\./\//"`
 }
 
-version_next() {
+increase() {
+    echo 1.2.3.4 | awk -F. -v OFS=. 'NF==1{print ++$NF}; NF>1{if(length($NF+1)>length($NF))$(NF-1)++; $NF=sprintf("%0*d", length($NF), ($NF+1)%(10^length($NF))); print}'
+
+}
+
+version_increase() {
+    if [ "${ARTIFACT_ID}" == "" ]; then
+        warning "Not set artifact_id. [${ARTIFACT_ID}]"
+        return 1
+    fi
+
+
+    echo "version=${VERSION}"
+
+    version_replace
+}
+
+version_master() {
     if [ "${ARTIFACT_ID}" == "" ]; then
         warning "Not set artifact_id. [${ARTIFACT_ID}]"
         return 1
@@ -1333,17 +1353,21 @@ version_next() {
         return 1
     fi
 
-    NEXT_VERSION="${ARR[1]}"
+    VERSION="${ARR[1]}"
 
-    echo "${NEXT_VERSION}"
+    echo "version=${VERSION}"
 
     DATE=`date +%Y-%m-%d" "%H:%M`
 
-    git tag -a "${NEXT_VERSION}" -m "at ${DATE} by toast"
-    git push origin "${NEXT_VERSION}"
+    git tag -a "${VERSION}" -m "at ${DATE} by toast"
+    git push origin "${VERSION}"
 
+    version_replace
+}
+
+version_replace() {
     VER1="<version>[0-9a-zA-Z\.\-]\+<\/version>"
-    VER2="<version>${NEXT_VERSION}<\/version>"
+    VER2="<version>${VERSION}<\/version>"
 
     TEMP_FILE="${TEMP_DIR}/toast-pom.tmp"
 
@@ -1353,8 +1377,6 @@ version_next() {
 
         cp -rf ${TEMP_FILE} ${POM_FILE}
     fi
-
-    VERSION=NEXT_VERSION
 }
 
 version_save() {
@@ -1390,8 +1412,6 @@ version_save() {
 
     if [ "${ARR[0]}" != "OK" ]; then
         warning "Server Error. [${URL}][${RES}]"
-    else
-        echo "${ARR[1]}"
     fi
 }
 
