@@ -1306,15 +1306,20 @@ version_parse() {
         exit 1
     fi
 
-    echo "groupId=${ARR_GROUP[0]}"
-    echo "artifactId=${ARR_ARTIFACT[0]}"
-    echo "version=${ARR_VERSION[0]}"
-    echo "packaging=${ARR_PACKAGE[0]}"
-
     GROUP_ID=${ARR_GROUP[0]}
     ARTIFACT_ID=${ARR_ARTIFACT[0]}
     VERSION=${ARR_VERSION[0]}
-    PACKAGE=${ARR_PACKAGE[0]}
+
+    if [ "${PARAM2}" != "" ]; then
+        PACKAGE="${PARAM2}"
+    else
+        PACKAGE=${ARR_PACKAGE[0]}
+    fi
+
+    echo "groupId=${GROUP_ID}"
+    echo "artifactId=${ARTIFACT_ID}"
+    echo "version=${VERSION}"
+    echo "packaging=${PACKAGE}"
 
     GROUP_PATH=`echo "${GROUP_ID}" | sed "s/\./\//"`
 }
