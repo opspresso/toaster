@@ -1281,6 +1281,10 @@ init_php_ini() {
         # date.timezone = Asia/Seoul
         sed "s/\;date\.timezone\ \=/date\.timezone\ \=\ Asia\/Seoul/g" ${PHP_INI} > ${TEMP_FILE}
         copy ${TEMP_FILE} ${PHP_INI} 644
+
+        # upload_max_filesize = 20M
+        sed "s/\;upload\_max\_filesize\ \=\ 2M/upload\_max\_filesize\ \=\ 20M/g" ${PHP_INI} > ${TEMP_FILE}
+        copy ${TEMP_FILE} ${PHP_INI} 644
     fi
 }
 
