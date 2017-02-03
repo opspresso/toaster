@@ -1237,6 +1237,7 @@ init_jenkins() {
 
     rm -rf ${WEBAPP_DIR}/jenkins*
 
+    echo "download jenkins..."
     wget -q -N -P "${WEBAPP_DIR}" "${URL}"
 
     tomcat_start
