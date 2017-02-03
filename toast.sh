@@ -288,6 +288,9 @@ init() {
         munin)
             init_munin
             ;;
+        jenkins)
+            init_jenkins
+            ;;
         *)
             self_info
             init_auto
@@ -864,8 +867,8 @@ init_auto() {
     RES=`curl -s --data "org=${ORG}&token=${TOKEN}&no=${SNO}" ${URL}`
     ARR=(${RES})
 
-    for i in "${ARR[@]}"; do
-        case "$i" in
+    for VAL in "${ARR[@]}"; do
+        case "${VAL}" in
             httpd)
                 init_httpd
                 ;;
@@ -1218,6 +1221,25 @@ init_munin() {
 
         touch "${SHELL_DIR}/.config_munin"
     fi
+}
+
+init_jenkins() {
+    if [ ! -f "${SHELL_DIR}/.config_tomcat" ]; then
+        warning "Not set tomcat."
+        return 1
+    fi
+
+    HAS_WAR="TRUE"
+
+    tomcat_stop
+
+    URL="http://mirrors.jenkins.io/war/latest/jenkins.war"
+
+    rm -rf ${WEBAPP_DIR}/jenkins*
+
+    wget -q -N -P "${WEBAPP_DIR}" "${URL}"
+
+    tomcat_start
 }
 
 init_httpd_conf() {
