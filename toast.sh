@@ -1233,7 +1233,8 @@ init_jenkins() {
 
     tomcat_stop
 
-    rm -rf ${WEBAPP_DIR}/jenkins*
+    rm -rf ${WEBAPP_DIR}/jenkins
+    rm -rf ${WEBAPP_DIR}/jenkins.war
 
     URL="http://mirrors.jenkins.io/war/latest/jenkins.war"
 
