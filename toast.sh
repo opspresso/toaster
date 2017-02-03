@@ -2221,6 +2221,7 @@ tomcat_stop() {
         if [ ${status} -ge 1 ]; then
             echo "tomcat stop..."
             ${TOMCAT_DIR}/bin/shutdown.sh
+            sleep 3
         fi
     fi
 }
