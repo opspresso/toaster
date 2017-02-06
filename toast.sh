@@ -1323,7 +1323,6 @@ version_parse() {
     ARR_GROUP=($(cat ${POM_FILE} | grep -oP '(?<=groupId>)[^<]+'))
     ARR_ARTIFACT=($(cat ${POM_FILE} | grep -oP '(?<=artifactId>)[^<]+'))
     ARR_VERSION=($(cat ${POM_FILE} | grep -oP '(?<=version>)[^<]+'))
-    ARR_PACKAGE=($(cat ${POM_FILE} | grep -oP '(?<=packaging>)[^<]+'))
 
     if [ "${ARR_GROUP[0]}" == "" ]; then
         warning "groupId does not exist. [${ARR_GROUP[0]}]"
@@ -1337,17 +1336,11 @@ version_parse() {
     GROUP_ID=${ARR_GROUP[0]}
     ARTIFACT_ID=${ARR_ARTIFACT[0]}
     VERSION=${ARR_VERSION[0]}
-
-    if [ "${PARAM2}" != "" ]; then
-        PACKAGE="${PARAM2}"
-    else
-        PACKAGE=${ARR_PACKAGE[0]}
-    fi
+    PACKAGE="${PARAM2}"
 
     echo "groupId=${GROUP_ID}"
     echo "artifactId=${ARTIFACT_ID}"
     echo "version=${VERSION}"
-    echo "packaging=${PACKAGE}"
 
     GROUP_PATH=`echo "${GROUP_ID}" | sed "s/\./\//"`
 }
