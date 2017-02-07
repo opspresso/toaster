@@ -1158,6 +1158,8 @@ init_tomcat8() {
 
         copy "${SHELL_DIR}/package/tomcat/tomcat.sh" "/etc/init.d/tomcat" 755
 
+        service_ctl tomcat start on
+
         mod_env "CATALINA_HOME" "${CATALINA_HOME}"
 
         echo "CATALINA_HOME=${CATALINA_HOME}"
