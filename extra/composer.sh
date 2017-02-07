@@ -40,8 +40,6 @@ if [ ! -d ${TARGET} ]; then
     exit 1
 fi
 
-cd ${TARGET}
-
 LOCK="${TARGET}/composer.lock"
 
 if [ -f "${LOCK}" ]; then
@@ -53,5 +51,7 @@ VENDOR="${TARGET}/vendor"
 if [ -d "${VENDOR}" ]; then
     rm -rf ${VENDOR}
 fi
+
+cd ${TARGET}
 
 ${PHP} ${COMPOSER} install
