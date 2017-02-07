@@ -33,11 +33,12 @@ if [ "${WORK}" == "" ]; then
 fi
 
 TARGET="${WORK}/src/main/webapp/application"
-DEST="${WORK}/src/main/webapp/apidoc"
 
 if [ ! -d ${TARGET} ]; then
     warning "Not exist target directory. [${TARGET}]"
     exit 1
 fi
+
+DEST="${WORK}/src/main/webapp/apidoc"
 
 ${PHP} ${SWAGGER} ${TARGET} -o ${DEST}

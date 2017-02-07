@@ -34,7 +34,6 @@ if [ "${WORK}" == "" ]; then
 fi
 
 TARGET="${WORK}/src/main/webapp"
-VENDOR="${TARGET}/vendor"
 
 if [ ! -d ${TARGET} ]; then
     warning "Not exist target directory. [${TARGET}]"
@@ -43,8 +42,10 @@ fi
 
 cd ${TARGET}
 
+VENDOR="${TARGET}/vendor"
+
 if [ -d "${VENDOR}" ]; then
-    ${PHP} ${COMPOSER} update
-else
-    ${PHP} ${COMPOSER} install
+    rm -rf ${COMPOSER}
 fi
+
+${PHP} ${COMPOSER} install
