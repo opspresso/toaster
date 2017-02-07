@@ -101,6 +101,9 @@ toast() {
         u|update)
             update
             ;;
+        p|prepare)
+            prepare
+            ;;
         e|eip)
             eip
             ;;
@@ -766,7 +769,7 @@ init_aws() {
             wget -q -N https://s3.amazonaws.com/aws-cli/awscli-bundle.zip
 
             if [ -f "${HOME}/awscli-bundle.zip" ]; then
-                unzip awscli-bundle.zip
+                unzip -q awscli-bundle.zip
 
                 AWS_HOME="/usr/local/aws"
 
