@@ -1120,7 +1120,7 @@ init_java8() {
         echo "init java..."
 
         service_remove "java-1.7.0-openjdk java-1.7.0-openjdk-headless"
-        service_remove "java-1.8.0-openjdk java-1.8.0-openjdk-devel java-1.8.0-openjdk-headless"
+        service_remove "java-1.8.0-openjdk java-1.8.0-openjdk-headless java-1.8.0-openjdk-devel"
 
         ${SHELL_DIR}/install-java.sh
 
@@ -1243,6 +1243,8 @@ init_jenkins() {
 
     echo "download jenkins..."
     wget -q -N -P "${WEBAPP_DIR}" "${URL}"
+
+    copy "${CATALINA_HOME}/conf/web.org.xml" "${CATALINA_HOME}/conf/web.xml" 644
 
     tomcat_start
 }
