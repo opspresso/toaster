@@ -16,11 +16,11 @@ export CATALINA_HOME=/data/apps/tomcat8
 User=TOMCAT_USER
 
 start() {
-    sudo -l ${User} -c /data/apps/tomcat8/bin/startup.sh
+    /bin/su -l ${User} -c /data/apps/tomcat8/bin/startup.sh
 }
 
 stop() {
-    sudo -l ${User} -c /data/apps/tomcat8/bin/shutdown.sh
+    /bin/su -l ${User} -c /data/apps/tomcat8/bin/shutdown.sh
 }
 
 case $1 in
