@@ -1163,7 +1163,7 @@ init_tomcat8() {
         if [ "${OS_TYPE}" == "el7" ]; then
             TEMPLATE="${SHELL_DIR}/package/tomcat/tomcat_el7"
             sed "s/TOMCAT\_USER/$USER/g" ${TEMPLATE} > ${TEMP_FILE}
-            copy ${TEMP_FILE} /usr/lib/systemd/system/tomcat.service 755
+            copy ${TEMP_FILE} /usr/lib/systemd/system/tomcat.service 644
         else
             TEMPLATE="${SHELL_DIR}/package/tomcat/tomcat_el6"
             sed "s/TOMCAT\_USER/$USER/g" ${TEMPLATE} > ${TEMP_FILE}
