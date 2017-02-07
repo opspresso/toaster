@@ -1153,16 +1153,25 @@ init_tomcat8() {
 
         CATALINA_HOME="${APPS_DIR}/tomcat8"
 
-        copy "${CATALINA_HOME}/conf/web.xml" "${CATALINA_HOME}/conf/web.org.xml" 644
-        copy "${SHELL_DIR}/package/tomcat/web.xml" "${CATALINA_HOME}/conf/web.xml" 644
-
-        copy "${SHELL_DIR}/package/tomcat/tomcat.sh" "/etc/init.d/tomcat" 755
-
-        service_ctl tomcat start on
-
         mod_env "CATALINA_HOME" "${CATALINA_HOME}"
 
         echo "CATALINA_HOME=${CATALINA_HOME}"
+
+        copy "${CATALINA_HOME}/conf/web.xml" "${CATALINA_HOME}/conf/web.org.xml" 644
+        copy "${SHELL_DIR}/package/tomcat/web.xml" "${CATALINA_HOME}/conf/web.xml" 644
+
+        if [ "${OS_TYPE}" == "el7" ]; then
+            TEMPLATE="${SHELL_DIR}/package/tomcat/tomcat_el7"
+            sed "s/TOMCAT\_USER/$USER/g" ${TEMPLATE} > ${TEMP_FILE}
+            copy ${TEMP_FILE} /usr/lib/systemd/system/tomcat.service 755
+        else
+            TEMPLATE="${SHELL_DIR}/package/tomcat/tomcat_el6"
+            sed "s/TOMCAT\_USER/$USER/g" ${TEMPLATE} > ${TEMP_FILE}
+            copy ${TEMP_FILE} /etc/init.d/tomcat 755
+        fi
+
+        service_ctl tomcat start on
+
         echo "CATALINA_HOME=${CATALINA_HOME}" > "${SHELL_DIR}/.config_tomcat"
     fi
 }

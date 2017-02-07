@@ -12,12 +12,14 @@ PATH=/sbin:/bin:/usr/sbin:/usr/bin
 
 export JAVA_HOME="/usr/local/java"
 
+User="TOMCAT_USER"
+
 start() {
-    /data/apps/tomcat8/bin/startup.sh
+    sudo -l ${User} -c /data/apps/tomcat8/bin/startup.sh
 }
 
 stop() {
-    /data/apps/tomcat8/bin/shutdown.sh
+    sudo -l ${User} -c /data/apps/tomcat8/bin/shutdown.sh
 }
 
 case $1 in

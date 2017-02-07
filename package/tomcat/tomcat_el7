@@ -1,0 +1,13 @@
+[Unit]
+Description=Tomcat 8
+After=network.target syslog.target
+
+[Service]
+Type=forking
+User="TOMCAT_USER"
+
+ExecStart=/data/apps/tomcat8/bin/startup.sh start
+ExecStop=/data/apps/tomcat8/bin/shutdown.sh stop
+
+[Install]
+WantedBy=multi-user.target
