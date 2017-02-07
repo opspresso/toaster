@@ -1,6 +1,6 @@
 #!/bin/bash
 
-if [ -z target ]; then
+if [ -d target ]; then
     rm -rf target
 fi
 
