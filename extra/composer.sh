@@ -42,10 +42,16 @@ fi
 
 cd ${TARGET}
 
+LOCK="${TARGET}/composer.lock"
+
+if [ -f "${LOCK}" ]; then
+    rm -rf ${LOCK}
+fi
+
 VENDOR="${TARGET}/vendor"
 
 if [ -d "${VENDOR}" ]; then
-    rm -rf ${COMPOSER}
+    rm -rf ${VENDOR}
 fi
 
 ${PHP} ${COMPOSER} install
