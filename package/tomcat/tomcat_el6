@@ -10,9 +10,9 @@
 
 PATH=/sbin:/bin:/usr/sbin:/usr/bin
 
-export JAVA_HOME="/usr/local/java"
+export JAVA_HOME=/usr/local/java
 
-User="TOMCAT_USER"
+User=TOMCAT_USER
 
 start() {
     sudo -l ${User} -c /data/apps/tomcat8/bin/startup.sh
