@@ -11,6 +11,7 @@
 PATH=/sbin:/bin:/usr/sbin:/usr/bin
 
 export JAVA_HOME=/usr/local/java
+export CATALINA_HOME=/data/apps/tomcat8
 
 User=TOMCAT_USER
 

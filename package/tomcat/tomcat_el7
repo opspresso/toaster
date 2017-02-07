@@ -1,13 +1,18 @@
+# Systemd unit file for tomcat
 [Unit]
-Description=Tomcat 8
-After=network.target syslog.target
+Description=Apache Tomcat Web Application Container
+After=syslog.target network.target
 
 [Service]
 Type=forking
+
 User=TOMCAT_USER
 
-ExecStart=/data/apps/tomcat8/bin/startup.sh start
-ExecStop=/data/apps/tomcat8/bin/shutdown.sh stop
+Environment=JAVA_HOME=/usr/local/java
+Environment=CATALINA_HOME=/data/apps/tomcat8
+
+ExecStart=/data/apps/tomcat8/bin/startup.sh
+ExecStop=/data/apps/tomcat8/bin/shutdown.sh
 
 [Install]
 WantedBy=multi-user.target

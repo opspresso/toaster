@@ -1170,7 +1170,7 @@ init_tomcat8() {
             copy ${TEMP_FILE} /etc/init.d/tomcat 755
         fi
 
-        service_ctl tomcat start on
+        #service_ctl tomcat start on
 
         echo "CATALINA_HOME=${CATALINA_HOME}" > "${SHELL_DIR}/.config_tomcat"
     fi
