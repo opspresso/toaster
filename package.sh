@@ -10,7 +10,7 @@ zip -q -r target/toaster extra package *.sh
 
 VERSION=${1}
 if [ "${VERSION}" == "" ]; then
-    VERSION="0.0.0"
+    VERSION=`git rev-parse --short HEAD`
 fi
 
 echo "${VERSION}" > target/version.txt
