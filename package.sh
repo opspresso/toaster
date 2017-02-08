@@ -13,6 +13,7 @@ if [ "${VERSION}" == "" ]; then
     VERSION=`git rev-parse --short HEAD`
 fi
 
+echo "version=${VERSION}"
 echo "${VERSION}" > target/version.txt
 
 REPO="s3://repo.toast.sh"
