@@ -52,27 +52,26 @@ if [ "${OS_NAME}" == "Linux" ]; then
     fi
 fi
 
-# update
-if [ -d "${HOME}/toaster" ]; then
-    warning "Already exists toast.sh - [${HOME}/toaster]"
-
-    if [ -f "${HOME}/toaster/toast.sh" ]; then
-        ${HOME}/toaster/toast.sh update
-    fi
-
-    exit 0
-fi
-
-# user
-USER=$1
-if [ "${USER}" == "" ]; then
-    USER="yanolja"
-fi
-
 pushd ${HOME}
 
+# download
+wget -q -N -P /tmp http://repo.toast.sh/release/toaster.txt
+wget -q -N -P /tmp http://repo.toast.sh/release/toaster.zip
+
+# unzip
+unzip -q -o /tmp/toaster.zip -d toaster
+
+# cp version
+cp -rf /tmp/toaster.txt toaster/.version.txt
+
+# user
+#USER=$1
+#if [ "${USER}" == "" ]; then
+#    USER="yanolja"
+#fi
+
 # git clone
-git clone "https://github.com/${USER}/toaster.git"
+#git clone "https://github.com/${USER}/toaster.git"
 
 popd
 
