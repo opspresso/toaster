@@ -60,7 +60,7 @@ if [ -f toaster/.version.txt ]; then
     OLD="`cat toaster/.version.txt`"
 
     if [ "${NEW}" == "${OLD}" ]; then
-        success "latest."
+        success "latest. [${OLD}]"
         exit 0
     fi
 
