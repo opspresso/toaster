@@ -49,7 +49,7 @@ pushd ${HOME}
 wget -q -N -P /tmp http://repo.toast.sh/release/toaster.txt
 
 if [ ! -f /tmp/toaster.txt ]; then
-    warning "Can not download. [toast version]"
+    warning "Can not download. [version]"
     exit 1
 fi
 
