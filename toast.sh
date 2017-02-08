@@ -405,9 +405,11 @@ self_info() {
 }
 
 self_update() {
-    pushd ${SHELL_DIR}
-    git pull
-    popd
+    #pushd ${SHELL_DIR}
+    #git pull
+    #popd
+
+    ${SHELL_DIR}/install.sh
 }
 
 prepare() {
