@@ -1683,7 +1683,8 @@ vhost_domain() {
 
     echo "--> ${DEST_FILE}"
 
-    sed "s/DOM/$DOM/g" ${TEMPLATE} > ${TEMP_FILE} && copy ${TEMP_FILE} ${DEST_FILE} 644
+    sed "s/DOM/$DOM/g" ${TEMPLATE} > ${TEMP_FILE}
+    copy ${TEMP_FILE} ${DEST_FILE} 644
 
     if [ "${OS_TYPE}" == "Ubuntu" ]; then
         ${SUDO} apache2 -k graceful
@@ -1737,7 +1738,8 @@ vhost_fleet() {
 
             echo "--> ${DEST_FILE}"
 
-            sed "s/DOM/$DOM/g" ${TEMPLATE} > ${TEMP_FILE} && copy ${TEMP_FILE} ${DEST_FILE} 644
+            sed "s/DOM/$DOM/g" ${TEMPLATE} > ${TEMP_FILE}
+            copy ${TEMP_FILE} ${DEST_FILE} 644
         done < ${VHOST_LIST}
     fi
 
