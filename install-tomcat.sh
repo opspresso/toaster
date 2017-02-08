@@ -2,8 +2,8 @@
 
 OS_NAME=`uname`
 if [ ${OS_NAME} != "Linux" ]; then
-    echo "OS : $OS_NAME"
-    #exit 1
+    echo "Not supported OS : $OS_NAME"
+    exit 1
 fi
 
 ################################################################################
