@@ -15,8 +15,10 @@ fi
 
 echo "${VERSION}" > target/version.txt
 
-option="--quiet --grants read=uri=http://acs.amazonaws.com/groups/global/AllUsers"
+REPO="s3://repo.toast.sh"
 
-aws s3 cp target/toaster.zip s3://repo.toast.sh/release/ ${option}
-aws s3 cp target/version.txt s3://repo.toast.sh/release/ ${option}
-aws s3 cp install.sh s3://repo.toast.sh/release/ ${option}
+OPTION="--quiet --grants read=uri=http://acs.amazonaws.com/groups/global/AllUsers"
+
+aws s3 cp target/toaster.zip ${REPO}/release/ ${OPTION}
+aws s3 cp target/version.txt ${REPO}/release/ ${OPTION}
+aws s3 cp install.sh ${REPO}/release/ ${OPTION}
