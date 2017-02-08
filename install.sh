@@ -43,15 +43,6 @@ SUDO="sudo"
 
 ################################################################################
 
-# git
-if [ "${OS_NAME}" == "Linux" ]; then
-    if [ "${OS_TYPE}" == "Ubuntu" ]; then
-        ${SUDO} apt-get install -y git wget zip
-    else
-        ${SUDO} yum install -y git wget zip
-    fi
-fi
-
 pushd ${HOME}
 
 # version
