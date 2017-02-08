@@ -8,22 +8,17 @@ warning() {
     echo "$(tput setaf 1)$1$(tput sgr0)"
 }
 
+################################################################################
+
 # root
 if [ "${HOME}" == "/root" ]; then
     warning "Not supported ROOT."
     exit 1
 fi
 
-# git
-if [ ! -x "/usr/bin/git" ]; then
-    # linux
-    OS_NAME=`uname`
-    if [ ${OS_NAME} != "Linux" ]; then
-        warning "Not supported OS - [${OS_NAME}]"
-        exit 1
-    fi
-
-    # el or ubuntu
+# linux
+OS_NAME=`uname`
+if [ "${OS_NAME}" == "Linux" ]; then
     OS_FULL=`uname -a`
     if [ `echo ${OS_FULL} | grep -c "Ubuntu"` -gt 0 ]; then
         OS_TYPE="Ubuntu"
@@ -34,24 +29,41 @@ if [ ! -x "/usr/bin/git" ]; then
             OS_TYPE="el6"
         fi
     fi
-
-    if [ "${OS_TYPE}" == "Ubuntu" ]; then
-        sudo apt-get install -y git
+else
+    if [ "${OS_NAME}" == "Darwin" ]; then
+        OS_TYPE="${OS_NAME}"
     else
-        sudo yum install -y git
+        warning "Not supported OS - ${OS_NAME}"
+        exit 1
     fi
 fi
 
+# sudo
+SUDO="sudo"
+
+################################################################################
+
+# git
+if [ "${OS_NAME}" == "Linux" ]; then
+    if [ "${OS_TYPE}" == "Ubuntu" ]; then
+        ${SUDO} apt-get install -y git
+    else
+        ${SUDO} yum install -y git
+    fi
+fi
+
+# update
 if [ -d "${HOME}/toaster" ]; then
     warning "Already exists toast.sh - [${HOME}/toaster]"
 
     if [ -f "${HOME}/toaster/toast.sh" ]; then
-        ${HOME}/toaster/toast.sh u
+        ${HOME}/toaster/toast.sh update
     fi
 
     exit 0
 fi
 
+# user
 USER=$1
 if [ "${USER}" == "" ]; then
     USER="yanolja"
