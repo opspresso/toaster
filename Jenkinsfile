@@ -1,8 +1,7 @@
 #!groovy
 
-echo "JOB_NAME    ${env.JOB_NAME}"
-echo "BRANCH_NAME ${env.BRANCH_NAME}"
-echo "GIT_COMMIT  ${env.GIT_COMMIT}"
+//echo "JOB_NAME    ${env.JOB_NAME}"
+//echo "BRANCH_NAME ${env.BRANCH_NAME}"
 
 properties([buildDiscarder(logRotator(daysToKeepStr: '60', numToKeepStr: '10')), pipelineTriggers([])])
 
