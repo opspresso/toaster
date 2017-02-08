@@ -52,6 +52,7 @@ if [ "${OS_NAME}" == "Linux" ]; then
     fi
 fi
 
+# update
 if [ -d "${HOME}/toaster" ]; then
     warning "Already exists toast.sh - [${HOME}/toaster]"
 
@@ -62,6 +63,7 @@ if [ -d "${HOME}/toaster" ]; then
     exit 0
 fi
 
+# user
 USER=$1
 if [ "${USER}" == "" ]; then
     USER="yanolja"
