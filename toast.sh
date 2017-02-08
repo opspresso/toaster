@@ -1686,9 +1686,9 @@ vhost_domain() {
     sed "s/DOM/$DOM/g" ${TEMPLATE} > ${TEMP_FILE} && copy ${TEMP_FILE} ${DEST_FILE} 644
 
     if [ "${OS_TYPE}" == "Ubuntu" ]; then
-        service_ctl apache2 graceful
+        ${SUDO} apache2 -k graceful
     else
-        service_ctl httpd graceful
+        ${SUDO} httpd -k graceful
     fi
 
     echo_bar
@@ -1742,9 +1742,9 @@ vhost_fleet() {
     fi
 
     if [ "${OS_TYPE}" == "Ubuntu" ]; then
-        service_ctl apache2 graceful
+        ${SUDO} apache2 -k graceful
     else
-        service_ctl httpd graceful
+        ${SUDO} httpd -k graceful
     fi
 
     echo_bar
