@@ -49,18 +49,22 @@ pushd ${HOME}
 wget -q -N -P /tmp http://repo.toast.sh/release/toaster.txt
 
 if [ ! -f /tmp/toaster.txt ]; then
-    warning "Can not download. [toast version]"
+    warning "Can not download. [version]"
     exit 1
 fi
+
+MSG="installed."
 
 if [ -f toaster/.version.txt ]; then
     NEW="`cat /tmp/toaster.txt`"
     OLD="`cat toaster/.version.txt`"
 
     if [ "${NEW}" == "${OLD}" ]; then
-        success "newest."
+        success "latest. [${OLD}]"
         exit 0
     fi
+
+    MSG="updated."
 fi
 
 # download
@@ -80,4 +84,4 @@ cp -rf /tmp/toaster.txt toaster/.version.txt
 popd
 
 # done
-success "done."
+success "${MSG}"

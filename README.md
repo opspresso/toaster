@@ -20,20 +20,20 @@ runuser -l ec2-user -c '~/toaster/toast.sh auto {fleet} {phase} {org} {token}'
 cat /var/log/cloud-init-output.log
 ```
 
-### Deploy
+### toast.sh
 ```
 ~/toaster/toast.sh auto
 ~/toaster/toast.sh init httpd
 ~/toaster/toast.sh init java
 ~/toaster/toast.sh deploy fleet
-~/toaster/toast.sh deploy target 10
+~/toaster/toast.sh deploy target ${no}
 ```
 
-### Remote
+### remote.sh
 ```
 ~/toaster/remote.sh user ip port auto
 ~/toaster/remote.sh user ip port init httpd
 ~/toaster/remote.sh user ip port init java
 ~/toaster/remote.sh user ip port deploy fleet
-~/toaster/remote.sh user ip port deploy target 10
+~/toaster/remote.sh user ip port deploy target ${no}
 ```
