@@ -110,7 +110,7 @@ toast() {
         c|config)
             config
             ;;
-        i|init)
+        i|init|install)
             init
             ;;
         v|version)

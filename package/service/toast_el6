@@ -1,0 +1,38 @@
+#!/bin/bash
+### BEGIN INIT INFO
+# Provides:        toast
+# Required-Start:  $network
+# Required-Stop:   $network
+# Default-Start:   2 3 4 5
+# Default-Stop:    0 1 6
+# Short-Description: Start/Stop Toast Server
+### END INIT INFO
+
+PATH=/sbin:/bin:/usr/sbin:/usr/bin
+
+export JAVA_HOME=/usr/local/java
+export CATALINA_HOME=/data/apps/tomcat8
+
+User=TOAST_USER
+
+start() {
+    /bin/su -l ${User} -c /home/TOAST_USER/toaster/toast.sh deploy
+}
+
+stop() {
+    /bin/su -l ${User} -c /home/TOAST_USER/toaster/toast.sh update
+}
+
+case $1 in
+    start|stop)
+        $1
+        ;;
+    restart)
+        stop
+        start
+        ;;
+    *)
+        echo "Run as $0 <start|stop|restart>"
+        exit 1
+        ;;
+esac
