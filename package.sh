@@ -6,19 +6,22 @@ fi
 
 mkdir target
 
-zip -q -r target/toaster extra package *.sh
-
 VERSION=${1}
 if [ "${VERSION}" == "" ]; then
     VERSION=`git rev-parse --short HEAD`
 fi
 
-echo "${VERSION}" > target/version.txt
+echo "version=${VERSION}"
+echo "${VERSION}" > target/toaster.txt
+
+# zip
+zip -q -r target/toaster extra package *.sh
 
 REPO="s3://repo.toast.sh"
 
 OPTION="--quiet --grants read=uri=http://acs.amazonaws.com/groups/global/AllUsers"
 
+# upload
+aws s3 cp target/toaster.txt ${REPO}/release/ ${OPTION}
 aws s3 cp target/toaster.zip ${REPO}/release/ ${OPTION}
-aws s3 cp target/version.txt ${REPO}/release/ ${OPTION}
 aws s3 cp install.sh ${REPO}/release/ ${OPTION}

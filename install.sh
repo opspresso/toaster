@@ -43,36 +43,39 @@ SUDO="sudo"
 
 ################################################################################
 
-# git
-if [ "${OS_NAME}" == "Linux" ]; then
-    if [ "${OS_TYPE}" == "Ubuntu" ]; then
-        ${SUDO} apt-get install -y git wget zip
-    else
-        ${SUDO} yum install -y git wget zip
-    fi
-fi
-
-# update
-if [ -d "${HOME}/toaster" ]; then
-    warning "Already exists toast.sh - [${HOME}/toaster]"
-
-    if [ -f "${HOME}/toaster/toast.sh" ]; then
-        ${HOME}/toaster/toast.sh update
-    fi
-
-    exit 0
-fi
-
-# user
-USER=$1
-if [ "${USER}" == "" ]; then
-    USER="yanolja"
-fi
-
 pushd ${HOME}
 
-# git clone
-git clone "https://github.com/${USER}/toaster.git"
+# version
+wget -q -N -P /tmp http://repo.toast.sh/release/toaster.txt
+
+if [ ! -f /tmp/toaster.txt ]; then
+    warning "Can not download. [toast version]"
+    exit 1
+fi
+
+if [ -f toaster/.version.txt ]; then
+    NEW="`cat /tmp/toaster.txt`"
+    OLD="`cat toaster/.version.txt`"
+
+    if [ "${NEW}" == "${OLD}" ]; then
+        success "newest."
+        exit 0
+    fi
+fi
+
+# download
+wget -q -N -P /tmp http://repo.toast.sh/release/toaster.zip
+
+if [ ! -f /tmp/toaster.zip ]; then
+    warning "Can not download. [toast.sh]"
+    exit 1
+fi
+
+# unzip
+unzip -q -o /tmp/toaster.zip -d toaster
+
+# cp version
+cp -rf /tmp/toaster.txt toaster/.version.txt
 
 popd
 

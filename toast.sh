@@ -405,9 +405,11 @@ self_info() {
 }
 
 self_update() {
-    pushd ${SHELL_DIR}
-    git pull
-    popd
+    #pushd ${SHELL_DIR}
+    #git pull
+    #popd
+
+    ${SHELL_DIR}/install.sh
 }
 
 prepare() {
@@ -1740,9 +1742,9 @@ vhost_fleet() {
     fi
 
     if [ "${OS_TYPE}" == "Ubuntu" ]; then
-        service_ctl apache2 restart
+        service_ctl apache2 graceful
     else
-        service_ctl httpd restart
+        service_ctl httpd graceful
     fi
 
     echo_bar
