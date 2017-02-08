@@ -53,6 +53,8 @@ if [ ! -f /tmp/toaster.txt ]; then
     exit 1
 fi
 
+MSG="installed."
+
 if [ -f toaster/.version.txt ]; then
     NEW="`cat /tmp/toaster.txt`"
     OLD="`cat toaster/.version.txt`"
@@ -61,6 +63,8 @@ if [ -f toaster/.version.txt ]; then
         success "newest."
         exit 0
     fi
+
+    MSG="updated."
 fi
 
 # download
@@ -80,4 +84,4 @@ cp -rf /tmp/toaster.txt toaster/.version.txt
 popd
 
 # done
-success "done."
+success "${MSG}"
