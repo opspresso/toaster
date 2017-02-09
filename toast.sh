@@ -1244,7 +1244,7 @@ init_rabbitmq() {
         ${SUDO} rabbitmqctl add_user rabbitmq rabbitmq
         ${SUDO} rabbitmqctl set_user_tags rabbitmq administrator
 
-        ${SUDO} rabbitmqctl add_user yanolja yanolja
+        ${SUDO} rabbitmqctl add_user ${USER} ${USER}
 
         touch "${SHELL_DIR}/.config_rabbitmq"
     fi
