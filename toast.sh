@@ -1221,12 +1221,17 @@ init_rabbitmq() {
     if [ ! -f "${SHELL_DIR}/.config_rabbitmq" ]; then
         echo "init rabbitmq..."
 
-        #wget -q -N -P "${HOME}" https://packages.erlang-solutions.com/erlang/esl-erlang/FLAVOUR_1_general/esl-erlang_19.0~centos~6_amd64.rpm
-        #wget -q -N -P "${HOME}" https://www.rabbitmq.com/releases/rabbitmq-server/v3.6.4/rabbitmq-server-3.6.4-1.noarch.rpm
+        ${SUDO} rpm -Uvh http://packages.erlang-solutions.com/erlang-solutions-1.0-1.noarch.rpm
 
-        service_install rabbitmq-server
+        service_install "erlang socat"
 
-        service_ctl rabbitmq-server restart on
+        ${SUDO} rpm --import http://www.rabbitmq.com/rabbitmq-signing-key-public.asc
+
+        # https://www.rabbitmq.com/releases/rabbitmq-server/v3.6.6/rabbitmq-server-3.6.6-1.el6.noarch.rpm
+
+        ${SUDO} rpm -Uvh rabbitmq-server-3.6.6-1.el6.noarch.rpm
+
+        service_ctl rabbitmq-server start on
 
         touch "${SHELL_DIR}/.config_rabbitmq"
     fi
@@ -1238,7 +1243,7 @@ init_docker() {
 
         service_install docker
 
-        service_ctl docker restart on
+        service_ctl docker start on
 
         touch "${SHELL_DIR}/.config_docker"
     fi
@@ -1250,7 +1255,7 @@ init_munin() {
 
         service_install munin
 
-        service_ctl munin-node restart on
+        service_ctl munin-node start on
 
         touch "${SHELL_DIR}/.config_munin"
     fi
