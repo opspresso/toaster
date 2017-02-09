@@ -288,6 +288,9 @@ init() {
         rabbitmq)
             init_rabbitmq
             ;;
+        docker)
+            init_docker
+            ;;
         munin)
             init_munin
             ;;
@@ -1226,6 +1229,18 @@ init_rabbitmq() {
         service_ctl rabbitmq-server restart on
 
         touch "${SHELL_DIR}/.config_rabbitmq"
+    fi
+}
+
+init_docker() {
+    if [ ! -f "${SHELL_DIR}/.config_docker" ]; then
+        echo "init docker..."
+
+        service_install docker
+
+        service_ctl docker restart on
+
+        touch "${SHELL_DIR}/.config_docker"
     fi
 }
 
