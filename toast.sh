@@ -1241,6 +1241,9 @@ init_rabbitmq() {
 
         ${SUDO} rabbitmq-plugins enable rabbitmq_delayed_message_exchange
 
+        ${SUDO} rabbitmqctl add_user rabbitmq rabbitmq
+        ${SUDO} rabbitmqctl set_user_tags rabbitmq administrator
+
         touch "${SHELL_DIR}/.config_rabbitmq"
     fi
 }
