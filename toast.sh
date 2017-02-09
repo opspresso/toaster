@@ -1225,13 +1225,21 @@ init_rabbitmq() {
 
         service_install "erlang socat"
 
-        ${SUDO} rpm --import "http://www.rabbitmq.com/rabbitmq-signing-key-public.asc"
-
         URL="https://www.rabbitmq.com/releases/rabbitmq-server/v3.6.6/rabbitmq-server-3.6.6-1.el6.noarch.rpm"
 
         ${SUDO} rpm -Uvh "${URL}"
 
         service_ctl rabbitmq-server start on
+
+        ${SUDO} rabbitmq-plugins enable rabbitmq_management
+
+        PLUGIN_DIR="/usr/lib/rabbitmq/lib/rabbitmq_server-3.6.6/plugins/"
+
+        URL="http://www.rabbitmq.com/community-plugins/v3.6.x/rabbitmq_delayed_message_exchange-0.0.1.ez"
+
+        ${SUDO} wget -q -N -P "${PLUGIN_DIR}" "${URL}"
+
+        ${SUDO} rabbitmq-plugins enable rabbitmq_delayed_message_exchange
 
         touch "${SHELL_DIR}/.config_rabbitmq"
     fi
