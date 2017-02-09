@@ -993,7 +993,7 @@ init_httpd() {
             fi
         fi
 
-        init_httpd_conf
+        custom_httpd_conf
 
         if [ "${OS_TYPE}" == "Ubuntu" ]; then
             service_ctl apache2 start on
@@ -1085,7 +1085,7 @@ init_php() {
             fi
         fi
 
-        init_php_ini
+        custom_php_ini
 
         echo "PHP_VERSION=${VERSION}" > "${SHELL_DIR}/.config_php"
     fi
@@ -1279,7 +1279,7 @@ init_jenkins() {
     tomcat_start
 }
 
-init_httpd_conf() {
+custom_httpd_conf() {
     if [ -f "/etc/httpd/conf/httpd.conf" ]; then
         HTTPD_CONF="/etc/httpd/conf/httpd.conf"
     else
@@ -1309,7 +1309,7 @@ init_httpd_conf() {
     fi
 }
 
-init_php_ini() {
+custom_php_ini() {
     if [ -f "/etc/php.ini" ]; then
         PHP_INI="/etc/php.ini"
     else
