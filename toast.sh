@@ -993,7 +993,7 @@ init_httpd() {
             fi
         fi
 
-        init_httpd_conf
+        custom_httpd_conf
 
         if [ "${OS_TYPE}" == "Ubuntu" ]; then
             service_ctl apache2 start on
@@ -1085,7 +1085,7 @@ init_php() {
             fi
         fi
 
-        init_php_ini
+        custom_php_ini
 
         echo "PHP_VERSION=${VERSION}" > "${SHELL_DIR}/.config_php"
     fi
@@ -1221,12 +1221,30 @@ init_rabbitmq() {
     if [ ! -f "${SHELL_DIR}/.config_rabbitmq" ]; then
         echo "init rabbitmq..."
 
-        #wget -q -N -P "${HOME}" https://packages.erlang-solutions.com/erlang/esl-erlang/FLAVOUR_1_general/esl-erlang_19.0~centos~6_amd64.rpm
-        #wget -q -N -P "${HOME}" https://www.rabbitmq.com/releases/rabbitmq-server/v3.6.4/rabbitmq-server-3.6.4-1.noarch.rpm
+        ${SUDO} rpm -Uvh "http://packages.erlang-solutions.com/erlang-solutions-1.0-1.noarch.rpm"
 
-        service_install rabbitmq-server
+        service_install "erlang socat"
 
-        service_ctl rabbitmq-server restart on
+        URL="https://www.rabbitmq.com/releases/rabbitmq-server/v3.6.6/rabbitmq-server-3.6.6-1.el6.noarch.rpm"
+
+        ${SUDO} rpm -Uvh "${URL}"
+
+        service_ctl rabbitmq-server start on
+
+        ${SUDO} rabbitmq-plugins enable rabbitmq_management
+
+        PLUGIN_DIR="/usr/lib/rabbitmq/lib/rabbitmq_server-3.6.6/plugins/"
+
+        URL="http://www.rabbitmq.com/community-plugins/v3.6.x/rabbitmq_delayed_message_exchange-0.0.1.ez"
+
+        ${SUDO} wget -q -N -P "${PLUGIN_DIR}" "${URL}"
+
+        ${SUDO} rabbitmq-plugins enable rabbitmq_delayed_message_exchange
+
+        ${SUDO} rabbitmqctl add_user rabbitmq rabbitmq
+        ${SUDO} rabbitmqctl set_user_tags rabbitmq administrator
+
+        ${SUDO} rabbitmqctl add_user ${USER} ${USER}
 
         touch "${SHELL_DIR}/.config_rabbitmq"
     fi
@@ -1238,7 +1256,7 @@ init_docker() {
 
         service_install docker
 
-        service_ctl docker restart on
+        service_ctl docker start on
 
         touch "${SHELL_DIR}/.config_docker"
     fi
@@ -1250,7 +1268,7 @@ init_munin() {
 
         service_install munin
 
-        service_ctl munin-node restart on
+        service_ctl munin-node start on
 
         touch "${SHELL_DIR}/.config_munin"
     fi
@@ -1279,7 +1297,7 @@ init_jenkins() {
     tomcat_start
 }
 
-init_httpd_conf() {
+custom_httpd_conf() {
     if [ -f "/etc/httpd/conf/httpd.conf" ]; then
         HTTPD_CONF="/etc/httpd/conf/httpd.conf"
     else
@@ -1309,7 +1327,7 @@ init_httpd_conf() {
     fi
 }
 
-init_php_ini() {
+custom_php_ini() {
     if [ -f "/etc/php.ini" ]; then
         PHP_INI="/etc/php.ini"
     else
