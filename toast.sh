@@ -865,6 +865,8 @@ init_certificate() {
 }
 
 init_service() {
+    TEMP_FILE="${TEMP_DIR}/toast-service.tmp"
+
     if [ "${OS_TYPE}" == "el7" ]; then
         TEMPLATE="${SHELL_DIR}/package/service/toast_el7"
         sed "s/TOAST\_USER/$USER/g" ${TEMPLATE} > ${TEMP_FILE}
