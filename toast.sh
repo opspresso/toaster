@@ -2165,7 +2165,7 @@ httpd_restart() {
 
     echo_ "httpd graceful..."
 
-    if [ "" == "el6" ]; then
+    if [ "${OS_TYPE}" == "el6" ]; then
         service_ctl httpd graceful
     else
         service_ctl httpd restart
