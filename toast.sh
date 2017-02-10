@@ -1009,8 +1009,10 @@ init_httpd() {
         vhost_local
 
         if [ "${OS_TYPE}" == "Ubuntu" ]; then
+            echo_ "apache2 start..."
             service_ctl apache2 start on
         else
+            echo_ "httpd start..."
             service_ctl httpd start on
         fi
 
@@ -1711,10 +1713,15 @@ vhost_domain() {
 
     if [ "${OS_TYPE}" == "Ubuntu" ]; then
         echo_ "apache2 graceful..."
-        ${SUDO} apache2 -k graceful
+        service_ctl apache2 graceful
     else
-        echo_ "httpd graceful..."
-        ${SUDO} httpd -k graceful
+        if [ "${OS_TYPE}" == "el7" ]; then
+            echo_ "httpd restart..."
+            service_ctl httpd restart
+        else
+            echo_ "httpd graceful..."
+            service_ctl httpd graceful
+        fi
     fi
 
     echo_bar
@@ -1763,10 +1770,15 @@ vhost_fleet() {
 
     if [ "${OS_TYPE}" == "Ubuntu" ]; then
         echo_ "apache2 graceful..."
-        ${SUDO} apache2 -k graceful
+        service_ctl apache2 graceful
     else
-        echo_ "httpd graceful..."
-        ${SUDO} httpd -k graceful
+        if [ "${OS_TYPE}" == "el7" ]; then
+            echo_ "httpd restart..."
+            service_ctl httpd restart
+        else
+            echo_ "httpd graceful..."
+            service_ctl httpd graceful
+        fi
     fi
 
     echo_bar
