@@ -1901,6 +1901,10 @@ download() {
             else
                 unzip -q "${FILEPATH}" -d "${UNZIP_DIR}"
 
+                if [ ! -d "${UNZIP_DIR}" ]; then
+                    warning "deploy file can not unzip. [${UNZIP_DIR}]"
+                fi
+
                 if [ -d "${UNZIP_DIR}/application/logs" ]; then
                     chmod 777 "${UNZIP_DIR}/application/logs"
                 fi
