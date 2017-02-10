@@ -1009,7 +1009,7 @@ init_httpd() {
             fi
         fi
 
-        custom_httpd_conf
+        httpd_localhost
 
         if [ "${OS_TYPE}" == "Ubuntu" ]; then
             service_ctl apache2 start on
@@ -1482,7 +1482,7 @@ version_save() {
     fi
 }
 
-nginx_conf() {
+nginx_conf_dir() {
     TOAST_NGINX="${SHELL_DIR}/.config_nginx"
     if [ ! -f "${TOAST_NGINX}" ]; then
         return 1
@@ -1495,16 +1495,14 @@ nginx_conf() {
     fi
 }
 
-httpd_conf() {
+httpd_conf_dir() {
     TOAST_APACHE="${SHELL_DIR}/.config_httpd"
-    if [ ! -f "${TOAST_APACHE}" ]; then
-        return 1
+    if [ -f "${TOAST_APACHE}" ]; then
+        source ${TOAST_APACHE}
     fi
 
-    source ${TOAST_APACHE}
-
     if [ "${HTTPD_VERSION}" == "" ]; then
-        HTTPD_VERSION="24"
+        HTTPD_VERSION="22"
     fi
 
     HTTPD_CONF_DIR=""
@@ -1524,8 +1522,22 @@ httpd_conf() {
     fi
 }
 
+httpd_localhost() {
+    httpd_conf_dir
+
+    if [ "${HTTPD_CONF_DIR}" == "" ]; then
+        return
+    fi
+
+    # localhost
+    TEMPLATE="${SHELL_DIR}/package/apache/${HTTPD_VERSION}/localhost.conf"
+    if [ -f "${TEMPLATE}" ]; then
+        copy ${TEMPLATE} "${HTTPD_CONF_DIR}/localhost.conf" 644
+    fi
+}
+
 nginx_lb() {
-    nginx_conf
+    nginx_conf_dir
 
     if [ "${NGINX_CONF_DIR}" == "" ]; then
         return
@@ -1678,7 +1690,7 @@ nginx_lb() {
 }
 
 vhost_domain() {
-    httpd_conf
+    httpd_conf_dir
 
     if [ "${HTTPD_CONF_DIR}" == "" ]; then
         return
@@ -1686,12 +1698,6 @@ vhost_domain() {
 
     echo_bar
     echo "apache..."
-
-    # localhost
-    TEMPLATE="${SHELL_DIR}/package/apache/${HTTPD_VERSION}/localhost.conf"
-    if [ -f "${TEMPLATE}" ]; then
-        copy ${TEMPLATE} "${HTTPD_CONF_DIR}/localhost.conf" 644
-    fi
 
     TEMPLATE="${SHELL_DIR}/package/apache/${HTTPD_VERSION}/vhost.conf"
     TEMP_FILE="${TEMP_DIR}/toast-vhost.tmp"
@@ -1717,7 +1723,7 @@ vhost_domain() {
 }
 
 vhost_fleet() {
-    httpd_conf
+    httpd_conf_dir
 
     if [ "${HTTPD_CONF_DIR}" == "" ]; then
         return
@@ -1726,14 +1732,7 @@ vhost_fleet() {
     echo_bar
     echo "apache fleet..."
 
-    ${SUDO} rm -rf ${HTTPD_CONF_DIR}/localhost*
     ${SUDO} rm -rf ${HTTPD_CONF_DIR}/toast*
-
-    # localhost
-    TEMPLATE="${SHELL_DIR}/package/apache/${HTTPD_VERSION}/localhost.conf"
-    if [ -f "${TEMPLATE}" ]; then
-        copy ${TEMPLATE} "${HTTPD_CONF_DIR}/localhost.conf" 644
-    fi
 
     VHOST_LIST="${TEMP_DIR}/${FLEET}"
     rm -rf ${VHOST_LIST}

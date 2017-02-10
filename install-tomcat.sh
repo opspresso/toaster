@@ -12,6 +12,13 @@ EXT="tar.gz"
 
 VERSION="8"
 
+APPS_DIR="$1"
+if [ "${APPS_DIR}" == "" ]; then
+    APPS_DIR="/data/apps"
+fi
+
+TOMCAT_DIR="${APPS_DIR}/tomcat${VERSION}"
+
 ################################################################################
 
 URL1="http://mirror.apache-kr.org/tomcat/tomcat-${VERSION}/"
@@ -47,23 +54,15 @@ echo ${TOMCAT}
 
 ################################################################################
 
-APPS_DIR="$1"
-if [ "${APPS_DIR}" == "" ]; then
-    APPS_DIR="/data/apps"
-fi
-
-rm -rf ${APPS_DIR}/apache-tomcat*
-rm -rf ${APPS_DIR}/tomcat*
-
-wget -q -N "${URL3}"
+wget -q -N -P "${APPS_DIR}" "${URL3}"
 
 tar xzf ${TOMCAT}
 
 #rm -rf ${TOMCAT}
 
-mv "apache-tomcat-${CURRENT}" "${APPS_DIR}/tomcat${VERSION}"
+rm -rf ${TOMCAT_DIR}
 
-TOMCAT_DIR="${APPS_DIR}/tomcat${VERSION}"
+mv apache-tomcat-${CURRENT} ${TOMCAT_DIR}
 
 chmod 755 ${TOMCAT_DIR}/bin/*.sh
 
