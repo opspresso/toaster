@@ -380,14 +380,14 @@ health() {
         return
     fi
 
-    #echo_ "server health..."
+    echo_ "server health..."
 
     UNAME=`uname -a`
     UPTIME=`uptime`
     CPU=`grep 'cpu ' /proc/stat | awk '{usage=($2+$4)*100/($2+$4+$5)} END {print usage}'`
 
-    #echo_ "server uptime    [${UPTIME}]"
-    #echo_ "server cpu usage [${CPU}]"
+    echo_ "server uptime    [${UPTIME}]"
+    echo_ "server cpu usage [${CPU}]"
 
     URL="${TOAST_URL}/server/health/${SNO}"
     RES=`curl -s --data "org=${ORG}&token=${TOKEN}&id=${UUID}&cpu=${CPU}&uname=${UNAME}&uptime=${UPTIME}" ${URL}`
@@ -421,7 +421,7 @@ self_update() {
 }
 
 prepare() {
-    service_install "gcc curl wget unzip vim git telnet"
+    service_install "gcc curl wget unzip vim git telnet httpie"
 
     make_dir ${DATA_DIR}
     make_dir ${LOGS_DIR} 777
@@ -1711,10 +1711,10 @@ vhost_domain() {
 
     if [ "${OS_TYPE}" == "Ubuntu" ]; then
         echo_ "apache2 graceful..."
-        ${SUDO} apache2 -k restart
+        ${SUDO} apache2 -k graceful
     else
         echo_ "httpd graceful..."
-        ${SUDO} httpd -k restart
+        ${SUDO} httpd -k graceful
     fi
 
     echo_bar
@@ -1762,11 +1762,11 @@ vhost_fleet() {
     fi
 
     if [ "${OS_TYPE}" == "Ubuntu" ]; then
-        echo_ "apache2 restart..."
-        ${SUDO} apache2 -k restart
+        echo_ "apache2 graceful..."
+        ${SUDO} apache2 -k graceful
     else
-        echo_ "httpd restart..."
-        ${SUDO} httpd -k restart
+        echo_ "httpd graceful..."
+        ${SUDO} httpd -k graceful
     fi
 
     echo_bar
