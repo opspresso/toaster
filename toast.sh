@@ -26,7 +26,7 @@ if [ "${OS_NAME}" == "Linux" ]; then
         if [ `echo ${OS_FULL} | grep -c "el7"` -gt 0 ]; then
             OS_TYPE="el7"
         else
-            OS_TYPE="el6"
+            OS_TYPE="el6" # el6 or amzn1
         fi
     fi
 else
