@@ -8,11 +8,11 @@ fi
 
 ################################################################################
 
+VERSION="8"
+
 OS_NAME="linux"
 
 EXT="tar.gz"
-
-VERSION="8"
 
 SUDO=""
 if [ "${HOME}" != "/root" ]; then
@@ -25,6 +25,8 @@ if [ ${MACHINE} == 'x86_64' ]; then
 else
     OS_BIT="i586"
 fi
+
+SHELL_DIR=$(dirname $0)
 
 ################################################################################
 
@@ -67,7 +69,7 @@ wget -q -N --no-cookies --no-check-certificate --header "Cookie: oraclelicense=a
 
 tar xzf ${JAVA}
 
-rm -rf ${JAVA}
+#rm -rf ${JAVA}
 
 VS1=$(echo ${JAVA} | cut -d "-" -f 3)
 VS2="${VS1/u/.0_}"
@@ -80,5 +82,7 @@ ${SUDO} mv ${JAVA_DIR} /usr/local/
 
 ${SUDO} rm -rf /usr/local/java
 ${SUDO} ln -s ${JAVA_HOME} /usr/local/java
+
+${SUDO} cp -rf ${SHELL_DIR}/package/jce8/* ${JAVA_HOME}/jre/lib/security/
 
 echo "JAVA_HOME=${JAVA_HOME}"

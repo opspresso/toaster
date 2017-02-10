@@ -57,7 +57,7 @@ wget -q -N ${URL3}
 
 tar xf ${NODE}
 
-rm -rf ${NODE}
+#rm -rf ${NODE}
 
 NODE_DIR=$(echo ${NODE} | egrep -o "node-v[0-9]+.[0-9]+.[0-9]+-${OS_NAME}-${OS_BIT}")
 NODE_HOME="/usr/local/${NODE_DIR}"

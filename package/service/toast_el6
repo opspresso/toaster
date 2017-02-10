@@ -13,14 +13,12 @@ PATH=/sbin:/bin:/usr/sbin:/usr/bin
 export JAVA_HOME=/usr/local/java
 export CATALINA_HOME=/data/apps/tomcat8
 
-User=TOAST_USER
-
 start() {
-    /bin/su -l ${User} -c /home/TOAST_USER/toaster/toast.sh deploy
+    /bin/su -l TOAST_USER -c /home/TOAST_USER/toaster/toast.sh deploy
 }
 
 stop() {
-    /bin/su -l ${User} -c /home/TOAST_USER/toaster/toast.sh update
+    /bin/su -l TOAST_USER -c /home/TOAST_USER/toaster/toast.sh update
 }
 
 case $1 in

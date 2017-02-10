@@ -20,33 +20,35 @@ fi
 OS_NAME=`uname`
 if [ "${OS_NAME}" == "Linux" ]; then
     OS_FULL=`uname -a`
-    if [ `echo ${OS_FULL} | grep -c "Ubuntu"` -gt 0 ]; then
-        OS_TYPE="Ubuntu"
-    else
-        if [ `echo ${OS_FULL} | grep -c "el7"` -gt 0 ]; then
-            OS_TYPE="el7"
-        else
-            OS_TYPE="el6"
-        fi
+    if [ `echo ${OS_FULL} | grep -c "amzn1"` -gt 0 ]; then
+        OS_TYPE="amzn1"
+    elif [ `echo ${OS_FULL} | grep -c "el6"` -gt 0 ]; then
+        OS_TYPE="el6"
+    elif [ `echo ${OS_FULL} | grep -c "el7"` -gt 0 ]; then
+        OS_TYPE="el7"
     fi
 else
     if [ "${OS_NAME}" == "Darwin" ]; then
         OS_TYPE="${OS_NAME}"
-    else
-        warning "Not supported OS - ${OS_NAME}"
-        exit 1
     fi
+fi
+
+if [ "${OS_TYPE}" == "" ]; then
+    warning "Not supported OS - ${OS_NAME}"
+    exit 1
 fi
 
 # sudo
 SUDO="sudo"
+
+REPO="http://repo.toast.sh"
 
 ################################################################################
 
 pushd ${HOME}
 
 # version
-wget -q -N -P /tmp http://repo.toast.sh/release/toaster.txt
+wget -q -N -P /tmp ${REPO}/release/toaster.txt
 
 if [ ! -f /tmp/toaster.txt ]; then
     warning "Can not download. [version]"
@@ -68,7 +70,7 @@ if [ -f toaster/.version.txt ]; then
 fi
 
 # download
-wget -q -N -P /tmp http://repo.toast.sh/release/toaster.zip
+wget -q -N -P /tmp ${REPO}/release/toaster.zip
 
 if [ ! -f /tmp/toaster.zip ]; then
     warning "Can not download. [toast.sh]"
