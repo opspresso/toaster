@@ -865,8 +865,6 @@ init_certificate() {
 }
 
 init_service() {
-    TEMP_FILE="${TEMP_DIR}/toast-service.tmp"
-
     if [ "${OS_TYPE}" == "el7" ]; then
         echo_
     else
@@ -882,9 +880,15 @@ init_service() {
         done < ${TARGET}
 
         if [ "${HAS_LINE}" == "false" ]; then
-            ${SUDO} echo "" >> ${TARGET}
-            ${SUDO} echo "# toast deploy" >> ${TARGET}
-            ${SUDO} echo "/bin/su -l ${USER} -c '/home/${USER}/toaster/toast.sh deploy'" >> ${TARGET}
+            TEMP_FILE="${TEMP_DIR}/toast-service.tmp"
+
+            copy ${TARGET} ${TEMP_FILE}
+
+            ${SUDO} echo "" >> ${TEMP_FILE}
+            ${SUDO} echo "# toast deploy" >> ${TEMP_FILE}
+            ${SUDO} echo "/bin/su -l ${USER} -c '/home/${USER}/toaster/toast.sh deploy'" >> ${TEMP_FILE}
+
+            copy ${TEMP_FILE} ${TARGET} 755
         fi
     fi
 }
