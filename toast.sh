@@ -931,9 +931,7 @@ init_epel() {
         return 1
     fi
 
-    if [ ! -f "/usr/bin/yum-config-manager" ]; then
-        service_install yum-utils
-    fi
+    service_install yum-utils
 
     if [ "${OS_TYPE}" == "el7" ]; then
         ${SUDO} rpm -Uvh https://dl.fedoraproject.org/pub/epel/epel-release-latest-7.noarch.rpm
@@ -1018,6 +1016,7 @@ init_nginx() {
 
         ${SHELL_DIR}/install-nginx.sh
 
+        echo_ "nginx start..."
         ${SUDO} nginx
 
         touch "${SHELL_DIR}/.config_nginx"
@@ -1640,8 +1639,13 @@ vhost_domain() {
     sed "s/DOM/$DOM/g" ${TEMPLATE} > ${TEMP_FILE}
     copy ${TEMP_FILE} ${DEST_FILE} 644
 
+    # TODO REMOVE
+    echo_ "`curl http://localhost`"
+
     echo_ "apachectl graceful..."
     ${SUDO} apachectl -k graceful
+
+    echo_ "`curl http://localhost`"
 
     echo_bar
 }
