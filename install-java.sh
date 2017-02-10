@@ -69,7 +69,7 @@ wget -q -N --no-cookies --no-check-certificate --header "Cookie: oraclelicense=a
 
 tar xzf ${JAVA}
 
-rm -rf ${JAVA}
+#rm -rf ${JAVA}
 
 VS1=$(echo ${JAVA} | cut -d "-" -f 3)
 VS2="${VS1/u/.0_}"

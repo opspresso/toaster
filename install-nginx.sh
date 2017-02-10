@@ -47,7 +47,7 @@ wget -q -N "https://nginx.org/download/${NGINX}"
 
 tar xzf ${NGINX}
 
-rm -rf ${NGINX}
+#rm -rf ${NGINX}
 
 NGINX_DIR=$(echo ${NGINX} | egrep -o "nginx-${VERSION}.[0-9]+")
 
