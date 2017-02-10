@@ -22,22 +22,22 @@ fi
 OS_NAME=`uname`
 if [ "${OS_NAME}" == "Linux" ]; then
     OS_FULL=`uname -a`
-    if [ `echo ${OS_FULL} | grep -c "Ubuntu"` -gt 0 ]; then
-        OS_TYPE="Ubuntu"
-    else
-        if [ `echo ${OS_FULL} | grep -c "el7"` -gt 0 ]; then
-            OS_TYPE="el7"
-        else
-            OS_TYPE="el6" # el6 or amzn1
-        fi
+    if [ `echo ${OS_FULL} | grep -c "amzn1"` -gt 0 ]; then
+        OS_TYPE="amzn1"
+    elif [ `echo ${OS_FULL} | grep -c "el6"` -gt 0 ]; then
+        OS_TYPE="el6"
+    elif [ `echo ${OS_FULL} | grep -c "el7"` -gt 0 ]; then
+        OS_TYPE="el7"
     fi
 else
     if [ "${OS_NAME}" == "Darwin" ]; then
         OS_TYPE="${OS_NAME}"
-    else
-        warning "Not supported OS - ${OS_NAME}"
-        exit 1
     fi
+fi
+
+if [ "${OS_TYPE}" == "" ]; then
+    warning "Not supported OS - ${OS_NAME}"
+    exit 1
 fi
 
 # sudo
@@ -438,10 +438,8 @@ prepare() {
     fi
 
     # i18n & selinux
-    if [ "${OS_TYPE}" != "Ubuntu" ]; then
-        copy ${SHELL_DIR}/package/linux/i18n.txt /etc/sysconfig/i18n 644
-        copy ${SHELL_DIR}/package/linux/selinux.txt /etc/selinux/config 644
-    fi
+    copy ${SHELL_DIR}/package/linux/i18n.txt /etc/sysconfig/i18n 644
+    copy ${SHELL_DIR}/package/linux/selinux.txt /etc/selinux/config 644
 
     if [ -f "/usr/sbin/setenforce" ]; then
         ${SUDO} setenforce 0
@@ -804,16 +802,12 @@ init_name() {
 
     echo_ "init hostname... [${NAME}]"
 
-    if [ "${OS_TYPE}" == "Ubuntu" ]; then
-        ${SUDO} echo "${NAME}" > /etc/hostname
+    if [ "${OS_TYPE}" == "el7" ]; then
+        ${SUDO} hostnamectl set-hostname "${NAME}"
     else
-        if [ "${OS_TYPE}" == "el7" ]; then
-            ${SUDO} hostnamectl set-hostname "${NAME}"
-        else
-            ${SUDO} hostname "${NAME}"
+        ${SUDO} hostname "${NAME}"
 
-            mod_conf /etc/sysconfig/network "HOSTNAME" "${NAME}"
-        fi
+        mod_conf /etc/sysconfig/network "HOSTNAME" "${NAME}"
     fi
 
     config_local
@@ -933,10 +927,6 @@ init_auto() {
 }
 
 init_epel() {
-    if [ "${OS_TYPE}" == "Ubuntu" ]; then
-        return 1
-    fi
-
     if [ -f "${SHELL_DIR}/.config_epel" ]; then
         return 1
     fi
@@ -957,10 +947,6 @@ init_epel() {
 }
 
 init_webtatic() {
-    if [ "${OS_TYPE}" == "Ubuntu" ]; then
-        return 1
-    fi
-
     if [ -f "${SHELL_DIR}/.config_webtatic" ]; then
         return 1
     fi
@@ -984,37 +970,26 @@ init_httpd() {
 
         service_install "openssl openssl-devel"
 
-        if [ "${OS_TYPE}" == "Ubuntu" ]; then
-            service_install apache2
+        status=`${SUDO} yum list | grep httpd24 | wc -l | awk '{print $1}'`
 
-            HTTPD_VERSION="ubuntu"
+        if [ ${status} -ge 1 ]; then
+            service_install "httpd24"
         else
-            status=`${SUDO} yum list | grep httpd24 | wc -l | awk '{print $1}'`
+            service_install "httpd"
+        fi
 
-            if [ ${status} -ge 1 ]; then
-                service_install "httpd24"
-            else
-                service_install "httpd"
-            fi
+        VERSION=$(httpd -version | egrep -o "Apache\/2.4")
 
-            VERSION=$(httpd -version | egrep -o "Apache\/2.4")
-
-            if [ "${VERSION}" != "" ]; then
-                HTTPD_VERSION="24"
-            else
-                HTTPD_VERSION="22"
-            fi
+        if [ "${VERSION}" != "" ]; then
+            HTTPD_VERSION="24"
+        else
+            HTTPD_VERSION="22"
         fi
 
         vhost_local
 
-        if [ "${OS_TYPE}" == "Ubuntu" ]; then
-            echo_ "apache2 start..."
-            service_ctl apache2 start on
-        else
-            echo_ "httpd start..."
-            service_ctl httpd start on
-        fi
+        echo_ "httpd start..."
+        service_ctl httpd start on
 
         echo "HTTPD_VERSION=${HTTPD_VERSION}" > "${SHELL_DIR}/.config_httpd"
     fi
@@ -1031,11 +1006,7 @@ init_httpd() {
     make_dir "${SITE_DIR}/upload" 777
 
     echo_bar
-    if [ "${OS_TYPE}" == "Ubuntu" ]; then
-        echo_ "`apache2 -version`"
-    else
-        echo_ "`httpd -version`"
-    fi
+    echo_ "`httpd -version`"
     echo_bar
 }
 
@@ -1070,34 +1041,18 @@ init_nginx() {
 
 init_php() {
     if [ ! -f "${SHELL_DIR}/.config_php" ]; then
-        if [ "${OS_TYPE}" == "Ubuntu" ]; then
-            if [ "$1" == "70" ]; then
-                VERSION="7.0"
-            else
-                if [ "$1" == "55" ]; then
-                    VERSION="5.5"
-                else
-                    VERSION="5.6"
-                fi
-            fi
+        init_webtatic
 
-            echo_ "init php${VERSION}..."
+        VERSION="$1"
 
-            service_install "php${VERSION} php${VERSION}-mysql php${VERSION}-mcrypt php${VERSION}-gd php${VERSION}-mbstring php${VERSION}-bcmath"
+        echo_ "init php${VERSION}..."
+
+        status=`${SUDO} yum list | grep php${VERSION}w | wc -l | awk '{print $1}'`
+
+        if [ ${status} -ge 1 ]; then
+            service_install "php${VERSION}w php${VERSION}w-mysqlnd php${VERSION}w-mcrypt php${VERSION}w-gd php${VERSION}w-mbstring php${VERSION}w-bcmath"
         else
-            init_webtatic
-
-            VERSION="$1"
-
-            echo_ "init php${VERSION}..."
-
-            status=`${SUDO} yum list | grep php${VERSION}w | wc -l | awk '{print $1}'`
-
-            if [ ${status} -ge 1 ]; then
-                service_install "php${VERSION}w php${VERSION}w-mysqlnd php${VERSION}w-mcrypt php${VERSION}w-gd php${VERSION}w-mbstring php${VERSION}w-bcmath"
-            else
-                service_install "php${VERSION} php${VERSION}-mysqlnd php${VERSION}-mcrypt php${VERSION}-gd php${VERSION}-mbstring php${VERSION}-bcmath"
-            fi
+            service_install "php${VERSION} php${VERSION}-mysqlnd php${VERSION}-mcrypt php${VERSION}-gd php${VERSION}-mbstring php${VERSION}-bcmath"
         fi
 
         custom_php_ini
@@ -1106,11 +1061,7 @@ init_php() {
     fi
 
     echo_bar
-    if [ "${OS_TYPE}" == "Ubuntu" ]; then
-        echo_ "`php -v`"
-    else
-        echo_ "`php -version`"
-    fi
+    echo_ "`php -version`"
     echo_bar
 }
 
@@ -1287,14 +1238,8 @@ custom_httpd_conf() {
     if [ -f "/etc/httpd/conf/httpd.conf" ]; then
         HTTPD_CONF="/etc/httpd/conf/httpd.conf"
     else
-        if [ "${OS_TYPE}" == "Ubuntu" ]; then
-            if [ -f "/etc/apache2/httpd.conf" ]; then
-                HTTPD_CONF="/etc/apache2/httpd.conf"
-            fi
-        else
-            if [ -f "/usr/local/apache/conf/httpd.conf" ]; then
-                HTTPD_CONF="/usr/local/apache/conf/httpd.conf"
-            fi
+        if [ -f "/usr/local/apache/conf/httpd.conf" ]; then
+            HTTPD_CONF="/usr/local/apache/conf/httpd.conf"
         fi
     fi
 
@@ -1316,16 +1261,6 @@ custom_httpd_conf() {
 custom_php_ini() {
     if [ -f "/etc/php.ini" ]; then
         PHP_INI="/etc/php.ini"
-    else
-        if [ "${OS_TYPE}" == "Ubuntu" ]; then
-            if [ -f "/etc/php/5.6/apache2/php.ini" ]; then
-                PHP_INI="/etc/php/5.6/apache2/php.ini"
-            else
-                if [ -f "/etc/php/7.0/apache2/php.ini" ]; then
-                    PHP_INI="/etc/php/7.0/apache2/php.ini"
-                fi
-            fi
-        fi
     fi
 
     if [ -f ${PHP_INI} ]; then
@@ -1505,17 +1440,11 @@ httpd_conf_dir() {
 
     HTTPD_CONF_DIR=""
 
-    if [ "${OS_TYPE}" == "Ubuntu" ]; then
-        if [ -d "/etc/apache2/sites-enabled" ]; then
-            HTTPD_CONF_DIR="/etc/apache2/sites-enabled"
-        fi
+    if [ -d "/etc/httpd/conf.d" ]; then
+        HTTPD_CONF_DIR="/etc/httpd/conf.d"
     else
-        if [ -d "/etc/httpd/conf.d" ]; then
-            HTTPD_CONF_DIR="/etc/httpd/conf.d"
-        else
-            if [ -d "/usr/local/apache/conf/extra" ]; then
-                HTTPD_CONF_DIR="/usr/local/apache/conf/extra"
-            fi
+        if [ -d "/usr/local/apache/conf/extra" ]; then
+            HTTPD_CONF_DIR="/usr/local/apache/conf/extra"
         fi
     fi
 }
@@ -1711,18 +1640,8 @@ vhost_domain() {
     sed "s/DOM/$DOM/g" ${TEMPLATE} > ${TEMP_FILE}
     copy ${TEMP_FILE} ${DEST_FILE} 644
 
-    if [ "${OS_TYPE}" == "Ubuntu" ]; then
-        echo_ "apache2 graceful..."
-        service_ctl apache2 graceful
-    else
-        if [ "${OS_TYPE}" == "el7" ]; then
-            echo_ "httpd restart..."
-            service_ctl httpd restart
-        else
-            echo_ "httpd graceful..."
-            service_ctl httpd graceful
-        fi
-    fi
+    echo_ "apachectl graceful..."
+    ${SUDO} apachectl -k graceful
 
     echo_bar
 }
@@ -1768,18 +1687,8 @@ vhost_fleet() {
         done < ${VHOST_LIST}
     fi
 
-    if [ "${OS_TYPE}" == "Ubuntu" ]; then
-        echo_ "apache2 graceful..."
-        service_ctl apache2 graceful
-    else
-        if [ "${OS_TYPE}" == "el7" ]; then
-            echo_ "httpd restart..."
-            service_ctl httpd restart
-        else
-            echo_ "httpd graceful..."
-            service_ctl httpd graceful
-        fi
-    fi
+    echo_ "apachectl graceful..."
+    ${SUDO} apachectl -k graceful
 
     echo_bar
 }
@@ -2220,28 +2129,15 @@ log_cron() {
 }
 
 service_update() {
-    if [ "${OS_TYPE}" == "Ubuntu" ]; then
-        ${SUDO} apt-get update
-        ${SUDO} apt-get upgrade -y
-    else
-        ${SUDO} yum update -y
-    fi
+    ${SUDO} yum update -y
 }
 
 service_install() {
-    if [ "${OS_TYPE}" == "Ubuntu" ]; then
-        ${SUDO} apt-get install -y $1
-    else
-        ${SUDO} yum install -y $1
-    fi
+    ${SUDO} yum install -y $1
 }
 
 service_remove() {
-    if [ "${OS_TYPE}" == "Ubuntu" ]; then
-        ${SUDO} apt-get remove -y $1
-    else
-        ${SUDO} yum remove -y $1
-    fi
+    ${SUDO} yum remove -y $1
 }
 
 service_ctl() {
