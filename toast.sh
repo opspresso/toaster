@@ -2164,10 +2164,10 @@ service_ctl() {
 httpd_graceful() {
     echo_ "httpd graceful..."
 
-    if [ "${OS_TYPE}" == "el6" ]; then
-        service_ctl httpd graceful
-    else
+    if [ "${OS_TYPE}" == "el7" ]; then
         service_ctl httpd restart
+    else
+        service_ctl httpd graceful
     fi
 }
 
