@@ -45,8 +45,10 @@ SUDO="sudo"
 
 pushd ${HOME}
 
+REPO="http://repo.toast.sh"
+
 # version
-wget -q -N -P /tmp http://repo.toast.sh/release/toaster.txt
+wget -q -N -P /tmp ${REPO}/release/toaster.txt
 
 if [ ! -f /tmp/toaster.txt ]; then
     warning "Can not download. [version]"
@@ -68,7 +70,7 @@ if [ -f toaster/.version.txt ]; then
 fi
 
 # download
-wget -q -N -P /tmp http://repo.toast.sh/release/toaster.zip
+wget -q -N -P /tmp ${REPO}/release/toaster.zip
 
 if [ ! -f /tmp/toaster.zip ]; then
     warning "Can not download. [toast.sh]"

@@ -26,6 +26,8 @@ else
     OS_BIT="i586"
 fi
 
+SHELL_DIR=$(dirname $0)
+
 ################################################################################
 
 URL0="http://www.oracle.com"
@@ -80,5 +82,7 @@ ${SUDO} mv ${JAVA_DIR} /usr/local/
 
 ${SUDO} rm -rf /usr/local/java
 ${SUDO} ln -s ${JAVA_HOME} /usr/local/java
+
+${SUDO} cp -rf ${SHELL_DIR}/package/jce8/* ${JAVA_HOME}/jre/lib/security/
 
 echo "JAVA_HOME=${JAVA_HOME}"

@@ -255,6 +255,9 @@ init() {
         certificate)
             init_certificate "${PARAM2}"
             ;;
+        service)
+            init_service
+            ;;
         httpd)
             init_httpd
             ;;
@@ -870,6 +873,21 @@ init_certificate() {
     fi
 }
 
+init_service() {
+    if [ "${OS_TYPE}" == "el7" ]; then
+        TEMPLATE="${SHELL_DIR}/package/service/toast_el7"
+        sed "s/TOAST\_USER/$USER/g" ${TEMPLATE} > ${TEMP_FILE}
+        copy ${TEMP_FILE} /usr/lib/systemd/system/tomcat.service 644
+    fi
+    if [ "${OS_TYPE}" == "el6" ]; then
+        TEMPLATE="${SHELL_DIR}/package/service/toast_el6"
+        sed "s/TOAST\_USER/$USER/g" ${TEMPLATE} > ${TEMP_FILE}
+        copy ${TEMP_FILE} /etc/init.d/tomcat 755
+    fi
+
+    service_ctl toast start on
+}
+
 init_auto() {
     URL="${TOAST_URL}/fleet/apps/${PHASE}/${FLEET}"
     RES=`curl -s --data "org=${ORG}&token=${TOKEN}&no=${SNO}" ${URL}`
@@ -974,8 +992,6 @@ init_httpd() {
 
             HTTPD_VERSION="ubuntu"
         else
-            #service_install "centos-release-scl"
-
             status=`${SUDO} yum list | grep httpd24 | wc -l | awk '{print $1}'`
 
             if [ ${status} -ge 1 ]; then
@@ -1134,9 +1150,6 @@ init_java8() {
         add_path "${JAVA_HOME}/bin"
         mod_env "JAVA_HOME" "${JAVA_HOME}"
 
-        copy "${SHELL_DIR}/package/jce8/local_policy.jar.bin" "${JAVA_HOME}/jre/lib/security/local_policy.jar" 644
-        copy "${SHELL_DIR}/package/jce8/US_export_policy.jar.bin" "${JAVA_HOME}/jre/lib/security/US_export_policy.jar" 644
-
         echo "JAVA_HOME=${JAVA_HOME}"
         echo "JAVA_HOME=${JAVA_HOME}" > "${SHELL_DIR}/.config_java"
     fi
@@ -1164,18 +1177,6 @@ init_tomcat8() {
 
         copy "${CATALINA_HOME}/conf/web.xml" "${CATALINA_HOME}/conf/web.org.xml" 644
         copy "${SHELL_DIR}/package/tomcat/web.xml" "${CATALINA_HOME}/conf/web.xml" 644
-
-        if [ "${OS_TYPE}" == "el7" ]; then
-            TEMPLATE="${SHELL_DIR}/package/tomcat/tomcat_el7"
-            sed "s/TOMCAT\_USER/$USER/g" ${TEMPLATE} > ${TEMP_FILE}
-            copy ${TEMP_FILE} /usr/lib/systemd/system/tomcat.service 644
-        else
-            TEMPLATE="${SHELL_DIR}/package/tomcat/tomcat_el6"
-            sed "s/TOMCAT\_USER/$USER/g" ${TEMPLATE} > ${TEMP_FILE}
-            copy ${TEMP_FILE} /etc/init.d/tomcat 755
-        fi
-
-        service_ctl tomcat start on
 
         echo "CATALINA_HOME=${CATALINA_HOME}" > "${SHELL_DIR}/.config_tomcat"
     fi
@@ -1221,24 +1222,11 @@ init_rabbitmq() {
     if [ ! -f "${SHELL_DIR}/.config_rabbitmq" ]; then
         echo "init rabbitmq..."
 
-        ${SUDO} rpm -Uvh "http://packages.erlang-solutions.com/erlang-solutions-1.0-1.noarch.rpm"
-
-        service_install "erlang socat"
-
-        URL="https://www.rabbitmq.com/releases/rabbitmq-server/v3.6.6/rabbitmq-server-3.6.6-1.el6.noarch.rpm"
-
-        ${SUDO} rpm -Uvh "${URL}"
+        ${SHELL_DIR}/install-rabbitmq.sh
 
         service_ctl rabbitmq-server start on
 
         ${SUDO} rabbitmq-plugins enable rabbitmq_management
-
-        PLUGIN_DIR="/usr/lib/rabbitmq/lib/rabbitmq_server-3.6.6/plugins/"
-
-        URL="http://www.rabbitmq.com/community-plugins/v3.6.x/rabbitmq_delayed_message_exchange-0.0.1.ez"
-
-        ${SUDO} wget -q -N -P "${PLUGIN_DIR}" "${URL}"
-
         ${SUDO} rabbitmq-plugins enable rabbitmq_delayed_message_exchange
 
         ${SUDO} rabbitmqctl add_user rabbitmq rabbitmq
@@ -1287,9 +1275,9 @@ init_jenkins() {
     rm -rf ${WEBAPP_DIR}/jenkins.war
     rm -rf ${WEBAPP_DIR}/jenkins
 
-    URL="http://mirrors.jenkins.io/war/latest/jenkins.war"
-
     echo "download jenkins..."
+
+    URL="http://mirrors.jenkins.io/war/latest/jenkins.war"
     wget -q -N -P "${WEBAPP_DIR}" "${URL}"
 
     copy "${CATALINA_HOME}/conf/web.org.xml" "${CATALINA_HOME}/conf/web.xml" 644
