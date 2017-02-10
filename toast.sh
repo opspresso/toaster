@@ -1007,7 +1007,7 @@ init_httpd() {
             fi
         fi
 
-        httpd_localhost
+        vhost_local
 
         if [ "${OS_TYPE}" == "Ubuntu" ]; then
             service_ctl apache2 start on
@@ -1520,20 +1520,6 @@ httpd_conf_dir() {
     fi
 }
 
-httpd_localhost() {
-    httpd_conf_dir
-
-    if [ "${HTTPD_CONF_DIR}" == "" ]; then
-        return
-    fi
-
-    # localhost
-    TEMPLATE="${SHELL_DIR}/package/apache/${HTTPD_VERSION}/localhost.conf"
-    if [ -f "${TEMPLATE}" ]; then
-        copy ${TEMPLATE} "${HTTPD_CONF_DIR}/localhost.conf" 644
-    fi
-}
-
 nginx_lb() {
     nginx_conf_dir
 
@@ -1685,6 +1671,20 @@ nginx_lb() {
     fi
 
     echo_bar
+}
+
+vhost_local() {
+    httpd_conf_dir
+
+    if [ "${HTTPD_CONF_DIR}" == "" ]; then
+        return
+    fi
+
+    # localhost
+    TEMPLATE="${SHELL_DIR}/package/apache/${HTTPD_VERSION}/localhost.conf"
+    if [ -f "${TEMPLATE}" ]; then
+        copy ${TEMPLATE} "${HTTPD_CONF_DIR}/localhost.conf" 644
+    fi
 }
 
 vhost_domain() {
