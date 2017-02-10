@@ -172,7 +172,7 @@ usage() {
     echo_
     echo " Usage: toast deploy"
     echo " Usage: toast deploy fleet"
-    echo " Usage: toast deploy project"
+    echo " Usage: toast deploy target {no}"
     echo_
     echo " Usage: toast health"
     echo_
@@ -200,10 +200,11 @@ auto() {
     init_auto
 
     repo_path
+
     deploy_fleet
+    vhost_fleet
 
     nginx_lb
-    vhost_fleet
 }
 
 update() {
@@ -283,7 +284,7 @@ init() {
             init_tomcat8
             ;;
         mysql)
-            init_mysql56
+            init_mysql55
             ;;
         redis)
             init_redis
@@ -338,6 +339,8 @@ vhost() {
 }
 
 deploy() {
+    not_darwin
+
     repo_path
 
     init_hosts
