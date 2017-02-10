@@ -2163,9 +2163,13 @@ httpd_restart() {
     # TODO REMOVE
     echo_ "`curl http://localhost`"
 
-    echo_ "httpd restart..."
-    #${SUDO} httpd -k graceful
-    service_ctl httpd restart
+    echo_ "httpd graceful..."
+
+    if [ "" == "el6" ]; then
+        service_ctl httpd graceful
+    else
+        service_ctl httpd restart
+    fi
 
     echo_ "`curl http://localhost`"
 }
