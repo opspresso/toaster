@@ -869,8 +869,7 @@ init_service() {
         TEMPLATE="${SHELL_DIR}/package/service/toast_el7"
         sed "s/TOAST\_USER/$USER/g" ${TEMPLATE} > ${TEMP_FILE}
         copy ${TEMP_FILE} /usr/lib/systemd/system/toast.service 644
-    fi
-    if [ "${OS_TYPE}" == "el6" ]; then
+    else
         TEMPLATE="${SHELL_DIR}/package/service/toast_el6"
         sed "s/TOAST\_USER/$USER/g" ${TEMPLATE} > ${TEMP_FILE}
         copy ${TEMP_FILE} /etc/init.d/toast 755
