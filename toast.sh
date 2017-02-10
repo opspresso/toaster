@@ -1712,8 +1712,10 @@ vhost_domain() {
     copy ${TEMP_FILE} ${DEST_FILE} 644
 
     if [ "${OS_TYPE}" == "Ubuntu" ]; then
+        echo_ "apache2 graceful..."
         ${SUDO} apache2 -k graceful
     else
+        echo_ "httpd graceful..."
         ${SUDO} httpd -k graceful
     fi
 
@@ -1762,8 +1764,10 @@ vhost_fleet() {
     fi
 
     if [ "${OS_TYPE}" == "Ubuntu" ]; then
+        echo_ "apache2 graceful..."
         ${SUDO} apache2 -k graceful
     else
+        echo_ "httpd graceful..."
         ${SUDO} httpd -k graceful
     fi
 
