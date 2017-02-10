@@ -1868,8 +1868,8 @@ deploy_value() {
 download() {
     SOURCE="${REPO_PATH}/${GROUP_PATH}/${ARTIFACT_ID}/${VERSION}/${FILENAME}"
 
-    echo_ "--> from: ${SOURCE}"
-    echo_ "--> to  : ${TEMP_DIR}/${FILENAME}"
+    echo_ "--> from : ${SOURCE}"
+    echo_ "--> to   : ${TEMP_DIR}/${FILENAME}"
 
     if [ -d "${FILEPATH}" ] || [ -f "${FILEPATH}" ]; then
         rm -rf "${FILEPATH}"
@@ -1899,6 +1899,8 @@ download() {
             if [ -d "${UNZIP_DIR}" ] || [ -f "${UNZIP_DIR}" ]; then
                 warning "deploy file can not unzip. [${UNZIP_DIR}]"
             else
+                echo_ "--> unzip: ${UNZIP_DIR}"
+
                 unzip -q "${FILEPATH}" -d "${UNZIP_DIR}"
 
                 if [ ! -d "${UNZIP_DIR}" ]; then
