@@ -14,11 +14,11 @@ export JAVA_HOME=/usr/local/java
 export CATALINA_HOME=/data/apps/tomcat8
 
 start() {
-    /bin/su -l TOAST_USER -c /home/TOAST_USER/toaster/toast.sh deploy
+    /bin/su -l TOAST_USER -c '/home/TOAST_USER/toaster/toast.sh deploy'
 }
 
 stop() {
-    /bin/su -l TOAST_USER -c /home/TOAST_USER/toaster/toast.sh update
+    /bin/su -l TOAST_USER -c '/home/TOAST_USER/toaster/toast.sh update'
 }
 
 case $1 in
