@@ -2164,8 +2164,8 @@ httpd_restart() {
     echo_ "`curl http://localhost`"
 
     echo_ "httpd graceful..."
-    #${SUDO} httpd -k graceful
-    service_ctl httpd restart
+    ${SUDO} httpd -k graceful
+    #service_ctl httpd restart
 
     echo_ "`curl http://localhost`"
 }
