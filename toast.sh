@@ -887,6 +887,7 @@ init_service() {
             ${SUDO} echo "" >> ${TEMP_FILE}
             ${SUDO} echo "# toast deploy" >> ${TEMP_FILE}
             ${SUDO} echo "/bin/su -l ${USER} -c '/home/${USER}/toaster/toast.sh deploy'" >> ${TEMP_FILE}
+            ${SUDO} echo "" >> ${TEMP_FILE}
 
             copy ${TEMP_FILE} ${TARGET} 755
         fi
