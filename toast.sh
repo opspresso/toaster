@@ -882,13 +882,11 @@ init_service() {
         done < ${TARGET}
 
         if [ "${HAS_LINE}" == "false" ]; then
-            echo "" >> ${TARGET}
-            echo "# toast deploy" >> ${TARGET}
-            echo "/bin/su -l ${USER} -c '/home/${USER}/toaster/toast.sh deploy'" >> ${TARGET}
+            ${SUDO} echo "" >> ${TARGET}
+            ${SUDO} echo "# toast deploy" >> ${TARGET}
+            ${SUDO} echo "/bin/su -l ${USER} -c '/home/${USER}/toaster/toast.sh deploy'" >> ${TARGET}
         fi
     fi
-
-    service_ctl toast start on
 }
 
 init_auto() {
