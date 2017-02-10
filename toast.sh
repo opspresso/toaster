@@ -865,12 +865,13 @@ init_certificate() {
 }
 
 init_service() {
+    TEMP_FILE="${TEMP_DIR}/toast-service.tmp"
+
     if [ "${OS_TYPE}" == "el7" ]; then
         TEMPLATE="${SHELL_DIR}/package/service/toast_el7"
         sed "s/TOAST\_USER/$USER/g" ${TEMPLATE} > ${TEMP_FILE}
         copy ${TEMP_FILE} /usr/lib/systemd/system/toast.service 644
-    fi
-    if [ "${OS_TYPE}" == "el6" ]; then
+    else
         TEMPLATE="${SHELL_DIR}/package/service/toast_el6"
         sed "s/TOAST\_USER/$USER/g" ${TEMPLATE} > ${TEMP_FILE}
         copy ${TEMP_FILE} /etc/init.d/toast 755
@@ -1632,6 +1633,11 @@ vhost_domain() {
 
     DOM="${PARAM2}"
 
+    if [ "${DOM}" == "" ]; then
+        warning "need domain. [${DOM}]"
+        return
+    fi
+
     make_dir "${SITE_DIR}/${DOM}"
 
     DEST_FILE="${HTTPD_CONF_DIR}/toast-${DOM}.conf"
@@ -1675,6 +1681,11 @@ vhost_fleet() {
             ARR=(${line})
 
             DOM="${ARR[0]}"
+
+            if [ "${DOM}" == "" ]; then
+                warning "need domain. [${DOM}]"
+                continue
+            fi
 
             make_dir "${SITE_DIR}/${DOM}"
 
@@ -1854,6 +1865,9 @@ deploy_value() {
         DEPLOY_PATH="${APPS_DIR}"
     fi
     if [ "${PACKAGING}" == "php" ]; then
+        if [ "${DOMAIN}" == "" ]; then
+            warning "need domain. [${DOMAIN}]"
+        fi
         PACKAGING="war"
         DEPLOY_PATH="${SITE_DIR}/${DOMAIN}"
     fi
@@ -1867,8 +1881,8 @@ deploy_value() {
 download() {
     SOURCE="${REPO_PATH}/${GROUP_PATH}/${ARTIFACT_ID}/${VERSION}/${FILENAME}"
 
-    echo_ "--> from: ${SOURCE}"
-    echo_ "--> to  : ${TEMP_DIR}/${FILENAME}"
+    echo_ "--> from : ${SOURCE}"
+    echo_ "--> to   : ${TEMP_DIR}/${FILENAME}"
 
     if [ -d "${FILEPATH}" ] || [ -f "${FILEPATH}" ]; then
         rm -rf "${FILEPATH}"
@@ -1899,6 +1913,10 @@ download() {
                 warning "deploy file can not unzip. [${UNZIP_DIR}]"
             else
                 unzip -q "${FILEPATH}" -d "${UNZIP_DIR}"
+
+                if [ ! -d "${UNZIP_DIR}" ]; then
+                    warning "deploy file can not unzip. [${UNZIP_DIR}]"
+                fi
 
                 if [ -d "${UNZIP_DIR}/application/logs" ]; then
                     chmod 777 "${UNZIP_DIR}/application/logs"
