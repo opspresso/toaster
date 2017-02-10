@@ -1635,7 +1635,7 @@ vhost_domain() {
 
     if [ "${DOM}" == "" ]; then
         warning "need domain. [${DOM}]"
-        continue
+        return
     fi
 
     make_dir "${SITE_DIR}/${DOM}"
