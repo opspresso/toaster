@@ -931,9 +931,7 @@ init_epel() {
         return 1
     fi
 
-    if [ ! -f "/usr/bin/yum-config-manager" ]; then
-        service_install yum-utils
-    fi
+    service_install yum-utils
 
     if [ "${OS_TYPE}" == "el7" ]; then
         ${SUDO} rpm -Uvh https://dl.fedoraproject.org/pub/epel/epel-release-latest-7.noarch.rpm
@@ -1016,8 +1014,9 @@ init_nginx() {
 
         service_install "pcre pcre-devel zlib zlib-devel openssl openssl-devel"
 
-        ${SHELL_DIR}/install-nginx.sh
+        ${SHELL_DIR}/install/nginx.sh
 
+        echo_ "nginx start..."
         ${SUDO} nginx
 
         touch "${SHELL_DIR}/.config_nginx"
@@ -1057,6 +1056,8 @@ init_php() {
 
         custom_php_ini
 
+        httpd_restart
+
         echo "PHP_VERSION=${VERSION}" > "${SHELL_DIR}/.config_php"
     fi
 
@@ -1069,7 +1070,7 @@ init_node() {
     if [ ! -f "${SHELL_DIR}/.config_node" ]; then
         echo_ "init node..."
 
-        ${SHELL_DIR}/install-node.sh
+        ${SHELL_DIR}/install/node.sh
 
         NODE_HOME="/usr/local/node"
 
@@ -1093,7 +1094,7 @@ init_java8() {
         service_remove "java-1.7.0-openjdk java-1.7.0-openjdk-headless"
         service_remove "java-1.8.0-openjdk java-1.8.0-openjdk-headless java-1.8.0-openjdk-devel"
 
-        ${SHELL_DIR}/install-java.sh
+        ${SHELL_DIR}/install/java.sh
 
         JAVA_HOME="/usr/local/java"
 
@@ -1117,7 +1118,7 @@ init_tomcat8() {
 
         make_dir "${APPS_DIR}"
 
-        ${SHELL_DIR}/install-tomcat.sh "${APPS_DIR}"
+        ${SHELL_DIR}/install/tomcat.sh "${APPS_DIR}"
 
         CATALINA_HOME="${APPS_DIR}/tomcat8"
 
@@ -1171,7 +1172,7 @@ init_rabbitmq() {
     if [ ! -f "${SHELL_DIR}/.config_rabbitmq" ]; then
         echo_ "init rabbitmq..."
 
-        ${SHELL_DIR}/install-rabbitmq.sh
+        ${SHELL_DIR}/install/rabbitmq.sh
 
         service_ctl rabbitmq-server start on
 
@@ -1640,8 +1641,7 @@ vhost_domain() {
     sed "s/DOM/$DOM/g" ${TEMPLATE} > ${TEMP_FILE}
     copy ${TEMP_FILE} ${DEST_FILE} 644
 
-    echo_ "apachectl graceful..."
-    ${SUDO} apachectl -k graceful
+    httpd_graceful
 
     echo_bar
 }
@@ -1687,8 +1687,7 @@ vhost_fleet() {
         done < ${VHOST_LIST}
     fi
 
-    echo_ "apachectl graceful..."
-    ${SUDO} apachectl -k graceful
+    httpd_graceful
 
     echo_bar
 }
@@ -2160,6 +2159,24 @@ service_ctl() {
             ${SUDO} chkconfig $1 off
         fi
     fi
+}
+
+httpd_graceful() {
+    echo_ "httpd graceful..."
+
+    if [ "${OS_TYPE}" == "el6" ]; then
+        service_ctl httpd graceful
+    else
+        service_ctl httpd restart
+    fi
+
+    echo_ "`curl http://localhost`"
+}
+
+httpd_restart() {
+    echo_ "httpd restart..."
+
+    service_ctl httpd restart
 }
 
 tomcat_stop() {
