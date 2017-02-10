@@ -1014,7 +1014,7 @@ init_nginx() {
 
         service_install "pcre pcre-devel zlib zlib-devel openssl openssl-devel"
 
-        ${SHELL_DIR}/install-nginx.sh
+        ${SHELL_DIR}/install/nginx.sh
 
         echo_ "nginx start..."
         ${SUDO} nginx
@@ -1068,7 +1068,7 @@ init_node() {
     if [ ! -f "${SHELL_DIR}/.config_node" ]; then
         echo_ "init node..."
 
-        ${SHELL_DIR}/install-node.sh
+        ${SHELL_DIR}/install/node.sh
 
         NODE_HOME="/usr/local/node"
 
@@ -1092,7 +1092,7 @@ init_java8() {
         service_remove "java-1.7.0-openjdk java-1.7.0-openjdk-headless"
         service_remove "java-1.8.0-openjdk java-1.8.0-openjdk-headless java-1.8.0-openjdk-devel"
 
-        ${SHELL_DIR}/install-java.sh
+        ${SHELL_DIR}/install/java.sh
 
         JAVA_HOME="/usr/local/java"
 
@@ -1116,7 +1116,7 @@ init_tomcat8() {
 
         make_dir "${APPS_DIR}"
 
-        ${SHELL_DIR}/install-tomcat.sh "${APPS_DIR}"
+        ${SHELL_DIR}/install/tomcat.sh "${APPS_DIR}"
 
         CATALINA_HOME="${APPS_DIR}/tomcat8"
 
@@ -1170,7 +1170,7 @@ init_rabbitmq() {
     if [ ! -f "${SHELL_DIR}/.config_rabbitmq" ]; then
         echo_ "init rabbitmq..."
 
-        ${SHELL_DIR}/install-rabbitmq.sh
+        ${SHELL_DIR}/install/rabbitmq.sh
 
         service_ctl rabbitmq-server start on
 
@@ -2163,9 +2163,9 @@ httpd_restart() {
     # TODO REMOVE
     echo_ "`curl http://localhost`"
 
-    echo_ "httpd graceful..."
-    ${SUDO} httpd -k graceful
-    #service_ctl httpd restart
+    echo_ "httpd restart..."
+    #${SUDO} httpd -k graceful
+    service_ctl httpd restart
 
     echo_ "`curl http://localhost`"
 }
