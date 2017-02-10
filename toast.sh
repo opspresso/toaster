@@ -1031,9 +1031,9 @@ init_httpd() {
 
     echo_bar
     if [ "${OS_TYPE}" == "Ubuntu" ]; then
-        apache2 -version
+        echo_ "`apache2 -version`"
     else
-        httpd -version
+        echo_ "`httpd -version`"
     fi
     echo_bar
 }
@@ -1063,7 +1063,7 @@ init_nginx() {
     make_dir "${SITE_DIR}/upload" 777
 
     echo_bar
-    nginx -v
+    echo_ "`nginx -v`"
     echo_bar
 }
 
@@ -1106,9 +1106,9 @@ init_php() {
 
     echo_bar
     if [ "${OS_TYPE}" == "Ubuntu" ]; then
-        php -v
+        echo_ "`php -v`"
     else
-        php -version
+        echo_ "`php -version`"
     fi
     echo_bar
 }
@@ -1155,7 +1155,7 @@ init_java8() {
     make_dir "${APPS_DIR}"
 
     echo_bar
-    java -version
+    echo_ "`java -version`"
     echo_bar
 }
 
