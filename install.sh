@@ -41,11 +41,11 @@ fi
 # sudo
 SUDO="sudo"
 
+REPO="http://repo.toast.sh"
+
 ################################################################################
 
 pushd ${HOME}
-
-REPO="http://repo.toast.sh"
 
 # version
 wget -q -N -P /tmp ${REPO}/release/toaster.txt
