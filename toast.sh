@@ -866,32 +866,30 @@ init_certificate() {
 }
 
 init_startup() {
-    if [ "${OS_TYPE}" == "el7" ]; then
-        echo_
-    else
-        TARGET="/etc/rc.d/rc.local"
+    TARGET="/etc/rc.d/rc.local"
 
-        HAS_LINE="false"
+    ${SUDO} chmod +x ${TARGET}
 
-        while read LINE
-        do
-            if [ "${LINE}" == "# toast deploy" ]; then
-                HAS_LINE="true"
-            fi
-        done < ${TARGET}
+    HAS_LINE="false"
 
-        if [ "${HAS_LINE}" == "false" ]; then
-            TEMP_FILE="${TEMP_DIR}/toast-service.tmp"
-
-            copy ${TARGET} ${TEMP_FILE}
-
-            ${SUDO} echo "" >> ${TEMP_FILE}
-            ${SUDO} echo "# toast deploy" >> ${TEMP_FILE}
-            ${SUDO} echo "/bin/su -l ${USER} -c '/home/${USER}/toaster/toast.sh deploy'" >> ${TEMP_FILE}
-            ${SUDO} echo "" >> ${TEMP_FILE}
-
-            copy ${TEMP_FILE} ${TARGET} 755
+    while read LINE
+    do
+        if [ "${LINE}" == "# toast deploy" ]; then
+            HAS_LINE="true"
         fi
+    done < ${TARGET}
+
+    if [ "${HAS_LINE}" == "false" ]; then
+        TEMP_FILE="${TEMP_DIR}/toast-service.tmp"
+
+        copy ${TARGET} ${TEMP_FILE}
+
+        ${SUDO} echo "" >> ${TEMP_FILE}
+        ${SUDO} echo "# toast deploy" >> ${TEMP_FILE}
+        ${SUDO} echo "/bin/su -l ${USER} -c '/home/${USER}/toaster/toast.sh deploy'" >> ${TEMP_FILE}
+        ${SUDO} echo "" >> ${TEMP_FILE}
+
+        copy ${TEMP_FILE} ${TARGET} 755
     fi
 }
 
