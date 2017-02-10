@@ -1,11 +1,11 @@
 #!/bin/bash
 
 success() {
-    echo "$(tput setaf 2)$1$(tput sgr0)"
+    echo_ "$(tput setaf 2)$1$(tput sgr0)"
 }
 
 warning() {
-    echo "$(tput setaf 1)$1$(tput sgr0)"
+    echo_ "$(tput setaf 1)$1$(tput sgr0)"
 }
 
 ################################################################################
@@ -139,44 +139,44 @@ toast() {
 usage() {
     echo_toast
 
-    echo " Usage: toast {auto|update|config|init|version|deploy}"
+    echo_ " Usage: toast {auto|update|config|init|version|deploy}"
     echo_bar
     echo_
-    echo " Usage: toast auto"
+    echo_ " Usage: toast auto"
     echo_
-    echo " Usage: toast update"
+    echo_ " Usage: toast update"
     echo_
-    echo " Usage: toast config"
+    echo_ " Usage: toast config"
     echo_
-    echo " Usage: toast init"
-    echo " Usage: toast init master"
-    echo " Usage: toast init slave"
-    echo " Usage: toast init httpd"
-    echo " Usage: toast init nginx"
-    echo " Usage: toast init php5"
-    echo " Usage: toast init php7"
-    echo " Usage: toast init node"
-    echo " Usage: toast init java"
-    echo " Usage: toast init tomcat"
-    echo " Usage: toast init mysql"
-    echo " Usage: toast init redis"
+    echo_ " Usage: toast init"
+    echo_ " Usage: toast init master"
+    echo_ " Usage: toast init slave"
+    echo_ " Usage: toast init httpd"
+    echo_ " Usage: toast init nginx"
+    echo_ " Usage: toast init php5"
+    echo_ " Usage: toast init php7"
+    echo_ " Usage: toast init node"
+    echo_ " Usage: toast init java"
+    echo_ " Usage: toast init tomcat"
+    echo_ " Usage: toast init mysql"
+    echo_ " Usage: toast init redis"
     echo_
-    echo " Usage: toast version"
-    echo " Usage: toast version next"
-    echo " Usage: toast version save"
+    echo_ " Usage: toast version"
+    echo_ " Usage: toast version next"
+    echo_ " Usage: toast version save"
     echo_
-    echo " Usage: toast vhost"
-    echo " Usage: toast vhost lb"
-    echo " Usage: toast vhost fleet"
-    echo " Usage: toast vhost domain"
+    echo_ " Usage: toast vhost"
+    echo_ " Usage: toast vhost lb"
+    echo_ " Usage: toast vhost fleet"
+    echo_ " Usage: toast vhost domain"
     echo_
-    echo " Usage: toast deploy"
-    echo " Usage: toast deploy fleet"
-    echo " Usage: toast deploy target {no}"
+    echo_ " Usage: toast deploy"
+    echo_ " Usage: toast deploy fleet"
+    echo_ " Usage: toast deploy target {no}"
     echo_
-    echo " Usage: toast health"
+    echo_ " Usage: toast health"
     echo_
-    echo " Usage: toast ssh"
+    echo_ " Usage: toast ssh"
     echo_
     echo_bar
 }
@@ -378,13 +378,13 @@ health() {
         return
     fi
 
-    echo "server health..."
+    echo_ "server health..."
 
     UNAME=`uname -a`
     UPTIME=`uptime`
     CPU=`grep 'cpu ' /proc/stat | awk '{usage=($2+$4)*100/($2+$4+$5)} END {print usage}'`
 
-    echo "server cpu usage [${CPU}]"
+    echo_ "server cpu usage [${CPU}]"
 
     URL="${TOAST_URL}/server/health/${SNO}"
     RES=`curl -s --data "org=${ORG}&token=${TOKEN}&id=${UUID}&cpu=${CPU}&uname=${UNAME}&uptime=${UPTIME}" ${URL}`
@@ -403,13 +403,13 @@ health() {
 
 self_info() {
     echo_bar
-    echo "OS    : ${OS_NAME} ${OS_TYPE}"
-    echo "HOME  : ${HOME}"
+    echo_ "OS    : ${OS_NAME} ${OS_TYPE}"
+    echo_ "HOME  : ${HOME}"
     echo_bar
-    echo "ORG   : ${ORG}"
-    echo "PHASE : ${PHASE}"
-    echo "FLEET : ${FLEET}"
-    echo "NAME  : ${NAME}"
+    echo_ "ORG   : ${ORG}"
+    echo_ "PHASE : ${PHASE}"
+    echo_ "FLEET : ${FLEET}"
+    echo_ "NAME  : ${NAME}"
     echo_bar
 }
 
@@ -450,21 +450,21 @@ prepare() {
 }
 
 eip_allocate() {
-    echo "eip allocate... [${UUID}]"
+    echo_ "eip allocate... [${UUID}]"
 
     URL="${TOAST_URL}/server/eip/allocate"
     RES=`curl -s --data "org=${ORG}&token=${TOKEN}&id=${UUID}" ${URL}`
 
-    echo "eip allocate [${RES}]"
+    echo_ "eip allocate [${RES}]"
 }
 
 eip_release() {
-    echo "eip release... [${UUID}]"
+    echo_ "eip release... [${UUID}]"
 
     URL="${TOAST_URL}/server/eip/release"
     RES=`curl -s --data "org=${ORG}&token=${TOKEN}&id=${UUID}" ${URL}`
 
-    echo "eip release [${RES}]"
+    echo_ "eip release [${RES}]"
 }
 
 config_auto() {
@@ -501,7 +501,7 @@ config_auto() {
 
 config_save() {
     echo_bar
-    echo "config save... [${UUID}][${SNO}]"
+    echo_ "config save... [${UUID}][${SNO}]"
 
     URL="${TOAST_URL}/server/config"
     RES=`curl -s --data "org=${ORG}&token=${TOKEN}&phase=${PHASE}&fleet=${FLEET}&id=${UUID}&name=${NAME}&host=${HOST}&port=${PORT}&user=${USER}&no=${SNO}" ${URL}`
@@ -530,7 +530,7 @@ config_save() {
 }
 
 config_local() {
-    echo "config local... [${SNO}][${NAME}]"
+    echo_ "config local... [${SNO}][${NAME}]"
 
     echo "# toast config" > ${CONFIG}
     echo "TOAST_URL=\"${TOAST_URL}\"" >> ${CONFIG}
@@ -576,7 +576,7 @@ config_cron() {
 }
 
 init_hosts() {
-    echo "init hosts..."
+    echo_ "init hosts..."
 
     TARGET="/etc/hosts"
     TEMP_FILE="${TEMP_DIR}/toast-hosts.tmp"
@@ -627,7 +627,7 @@ init_hosts() {
 }
 
 init_profile() {
-    echo "init profile..."
+    echo_ "init profile..."
 
     # .bash_toast
     TARGET="${HOME}/.toast_profile"
@@ -675,7 +675,7 @@ init_profile() {
 }
 
 init_master() {
-    echo "init master..."
+    echo_ "init master..."
 
     # .ssh/id_rsa
     URL="${TOAST_URL}/config/key/rsa_private_key"
@@ -709,7 +709,7 @@ init_master() {
 }
 
 init_slave() {
-    echo "init slave..."
+    echo_ "init slave..."
 
     # .ssh/authorized_keys
     TARGET="${HOME}/.ssh/authorized_keys"
@@ -755,7 +755,7 @@ init_slave() {
 }
 
 init_aws() {
-    echo "init aws..."
+    echo_ "init aws..."
 
     # .aws/config
     URL="${TOAST_URL}/config/key/aws_config"
@@ -803,7 +803,7 @@ init_name() {
 
     NAME="$1"
 
-    echo "init hostname... [${NAME}]"
+    echo_ "init hostname... [${NAME}]"
 
     if [ "${OS_TYPE}" == "Ubuntu" ]; then
         ${SUDO} echo "${NAME}" > /etc/hostname
@@ -827,7 +827,7 @@ init_certificate() {
 
     PARAM="$1"
 
-    echo "init certificate... [${PARAM}]"
+    echo_ "init certificate... [${PARAM}]"
 
     SSL_DIR="/data/conf"
     make_dir ${SSL_DIR}
@@ -849,7 +849,7 @@ init_certificate() {
     wget -q -N --post-data "org=${ORG}&token=${TOKEN}&no=${SNO}" -P "${TEMP_DIR}" "${URL}"
 
     if [ -f ${CERTIFICATE} ]; then
-        echo "save certificate..."
+        echo_ "save certificate..."
 
         TARGET=
 
@@ -875,12 +875,12 @@ init_service() {
     if [ "${OS_TYPE}" == "el7" ]; then
         TEMPLATE="${SHELL_DIR}/package/service/toast_el7"
         sed "s/TOAST\_USER/$USER/g" ${TEMPLATE} > ${TEMP_FILE}
-        copy ${TEMP_FILE} /usr/lib/systemd/system/tomcat.service 644
+        copy ${TEMP_FILE} /usr/lib/systemd/system/toast.service 644
     fi
     if [ "${OS_TYPE}" == "el6" ]; then
         TEMPLATE="${SHELL_DIR}/package/service/toast_el6"
         sed "s/TOAST\_USER/$USER/g" ${TEMPLATE} > ${TEMP_FILE}
-        copy ${TEMP_FILE} /etc/init.d/tomcat 755
+        copy ${TEMP_FILE} /etc/init.d/toast 755
     fi
 
     service_ctl toast start on
@@ -981,7 +981,7 @@ init_webtatic() {
 
 init_httpd() {
     if [ ! -f "${SHELL_DIR}/.config_httpd" ]; then
-        echo "init httpd..."
+        echo_ "init httpd..."
 
         service_install "openssl openssl-devel"
 
@@ -1040,7 +1040,7 @@ init_httpd() {
 
 init_nginx() {
     if [ ! -f "${SHELL_DIR}/.config_nginx" ]; then
-        echo "init nginx..."
+        echo_ "init nginx..."
 
         service_install "pcre pcre-devel zlib zlib-devel openssl openssl-devel"
 
@@ -1080,7 +1080,7 @@ init_php() {
                 fi
             fi
 
-            echo "init php${VERSION}..."
+            echo_ "init php${VERSION}..."
 
             service_install "php${VERSION} php${VERSION}-mysql php${VERSION}-mcrypt php${VERSION}-gd php${VERSION}-mbstring php${VERSION}-bcmath"
         else
@@ -1088,7 +1088,7 @@ init_php() {
 
             VERSION="$1"
 
-            echo "init php${VERSION}..."
+            echo_ "init php${VERSION}..."
 
             status=`${SUDO} yum list | grep php${VERSION}w | wc -l | awk '{print $1}'`
 
@@ -1115,7 +1115,7 @@ init_php() {
 
 init_node() {
     if [ ! -f "${SHELL_DIR}/.config_node" ]; then
-        echo "init node..."
+        echo_ "init node..."
 
         ${SHELL_DIR}/install-node.sh
 
@@ -1129,14 +1129,14 @@ init_node() {
     fi
 
     echo_bar
-    echo "node version `node -v`"
-    echo "npm version `npm -v`"
+    echo_ "node version `node -v`"
+    echo_ "npm version `npm -v`"
     echo_bar
 }
 
 init_java8() {
     if [ ! -f "${SHELL_DIR}/.config_java" ]; then
-        echo "init java..."
+        echo_ "init java..."
 
         service_remove "java-1.7.0-openjdk java-1.7.0-openjdk-headless"
         service_remove "java-1.8.0-openjdk java-1.8.0-openjdk-headless java-1.8.0-openjdk-devel"
@@ -1161,7 +1161,7 @@ init_java8() {
 
 init_tomcat8() {
     if [ ! -f "${SHELL_DIR}/.config_tomcat" ]; then
-        echo "init tomcat..."
+        echo_ "init tomcat..."
 
         make_dir "${APPS_DIR}"
 
@@ -1171,18 +1171,17 @@ init_tomcat8() {
 
         mod_env "CATALINA_HOME" "${CATALINA_HOME}"
 
-        echo "CATALINA_HOME=${CATALINA_HOME}"
-
         copy "${CATALINA_HOME}/conf/web.xml" "${CATALINA_HOME}/conf/web.org.xml" 644
         copy "${SHELL_DIR}/package/tomcat/web.xml" "${CATALINA_HOME}/conf/web.xml" 644
 
+        echo "CATALINA_HOME=${CATALINA_HOME}"
         echo "CATALINA_HOME=${CATALINA_HOME}" > "${SHELL_DIR}/.config_tomcat"
     fi
 }
 
 init_mysql55() {
     if [ ! -f "${SHELL_DIR}/.config_mysql" ]; then
-        echo "init mysql55..."
+        echo_ "init mysql55..."
 
         service_install mysql55-server
 
@@ -1194,7 +1193,7 @@ init_mysql55() {
 
 init_mysql56() {
     if [ ! -f "${SHELL_DIR}/.config_mysql" ]; then
-        echo "init mysql56..."
+        echo_ "init mysql56..."
 
         service_install mysql56-server
 
@@ -1206,7 +1205,7 @@ init_mysql56() {
 
 init_redis() {
     if [ ! -f "${SHELL_DIR}/.config_redis" ]; then
-        echo "init redis..."
+        echo_ "init redis..."
 
         service_install redis
 
@@ -1218,7 +1217,7 @@ init_redis() {
 
 init_rabbitmq() {
     if [ ! -f "${SHELL_DIR}/.config_rabbitmq" ]; then
-        echo "init rabbitmq..."
+        echo_ "init rabbitmq..."
 
         ${SHELL_DIR}/install-rabbitmq.sh
 
@@ -1238,7 +1237,7 @@ init_rabbitmq() {
 
 init_docker() {
     if [ ! -f "${SHELL_DIR}/.config_docker" ]; then
-        echo "init docker..."
+        echo_ "init docker..."
 
         service_install docker
 
@@ -1250,7 +1249,7 @@ init_docker() {
 
 init_munin() {
     if [ ! -f "${SHELL_DIR}/.config_munin" ]; then
-        echo "init munin..."
+        echo_ "init munin..."
 
         service_install munin
 
@@ -1273,7 +1272,7 @@ init_jenkins() {
     rm -rf ${WEBAPP_DIR}/jenkins.war
     rm -rf ${WEBAPP_DIR}/jenkins
 
-    echo "download jenkins..."
+    echo_ "download jenkins..."
 
     URL="http://mirrors.jenkins.io/war/latest/jenkins.war"
     wget -q -N -P "${WEBAPP_DIR}" "${URL}"
@@ -1299,7 +1298,7 @@ custom_httpd_conf() {
     fi
 
     if [ -f ${HTTPD_CONF} ]; then
-        echo "${HTTPD_CONF}"
+        echo_ "${HTTPD_CONF}"
 
         TEMP_FILE="${TEMP_DIR}/toast-httpd-conf.tmp"
 
@@ -1329,7 +1328,7 @@ custom_php_ini() {
     fi
 
     if [ -f ${PHP_INI} ]; then
-        echo "${PHP_INI}"
+        echo_ "${PHP_INI}"
 
         TEMP_FILE="${TEMP_DIR}/toast-php-ini.tmp"
 
@@ -1377,9 +1376,9 @@ version_parse() {
     VERSION=${ARR_VERSION[0]}
     PACKAGE="${PARAM2}"
 
-    echo "groupId=${GROUP_ID}"
-    echo "artifactId=${ARTIFACT_ID}"
-    echo "version=${VERSION}"
+    echo_ "groupId=${GROUP_ID}"
+    echo_ "artifactId=${ARTIFACT_ID}"
+    echo_ "version=${VERSION}"
 
     GROUP_PATH=`echo "${GROUP_ID}" | sed "s/\./\//"`
 }
@@ -1396,7 +1395,7 @@ version_increase() {
     fi
 
 
-    echo "version=${VERSION}"
+    echo_ "version=${VERSION}"
 
     version_replace
 }
@@ -1407,7 +1406,7 @@ version_master() {
         return 1
     fi
 
-    echo "version get..."
+    echo_ "version get..."
 
     URL="${TOAST_URL}/version/latest/${ARTIFACT_ID}"
     RES=`curl -s --data "org=${ORG}&token=${TOKEN}&groupId=${GROUP_ID}&artifactId=${ARTIFACT_ID}&packaging=${PACKAGE}&no=${SNO}" ${URL}`
@@ -1420,7 +1419,7 @@ version_master() {
 
     VERSION="${ARR[1]}"
 
-    echo "version=${VERSION}"
+    echo_ "version=${VERSION}"
 
     DATE=`date +%Y-%m-%d" "%H:%M`
 
@@ -1452,8 +1451,8 @@ version_save() {
 
     ARTIFACT_PATH="${GROUP_PATH}/${ARTIFACT_ID}/${VERSION}"
 
-    echo "version save..."
-    echo "--> from: ${REPO_PATH}/${ARTIFACT_PATH}"
+    echo_ "version save..."
+    echo_ "--> from: ${REPO_PATH}/${ARTIFACT_PATH}"
 
     PACKAGE_PATH=""
     if [ -d "target" ]; then
@@ -1531,7 +1530,7 @@ nginx_lb() {
     TARGET="${NGINX_CONF_DIR}/nginx.conf"
 
     echo_bar
-    echo "nginx lb..."
+    echo_ "nginx lb..."
 
     LB_CONF="${TEMP_DIR}/${FLEET}"
 
@@ -1624,7 +1623,7 @@ nginx_lb() {
             fi
         done < ${LB_CONF}
 
-        echo "assemble..."
+        echo_ "assemble..."
 
         # default
         TEMPLATE="${SHELL_DIR}/package/nginx/nginx-default.conf"
@@ -1695,7 +1694,7 @@ vhost_domain() {
     fi
 
     echo_bar
-    echo "apache..."
+    echo_ "apache..."
 
     TEMPLATE="${SHELL_DIR}/package/apache/${HTTPD_VERSION}/vhost.conf"
     TEMP_FILE="${TEMP_DIR}/toast-vhost.tmp"
@@ -1706,7 +1705,7 @@ vhost_domain() {
 
     DEST_FILE="${HTTPD_CONF_DIR}/toast-${DOM}.conf"
 
-    echo "--> ${DEST_FILE}"
+    echo_ "--> ${DEST_FILE}"
 
     sed "s/DOM/$DOM/g" ${TEMPLATE} > ${TEMP_FILE}
     copy ${TEMP_FILE} ${DEST_FILE} 644
@@ -1728,7 +1727,7 @@ vhost_fleet() {
     fi
 
     echo_bar
-    echo "apache fleet..."
+    echo_ "apache fleet..."
 
     ${SUDO} rm -rf ${HTTPD_CONF_DIR}/toast*
 
@@ -1739,7 +1738,7 @@ vhost_fleet() {
     wget -q -N --post-data "org=${ORG}&token=${TOKEN}&no=${SNO}" -P "${TEMP_DIR}" "${URL}"
 
     if [ -f ${VHOST_LIST} ]; then
-        echo "placement apache..."
+        echo_ "placement apache..."
 
         TEMPLATE="${SHELL_DIR}/package/apache/${HTTPD_VERSION}/vhost.conf"
         TEMP_FILE="${TEMP_DIR}/toast-vhost.tmp"
@@ -1754,7 +1753,7 @@ vhost_fleet() {
 
             DEST_FILE="${HTTPD_CONF_DIR}/toast-${DOM}.conf"
 
-            echo "--> ${DEST_FILE}"
+            echo_ "--> ${DEST_FILE}"
 
             sed "s/DOM/$DOM/g" ${TEMPLATE} > ${TEMP_FILE}
             copy ${TEMP_FILE} ${DEST_FILE} 644
@@ -1788,7 +1787,7 @@ repo_path() {
 }
 
 deploy_project() {
-    echo "deploy project..."
+    echo_ "deploy project..."
 
     GROUP_ID="${PARAM2}"
     ARTIFACT_ID="${PARAM3}"
@@ -1816,13 +1815,13 @@ deploy_project() {
     UNZIP_DIR="${TEMP_DIR}/${ARTIFACT_ID}"
 
     echo_bar
-    echo "download..."
+    echo_ "download..."
 
     download
 
     tomcat_stop
 
-    echo "placement..."
+    echo_ "placement..."
 
     placement
 
@@ -1833,7 +1832,7 @@ deploy_project() {
 
 deploy_target() {
     echo_bar
-    echo "deploy target..."
+    echo_ "deploy target..."
 
     TARGET_FILE="${TEMP_DIR}/${FLEET}"
     rm -rf ${TARGET_FILE}
@@ -1842,7 +1841,7 @@ deploy_target() {
     wget -q -N --post-data "org=${ORG}&token=${TOKEN}&no=${SNO}&t_no=${PARAM2}" -P "${TEMP_DIR}" "${URL}"
 
     if [ -f ${TARGET_FILE} ]; then
-        echo "download..."
+        echo_ "download..."
 
         while read line
         do
@@ -1855,7 +1854,7 @@ deploy_target() {
 
         tomcat_stop
 
-        echo "placement..."
+        echo_ "placement..."
 
         while read line
         do
@@ -1874,7 +1873,7 @@ deploy_target() {
 
 deploy_fleet() {
     echo_bar
-    echo "deploy fleet..."
+    echo_ "deploy fleet..."
 
     TARGET_FILE="${TEMP_DIR}/${FLEET}"
     rm -rf ${TARGET_FILE}
@@ -1883,7 +1882,7 @@ deploy_fleet() {
     wget -q -N --post-data "org=${ORG}&token=${TOKEN}&no=${SNO}" -P "${TEMP_DIR}" "${URL}"
 
     if [ -f ${TARGET_FILE} ]; then
-        echo "download..."
+        echo_ "download..."
 
         while read line
         do
@@ -1897,7 +1896,7 @@ deploy_fleet() {
         tomcat_stop
         process_stop_all
 
-        echo "placement..."
+        echo_ "placement..."
 
         while read line
         do
@@ -1945,8 +1944,8 @@ deploy_value() {
 download() {
     SOURCE="${REPO_PATH}/${GROUP_PATH}/${ARTIFACT_ID}/${VERSION}/${FILENAME}"
 
-    echo "--> from: ${SOURCE}"
-    echo "--> to  : ${TEMP_DIR}/${FILENAME}"
+    echo_ "--> from: ${SOURCE}"
+    echo_ "--> to  : ${TEMP_DIR}/${FILENAME}"
 
     if [ -d "${FILEPATH}" ] || [ -f "${FILEPATH}" ]; then
         rm -rf "${FILEPATH}"
@@ -1987,7 +1986,7 @@ download() {
 }
 
 placement() {
-    echo "--> ${DEPLOY_PATH}"
+    echo_ "--> ${DEPLOY_PATH}"
 
     # php
     if [ "${TYPE}" == "php" ]; then
@@ -2060,7 +2059,7 @@ connect() {
         fi
 
         echo_bar
-        echo "# phase list"
+        echo_ "# phase list"
         cat ${CONN_LIST}
         echo_bar
 
@@ -2105,7 +2104,7 @@ connect() {
         fi
 
         echo_bar
-        echo "# fleet list"
+        echo_ "# fleet list"
         cat ${CONN_LIST}
         echo_bar
 
@@ -2152,7 +2151,7 @@ connect() {
     fi
 
     echo_bar
-    echo "# server list"
+    echo_ "# server list"
     cat ${CONN_LIST}
     echo_bar
 
@@ -2183,7 +2182,7 @@ connect() {
         return 1
     fi
 
-    echo "connect... ${CONN_PARAM}..."
+    echo_ "connect... ${CONN_PARAM}..."
     echo_bar
 
     # ssh
@@ -2256,7 +2255,7 @@ tomcat_stop() {
     if [ "${HAS_WAR}" == "TRUE" ]; then
         status=`ps -ef | grep catalina | grep java | grep -v grep | wc -l | awk '{print $1}'`
         if [ ${status} -ge 1 ]; then
-            echo "tomcat stop..."
+            echo_ "tomcat stop..."
             ${TOMCAT_DIR}/bin/shutdown.sh
             sleep 3
         fi
@@ -2268,13 +2267,13 @@ tomcat_start() {
         status=`ps -ef | grep catalina | grep java | grep -v grep | wc -l | awk '{print $1}'`
         count=0
         while [ ${status} -ge 1 ]; do
-            echo "wait tomcat..."
+            echo_ "wait tomcat..."
             sleep 3
 
             if [ ${count} -ge 5 ]; then
                 pid=`ps -ef | grep catalina | grep java | grep -v grep | awk '{print $2}'`
                 kill -9 ${pid}
-                echo "tomcat (${pid}) was killed."
+                echo_ "tomcat (${pid}) was killed."
             fi
 
             sleep 2
@@ -2282,7 +2281,7 @@ tomcat_start() {
             count=`expr ${count} + 1`
         done
 
-        echo "tomcat start..."
+        echo_ "tomcat start..."
         ${TOMCAT_DIR}/bin/startup.sh
     fi
 }
@@ -2292,7 +2291,7 @@ process_stop_all() {
         PID=`ps -ef | grep "[j]ava" | grep "[-]jar" | awk '{print $2}'`
         if [ "${PID}" != "" ]; then
             kill -9 ${PID}
-            echo "killed (${PID})"
+            echo_ "killed (${PID})"
         fi
     fi
 }
@@ -2301,7 +2300,7 @@ process_stop() {
     PID=`ps -ef | grep "[${ARTIFACT_ID:0:1}]""${ARTIFACT_ID:1}" | grep "[-]jar" | awk '{print $2}'`
     if [ "${PID}" != "" ]; then
         kill -9 ${PID}
-        echo "killed (${PID})"
+        echo_ "killed (${PID})"
     fi
 }
 
@@ -2310,7 +2309,7 @@ process_start() {
 
     PID=`ps -ef | grep "[${ARTIFACT_ID:0:1}]""${ARTIFACT_ID:1}" | grep "[-]jar" | awk '{print $2}'`
     if [ "${PID}" != "" ]; then
-        echo "startup (${PID})"
+        echo_ "startup (${PID})"
     fi
 }
 
@@ -2460,24 +2459,25 @@ not_darwin() {
     fi
 }
 
-echo_() {
-    echo ""
-}
-
 echo_bar() {
-    echo "================================================================================"
+    echo_ "================================================================================"
 }
 
 echo_toast() {
     echo_bar
-    echo "                              _  _          _                  _        "
-    echo "      _   _  __ _ _ __   ___ | |(_) __ _   | |_ ___   __ _ ___| |_      "
-    echo "     | | | |/ _\` | '_ \ / _ \| || |/ _\` |  | __/ _ \ / _\` / __| __|  "
-    echo "     | |_| | (_| | | | | (_) | || | (_| |  | || (_) | (_| \__ \ |_      "
-    echo "      \__, |\__,_|_| |_|\___/|_|/ |\__,_|   \__\___/ \__,_|___/\__|     "
-    echo "      |___/                   |__/                                      "
-    echo "                                                         by nalbam      "
+    echo_ "                              _  _          _                  _        "
+    echo_ "      _   _  __ _ _ __   ___ | |(_) __ _   | |_ ___   __ _ ___| |_      "
+    echo_ "     | | | |/ _\` | '_ \ / _ \| || |/ _\` |  | __/ _ \ / _\` / __| __|  "
+    echo_ "     | |_| | (_| | | | | (_) | || | (_| |  | || (_) | (_| \__ \ |_      "
+    echo_ "      \__, |\__,_|_| |_|\___/|_|/ |\__,_|   \__\___/ \__,_|___/\__|     "
+    echo_ "      |___/                   |__/                                      "
+    echo_ "                                                         by nalbam      "
     echo_bar
+}
+
+echo_() {
+    echo "$1"
+    echo "$1" >> /tmp/toast.log
 }
 
 ################################################################################
