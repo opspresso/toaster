@@ -86,7 +86,7 @@ LOGS_DIR="${DATA_DIR}/logs"
 SITE_DIR="${DATA_DIR}/site"
 TEMP_DIR="/tmp"
 
-HTTPD_VERSION="24"
+HTTPD_VERSION="22"
 
 TOMCAT_DIR="${APPS_DIR}/tomcat8"
 WEBAPP_DIR="${TOMCAT_DIR}/webapps"
@@ -1771,6 +1771,10 @@ vhost_fleet() {
 }
 
 repo_path() {
+    if [ "${REPO_PATH}" != "" ]; then
+        return
+    fi
+
     # repo_path
     URL="${TOAST_URL}/config/key/repo_path"
     RES=`curl -s --data "org=${ORG}&token=${TOKEN}&no=${SNO}" ${URL}`
