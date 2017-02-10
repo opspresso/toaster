@@ -1,11 +1,13 @@
 #!/bin/bash
 
 success() {
-    echo_ "$(tput setaf 2)$1$(tput sgr0)"
+    echo "$(tput setaf 2)$1$(tput sgr0)"
+    echo "$1" >> /tmp/toast.log
 }
 
 warning() {
-    echo_ "$(tput setaf 1)$1$(tput sgr0)"
+    echo "$(tput setaf 1)$1$(tput sgr0)"
+    echo "$1" >> /tmp/toast.log
 }
 
 ################################################################################
@@ -378,14 +380,14 @@ health() {
         return
     fi
 
-    echo_ "server health..."
+    #echo_ "server health..."
 
     UNAME=`uname -a`
     UPTIME=`uptime`
     CPU=`grep 'cpu ' /proc/stat | awk '{usage=($2+$4)*100/($2+$4+$5)} END {print usage}'`
 
-    echo_ "server uptime    [${UPTIME}]"
-    echo_ "server cpu usage [${CPU}]"
+    #echo_ "server uptime    [${UPTIME}]"
+    #echo_ "server cpu usage [${CPU}]"
 
     URL="${TOAST_URL}/server/health/${SNO}"
     RES=`curl -s --data "org=${ORG}&token=${TOKEN}&id=${UUID}&cpu=${CPU}&uname=${UNAME}&uptime=${UPTIME}" ${URL}`
@@ -415,15 +417,11 @@ self_info() {
 }
 
 self_update() {
-    #pushd ${SHELL_DIR}
-    #git pull
-    #popd
-
     ${SHELL_DIR}/install.sh
 }
 
 prepare() {
-    service_install "gcc curl wget unzip vim git telnet httpie"
+    service_install "gcc curl wget unzip vim git telnet"
 
     make_dir ${DATA_DIR}
     make_dir ${LOGS_DIR} 777
@@ -1713,10 +1711,10 @@ vhost_domain() {
 
     if [ "${OS_TYPE}" == "Ubuntu" ]; then
         echo_ "apache2 graceful..."
-        ${SUDO} apache2 -k graceful
+        ${SUDO} apache2 -k restart
     else
         echo_ "httpd graceful..."
-        ${SUDO} httpd -k graceful
+        ${SUDO} httpd -k restart
     fi
 
     echo_bar
@@ -1764,11 +1762,11 @@ vhost_fleet() {
     fi
 
     if [ "${OS_TYPE}" == "Ubuntu" ]; then
-        echo_ "apache2 graceful..."
-        ${SUDO} apache2 -k graceful
+        echo_ "apache2 restart..."
+        ${SUDO} apache2 -k restart
     else
-        echo_ "httpd graceful..."
-        ${SUDO} httpd -k graceful
+        echo_ "httpd restart..."
+        ${SUDO} httpd -k restart
     fi
 
     echo_bar
