@@ -196,6 +196,7 @@ auto() {
 
     init_hosts
     init_profile
+    init_startup
     init_slave
     init_aws
     init_epel
@@ -258,8 +259,8 @@ init() {
         certificate)
             init_certificate "${PARAM2}"
             ;;
-        service)
-            init_service
+        startup)
+            init_startup
             ;;
         httpd)
             init_httpd
@@ -864,7 +865,7 @@ init_certificate() {
     fi
 }
 
-init_service() {
+init_startup() {
     if [ "${OS_TYPE}" == "el7" ]; then
         echo_
     else
