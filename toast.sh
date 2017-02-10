@@ -1056,6 +1056,8 @@ init_php() {
 
         custom_php_ini
 
+        httpd_restart
+
         echo "PHP_VERSION=${VERSION}" > "${SHELL_DIR}/.config_php"
     fi
 
@@ -1639,7 +1641,7 @@ vhost_domain() {
     sed "s/DOM/$DOM/g" ${TEMPLATE} > ${TEMP_FILE}
     copy ${TEMP_FILE} ${DEST_FILE} 644
 
-    httpd_restart
+    httpd_graceful
 
     echo_bar
 }
@@ -1685,7 +1687,7 @@ vhost_fleet() {
         done < ${VHOST_LIST}
     fi
 
-    httpd_restart
+    httpd_graceful
 
     echo_bar
 }
@@ -2159,7 +2161,7 @@ service_ctl() {
     fi
 }
 
-httpd_restart() {
+httpd_graceful() {
     # TODO REMOVE
     echo_ "`curl http://localhost`"
 
@@ -2172,6 +2174,12 @@ httpd_restart() {
     fi
 
     echo_ "`curl http://localhost`"
+}
+
+httpd_restart() {
+    echo_ "httpd restart..."
+
+    service_ctl httpd restart
 }
 
 tomcat_stop() {
