@@ -1855,6 +1855,9 @@ deploy_value() {
         DEPLOY_PATH="${APPS_DIR}"
     fi
     if [ "${PACKAGING}" == "php" ]; then
+        if [ "${DOMAIN}" == "" ]; then
+            warning "need domain. [${DOMAIN}]"
+        fi
         PACKAGING="war"
         DEPLOY_PATH="${SITE_DIR}/${DOMAIN}"
     fi
@@ -1899,8 +1902,6 @@ download() {
             if [ -d "${UNZIP_DIR}" ] || [ -f "${UNZIP_DIR}" ]; then
                 warning "deploy file can not unzip. [${UNZIP_DIR}]"
             else
-                echo_ "--> unzip: ${UNZIP_DIR}"
-
                 unzip -q "${FILEPATH}" -d "${UNZIP_DIR}"
 
                 if [ ! -d "${UNZIP_DIR}" ]; then
