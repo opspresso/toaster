@@ -868,8 +868,6 @@ init_certificate() {
 init_startup() {
     TARGET="/etc/rc.d/rc.local"
 
-    ${SUDO} chmod +x ${TARGET}
-
     HAS_LINE="false"
 
     while read LINE
