@@ -1633,6 +1633,11 @@ vhost_domain() {
 
     DOM="${PARAM2}"
 
+    if [ "${DOM}" == "" ]; then
+        warning "need domain. [${DOM}]"
+        continue
+    fi
+
     make_dir "${SITE_DIR}/${DOM}"
 
     DEST_FILE="${HTTPD_CONF_DIR}/toast-${DOM}.conf"
@@ -1676,6 +1681,11 @@ vhost_fleet() {
             ARR=(${line})
 
             DOM="${ARR[0]}"
+
+            if [ "${DOM}" == "" ]; then
+                warning "need domain. [${DOM}]"
+                continue
+            fi
 
             make_dir "${SITE_DIR}/${DOM}"
 
