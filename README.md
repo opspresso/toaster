@@ -23,7 +23,6 @@ cat /var/log/cloud-init-output.log
 ### toast.sh
 ```
 ~/toaster/toast.sh auto
-~/toaster/toast.sh init httpd
 ~/toaster/toast.sh init java
 ~/toaster/toast.sh deploy fleet
 ~/toaster/toast.sh deploy target ${no}
@@ -32,7 +31,6 @@ cat /var/log/cloud-init-output.log
 ### remote.sh
 ```
 ~/toaster/remote.sh user ip port auto
-~/toaster/remote.sh user ip port init httpd
 ~/toaster/remote.sh user ip port init java
 ~/toaster/remote.sh user ip port deploy fleet
 ~/toaster/remote.sh user ip port deploy target ${no}
