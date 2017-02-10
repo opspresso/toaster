@@ -2162,9 +2162,6 @@ service_ctl() {
 }
 
 httpd_graceful() {
-    # TODO REMOVE
-    echo_ "`curl http://localhost`"
-
     echo_ "httpd graceful..."
 
     if [ "${OS_TYPE}" == "el6" ]; then
