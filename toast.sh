@@ -2169,8 +2169,6 @@ httpd_graceful() {
     else
         service_ctl httpd restart
     fi
-
-    echo_ "`curl http://localhost`"
 }
 
 httpd_restart() {
