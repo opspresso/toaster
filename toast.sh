@@ -1639,13 +1639,7 @@ vhost_domain() {
     sed "s/DOM/$DOM/g" ${TEMPLATE} > ${TEMP_FILE}
     copy ${TEMP_FILE} ${DEST_FILE} 644
 
-    # TODO REMOVE
-    echo_ "`curl http://localhost`"
-
-    echo_ "apachectl graceful..."
-    ${SUDO} apachectl -k graceful
-
-    echo_ "`curl http://localhost`"
+    httpd_restart
 
     echo_bar
 }
@@ -1691,8 +1685,7 @@ vhost_fleet() {
         done < ${VHOST_LIST}
     fi
 
-    echo_ "apachectl graceful..."
-    ${SUDO} apachectl -k graceful
+    httpd_restart
 
     echo_bar
 }
@@ -2164,6 +2157,17 @@ service_ctl() {
             ${SUDO} chkconfig $1 off
         fi
     fi
+}
+
+httpd_restart() {
+    # TODO REMOVE
+    echo_ "`curl http://localhost`"
+
+    echo_ "httpd graceful..."
+    #${SUDO} httpd -k graceful
+    service_ctl httpd restart
+
+    echo_ "`curl http://localhost`"
 }
 
 tomcat_stop() {
