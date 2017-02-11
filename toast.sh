@@ -196,6 +196,7 @@ auto() {
 
     init_hosts
     init_profile
+    init_startup
     init_slave
     init_aws
     init_epel
@@ -258,8 +259,8 @@ init() {
         certificate)
             init_certificate "${PARAM2}"
             ;;
-        service)
-            init_service
+        startup)
+            init_startup
             ;;
         httpd)
             init_httpd
@@ -789,7 +790,7 @@ init_aws() {
     fi
 
     echo_bar
-    aws --version
+    echo_ "`aws --version`"
     echo_bar
 }
 
@@ -864,20 +865,30 @@ init_certificate() {
     fi
 }
 
-init_service() {
-    TEMP_FILE="${TEMP_DIR}/toast-service.tmp"
+init_startup() {
+    TARGET="/etc/rc.d/rc.local"
 
-    if [ "${OS_TYPE}" == "el7" ]; then
-        TEMPLATE="${SHELL_DIR}/package/service/toast_el7"
-        sed "s/TOAST\_USER/$USER/g" ${TEMPLATE} > ${TEMP_FILE}
-        copy ${TEMP_FILE} /usr/lib/systemd/system/toast.service 644
-    else
-        TEMPLATE="${SHELL_DIR}/package/service/toast_el6"
-        sed "s/TOAST\_USER/$USER/g" ${TEMPLATE} > ${TEMP_FILE}
-        copy ${TEMP_FILE} /etc/init.d/toast 755
+    HAS_LINE="false"
+
+    while read LINE
+    do
+        if [ "${LINE}" == "# toast deploy" ]; then
+            HAS_LINE="true"
+        fi
+    done < ${TARGET}
+
+    if [ "${HAS_LINE}" == "false" ]; then
+        TEMP_FILE="${TEMP_DIR}/toast-service.tmp"
+
+        copy ${TARGET} ${TEMP_FILE}
+
+        ${SUDO} echo "" >> ${TEMP_FILE}
+        ${SUDO} echo "# toast deploy" >> ${TEMP_FILE}
+        ${SUDO} echo "/bin/su -l ${USER} -c '/home/${USER}/toaster/toast.sh deploy'" >> ${TEMP_FILE}
+        ${SUDO} echo "" >> ${TEMP_FILE}
+
+        copy ${TEMP_FILE} ${TARGET} 755
     fi
-
-    service_ctl toast start on
 }
 
 init_auto() {
