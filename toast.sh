@@ -358,6 +358,7 @@ deploy() {
             ;;
         *)
             deploy_fleet
+            vhost_local
             vhost_fleet
     esac
 }
