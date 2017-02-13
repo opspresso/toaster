@@ -207,8 +207,12 @@ auto() {
     init_auto
 
     #init_startup
-    deploy_fleet
+
     vhost_local
+
+    repo_path
+
+    deploy_fleet
     vhost_fleet
     nginx_lb
 }
