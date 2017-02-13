@@ -201,16 +201,12 @@ auto() {
 
     init_hosts
     init_profile
-    init_startup
     init_slave
     init_aws
     init_epel
     init_auto
 
-    repo_path
-
-    deploy_fleet
-    vhost_fleet
+    init_startup
 
     nginx_lb
 }
@@ -387,14 +383,14 @@ health() {
         return
     fi
 
-    echo_ "server health..."
+    #echo_ "server health..."
 
     UNAME=`uname -a`
     UPTIME=`uptime`
     CPU=`grep 'cpu ' /proc/stat | awk '{usage=($2+$4)*100/($2+$4+$5)} END {print usage}'`
 
-    echo_ "server uptime    [${UPTIME}]"
-    echo_ "server cpu usage [${CPU}]"
+    #echo_ "server uptime    [${UPTIME}]"
+    #echo_ "server cpu usage [${CPU}]"
 
     URL="${TOAST_URL}/server/health/${SNO}"
     RES=`curl -s --data "org=${ORG}&token=${TOKEN}&id=${UUID}&cpu=${CPU}&uname=${UNAME}&uptime=${UPTIME}" ${URL}`
@@ -407,6 +403,8 @@ health() {
             fi
         fi
     fi
+
+    exit 0
 }
 
 ################################################################################
