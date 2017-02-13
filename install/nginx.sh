@@ -38,7 +38,7 @@ FILE="nginx-${VERSION}"
 
 EXT="tar.gz"
 
-# aws s3 cp nginx-1.11.9.tar.gz s3://repo.yanolja.com/nginx/nginx-1.11.9.tar.gz
+# s3://repo.toast.sh/nginx/nginx-1.11.9.tar.gz
 
 ################################################################################
 

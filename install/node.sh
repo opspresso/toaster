@@ -38,7 +38,7 @@ FILE="node-v${VERSION}-linux-x64"
 
 EXT="tar.xz"
 
-# aws s3 cp node-v6.9.5-linux-x64.tar.xz s3://repo.yanolja.com/node/node-v6.9.5-linux-x64.tar.xz
+# s3://repo.toast.sh/node/node-v6.9.5-linux-x64.tar.xz
 
 ################################################################################
 

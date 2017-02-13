@@ -38,7 +38,7 @@ FILE="server-jre-8u121-linux-x64"
 
 EXT="tar.gz"
 
-# aws s3 cp server-jre-8u121-linux-x64.tar.gz s3://repo.yanolja.com/java/server-jre-8u121-linux-x64.tar.gz
+# s3://repo.toast.sh/java/server-jre-8u121-linux-x64.tar.gz
 
 ################################################################################
 

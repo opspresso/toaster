@@ -40,7 +40,7 @@ EXT="tar.gz"
 
 TOMCAT_DIR="/data/apps/tomcat8"
 
-# aws s3 cp apache-tomcat-8.0.41.tar.gz s3://repo.yanolja.com/tomcat/apache-tomcat-8.0.41.tar.gz
+# s3://repo.toast.sh/tomcat/apache-tomcat-8.0.41.tar.gz
 
 ################################################################################
 
