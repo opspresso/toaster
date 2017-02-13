@@ -1424,10 +1424,11 @@ version_save() {
     fi
 
     if [ "${PACKAGE_PATH}" == "" ]; then
-        aws s3 sync ~/.m2/repository/${ARTIFACT_PATH}/ ${REPO_PATH}/maven2/${ARTIFACT_PATH}/ --quiet
-    else
-        aws s3 cp ${PACKAGE_PATH} ${REPO_PATH}/maven2/${ARTIFACT_PATH}/ --quiet
+        warning "package does not exist. [${PACKAGE_PATH}]"
+        return 1
     fi
+
+    aws s3 cp ${PACKAGE_PATH} ${REPO_PATH}/maven2/${ARTIFACT_PATH}/ --quiet
 
     URL="${TOAST_URL}/version/build/${ARTIFACT_ID}/${VERSION}"
     RES=`curl -s --data "org=${ORG}&token=${TOKEN}&groupId=${GROUP_ID}&artifactId=${ARTIFACT_ID}&packaging=${PACKAGE}&no=${SNO}" ${URL}`
@@ -1900,16 +1901,23 @@ deploy_value() {
 }
 
 download() {
+    if [ -d "${FILEPATH}" ] || [ -f "${FILEPATH}" ]; then
+        rm -rf "${FILEPATH}"
+    fi
+
     SOURCE="${REPO_PATH}/maven2/${GROUP_PATH}/${ARTIFACT_ID}/${VERSION}/${FILENAME}"
 
     echo_ "--> from : ${SOURCE}"
     echo_ "--> to   : ${TEMP_DIR}/${FILENAME}"
 
-    if [ -d "${FILEPATH}" ] || [ -f "${FILEPATH}" ]; then
-        rm -rf "${FILEPATH}"
-    fi
-
     aws s3 cp "${SOURCE}" "${TEMP_DIR}" --quiet
+
+    # TODO REMOVE
+    if [ ! -f "${FILEPATH}" ]; then
+        SOURCE="${REPO_PATH}/${GROUP_PATH}/${ARTIFACT_ID}/${VERSION}/${FILENAME}"
+
+        aws s3 cp "${SOURCE}" "${TEMP_DIR}" --quiet
+    fi
 
     if [ ! -f "${FILEPATH}" ]; then
         warning "deploy file does not exist. [${FILEPATH}]"
