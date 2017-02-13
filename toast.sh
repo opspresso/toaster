@@ -626,6 +626,8 @@ init_hosts() {
         echo "${RES}" >> ${TEMP_FILE}
     fi
 
+    echo "" >> ${TEMP_FILE}
+
     copy ${TEMP_FILE} ${TARGET}
 }
 
