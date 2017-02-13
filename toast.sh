@@ -1030,8 +1030,6 @@ init_nginx() {
 
         repo_path
 
-        service_install "pcre pcre-devel zlib zlib-devel openssl openssl-devel"
-
         ${SHELL_DIR}/install/nginx.sh ${REPO_PATH}
 
         echo_ "nginx start..."
@@ -1194,7 +1192,9 @@ init_rabbitmq() {
     if [ ! -f "${SHELL_DIR}/.config_rabbitmq" ]; then
         echo_ "init rabbitmq..."
 
-        ${SHELL_DIR}/install/rabbitmq.sh
+        repo_path
+
+        ${SHELL_DIR}/install/rabbitmq.sh ${REPO_PATH}
 
         service_ctl rabbitmq-server start on
 
@@ -1424,10 +1424,11 @@ version_save() {
     fi
 
     if [ "${PACKAGE_PATH}" == "" ]; then
-        aws s3 sync ~/.m2/repository/${ARTIFACT_PATH}/ ${REPO_PATH}/maven2/${ARTIFACT_PATH}/ --quiet
-    else
-        aws s3 cp ${PACKAGE_PATH} ${REPO_PATH}/maven2/${ARTIFACT_PATH}/ --quiet
+        warning "package does not exist. [${PACKAGE_PATH}]"
+        return 1
     fi
+
+    aws s3 cp ${PACKAGE_PATH} ${REPO_PATH}/maven2/${ARTIFACT_PATH}/ --quiet
 
     URL="${TOAST_URL}/version/build/${ARTIFACT_ID}/${VERSION}"
     RES=`curl -s --data "org=${ORG}&token=${TOKEN}&groupId=${GROUP_ID}&artifactId=${ARTIFACT_ID}&packaging=${PACKAGE}&no=${SNO}" ${URL}`
@@ -1900,48 +1901,50 @@ deploy_value() {
 }
 
 download() {
-    SOURCE="${REPO_PATH}/maven2/${GROUP_PATH}/${ARTIFACT_ID}/${VERSION}/${FILENAME}"
-
-    echo_ "--> from : ${SOURCE}"
-    echo_ "--> to   : ${TEMP_DIR}/${FILENAME}"
-
     if [ -d "${FILEPATH}" ] || [ -f "${FILEPATH}" ]; then
         rm -rf "${FILEPATH}"
     fi
 
+    SOURCE="${REPO_PATH}/maven2/${GROUP_PATH}/${ARTIFACT_ID}/${VERSION}/${FILENAME}"
+
+    echo_ "--> from : ${SOURCE}"
+
     aws s3 cp "${SOURCE}" "${TEMP_DIR}" --quiet
+
+    echo_ "--> to   : ${TEMP_DIR}/${FILENAME}"
 
     if [ ! -f "${FILEPATH}" ]; then
         warning "deploy file does not exist. [${FILEPATH}]"
-    else
-        # war (for tomcat stop/start)
-        if [ "${TYPE}" == "war" ]; then
-            HAS_WAR="TRUE"
+        return 1
+    fi
+
+    # war (for tomcat stop/start)
+    if [ "${TYPE}" == "war" ]; then
+        HAS_WAR="TRUE"
+    fi
+
+    # jar (for jar stop/start)
+    if [ "${TYPE}" == "jar" ]; then
+        HAS_JAR="true"
+    fi
+
+    # php unzip
+    if [ "${TYPE}" == "php" ]; then
+        if [ -d "${UNZIP_DIR}" ] || [ -f "${UNZIP_DIR}" ]; then
+            rm -rf "${UNZIP_DIR}"
         fi
 
-        # jar (for jar stop/start)
-        if [ "${TYPE}" == "jar" ]; then
-            HAS_JAR="true"
-        fi
+        if [ -d "${UNZIP_DIR}" ] || [ -f "${UNZIP_DIR}" ]; then
+            warning "deploy file can not unzip. [${UNZIP_DIR}]"
+        else
+            unzip -q "${FILEPATH}" -d "${UNZIP_DIR}"
 
-        # php unzip
-        if [ "${TYPE}" == "php" ]; then
-            if [ -d "${UNZIP_DIR}" ] || [ -f "${UNZIP_DIR}" ]; then
-                rm -rf "${UNZIP_DIR}"
+            if [ ! -d "${UNZIP_DIR}" ]; then
+                warning "deploy file can not unzip. [${UNZIP_DIR}]"
             fi
 
-            if [ -d "${UNZIP_DIR}" ] || [ -f "${UNZIP_DIR}" ]; then
-                warning "deploy file can not unzip. [${UNZIP_DIR}]"
-            else
-                unzip -q "${FILEPATH}" -d "${UNZIP_DIR}"
-
-                if [ ! -d "${UNZIP_DIR}" ]; then
-                    warning "deploy file can not unzip. [${UNZIP_DIR}]"
-                fi
-
-                if [ -d "${UNZIP_DIR}/application/logs" ]; then
-                    chmod 777 "${UNZIP_DIR}/application/logs"
-                fi
+            if [ -d "${UNZIP_DIR}/application/logs" ]; then
+                chmod 777 "${UNZIP_DIR}/application/logs"
             fi
         fi
     fi

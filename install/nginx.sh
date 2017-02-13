@@ -69,11 +69,11 @@ fi
 
 ################################################################################
 
+${SUDO} yum install -y pcre pcre-devel zlib zlib-devel openssl openssl-devel
+
 tar xzf ${FILE}.${EXT}
 
 pushd ${FILE}
-
-# sudo yum install -y pcre-devel openssl-devel
 
 ./configure --prefix=/usr/local/nginx \
             --sbin-path=/usr/sbin/nginx \
@@ -90,4 +90,5 @@ ${SUDO} make install
 
 popd
 
+rm -rf ${FILE}.${EXT}
 rm -rf ${FILE}
