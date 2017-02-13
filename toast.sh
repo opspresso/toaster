@@ -1411,7 +1411,7 @@ version_save() {
     ARTIFACT_PATH="${GROUP_PATH}/${ARTIFACT_ID}/${VERSION}"
 
     echo_ "version save..."
-    echo_ "--> from: ${REPO_PATH}/${ARTIFACT_PATH}"
+    echo_ "--> from: ${REPO_PATH}/maven2/${ARTIFACT_PATH}"
 
     PACKAGE_PATH=""
     if [ -d "target" ]; then
@@ -1424,9 +1424,9 @@ version_save() {
     fi
 
     if [ "${PACKAGE_PATH}" == "" ]; then
-        aws s3 sync ~/.m2/repository/${ARTIFACT_PATH}/ ${REPO_PATH}/${ARTIFACT_PATH}/ --quiet
+        aws s3 sync ~/.m2/repository/${ARTIFACT_PATH}/ ${REPO_PATH}/maven2/${ARTIFACT_PATH}/ --quiet
     else
-        aws s3 cp ${PACKAGE_PATH} ${REPO_PATH}/${ARTIFACT_PATH}/ --quiet
+        aws s3 cp ${PACKAGE_PATH} ${REPO_PATH}/maven2/${ARTIFACT_PATH}/ --quiet
     fi
 
     URL="${TOAST_URL}/version/build/${ARTIFACT_ID}/${VERSION}"
@@ -1900,7 +1900,7 @@ deploy_value() {
 }
 
 download() {
-    SOURCE="${REPO_PATH}/${GROUP_PATH}/${ARTIFACT_ID}/${VERSION}/${FILENAME}"
+    SOURCE="${REPO_PATH}/maven2/${GROUP_PATH}/${ARTIFACT_ID}/${VERSION}/${FILENAME}"
 
     echo_ "--> from : ${SOURCE}"
     echo_ "--> to   : ${TEMP_DIR}/${FILENAME}"
