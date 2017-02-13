@@ -1,5 +1,10 @@
 #!/bin/bash
 
+echo_() {
+    echo "$1"
+    echo "$1" >> /tmp/toast.log
+}
+
 success() {
     echo "$(tput setaf 2)$1$(tput sgr0)"
     echo "$1" >> /tmp/toast.log

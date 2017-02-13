@@ -1,16 +1,27 @@
 #!/bin/bash
 
-OS_NAME=`uname`
-if [ ${OS_NAME} != "Linux" ]; then
-    echo "Not supported OS : $OS_NAME"
-    exit 1
-fi
+echo_() {
+    echo "$1"
+    echo "$1" >> /tmp/toast.log
+}
+
+success() {
+    echo "$(tput setaf 2)$1$(tput sgr0)"
+    echo "$1" >> /tmp/toast.log
+}
+
+warning() {
+    echo "$(tput setaf 1)$1$(tput sgr0)"
+    echo "$1" >> /tmp/toast.log
+}
 
 ################################################################################
 
-VERSION="1.11"
-
-EXT="tar.gz"
+#OS_NAME=`uname`
+#if [ ${OS_NAME} != "Linux" ]; then
+#    warning "Not supported OS : ${OS_NAME}"
+#    exit 1
+#fi
 
 SUDO=""
 if [ "${HOME}" != "/root" ]; then
@@ -19,42 +30,48 @@ fi
 
 ################################################################################
 
-URL1="https://nginx.org/en/download.html"
-URL2=$(curl -s ${URL1} | egrep -o "\/download\/nginx-${VERSION}.(.*).${EXT}")
+NAME="nginx"
 
-# /download/nginx-1.11.4.tar.gz
+VERSION="1.11.9"
 
-if [[ -z "$URL2" ]]; then
-    echo "Could not get nginx url - $URL2"
-    exit 1
-fi
+FILE="nginx-${VERSION}"
 
-URL3=$(echo ${URL2} | cut -d "\"" -f 1)
+EXT="tar.gz"
 
-NGINX=$(echo ${URL3} | cut -d "/" -f 3)
-
-if [[ -z "$NGINX" ]]; then
-    echo "Could not get nginx - $NGINX"
-    exit 1
-fi
-
-echo "https://nginx.org/download/${NGINX}"
-echo ${NGINX}
+# aws s3 cp nginx-1.11.9.tar.gz s3://repo.yanolja.com/nginx/nginx-1.11.9.tar.gz
 
 ################################################################################
 
-wget -q -N "https://nginx.org/download/${NGINX}"
+REPO="$1"
 
-tar xzf ${NGINX}
+if [ "${REPO}" == "" ]; then
+    URL="http://repo.toast.sh/${NAME}/${FILE}.${EXT}"
 
-#rm -rf ${NGINX}
+    echo_ "download... [${URL}]"
 
-NGINX_DIR=$(echo ${NGINX} | egrep -o "nginx-${VERSION}.[0-9]+")
+    wget -q -N ${URL}
+else
+    URL="${REPO}/${NAME}/${FILE}.${EXT}"
 
-pushd ${NGINX_DIR}
+    echo_ "download... [${URL}]"
 
-# sudo yum install -y pcre-devel
-# sudo yum install -y openssl-devel
+    aws s3 cp ${URL} ./
+fi
+
+if [ ! -f ${FILE}.${EXT} ]; then
+    warning "Can not download : ${URL}"
+    exit 1
+fi
+
+exit 0
+
+################################################################################
+
+tar xzf ${FILE}.${EXT}
+
+pushd ${FILE}
+
+# sudo yum install -y pcre-devel openssl-devel
 
 ./configure --prefix=/usr/local/nginx \
             --sbin-path=/usr/sbin/nginx \
@@ -71,4 +88,4 @@ ${SUDO} make install
 
 popd
 
-rm -rf ${NGINX_DIR}
+rm -rf ${FILE}

@@ -1,77 +1,75 @@
 #!/bin/bash
 
-OS_NAME=`uname`
-if [ ${OS_NAME} != "Linux" ]; then
-    echo "Not supported OS : $OS_NAME"
-    exit 1
-fi
+echo_() {
+    echo "$1"
+    echo "$1" >> /tmp/toast.log
+}
+
+success() {
+    echo "$(tput setaf 2)$1$(tput sgr0)"
+    echo "$1" >> /tmp/toast.log
+}
+
+warning() {
+    echo "$(tput setaf 1)$1$(tput sgr0)"
+    echo "$1" >> /tmp/toast.log
+}
 
 ################################################################################
 
-VERSION="8"
-
-OS_NAME="linux"
-
-EXT="tar.gz"
+#OS_NAME=`uname`
+#if [ ${OS_NAME} != "Linux" ]; then
+#    warning "Not supported OS : ${OS_NAME}"
+#    exit 1
+#fi
 
 SUDO=""
 if [ "${HOME}" != "/root" ]; then
     SUDO="sudo"
 fi
 
-MACHINE=`uname -m`
-if [ ${MACHINE} == 'x86_64' ]; then
-    OS_BIT="x64"
-else
-    OS_BIT="i586"
-fi
-
 SHELL_DIR=$(dirname $0)
 
 ################################################################################
 
-URL0="http://www.oracle.com"
-URL1="${URL0}/technetwork/java/javase/downloads/index.html"
-URL2=$(curl -s ${URL1} | egrep -o "\/technetwork\/java/\javase\/downloads\/server-jre${VERSION}-downloads-(.*)\.html" | head -1)
+NAME="java"
 
-# http://www.oracle.com/technetwork/java/javase/downloads/server-jre8-downloads-2133154.html
+FILE="server-jre-8u121-linux-x64"
 
-if [[ -z "$URL2" ]]; then
-    echo "Could not download - $URL1"
-    exit 1
-fi
+EXT="tar.gz"
 
-URL3="$(echo ${URL0}${URL2} | awk -F\" {'print $1'})"
-URL4=$(curl -s ${URL3} | egrep -o "http\:\/\/download\.oracle\.com\/otn-pub\/java\/jdk\/${VERSION}u(.*)\/server-jre-${VERSION}u(.*)-${OS_NAME}-${OS_BIT}.${EXT}")
-
-# http://download.oracle.com/otn-pub/java/jdk/8u101-b13/server-jre-8u101-linux-x64.tar.gz
-# http://download.oracle.com/otn-pub/java/jdk/8u121-b13/e9e7ea248e2c4826b92b3f075a80e441/server-jre-8u121-linux-x64.tar.gz
-
-if [[ -z "$URL4" ]]; then
-    echo "Could not get java url - $URL4"
-    exit 1
-fi
-
-URL5=$(echo ${URL4} | cut -d " " -f 1)
-
-JAVA=$(echo ${URL5} | cut -d "/" -f 9)
-if [[ -z "$JAVA" ]]; then
-    echo "Could not get java - $JAVA"
-    exit 1
-fi
-
-echo ${URL5}
-echo ${JAVA}
+# aws s3 cp server-jre-8u121-linux-x64.tar.gz s3://repo.yanolja.com/java/server-jre-8u121-linux-x64.tar.gz
 
 ################################################################################
 
-wget -q -N --no-cookies --no-check-certificate --header "Cookie: oraclelicense=accept-securebackup-cookie" ${URL5}
+REPO="$1"
 
-tar xzf ${JAVA}
+if [ "${REPO}" == "" ]; then
+    URL="http://repo.toast.sh/${NAME}/${FILE}.${EXT}"
 
-#rm -rf ${JAVA}
+    echo_ "download... [${URL}]"
 
-VS1=$(echo ${JAVA} | cut -d "-" -f 3)
+    wget -q -N ${URL}
+else
+    URL="${REPO}/${NAME}/${FILE}.${EXT}"
+
+    echo_ "download... [${URL}]"
+
+    aws s3 cp ${URL} ./
+fi
+
+if [ ! -f ${FILE}.${EXT} ]; then
+    warning "Can not download : ${URL}"
+    exit 1
+fi
+
+exit 0
+
+################################################################################
+
+tar xzf ${FILE}.${EXT}
+
+VS1=$(echo ${FILE} | cut -d "-" -f 3)
 VS2="${VS1/u/.0_}"
 
 JAVA_DIR="jdk1.${VS2}"
@@ -85,4 +83,4 @@ ${SUDO} ln -s ${JAVA_HOME} /usr/local/java
 
 ${SUDO} cp -rf ${SHELL_DIR}/jce8/* ${JAVA_HOME}/jre/lib/security/
 
-echo "JAVA_HOME=${JAVA_HOME}"
+echo_ "JAVA_HOME=${JAVA_HOME}"

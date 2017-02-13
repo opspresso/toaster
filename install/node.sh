@@ -1,71 +1,81 @@
 #!/bin/bash
 
-OS_NAME=`uname`
-if [ ${OS_NAME} != "Linux" ]; then
-    echo "Not supported OS : $OS_NAME"
-    exit 1
-fi
+echo_() {
+    echo "$1"
+    echo "$1" >> /tmp/toast.log
+}
+
+success() {
+    echo "$(tput setaf 2)$1$(tput sgr0)"
+    echo "$1" >> /tmp/toast.log
+}
+
+warning() {
+    echo "$(tput setaf 1)$1$(tput sgr0)"
+    echo "$1" >> /tmp/toast.log
+}
 
 ################################################################################
 
-OS_NAME="linux"
-
-EXT="tar.xz"
+#OS_NAME=`uname`
+#if [ ${OS_NAME} != "Linux" ]; then
+#    warning "Not supported OS : ${OS_NAME}"
+#    exit 1
+#fi
 
 SUDO=""
 if [ "${HOME}" != "/root" ]; then
     SUDO="sudo"
 fi
 
-MACHINE=`uname -m`
-if [ ${MACHINE} == 'x86_64' ]; then
-    OS_BIT="x64"
+################################################################################
+
+NAME="node"
+
+VERSION="6.9.5"
+
+FILE="node-v${VERSION}-linux-x64"
+
+EXT="tar.xz"
+
+# aws s3 cp node-v6.9.5-linux-x64.tar.xz s3://repo.yanolja.com/node/node-v6.9.5-linux-x64.tar.xz
+
+################################################################################
+
+REPO="$1"
+
+if [ "${REPO}" == "" ]; then
+    URL="http://repo.toast.sh/${NAME}/${FILE}.${EXT}"
+
+    echo_ "download... [${URL}]"
+
+    wget -q -N ${URL}
 else
-    OS_BIT="i586"
+    URL="${REPO}/${NAME}/${FILE}.${EXT}"
+
+    echo_ "download... [${URL}]"
+
+    aws s3 cp ${URL} ./
 fi
 
-################################################################################
-
-URL1="https://nodejs.org/en/download/"
-URL2=$(curl -s ${URL1} | egrep -o "https\:\/\/nodejs\.org\/dist\/v[0-9]+.[0-9]+.[0-9]+\/node-v[0-9]+.[0-9]+.[0-9]+-${OS_NAME}-${OS_BIT}.${EXT}")
-
-# curl -s https://nodejs.org/en/download/ | egrep -o "https\:\/\/nodejs\.org\/dist\/v[0-9]+.[0-9]+.[0-9]+\/node-v[0-9]+.[0-9]+.[0-9]+-linux-x64.tar.xz"
-
-# https://nodejs.org/dist/v6.9.1/node-v6.9.1-linux-x64.tar.xz
-# https://nodejs.org/dist/v4.4.7/node-v4.4.7-linux-x64.tar.xz
-
-if [[ -z "$URL2" ]]; then
-    echo "Could not get node url - $URL2"
+if [ ! -f ${FILE}.${EXT} ]; then
+    warning "Can not download : ${URL}"
     exit 1
 fi
 
-URL3=$(echo ${URL2} | cut -d " " -f 1)
-
-NODE=$(echo ${URL3} | cut -d "/" -f 6)
-
-if [[ -z "$NODE" ]]; then
-    echo "Could not get node - $NODE"
-    exit 1
-fi
-
-echo ${URL3}
-echo ${NODE}
+exit 0
 
 ################################################################################
 
-wget -q -N ${URL3}
+tar xf ${FILE}.${EXT}
 
-tar xf ${NODE}
-
-#rm -rf ${NODE}
-
-NODE_DIR=$(echo ${NODE} | egrep -o "node-v[0-9]+.[0-9]+.[0-9]+-${OS_NAME}-${OS_BIT}")
-NODE_HOME="/usr/local/${NODE_DIR}"
+NODE_HOME="/usr/local/${FILE}"
 
 ${SUDO} rm -rf ${NODE_HOME}
-${SUDO} mv ${NODE_DIR} /usr/local/
-
 ${SUDO} rm -rf /usr/local/node
+
+${SUDO} mv ${FILE} /usr/local/
+
 ${SUDO} ln -s ${NODE_HOME} /usr/local/node
 
-echo "NODE_HOME=${NODE_HOME}"
+echo_ "NODE_HOME=${NODE_HOME}"

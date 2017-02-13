@@ -1,69 +1,80 @@
 #!/bin/bash
 
-OS_NAME=`uname`
-if [ ${OS_NAME} != "Linux" ]; then
-    echo "Not supported OS : $OS_NAME"
-    exit 1
+echo_() {
+    echo "$1"
+    echo "$1" >> /tmp/toast.log
+}
+
+success() {
+    echo "$(tput setaf 2)$1$(tput sgr0)"
+    echo "$1" >> /tmp/toast.log
+}
+
+warning() {
+    echo "$(tput setaf 1)$1$(tput sgr0)"
+    echo "$1" >> /tmp/toast.log
+}
+
+################################################################################
+
+#OS_NAME=`uname`
+#if [ ${OS_NAME} != "Linux" ]; then
+#    warning "Not supported OS : ${OS_NAME}"
+#    exit 1
+#fi
+
+SUDO=""
+if [ "${HOME}" != "/root" ]; then
+    SUDO="sudo"
 fi
 
 ################################################################################
 
-VERSION="8"
+NAME="tomcat"
+
+VERSION="8.0.41"
+
+FILE="apache-tomcat-${VERSION}"
 
 EXT="tar.gz"
 
-APPS_DIR="$1"
-if [ "${APPS_DIR}" == "" ]; then
-    APPS_DIR="/data/apps"
-fi
+TOMCAT_DIR="/data/apps/tomcat8"
 
-TOMCAT_DIR="${APPS_DIR}/tomcat${VERSION}"
+# aws s3 cp apache-tomcat-8.0.41.tar.gz s3://repo.yanolja.com/tomcat/apache-tomcat-8.0.41.tar.gz
 
 ################################################################################
 
-URL1="http://mirror.apache-kr.org/tomcat/tomcat-${VERSION}/"
-URL2=$(curl -s ${URL1} | egrep -o "v${VERSION}.0.[0-9]+")
+REPO="$1"
 
-ARR=(${URL2})
+if [ "${REPO}" == "" ]; then
+    URL="http://repo.toast.sh/${NAME}/${FILE}.${EXT}"
 
-if [ "$ARR[0]" == "" ]; then
-    echo "Could not get node url - $URL2"
+    echo_ "download... [${URL}]"
+
+    wget -q -N ${URL}
+else
+    URL="${REPO}/${NAME}/${FILE}.${EXT}"
+
+    echo_ "download... [${URL}]"
+
+    aws s3 cp ${URL} ./
+fi
+
+if [ ! -f ${FILE}.${EXT} ]; then
+    warning "Can not download : ${URL}"
     exit 1
 fi
 
-CURRENT="${ARR[0]:1}"
-
-URL3="http://mirror.apache-kr.org/tomcat/tomcat-${VERSION}/v${CURRENT}/bin/apache-tomcat-${CURRENT}.tar.gz"
-
-# http://mirror.apache-kr.org/tomcat/tomcat-8/v8.0.36/bin/apache-tomcat-8.0.36.tar.gz
-
-if [[ -z "$URL3" ]]; then
-    echo "Could not get node url - $URL3"
-    exit 1
-fi
-
-TOMCAT=$(echo ${URL3} | cut -d "/" -f 8)
-
-if [[ -z "$TOMCAT" ]]; then
-    echo "Could not get tomcat - $TOMCAT"
-    exit 1
-fi
-
-echo ${URL3}
-echo ${TOMCAT}
+exit 0
 
 ################################################################################
 
-wget -q -N -P "${APPS_DIR}" "${URL3}"
+tar xzf ${FILE}.${EXT}
 
-tar xzf ${TOMCAT}
-
-#rm -rf ${TOMCAT}
-
-rm -rf ${TOMCAT_DIR}
-
-mv apache-tomcat-${CURRENT} ${TOMCAT_DIR}
+mv apache-tomcat-${VERSION} ${TOMCAT_DIR}
 
 chmod 755 ${TOMCAT_DIR}/bin/*.sh
 
 rm -rf ${TOMCAT_DIR}/webapps/*
+
+echo_ "CATALINA_HOME=${TOMCAT_DIR}"
