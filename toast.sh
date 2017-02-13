@@ -206,8 +206,10 @@ auto() {
     init_epel
     init_auto
 
-    init_startup
+    #init_startup
 
+    deploy_fleet
+    vhost_fleet
     nginx_lb
 }
 
@@ -359,7 +361,6 @@ deploy() {
             ;;
         *)
             deploy_fleet
-            vhost_local
             vhost_fleet
     esac
 }
@@ -625,6 +626,8 @@ init_hosts() {
         echo "${RES}" >> ${TEMP_FILE}
     fi
 
+    echo "" >> ${TEMP_FILE}
+
     copy ${TEMP_FILE} ${TARGET}
 }
 
@@ -872,11 +875,13 @@ init_certificate() {
 init_startup() {
     TARGET="/etc/rc.d/rc.local"
 
+    RC_HEAD="# toast auto"
+
     HAS_LINE="false"
 
     while read LINE
     do
-        if [ "${LINE}" == "# toast deploy" ]; then
+        if [ "${LINE}" == "${RC_HEAD}" ]; then
             HAS_LINE="true"
         fi
     done < ${TARGET}
@@ -887,8 +892,8 @@ init_startup() {
         copy ${TARGET} ${TEMP_FILE}
 
         ${SUDO} echo "" >> ${TEMP_FILE}
-        ${SUDO} echo "# toast deploy" >> ${TEMP_FILE}
-        ${SUDO} echo "/bin/su -l ${USER} -c '/home/${USER}/toaster/toast.sh deploy'" >> ${TEMP_FILE}
+        ${SUDO} echo "${RC_HEAD}" >> ${TEMP_FILE}
+        ${SUDO} echo "/sbin/runuser -l ${USER} -c '/home/${USER}/toaster/toast.sh auto'" >> ${TEMP_FILE}
         ${SUDO} echo "" >> ${TEMP_FILE}
 
         copy ${TEMP_FILE} ${TARGET} 755
@@ -1684,6 +1689,8 @@ vhost_fleet() {
     echo_bar
     echo_ "apache fleet..."
 
+    vhost_local
+
     ${SUDO} rm -rf ${HTTPD_CONF_DIR}/toast*
 
     VHOST_LIST="${TEMP_DIR}/${FLEET}"
@@ -1745,6 +1752,8 @@ repo_path() {
 deploy_project() {
     echo_ "deploy project..."
 
+    repo_path
+
     GROUP_ID="${PARAM2}"
     ARTIFACT_ID="${PARAM3}"
     VERSION="${PARAM4}"
@@ -1790,6 +1799,8 @@ deploy_target() {
     echo_bar
     echo_ "deploy target..."
 
+    repo_path
+
     TARGET_FILE="${TEMP_DIR}/${FLEET}"
     rm -rf ${TARGET_FILE}
 
@@ -1830,6 +1841,8 @@ deploy_target() {
 deploy_fleet() {
     echo_bar
     echo_ "deploy fleet..."
+
+    repo_path
 
     TARGET_FILE="${TEMP_DIR}/${FLEET}"
     rm -rf ${TARGET_FILE}
