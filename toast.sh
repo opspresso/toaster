@@ -206,8 +206,10 @@ auto() {
     init_epel
     init_auto
 
-    init_startup
-
+    #init_startup
+    deploy_fleet
+    vhost_local
+    vhost_fleet
     nginx_lb
 }
 
@@ -872,11 +874,13 @@ init_certificate() {
 init_startup() {
     TARGET="/etc/rc.d/rc.local"
 
+    RC_HEAD="# toast auto"
+
     HAS_LINE="false"
 
     while read LINE
     do
-        if [ "${LINE}" == "# toast deploy" ]; then
+        if [ "${LINE}" == "${RC_HEAD}" ]; then
             HAS_LINE="true"
         fi
     done < ${TARGET}
@@ -887,8 +891,8 @@ init_startup() {
         copy ${TARGET} ${TEMP_FILE}
 
         ${SUDO} echo "" >> ${TEMP_FILE}
-        ${SUDO} echo "# toast deploy" >> ${TEMP_FILE}
-        ${SUDO} echo "/bin/su -l ${USER} -c '/home/${USER}/toaster/toast.sh deploy'" >> ${TEMP_FILE}
+        ${SUDO} echo "${RC_HEAD}" >> ${TEMP_FILE}
+        ${SUDO} echo "/sbin/runuser -l ${USER} -c '/home/${USER}/toaster/toast.sh auto'" >> ${TEMP_FILE}
         ${SUDO} echo "" >> ${TEMP_FILE}
 
         copy ${TEMP_FILE} ${TARGET} 755
