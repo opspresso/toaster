@@ -1030,8 +1030,6 @@ init_nginx() {
 
         repo_path
 
-        service_install "pcre pcre-devel zlib zlib-devel openssl openssl-devel"
-
         ${SHELL_DIR}/install/nginx.sh ${REPO_PATH}
 
         echo_ "nginx start..."
@@ -1194,7 +1192,9 @@ init_rabbitmq() {
     if [ ! -f "${SHELL_DIR}/.config_rabbitmq" ]; then
         echo_ "init rabbitmq..."
 
-        ${SHELL_DIR}/install/rabbitmq.sh
+        repo_path
+
+        ${SHELL_DIR}/install/rabbitmq.sh ${REPO_PATH}
 
         service_ctl rabbitmq-server start on
 
@@ -1910,15 +1910,6 @@ download() {
     echo_ "--> from : ${SOURCE}"
 
     aws s3 cp "${SOURCE}" "${TEMP_DIR}" --quiet
-
-    # TODO REMOVE
-    if [ ! -f "${FILEPATH}" ]; then
-        SOURCE="${REPO_PATH}/${GROUP_PATH}/${ARTIFACT_ID}/${VERSION}/${FILENAME}"
-
-        echo_ "--> from : ${SOURCE}"
-
-        aws s3 cp "${SOURCE}" "${TEMP_DIR}" --quiet
-    fi
 
     echo_ "--> to   : ${TEMP_DIR}/${FILENAME}"
 

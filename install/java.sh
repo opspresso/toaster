@@ -86,3 +86,5 @@ ${SUDO} ln -s ${JAVA_HOME} /usr/local/java
 ${SUDO} cp -rf ${SHELL_DIR}/jce8/* ${JAVA_HOME}/jre/lib/security/
 
 echo_ "JAVA_HOME=${JAVA_HOME}"
+
+rm -rf ${FILE}.${EXT}

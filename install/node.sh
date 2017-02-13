@@ -81,3 +81,5 @@ ${SUDO} mv ${FILE} /usr/local/
 ${SUDO} ln -s ${NODE_HOME} /usr/local/node
 
 echo_ "NODE_HOME=${NODE_HOME}"
+
+rm -rf ${FILE}.${EXT}
