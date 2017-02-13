@@ -17,11 +17,11 @@ warning() {
 
 ################################################################################
 
-#OS_NAME=`uname`
-#if [ ${OS_NAME} != "Linux" ]; then
-#    warning "Not supported OS : ${OS_NAME}"
-#    exit 1
-#fi
+OS_NAME=`uname`
+if [ ${OS_NAME} != "Linux" ]; then
+    warning "Not supported OS : ${OS_NAME}"
+    exit 1
+fi
 
 SUDO=""
 if [ "${HOME}" != "/root" ]; then
@@ -44,13 +44,7 @@ EXT="tar.xz"
 
 REPO="$1"
 
-if [ "${REPO}" == "" ]; then
-    URL="http://repo.toast.sh/${NAME}/${FILE}.${EXT}"
-
-    echo_ "download... [${URL}]"
-
-    wget -q -N ${URL}
-else
+if [ "${REPO}" != "" ]; then
     URL="${REPO}/${NAME}/${FILE}.${EXT}"
 
     echo_ "download... [${URL}]"
@@ -60,10 +54,18 @@ fi
 
 if [ ! -f ${FILE}.${EXT} ]; then
     warning "Can not download : ${URL}"
-    exit 1
+
+    URL="http://repo.toast.sh/${NAME}/${FILE}.${EXT}"
+
+    echo_ "download... [${URL}]"
+
+    wget -q -N ${URL}
 fi
 
-exit 0
+if [ ! -f ${FILE}.${EXT} ]; then
+    warning "Can not download : ${URL}"
+    exit 1
+fi
 
 ################################################################################
 
