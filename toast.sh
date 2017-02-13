@@ -1924,35 +1924,36 @@ download() {
 
     if [ ! -f "${FILEPATH}" ]; then
         warning "deploy file does not exist. [${FILEPATH}]"
-    else
-        # war (for tomcat stop/start)
-        if [ "${TYPE}" == "war" ]; then
-            HAS_WAR="TRUE"
+        return 1
+    fi
+
+    # war (for tomcat stop/start)
+    if [ "${TYPE}" == "war" ]; then
+        HAS_WAR="TRUE"
+    fi
+
+    # jar (for jar stop/start)
+    if [ "${TYPE}" == "jar" ]; then
+        HAS_JAR="true"
+    fi
+
+    # php unzip
+    if [ "${TYPE}" == "php" ]; then
+        if [ -d "${UNZIP_DIR}" ] || [ -f "${UNZIP_DIR}" ]; then
+            rm -rf "${UNZIP_DIR}"
         fi
 
-        # jar (for jar stop/start)
-        if [ "${TYPE}" == "jar" ]; then
-            HAS_JAR="true"
-        fi
+        if [ -d "${UNZIP_DIR}" ] || [ -f "${UNZIP_DIR}" ]; then
+            warning "deploy file can not unzip. [${UNZIP_DIR}]"
+        else
+            unzip -q "${FILEPATH}" -d "${UNZIP_DIR}"
 
-        # php unzip
-        if [ "${TYPE}" == "php" ]; then
-            if [ -d "${UNZIP_DIR}" ] || [ -f "${UNZIP_DIR}" ]; then
-                rm -rf "${UNZIP_DIR}"
+            if [ ! -d "${UNZIP_DIR}" ]; then
+                warning "deploy file can not unzip. [${UNZIP_DIR}]"
             fi
 
-            if [ -d "${UNZIP_DIR}" ] || [ -f "${UNZIP_DIR}" ]; then
-                warning "deploy file can not unzip. [${UNZIP_DIR}]"
-            else
-                unzip -q "${FILEPATH}" -d "${UNZIP_DIR}"
-
-                if [ ! -d "${UNZIP_DIR}" ]; then
-                    warning "deploy file can not unzip. [${UNZIP_DIR}]"
-                fi
-
-                if [ -d "${UNZIP_DIR}/application/logs" ]; then
-                    chmod 777 "${UNZIP_DIR}/application/logs"
-                fi
+            if [ -d "${UNZIP_DIR}/application/logs" ]; then
+                chmod 777 "${UNZIP_DIR}/application/logs"
             fi
         fi
     fi
