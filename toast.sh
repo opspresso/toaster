@@ -1,5 +1,10 @@
 #!/bin/bash
 
+echo_() {
+    echo "$1"
+    echo "$1" >> /tmp/toast.log
+}
+
 success() {
     echo "$(tput setaf 2)$1$(tput sgr0)"
     echo "$1" >> /tmp/toast.log
@@ -196,16 +201,12 @@ auto() {
 
     init_hosts
     init_profile
-    init_startup
     init_slave
     init_aws
     init_epel
     init_auto
 
-    repo_path
-
-    deploy_fleet
-    vhost_fleet
+    init_startup
 
     nginx_lb
 }
@@ -382,14 +383,14 @@ health() {
         return
     fi
 
-    echo_ "server health..."
+    #echo_ "server health..."
 
     UNAME=`uname -a`
     UPTIME=`uptime`
     CPU=`grep 'cpu ' /proc/stat | awk '{usage=($2+$4)*100/($2+$4+$5)} END {print usage}'`
 
-    echo_ "server uptime    [${UPTIME}]"
-    echo_ "server cpu usage [${CPU}]"
+    #echo_ "server uptime    [${UPTIME}]"
+    #echo_ "server cpu usage [${CPU}]"
 
     URL="${TOAST_URL}/server/health/${SNO}"
     RES=`curl -s --data "org=${ORG}&token=${TOKEN}&id=${UUID}&cpu=${CPU}&uname=${UNAME}&uptime=${UPTIME}" ${URL}`
@@ -402,6 +403,8 @@ health() {
             fi
         fi
     fi
+
+    exit 0
 }
 
 ################################################################################
@@ -1025,9 +1028,11 @@ init_nginx() {
     if [ ! -f "${SHELL_DIR}/.config_nginx" ]; then
         echo_ "init nginx..."
 
+        repo_path
+
         service_install "pcre pcre-devel zlib zlib-devel openssl openssl-devel"
 
-        ${SHELL_DIR}/install/nginx.sh
+        ${SHELL_DIR}/install/nginx.sh ${REPO_PATH}
 
         echo_ "nginx start..."
         ${SUDO} nginx
@@ -1083,7 +1088,9 @@ init_node() {
     if [ ! -f "${SHELL_DIR}/.config_node" ]; then
         echo_ "init node..."
 
-        ${SHELL_DIR}/install/node.sh
+        repo_path
+
+        ${SHELL_DIR}/install/node.sh ${REPO_PATH}
 
         NODE_HOME="/usr/local/node"
 
@@ -1104,10 +1111,12 @@ init_java8() {
     if [ ! -f "${SHELL_DIR}/.config_java" ]; then
         echo_ "init java..."
 
+        repo_path
+
         service_remove "java-1.7.0-openjdk java-1.7.0-openjdk-headless"
         service_remove "java-1.8.0-openjdk java-1.8.0-openjdk-headless java-1.8.0-openjdk-devel"
 
-        ${SHELL_DIR}/install/java.sh
+        ${SHELL_DIR}/install/java.sh ${REPO_PATH}
 
         JAVA_HOME="/usr/local/java"
 
@@ -1129,9 +1138,9 @@ init_tomcat8() {
     if [ ! -f "${SHELL_DIR}/.config_tomcat" ]; then
         echo_ "init tomcat..."
 
-        make_dir "${APPS_DIR}"
+        repo_path
 
-        ${SHELL_DIR}/install/tomcat.sh "${APPS_DIR}"
+        ${SHELL_DIR}/install/tomcat.sh ${REPO_PATH}
 
         CATALINA_HOME="${APPS_DIR}/tomcat8"
 
@@ -1402,7 +1411,7 @@ version_save() {
     ARTIFACT_PATH="${GROUP_PATH}/${ARTIFACT_ID}/${VERSION}"
 
     echo_ "version save..."
-    echo_ "--> from: ${REPO_PATH}/${ARTIFACT_PATH}"
+    echo_ "--> from: ${REPO_PATH}/maven2/${ARTIFACT_PATH}"
 
     PACKAGE_PATH=""
     if [ -d "target" ]; then
@@ -1415,9 +1424,9 @@ version_save() {
     fi
 
     if [ "${PACKAGE_PATH}" == "" ]; then
-        aws s3 sync ~/.m2/repository/${ARTIFACT_PATH}/ ${REPO_PATH}/${ARTIFACT_PATH}/ --quiet
+        aws s3 sync ~/.m2/repository/${ARTIFACT_PATH}/ ${REPO_PATH}/maven2/${ARTIFACT_PATH}/ --quiet
     else
-        aws s3 cp ${PACKAGE_PATH} ${REPO_PATH}/${ARTIFACT_PATH}/ --quiet
+        aws s3 cp ${PACKAGE_PATH} ${REPO_PATH}/maven2/${ARTIFACT_PATH}/ --quiet
     fi
 
     URL="${TOAST_URL}/version/build/${ARTIFACT_ID}/${VERSION}"
@@ -1891,7 +1900,7 @@ deploy_value() {
 }
 
 download() {
-    SOURCE="${REPO_PATH}/${GROUP_PATH}/${ARTIFACT_ID}/${VERSION}/${FILENAME}"
+    SOURCE="${REPO_PATH}/maven2/${GROUP_PATH}/${ARTIFACT_ID}/${VERSION}/${FILENAME}"
 
     echo_ "--> from : ${SOURCE}"
     echo_ "--> to   : ${TEMP_DIR}/${FILENAME}"
