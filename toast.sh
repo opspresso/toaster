@@ -208,10 +208,6 @@ auto() {
 
     #init_startup
 
-    vhost_local
-
-    repo_path
-
     deploy_fleet
     vhost_fleet
     nginx_lb
@@ -365,7 +361,6 @@ deploy() {
             ;;
         *)
             deploy_fleet
-            vhost_local
             vhost_fleet
     esac
 }
@@ -1692,6 +1687,8 @@ vhost_fleet() {
     echo_bar
     echo_ "apache fleet..."
 
+    vhost_local
+
     ${SUDO} rm -rf ${HTTPD_CONF_DIR}/toast*
 
     VHOST_LIST="${TEMP_DIR}/${FLEET}"
@@ -1753,6 +1750,8 @@ repo_path() {
 deploy_project() {
     echo_ "deploy project..."
 
+    repo_path
+
     GROUP_ID="${PARAM2}"
     ARTIFACT_ID="${PARAM3}"
     VERSION="${PARAM4}"
@@ -1798,6 +1797,8 @@ deploy_target() {
     echo_bar
     echo_ "deploy target..."
 
+    repo_path
+
     TARGET_FILE="${TEMP_DIR}/${FLEET}"
     rm -rf ${TARGET_FILE}
 
@@ -1838,6 +1839,8 @@ deploy_target() {
 deploy_fleet() {
     echo_bar
     echo_ "deploy fleet..."
+
+    repo_path
 
     TARGET_FILE="${TEMP_DIR}/${FLEET}"
     rm -rf ${TARGET_FILE}
