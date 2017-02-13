@@ -1030,9 +1030,11 @@ init_nginx() {
     if [ ! -f "${SHELL_DIR}/.config_nginx" ]; then
         echo_ "init nginx..."
 
+        repo_path
+
         service_install "pcre pcre-devel zlib zlib-devel openssl openssl-devel"
 
-        ${SHELL_DIR}/install/nginx.sh
+        ${SHELL_DIR}/install/nginx.sh ${REPO_PATH}
 
         echo_ "nginx start..."
         ${SUDO} nginx
@@ -1088,7 +1090,9 @@ init_node() {
     if [ ! -f "${SHELL_DIR}/.config_node" ]; then
         echo_ "init node..."
 
-        ${SHELL_DIR}/install/node.sh
+        repo_path
+
+        ${SHELL_DIR}/install/node.sh ${REPO_PATH}
 
         NODE_HOME="/usr/local/node"
 
@@ -1109,10 +1113,12 @@ init_java8() {
     if [ ! -f "${SHELL_DIR}/.config_java" ]; then
         echo_ "init java..."
 
+        repo_path
+
         service_remove "java-1.7.0-openjdk java-1.7.0-openjdk-headless"
         service_remove "java-1.8.0-openjdk java-1.8.0-openjdk-headless java-1.8.0-openjdk-devel"
 
-        ${SHELL_DIR}/install/java.sh
+        ${SHELL_DIR}/install/java.sh ${REPO_PATH}
 
         JAVA_HOME="/usr/local/java"
 
@@ -1134,9 +1140,9 @@ init_tomcat8() {
     if [ ! -f "${SHELL_DIR}/.config_tomcat" ]; then
         echo_ "init tomcat..."
 
-        make_dir "${APPS_DIR}"
+        repo_path
 
-        ${SHELL_DIR}/install/tomcat.sh "${APPS_DIR}"
+        ${SHELL_DIR}/install/tomcat.sh ${REPO_PATH}
 
         CATALINA_HOME="${APPS_DIR}/tomcat8"
 
