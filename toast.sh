@@ -1916,6 +1916,8 @@ download() {
     if [ ! -f "${FILEPATH}" ]; then
         SOURCE="${REPO_PATH}/${GROUP_PATH}/${ARTIFACT_ID}/${VERSION}/${FILENAME}"
 
+        echo_ "--> from : ${SOURCE}"
+
         aws s3 cp "${SOURCE}" "${TEMP_DIR}" --quiet
     fi
 
