@@ -73,6 +73,10 @@ fi
 UUID=`curl -s http://instance-data/latest/meta-data/instance-id`
 USER=`whoami`
 
+if [ "${ORG}" != "" ]; then
+    TOAST_URL="http://${ORG}.toast.sh"
+fi
+
 ################################################################################
 
 CMD=$1
