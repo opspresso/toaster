@@ -1009,6 +1009,8 @@ init_httpd() {
             HTTPD_VERSION="22"
         fi
 
+        custom_httpd_conf
+
         vhost_local
 
         echo_ "httpd start..."
