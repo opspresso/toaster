@@ -336,6 +336,13 @@ version() {
 }
 
 vhost() {
+    not_darwin
+
+    self_info
+
+    init_hosts
+    init_profile
+
     case ${PARAM1} in
         b|lb)
             nginx_lb
@@ -352,6 +359,8 @@ deploy() {
     not_darwin
 
     repo_path
+
+    self_info
 
     init_hosts
     init_profile
