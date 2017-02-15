@@ -1450,7 +1450,7 @@ version_save() {
     echo_ "--> from: ${PACKAGE_PATH}"
     echo_ "--> to  : ${UPLOAD_PATH}"
 
-    aws s3 cp ${PACKAGE_PATH} ${UPLOAD_PATH}/ --quiet
+    aws s3 cp ${PACKAGE_PATH} ${UPLOAD_PATH}/ # --quiet
 
     echo_ "package uploaded."
 
@@ -1933,17 +1933,13 @@ deploy_value() {
 }
 
 download() {
-    if [ -d "${FILEPATH}" ] || [ -f "${FILEPATH}" ]; then
-        rm -rf "${FILEPATH}"
-    fi
-
     SOURCE="${REPO_PATH}/maven2/${GROUP_PATH}/${ARTIFACT_ID}/${VERSION}/${FILENAME}"
 
     echo_ "--> from : ${SOURCE}"
 
     aws s3 cp "${SOURCE}" "${TEMP_DIR}" --quiet
 
-    echo_ "--> to   : ${TEMP_DIR}/${FILENAME}"
+    echo_ "--> to   : ${FILEPATH}"
 
     if [ ! -f "${FILEPATH}" ]; then
         warning "deploy file does not exist. [${FILEPATH}]"
