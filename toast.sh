@@ -1009,6 +1009,8 @@ init_httpd() {
             HTTPD_VERSION="22"
         fi
 
+        custom_httpd_conf
+
         vhost_local
 
         echo_ "httpd start..."
@@ -1417,10 +1419,7 @@ version_save() {
         return 1
     fi
 
-    ARTIFACT_PATH="${GROUP_PATH}/${ARTIFACT_ID}/${VERSION}"
-
     echo_ "version save..."
-    echo_ "--> from: ${REPO_PATH}/maven2/${ARTIFACT_PATH}"
 
     PACKAGE_PATH=""
     if [ -d "target" ]; then
@@ -1437,7 +1436,14 @@ version_save() {
         return 1
     fi
 
-    aws s3 cp ${PACKAGE_PATH} ${REPO_PATH}/maven2/${ARTIFACT_PATH}/ --quiet
+    UPLOAD_PATH="${REPO_PATH}/maven2/${GROUP_PATH}/${ARTIFACT_ID}/${VERSION}/"
+
+    echo_ "--> from: ${PACKAGE_PATH}"
+    echo_ "--> to  : ${UPLOAD_PATH}"
+
+    aws s3 cp ${PACKAGE_PATH} ${UPLOAD_PATH}/ --quiet
+
+    echo_ "package uploaded."
 
     URL="${TOAST_URL}/version/build/${ARTIFACT_ID}/${VERSION}"
     RES=`curl -s --data "org=${ORG}&token=${TOKEN}&groupId=${GROUP_ID}&artifactId=${ARTIFACT_ID}&packaging=${PACKAGE}&no=${SNO}" ${URL}`
