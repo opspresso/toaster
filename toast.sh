@@ -1441,6 +1441,8 @@ version_save() {
 
     aws s3 cp ${PACKAGE_PATH} ${REPO_PATH}/maven2/${ARTIFACT_PATH}/ --quiet
 
+    echo_ "package uploaded."
+
     URL="${TOAST_URL}/version/build/${ARTIFACT_ID}/${VERSION}"
     RES=`curl -s --data "org=${ORG}&token=${TOKEN}&groupId=${GROUP_ID}&artifactId=${ARTIFACT_ID}&packaging=${PACKAGE}&no=${SNO}" ${URL}`
     ARR=(${RES})
