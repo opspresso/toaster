@@ -1436,7 +1436,7 @@ version_save() {
         return 1
     fi
 
-    UPLOAD_PATH="${REPO_PATH}/maven2/${GROUP_PATH}/${ARTIFACT_ID}/${VERSION}"
+    UPLOAD_PATH="${REPO_PATH}/maven2/${GROUP_PATH}/${ARTIFACT_ID}/${VERSION}/"
 
     echo_ "--> from: ${PACKAGE_PATH}"
     echo_ "--> to  : ${UPLOAD_PATH}"
