@@ -1447,6 +1447,13 @@ version_save() {
 
     URL="${TOAST_URL}/version/build/${ARTIFACT_ID}/${VERSION}"
     RES=`curl -s --data "org=${ORG}&token=${TOKEN}&groupId=${GROUP_ID}&artifactId=${ARTIFACT_ID}&packaging=${PACKAGE}&no=${SNO}" ${URL}`
+
+
+    echo_ "${URL}"
+    echo_ "org=${ORG}&token=${TOKEN}&groupId=${GROUP_ID}&artifactId=${ARTIFACT_ID}&packaging=${PACKAGE}&no=${SNO}"
+    echo_ "${RES}"
+
+
     ARR=(${RES})
 
     if [ "${ARR[0]}" != "OK" ]; then
