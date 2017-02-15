@@ -1450,7 +1450,7 @@ version_save() {
     echo_ "--> from: ${PACKAGE_PATH}"
     echo_ "--> to  : ${UPLOAD_PATH}"
 
-    aws s3 cp ${PACKAGE_PATH} ${UPLOAD_PATH}/ # --quiet
+    aws s3 cp ${PACKAGE_PATH} ${UPLOAD_PATH} # --quiet
 
     echo_ "package uploaded."
 
