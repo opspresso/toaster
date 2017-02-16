@@ -139,6 +139,9 @@ toast() {
         s|ssh)
             connect
             ;;
+        r|reset)
+            reset
+            ;;
         l|log)
             log
             ;;
@@ -414,11 +417,32 @@ health() {
         if [ "${ARR[2]}" != "" ]; then
             if [ "${ARR[2]}" != "${NAME}" ]; then
                 init_name "${ARR[2]}"
+                config_local
             fi
         fi
     fi
 
     exit 0
+}
+
+reset() {
+    if [ "${SNO}" == "" ]; then
+        warning "Not configured server. [${SNO}]"
+        return
+    fi
+
+    URL="${TOAST_URL}/server/info/${SNO}"
+    RES=`curl -s --data "org=${ORG}&token=${TOKEN}&id=${UUID}" ${URL}`
+    ARR=(${RES})
+
+    if [ "${ARR[0]}" == "OK" ]; then
+        if [ "${ARR[2]}" != "" ]; then
+            if [ "${ARR[2]}" != "${NAME}" ]; then
+                init_name "${ARR[2]}"
+                config_local
+            fi
+        fi
+    fi
 }
 
 ################################################################################
@@ -535,6 +559,11 @@ config_save() {
         fi
         if [ "${ARR[4]}" != "" ]; then
             FLEET="${ARR[4]}"
+        fi
+        if [ "${ARR[5]}" != "" ]; then
+            if [ "${ARR[5]}" != "${NAME}" ]; then
+                init_name "${ARR[5]}"
+            fi
         fi
 
         config_local
@@ -830,8 +859,6 @@ init_name() {
 
         mod_conf /etc/sysconfig/network "HOSTNAME" "${NAME}"
     fi
-
-    config_local
 }
 
 init_certificate() {
