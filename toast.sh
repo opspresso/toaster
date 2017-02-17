@@ -505,7 +505,12 @@ eip_release() {
 }
 
 config_auto() {
-    SSH=`${SUDO} cat /etc/ssh/sshd_config | egrep ^\#?Port`
+    # port
+    if [ -r /etc/ssh/sshd_config ]; then
+        SSH="`cat /etc/ssh/sshd_config | egrep ^\#?Port`"
+    else
+        SSH="`${SUDO} cat /etc/ssh/sshd_config | egrep ^\#?Port`"
+    fi
     if [ "${SSH}" != "" ]; then
         ARR=(${SSH})
         PORT="${ARR[1]}"
