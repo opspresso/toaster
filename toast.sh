@@ -2453,7 +2453,7 @@ copy() {
         return
     fi
 
-    touch $2
+    MSG="`touch $2`"
 
     if [ -w $2 ]; then
         cp -rf $1 $2
@@ -2478,6 +2478,10 @@ new_file() {
 make_dir() {
     if [ "$1" == "" ]; then
         return
+    fi
+
+    if [ ! -d $1 ] && [ ! -f $1 ]; then
+        mkdir $1
     fi
 
     if [ ! -d $1 ] && [ ! -f $1 ]; then
