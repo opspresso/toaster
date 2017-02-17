@@ -2447,7 +2447,11 @@ copy() {
         return
     fi
 
-    ${SUDO} cp -rf $1 $2
+    if [ -w $2 ]; then
+        cp -rf $1 $2
+    else
+        ${SUDO} cp -rf $1 $2
+    fi
 
     mod $2 $3
 }
@@ -2496,11 +2500,6 @@ echo_toast() {
     echo_ "      |___/                   |__/                                      "
     echo_ "                                                         by nalbam      "
     echo_bar
-}
-
-echo_() {
-    echo "$1"
-    echo "$1" >> /tmp/toast.log
 }
 
 ################################################################################
