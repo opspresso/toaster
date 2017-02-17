@@ -70,12 +70,12 @@ if [ -f "${CONFIG}" ]; then
     source ${CONFIG}
 fi
 
-UUID=`curl -s http://instance-data/latest/meta-data/instance-id`
-USER=`whoami`
-
 if [ "${ORG}" != "" ]; then
     TOAST_URL="http://${ORG}.toast.sh"
 fi
+
+UUID=`curl -s http://instance-data/latest/meta-data/instance-id`
+USER=`whoami`
 
 ################################################################################
 
@@ -469,9 +469,6 @@ prepare() {
     make_dir ${DATA_DIR}
     make_dir ${LOGS_DIR} 777
 
-    make_dir ${HOME}/.aws
-    make_dir ${HOME}/.ssh
-
     # timezone
     if [ ! -f "${SHELL_DIR}/.config_time" ]; then
         ${SUDO} rm -rf /etc/localtime
@@ -529,6 +526,7 @@ config_auto() {
     fi
     if [ "${PARAM3}" != "" ]; then
         ORG="${PARAM3}"
+        TOAST_URL="http://${ORG}.toast.sh"
     fi
     if [ "${PARAM4}" != "" ]; then
         TOKEN="${PARAM4}"
@@ -724,6 +722,9 @@ init_profile() {
 init_master() {
     echo_ "init master..."
 
+    make_dir ${HOME}/.ssh
+    make_dir ${HOME}/.aws
+
     # .ssh/id_rsa
     URL="${TOAST_URL}/config/key/rsa_private_key"
     RES=`curl -s --data "org=${ORG}&token=${TOKEN}&no=${SNO}" ${URL}`
@@ -757,6 +758,9 @@ init_master() {
 
 init_slave() {
     echo_ "init slave..."
+
+    make_dir ${HOME}/.ssh
+    make_dir ${HOME}/.aws
 
     # .ssh/authorized_keys
     TARGET="${HOME}/.ssh/authorized_keys"
@@ -803,6 +807,8 @@ init_slave() {
 
 init_aws() {
     echo_ "init aws..."
+
+    make_dir ${HOME}/.aws
 
     # .aws/config
     URL="${TOAST_URL}/config/key/aws_config"
@@ -2447,7 +2453,13 @@ copy() {
         return
     fi
 
-    ${SUDO} cp -rf $1 $2
+    touch $2
+
+    if [ -w $2 ]; then
+        cp -rf $1 $2
+    else
+        ${SUDO} cp -rf $1 $2
+    fi
 
     mod $2 $3
 }
@@ -2496,11 +2508,6 @@ echo_toast() {
     echo_ "      |___/                   |__/                                      "
     echo_ "                                                         by nalbam      "
     echo_bar
-}
-
-echo_() {
-    echo "$1"
-    echo "$1" >> /tmp/toast.log
 }
 
 ################################################################################
