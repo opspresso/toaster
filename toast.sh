@@ -70,12 +70,12 @@ if [ -f "${CONFIG}" ]; then
     source ${CONFIG}
 fi
 
-UUID=`curl -s http://instance-data/latest/meta-data/instance-id`
-USER=`whoami`
-
 if [ "${ORG}" != "" ]; then
     TOAST_URL="http://${ORG}.toast.sh"
 fi
+
+UUID=`curl -s http://instance-data/latest/meta-data/instance-id`
+USER=`whoami`
 
 ################################################################################
 
@@ -529,6 +529,7 @@ config_auto() {
     fi
     if [ "${PARAM3}" != "" ]; then
         ORG="${PARAM3}"
+        TOAST_URL="http://${ORG}.toast.sh"
     fi
     if [ "${PARAM4}" != "" ]; then
         TOKEN="${PARAM4}"
