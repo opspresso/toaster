@@ -469,9 +469,6 @@ prepare() {
     make_dir ${DATA_DIR}
     make_dir ${LOGS_DIR} 777
 
-    make_dir ${HOME}/.aws
-    make_dir ${HOME}/.ssh
-
     # timezone
     if [ ! -f "${SHELL_DIR}/.config_time" ]; then
         ${SUDO} rm -rf /etc/localtime
@@ -725,6 +722,9 @@ init_profile() {
 init_master() {
     echo_ "init master..."
 
+    make_dir ${HOME}/.ssh
+    make_dir ${HOME}/.aws
+
     # .ssh/id_rsa
     URL="${TOAST_URL}/config/key/rsa_private_key"
     RES=`curl -s --data "org=${ORG}&token=${TOKEN}&no=${SNO}" ${URL}`
@@ -758,6 +758,9 @@ init_master() {
 
 init_slave() {
     echo_ "init slave..."
+
+    make_dir ${HOME}/.ssh
+    make_dir ${HOME}/.aws
 
     # .ssh/authorized_keys
     TARGET="${HOME}/.ssh/authorized_keys"
@@ -804,6 +807,8 @@ init_slave() {
 
 init_aws() {
     echo_ "init aws..."
+
+    make_dir ${HOME}/.aws
 
     # .aws/config
     URL="${TOAST_URL}/config/key/aws_config"
