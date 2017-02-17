@@ -2447,6 +2447,8 @@ copy() {
         return
     fi
 
+    touch $2
+
     if [ -w $2 ]; then
         cp -rf $1 $2
     else
