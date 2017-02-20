@@ -518,7 +518,7 @@ config_auto() {
 
     # .toast
     if [ ! -f "${CONFIG}" ]; then
-        copy ${SHELL_DIR}/package/toast.txt ${CONFIG} 644
+        cp -rf ${SHELL_DIR}/package/toast.txt ${CONFIG} 644
         source ${CONFIG}
     fi
 
@@ -1069,8 +1069,8 @@ init_httpd() {
     if [ -d "/var/www/html" ]; then
         TEMP_FILE="${TEMP_DIR}/toast-health.tmp"
         echo "OK ${HOST}" > ${TEMP_FILE}
-        copy ${TEMP_FILE} "/var/www/html/index.html" 644
-        copy ${TEMP_FILE} "/var/www/html/health.html" 644
+        copy ${TEMP_FILE} "/var/www/html/index.html"
+        copy ${TEMP_FILE} "/var/www/html/health.html"
     fi
 
     make_dir "${SITE_DIR}"
@@ -1099,8 +1099,8 @@ init_nginx() {
     if [ -d "/usr/local/nginx/html" ]; then
         TEMP_FILE="${TEMP_DIR}/toast-health.tmp"
         echo "OK ${NAME}" > ${TEMP_FILE}
-        copy ${TEMP_FILE} "/usr/local/nginx/html/index.html" 644
-        copy ${TEMP_FILE} "/usr/local/nginx/html/health.html" 644
+        copy ${TEMP_FILE} "/usr/local/nginx/html/index.html"
+        copy ${TEMP_FILE} "/usr/local/nginx/html/health.html"
     fi
 
     make_dir "${SITE_DIR}"
@@ -1202,8 +1202,8 @@ init_tomcat8() {
 
         mod_env "CATALINA_HOME" "${CATALINA_HOME}"
 
-        copy "${CATALINA_HOME}/conf/web.xml" "${CATALINA_HOME}/conf/web.org.xml" 644
-        copy "${SHELL_DIR}/package/tomcat/web.xml" "${CATALINA_HOME}/conf/web.xml" 644
+        cp -rf "${CATALINA_HOME}/conf/web.xml" "${CATALINA_HOME}/conf/web.org.xml"
+        cp -rf "${SHELL_DIR}/package/tomcat/web.xml" "${CATALINA_HOME}/conf/web.xml"
 
         echo "CATALINA_HOME=${CATALINA_HOME}"
         echo "CATALINA_HOME=${CATALINA_HOME}" > "${SHELL_DIR}/.config_tomcat"
@@ -1310,7 +1310,7 @@ init_jenkins() {
     URL="http://mirrors.jenkins.io/war/latest/jenkins.war"
     wget -q -N -P "${WEBAPP_DIR}" "${URL}"
 
-    copy "${CATALINA_HOME}/conf/web.org.xml" "${CATALINA_HOME}/conf/web.xml" 644
+    cp -rf "${CATALINA_HOME}/conf/web.org.xml" "${CATALINA_HOME}/conf/web.xml" 644
 
     tomcat_start
 }
@@ -1331,11 +1331,11 @@ custom_httpd_conf() {
 
         # User apache
         sed "s/User\ apache/User\ $USER/g" ${HTTPD_CONF} > ${TEMP_FILE}
-        copy ${TEMP_FILE} ${HTTPD_CONF} 644
+        copy ${TEMP_FILE} ${HTTPD_CONF}
 
         # Group apache
         sed "s/Group\ apache/Group\ $USER/g" ${HTTPD_CONF} > ${TEMP_FILE}
-        copy ${TEMP_FILE} ${HTTPD_CONF} 644
+        copy ${TEMP_FILE} ${HTTPD_CONF}
     fi
 }
 
@@ -2458,13 +2458,7 @@ copy() {
         return
     fi
 
-    MSG="`touch $2`"
-
-    if [ -w $2 ]; then
-        cp -rf $1 $2
-    else
-        ${SUDO} cp -rf $1 $2
-    fi
+    ${SUDO} cp -rf $1 $2
 
     mod $2 $3
 }
