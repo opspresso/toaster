@@ -607,99 +607,38 @@ init_hosts() {
     TARGET="/etc/hosts"
     TEMP_FILE="${TEMP_DIR}/toast-hosts.tmp"
 
-    new_file ${TEMP_FILE}
-
+    # backup
     if [ -f "${TARGET}_toast" ]; then
         copy "${TARGET}_toast" ${TARGET}
     else
         copy ${TARGET} "${TARGET}_toast"
     fi
 
-    # default hosts
-    URL="${TOAST_URL}/config/key/hosts"
-    RES=`curl -s --data "org=${ORG}&token=${TOKEN}&no=${SNO}" ${URL}`
-
-    echo "# toast default hosts" >> ${TEMP_FILE}
-    echo "" >> ${TEMP_FILE}
-    echo "${RES}" >> ${TEMP_FILE}
-
-    if [ "${NAME}" != "" ]; then
-        echo "127.0.0.1 ${NAME}" >> ${TEMP_FILE}
-    fi
-
-    # phase hosts
-    URL="${TOAST_URL}/phase/hosts/${PHASE}"
+    # hosts
+    URL="${TOAST_URL}/server/hosts/${SNO}"
     RES=`curl -s --data "org=${ORG}&token=${TOKEN}&no=${SNO}" ${URL}`
 
     if [ "${RES}" != "" ]; then
-        echo "" >> ${TEMP_FILE}
-        echo "# toast ${PHASE} hosts" >> ${TEMP_FILE}
-        echo "" >> ${TEMP_FILE}
-        echo "${RES}" >> ${TEMP_FILE}
+        echo "${RES}" > ${TEMP_FILE}
+        copy ${TEMP_FILE} ${TARGET}
     fi
-
-    # fleet hosts
-    URL="${TOAST_URL}/fleet/hosts/${PHASE}/${FLEET}"
-    RES=`curl -s --data "org=${ORG}&token=${TOKEN}&no=${SNO}" ${URL}`
-
-    if [ "${RES}" != "" ]; then
-        echo "" >> ${TEMP_FILE}
-        echo "# toast ${FLEET} hosts" >> ${TEMP_FILE}
-        echo "" >> ${TEMP_FILE}
-        echo "${RES}" >> ${TEMP_FILE}
-    fi
-
-    echo "" >> ${TEMP_FILE}
-
-    copy ${TEMP_FILE} ${TARGET}
 }
 
 init_profile() {
     echo_ "init profile..."
 
-    # .bash_toast
     TARGET="${HOME}/.toast_profile"
 
     add_source ${TARGET}
 
-    echo "# toast profile" > ${TARGET}
-
-    # default profile
-    URL="${TOAST_URL}/config/key/profile"
+    # profile
+    URL="${TOAST_URL}/fleet/profile/${SNO}"
     RES=`curl -s --data "org=${ORG}&token=${TOKEN}&no=${SNO}" ${URL}`
 
     if [ "${RES}" != "" ]; then
-        echo "" >> ${TARGET}
-        echo "# toast default profile" >> ${TARGET}
-        echo "" >> ${TARGET}
-        echo "${RES}" >> ${TARGET}
+        echo "${RES}" > ${TARGET}
+        source ${TARGET}
     fi
-
-    # phase profile
-    URL="${TOAST_URL}/phase/profile/${PHASE}"
-    RES=`curl -s --data "org=${ORG}&token=${TOKEN}&no=${SNO}" ${URL}`
-
-    if [ "${RES}" != "" ]; then
-        echo "" >> ${TARGET}
-        echo "# toast ${PHASE} profile" >> ${TARGET}
-        echo "" >> ${TARGET}
-        echo "${RES}" >> ${TARGET}
-    fi
-
-    # fleet profile
-    URL="${TOAST_URL}/fleet/profile/${PHASE}/${FLEET}"
-    RES=`curl -s --data "org=${ORG}&token=${TOKEN}&no=${SNO}" ${URL}`
-
-    if [ "${RES}" != "" ]; then
-        echo "" >> ${TARGET}
-        echo "# toast ${FLEET} profile" >> ${TARGET}
-        echo "" >> ${TARGET}
-        echo "${RES}" >> ${TARGET}
-    fi
-
-    echo "" >> ${TARGET}
-
-    source ${TARGET}
 }
 
 init_master() {
@@ -907,10 +846,10 @@ init_startup() {
 
         copy ${TARGET} ${TEMP_FILE}
 
-        ${SUDO} echo "" >> ${TEMP_FILE}
-        ${SUDO} echo "${RC_HEAD}" >> ${TEMP_FILE}
-        ${SUDO} echo "/sbin/runuser -l ${USER} -c '/home/${USER}/toaster/toast.sh auto'" >> ${TEMP_FILE}
-        ${SUDO} echo "" >> ${TEMP_FILE}
+        echo "" >> ${TEMP_FILE}
+        echo "${RC_HEAD}" >> ${TEMP_FILE}
+        echo "/sbin/runuser -l ${USER} -c '/home/${USER}/toaster/toast.sh auto'" >> ${TEMP_FILE}
+        echo "" >> ${TEMP_FILE}
 
         copy ${TEMP_FILE} ${TARGET} 755
     fi
