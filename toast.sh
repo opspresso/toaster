@@ -1881,7 +1881,7 @@ download() {
 
     aws s3 cp "${SOURCE}" "${TEMP_DIR}" --quiet
 
-    echo_ "--> to   : ${FILEPATH}"
+    #echo_ "--> to   : ${FILEPATH}"
 
     if [ ! -f "${FILEPATH}" ]; then
         warning "deploy file does not exist. [${FILEPATH}]"
