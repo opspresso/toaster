@@ -632,7 +632,7 @@ init_profile() {
     add_source ${TARGET}
 
     # profile
-    URL="${TOAST_URL}/fleet/profile/${SNO}"
+    URL="${TOAST_URL}/server/profile/${SNO}"
     RES=`curl -s --data "org=${ORG}&token=${TOKEN}&no=${SNO}" ${URL}`
 
     if [ "${RES}" != "" ]; then
