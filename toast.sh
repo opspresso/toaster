@@ -1891,11 +1891,9 @@ deploy_value() {
 download() {
     SOURCE="${REPO_PATH}/maven2/${GROUP_PATH}/${ARTIFACT_ID}/${VERSION}/${FILENAME}"
 
-    echo_ "--> from : ${SOURCE}"
+    echo_ "--> ${SOURCE}"
 
     aws s3 cp "${SOURCE}" "${TEMP_DIR}" --quiet
-
-    #echo_ "--> to   : ${FILEPATH}"
 
     if [ ! -f "${FILEPATH}" ]; then
         warning "deploy file does not exist. [${FILEPATH}]"
