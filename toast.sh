@@ -115,9 +115,6 @@ toast() {
         p|prepare)
             prepare
             ;;
-        e|eip)
-            eip
-            ;;
         c|config)
             config
             ;;
@@ -208,8 +205,9 @@ auto() {
 
     init_hosts
     init_profile
-    init_slave
+
     init_aws
+    init_slave
     init_epel
     init_auto
 
@@ -227,19 +225,6 @@ update() {
     self_update
 
     #service_update
-}
-
-eip() {
-    case ${PARAM1} in
-        a|allocate)
-            eip_allocate
-            ;;
-        r|release)
-            eip_release
-            ;;
-        *)
-            eip_allocate
-    esac
 }
 
 config() {
@@ -262,9 +247,6 @@ init() {
             ;;
         aws)
             init_aws
-            ;;
-        name)
-            init_name "${PARAM2}"
             ;;
         certificate)
             init_certificate "${PARAM2}"
@@ -416,7 +398,7 @@ health() {
     if [ "${ARR[0]}" == "OK" ]; then
         if [ "${ARR[2]}" != "" ]; then
             if [ "${ARR[2]}" != "${NAME}" ]; then
-                init_name "${ARR[2]}"
+                config_name "${ARR[2]}"
                 config_local
             fi
         fi
@@ -438,7 +420,7 @@ reset() {
     if [ "${ARR[0]}" == "OK" ]; then
         if [ "${ARR[2]}" != "" ]; then
             if [ "${ARR[2]}" != "${NAME}" ]; then
-                init_name "${ARR[2]}"
+                config_name "${ARR[2]}"
                 config_local
             fi
         fi
@@ -470,38 +452,16 @@ prepare() {
     make_dir ${LOGS_DIR} 777
 
     # timezone
-    if [ ! -f "${SHELL_DIR}/.config_time" ]; then
-        ${SUDO} rm -rf /etc/localtime
-        ${SUDO} ln -sf /usr/share/zoneinfo/Asia/Seoul /etc/localtime
-
-        touch "${SHELL_DIR}/.config_time"
-    fi
+    ${SUDO} rm -rf /etc/localtime
+    ${SUDO} ln -sf /usr/share/zoneinfo/Asia/Seoul /etc/localtime
 
     # i18n & selinux
-    copy ${SHELL_DIR}/package/linux/i18n.txt /etc/sysconfig/i18n 644
-    copy ${SHELL_DIR}/package/linux/selinux.txt /etc/selinux/config 644
+    ${SUDO} cp -rf ${SHELL_DIR}/package/linux/i18n.txt /etc/sysconfig/i18n
+    ${SUDO} cp -rf ${SHELL_DIR}/package/linux/selinux.txt /etc/selinux/config
 
     if [ -f "/usr/sbin/setenforce" ]; then
         ${SUDO} setenforce 0
     fi
-}
-
-eip_allocate() {
-    echo_ "eip allocate... [${UUID}]"
-
-    URL="${TOAST_URL}/server/eip/allocate"
-    RES=`curl -s --data "org=${ORG}&token=${TOKEN}&id=${UUID}" ${URL}`
-
-    echo_ "eip allocate [${RES}]"
-}
-
-eip_release() {
-    echo_ "eip release... [${UUID}]"
-
-    URL="${TOAST_URL}/server/eip/release"
-    RES=`curl -s --data "org=${ORG}&token=${TOKEN}&id=${UUID}" ${URL}`
-
-    echo_ "eip release [${RES}]"
 }
 
 config_auto() {
@@ -565,7 +525,7 @@ config_save() {
         fi
         if [ "${ARR[5]}" != "" ]; then
             if [ "${ARR[5]}" != "${NAME}" ]; then
-                init_name "${ARR[5]}"
+                config_name "${ARR[5]}"
             fi
         fi
 
@@ -595,6 +555,24 @@ config_local() {
 
     chmod 644 ${CONFIG}
     source ${CONFIG}
+}
+
+config_name() {
+    if [ "$1" == "" ]; then
+        return
+    fi
+
+    NAME="$1"
+
+    echo_ "hostname... [${NAME}]"
+
+    if [ "${OS_TYPE}" == "el7" ]; then
+        ${SUDO} hostnamectl set-hostname "${NAME}"
+    else
+        ${SUDO} hostname "${NAME}"
+
+        mod_conf /etc/sysconfig/network "HOSTNAME" "${NAME}"
+    fi
 }
 
 config_info() {
@@ -808,6 +786,11 @@ init_slave() {
         echo "${RES}" > ${TARGET}
         chmod 600 ${TARGET}
     fi
+
+    # master
+    if [ "${PHASE}" == "build" ]; then
+        init_master
+    fi
 }
 
 init_aws() {
@@ -852,24 +835,6 @@ init_aws() {
     echo_bar
     echo_ "`aws --version`"
     echo_bar
-}
-
-init_name() {
-    if [ "$1" == "" ]; then
-        return
-    fi
-
-    NAME="$1"
-
-    echo_ "init hostname... [${NAME}]"
-
-    if [ "${OS_TYPE}" == "el7" ]; then
-        ${SUDO} hostnamectl set-hostname "${NAME}"
-    else
-        ${SUDO} hostname "${NAME}"
-
-        mod_conf /etc/sysconfig/network "HOSTNAME" "${NAME}"
-    fi
 }
 
 init_certificate() {
