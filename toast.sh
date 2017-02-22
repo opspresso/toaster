@@ -115,9 +115,6 @@ toast() {
         p|prepare)
             prepare
             ;;
-        e|eip)
-            eip
-            ;;
         c|config)
             config
             ;;
@@ -208,8 +205,9 @@ auto() {
 
     init_hosts
     init_profile
-    init_slave
+
     init_aws
+    init_slave
     init_epel
     init_auto
 
@@ -227,19 +225,6 @@ update() {
     self_update
 
     #service_update
-}
-
-eip() {
-    case ${PARAM1} in
-        a|allocate)
-            eip_allocate
-            ;;
-        r|release)
-            eip_release
-            ;;
-        *)
-            eip_allocate
-    esac
 }
 
 config() {
@@ -262,9 +247,6 @@ init() {
             ;;
         aws)
             init_aws
-            ;;
-        name)
-            init_name "${PARAM2}"
             ;;
         certificate)
             init_certificate "${PARAM2}"
@@ -416,7 +398,7 @@ health() {
     if [ "${ARR[0]}" == "OK" ]; then
         if [ "${ARR[2]}" != "" ]; then
             if [ "${ARR[2]}" != "${NAME}" ]; then
-                init_name "${ARR[2]}"
+                config_name "${ARR[2]}"
                 config_local
             fi
         fi
@@ -438,7 +420,7 @@ reset() {
     if [ "${ARR[0]}" == "OK" ]; then
         if [ "${ARR[2]}" != "" ]; then
             if [ "${ARR[2]}" != "${NAME}" ]; then
-                init_name "${ARR[2]}"
+                config_name "${ARR[2]}"
                 config_local
             fi
         fi
@@ -470,42 +452,25 @@ prepare() {
     make_dir ${LOGS_DIR} 777
 
     # timezone
-    if [ ! -f "${SHELL_DIR}/.config_time" ]; then
-        ${SUDO} rm -rf /etc/localtime
-        ${SUDO} ln -sf /usr/share/zoneinfo/Asia/Seoul /etc/localtime
-
-        touch "${SHELL_DIR}/.config_time"
-    fi
+    ${SUDO} rm -rf /etc/localtime
+    ${SUDO} ln -sf /usr/share/zoneinfo/Asia/Seoul /etc/localtime
 
     # i18n & selinux
-    copy ${SHELL_DIR}/package/linux/i18n.txt /etc/sysconfig/i18n 644
-    copy ${SHELL_DIR}/package/linux/selinux.txt /etc/selinux/config 644
+    ${SUDO} cp -rf ${SHELL_DIR}/package/linux/i18n.txt /etc/sysconfig/i18n
+    ${SUDO} cp -rf ${SHELL_DIR}/package/linux/selinux.txt /etc/selinux/config
 
     if [ -f "/usr/sbin/setenforce" ]; then
         ${SUDO} setenforce 0
     fi
 }
 
-eip_allocate() {
-    echo_ "eip allocate... [${UUID}]"
-
-    URL="${TOAST_URL}/server/eip/allocate"
-    RES=`curl -s --data "org=${ORG}&token=${TOKEN}&id=${UUID}" ${URL}`
-
-    echo_ "eip allocate [${RES}]"
-}
-
-eip_release() {
-    echo_ "eip release... [${UUID}]"
-
-    URL="${TOAST_URL}/server/eip/release"
-    RES=`curl -s --data "org=${ORG}&token=${TOKEN}&id=${UUID}" ${URL}`
-
-    echo_ "eip release [${RES}]"
-}
-
 config_auto() {
-    SSH=`${SUDO} cat /etc/ssh/sshd_config | egrep ^\#?Port`
+    # port
+    if [ -r /etc/ssh/sshd_config ]; then
+        SSH="`cat /etc/ssh/sshd_config | egrep ^\#?Port`"
+    else
+        SSH="`${SUDO} cat /etc/ssh/sshd_config | egrep ^\#?Port`"
+    fi
     if [ "${SSH}" != "" ]; then
         ARR=(${SSH})
         PORT="${ARR[1]}"
@@ -513,7 +478,7 @@ config_auto() {
 
     # .toast
     if [ ! -f "${CONFIG}" ]; then
-        copy ${SHELL_DIR}/package/toast.txt ${CONFIG} 644
+        cp -rf ${SHELL_DIR}/package/toast.txt ${CONFIG} 644
         source ${CONFIG}
     fi
 
@@ -560,7 +525,7 @@ config_save() {
         fi
         if [ "${ARR[5]}" != "" ]; then
             if [ "${ARR[5]}" != "${NAME}" ]; then
-                init_name "${ARR[5]}"
+                config_name "${ARR[5]}"
             fi
         fi
 
@@ -590,6 +555,24 @@ config_local() {
 
     chmod 644 ${CONFIG}
     source ${CONFIG}
+}
+
+config_name() {
+    if [ "$1" == "" ]; then
+        return
+    fi
+
+    NAME="$1"
+
+    echo_ "hostname... [${NAME}]"
+
+    if [ "${OS_TYPE}" == "el7" ]; then
+        ${SUDO} hostnamectl set-hostname "${NAME}"
+    else
+        ${SUDO} hostname "${NAME}"
+
+        mod_conf /etc/sysconfig/network "HOSTNAME" "${NAME}"
+    fi
 }
 
 config_info() {
@@ -624,99 +607,38 @@ init_hosts() {
     TARGET="/etc/hosts"
     TEMP_FILE="${TEMP_DIR}/toast-hosts.tmp"
 
-    new_file ${TEMP_FILE}
-
+    # backup
     if [ -f "${TARGET}_toast" ]; then
         copy "${TARGET}_toast" ${TARGET}
     else
         copy ${TARGET} "${TARGET}_toast"
     fi
 
-    # default hosts
-    URL="${TOAST_URL}/config/key/hosts"
-    RES=`curl -s --data "org=${ORG}&token=${TOKEN}&no=${SNO}" ${URL}`
-
-    echo "# toast default hosts" >> ${TEMP_FILE}
-    echo "" >> ${TEMP_FILE}
-    echo "${RES}" >> ${TEMP_FILE}
-
-    if [ "${NAME}" != "" ]; then
-        echo "127.0.0.1 ${NAME}" >> ${TEMP_FILE}
-    fi
-
-    # phase hosts
-    URL="${TOAST_URL}/phase/hosts/${PHASE}"
+    # hosts
+    URL="${TOAST_URL}/server/hosts/${SNO}"
     RES=`curl -s --data "org=${ORG}&token=${TOKEN}&no=${SNO}" ${URL}`
 
     if [ "${RES}" != "" ]; then
-        echo "" >> ${TEMP_FILE}
-        echo "# toast ${PHASE} hosts" >> ${TEMP_FILE}
-        echo "" >> ${TEMP_FILE}
-        echo "${RES}" >> ${TEMP_FILE}
+        echo "${RES}" > ${TEMP_FILE}
+        copy ${TEMP_FILE} ${TARGET}
     fi
-
-    # fleet hosts
-    URL="${TOAST_URL}/fleet/hosts/${PHASE}/${FLEET}"
-    RES=`curl -s --data "org=${ORG}&token=${TOKEN}&no=${SNO}" ${URL}`
-
-    if [ "${RES}" != "" ]; then
-        echo "" >> ${TEMP_FILE}
-        echo "# toast ${FLEET} hosts" >> ${TEMP_FILE}
-        echo "" >> ${TEMP_FILE}
-        echo "${RES}" >> ${TEMP_FILE}
-    fi
-
-    echo "" >> ${TEMP_FILE}
-
-    copy ${TEMP_FILE} ${TARGET}
 }
 
 init_profile() {
     echo_ "init profile..."
 
-    # .bash_toast
     TARGET="${HOME}/.toast_profile"
 
     add_source ${TARGET}
 
-    echo "# toast profile" > ${TARGET}
-
-    # default profile
-    URL="${TOAST_URL}/config/key/profile"
+    # profile
+    URL="${TOAST_URL}/server/profile/${SNO}"
     RES=`curl -s --data "org=${ORG}&token=${TOKEN}&no=${SNO}" ${URL}`
 
     if [ "${RES}" != "" ]; then
-        echo "" >> ${TARGET}
-        echo "# toast default profile" >> ${TARGET}
-        echo "" >> ${TARGET}
-        echo "${RES}" >> ${TARGET}
+        echo "${RES}" > ${TARGET}
+        source ${TARGET}
     fi
-
-    # phase profile
-    URL="${TOAST_URL}/phase/profile/${PHASE}"
-    RES=`curl -s --data "org=${ORG}&token=${TOKEN}&no=${SNO}" ${URL}`
-
-    if [ "${RES}" != "" ]; then
-        echo "" >> ${TARGET}
-        echo "# toast ${PHASE} profile" >> ${TARGET}
-        echo "" >> ${TARGET}
-        echo "${RES}" >> ${TARGET}
-    fi
-
-    # fleet profile
-    URL="${TOAST_URL}/fleet/profile/${PHASE}/${FLEET}"
-    RES=`curl -s --data "org=${ORG}&token=${TOKEN}&no=${SNO}" ${URL}`
-
-    if [ "${RES}" != "" ]; then
-        echo "" >> ${TARGET}
-        echo "# toast ${FLEET} profile" >> ${TARGET}
-        echo "" >> ${TARGET}
-        echo "${RES}" >> ${TARGET}
-    fi
-
-    echo "" >> ${TARGET}
-
-    source ${TARGET}
 }
 
 init_master() {
@@ -803,6 +725,11 @@ init_slave() {
         echo "${RES}" > ${TARGET}
         chmod 600 ${TARGET}
     fi
+
+    # master
+    if [ "${PHASE}" == "build" ]; then
+        init_master
+    fi
 }
 
 init_aws() {
@@ -847,24 +774,6 @@ init_aws() {
     echo_bar
     echo_ "`aws --version`"
     echo_bar
-}
-
-init_name() {
-    if [ "$1" == "" ]; then
-        return
-    fi
-
-    NAME="$1"
-
-    echo_ "init hostname... [${NAME}]"
-
-    if [ "${OS_TYPE}" == "el7" ]; then
-        ${SUDO} hostnamectl set-hostname "${NAME}"
-    else
-        ${SUDO} hostname "${NAME}"
-
-        mod_conf /etc/sysconfig/network "HOSTNAME" "${NAME}"
-    fi
 }
 
 init_certificate() {
@@ -937,10 +846,10 @@ init_startup() {
 
         copy ${TARGET} ${TEMP_FILE}
 
-        ${SUDO} echo "" >> ${TEMP_FILE}
-        ${SUDO} echo "${RC_HEAD}" >> ${TEMP_FILE}
-        ${SUDO} echo "/sbin/runuser -l ${USER} -c '/home/${USER}/toaster/toast.sh auto'" >> ${TEMP_FILE}
-        ${SUDO} echo "" >> ${TEMP_FILE}
+        echo "" >> ${TEMP_FILE}
+        echo "${RC_HEAD}" >> ${TEMP_FILE}
+        echo "/sbin/runuser -l ${USER} -c '/home/${USER}/toaster/toast.sh auto'" >> ${TEMP_FILE}
+        echo "" >> ${TEMP_FILE}
 
         copy ${TEMP_FILE} ${TARGET} 755
     fi
@@ -1064,8 +973,8 @@ init_httpd() {
     if [ -d "/var/www/html" ]; then
         TEMP_FILE="${TEMP_DIR}/toast-health.tmp"
         echo "OK ${HOST}" > ${TEMP_FILE}
-        copy ${TEMP_FILE} "/var/www/html/index.html" 644
-        copy ${TEMP_FILE} "/var/www/html/health.html" 644
+        copy ${TEMP_FILE} "/var/www/html/index.html"
+        copy ${TEMP_FILE} "/var/www/html/health.html"
     fi
 
     make_dir "${SITE_DIR}"
@@ -1094,8 +1003,8 @@ init_nginx() {
     if [ -d "/usr/local/nginx/html" ]; then
         TEMP_FILE="${TEMP_DIR}/toast-health.tmp"
         echo "OK ${NAME}" > ${TEMP_FILE}
-        copy ${TEMP_FILE} "/usr/local/nginx/html/index.html" 644
-        copy ${TEMP_FILE} "/usr/local/nginx/html/health.html" 644
+        copy ${TEMP_FILE} "/usr/local/nginx/html/index.html"
+        copy ${TEMP_FILE} "/usr/local/nginx/html/health.html"
     fi
 
     make_dir "${SITE_DIR}"
@@ -1197,8 +1106,8 @@ init_tomcat8() {
 
         mod_env "CATALINA_HOME" "${CATALINA_HOME}"
 
-        copy "${CATALINA_HOME}/conf/web.xml" "${CATALINA_HOME}/conf/web.org.xml" 644
-        copy "${SHELL_DIR}/package/tomcat/web.xml" "${CATALINA_HOME}/conf/web.xml" 644
+        cp -rf "${CATALINA_HOME}/conf/web.xml" "${CATALINA_HOME}/conf/web.org.xml"
+        cp -rf "${SHELL_DIR}/package/tomcat/web.xml" "${CATALINA_HOME}/conf/web.xml"
 
         echo "CATALINA_HOME=${CATALINA_HOME}"
         echo "CATALINA_HOME=${CATALINA_HOME}" > "${SHELL_DIR}/.config_tomcat"
@@ -1305,7 +1214,7 @@ init_jenkins() {
     URL="http://mirrors.jenkins.io/war/latest/jenkins.war"
     wget -q -N -P "${WEBAPP_DIR}" "${URL}"
 
-    copy "${CATALINA_HOME}/conf/web.org.xml" "${CATALINA_HOME}/conf/web.xml" 644
+    cp -rf "${CATALINA_HOME}/conf/web.org.xml" "${CATALINA_HOME}/conf/web.xml" 644
 
     tomcat_start
 }
@@ -1326,11 +1235,11 @@ custom_httpd_conf() {
 
         # User apache
         sed "s/User\ apache/User\ $USER/g" ${HTTPD_CONF} > ${TEMP_FILE}
-        copy ${TEMP_FILE} ${HTTPD_CONF} 644
+        copy ${TEMP_FILE} ${HTTPD_CONF}
 
         # Group apache
         sed "s/Group\ apache/Group\ $USER/g" ${HTTPD_CONF} > ${TEMP_FILE}
-        copy ${TEMP_FILE} ${HTTPD_CONF} 644
+        copy ${TEMP_FILE} ${HTTPD_CONF}
     fi
 }
 
@@ -1972,7 +1881,7 @@ download() {
 
     aws s3 cp "${SOURCE}" "${TEMP_DIR}" --quiet
 
-    echo_ "--> to   : ${FILEPATH}"
+    #echo_ "--> to   : ${FILEPATH}"
 
     if [ ! -f "${FILEPATH}" ]; then
         warning "deploy file does not exist. [${FILEPATH}]"
@@ -2453,13 +2362,7 @@ copy() {
         return
     fi
 
-    touch $2
-
-    if [ -w $2 ]; then
-        cp -rf $1 $2
-    else
-        ${SUDO} cp -rf $1 $2
-    fi
+    ${SUDO} cp -rf $1 $2
 
     mod $2 $3
 }
@@ -2478,6 +2381,10 @@ new_file() {
 make_dir() {
     if [ "$1" == "" ]; then
         return
+    fi
+
+    if [ ! -d $1 ] && [ ! -f $1 ]; then
+        mkdir $1
     fi
 
     if [ ! -d $1 ] && [ ! -f $1 ]; then
