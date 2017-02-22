@@ -856,7 +856,7 @@ init_startup() {
 }
 
 init_auto() {
-    URL="${TOAST_URL}/fleet/apps/${PHASE}/${FLEET}"
+    URL="${TOAST_URL}/server/apps/${SNO}"
     RES=`curl -s --data "org=${ORG}&token=${TOKEN}&no=${SNO}" ${URL}`
     ARR=(${RES})
 
@@ -900,6 +900,19 @@ init_auto() {
                 ;;
         esac
     done
+}
+
+init_script() {
+    TARGET="${HOME}/.toast_script"
+
+    # script
+    URL="${TOAST_URL}/server/script/${SNO}"
+    RES=`curl -s --data "org=${ORG}&token=${TOKEN}&no=${SNO}" ${URL}`
+
+    if [ "${RES}" != "" ]; then
+        echo "${RES}" > ${TARGET}
+        chmod 755 ${TARGET}
+    fi
 }
 
 init_epel() {
@@ -1452,9 +1465,10 @@ nginx_lb() {
     echo_bar
     echo_ "nginx lb..."
 
-    LB_CONF="${TEMP_DIR}/${FLEET}"
+    LB_CONF="${TEMP_DIR}/${SNO}"
+    rm -rf ${LB_CONF}
 
-    URL="${TOAST_URL}/fleet/lb/${FLEET}"
+    URL="${TOAST_URL}/server/lb/${SNO}"
     wget -q -N --post-data "org=${ORG}&token=${TOKEN}&no=${SNO}" -P "${TEMP_DIR}" "${URL}"
 
     if [ -f ${LB_CONF} ]; then
@@ -1654,10 +1668,10 @@ vhost_fleet() {
 
     ${SUDO} rm -rf ${HTTPD_CONF_DIR}/toast*
 
-    VHOST_LIST="${TEMP_DIR}/${FLEET}"
+    VHOST_LIST="${TEMP_DIR}/${SNO}"
     rm -rf ${VHOST_LIST}
 
-    URL="${TOAST_URL}/target/vhost/${PHASE}/${FLEET}"
+    URL="${TOAST_URL}/server/vhost/${SNO}"
     wget -q -N --post-data "org=${ORG}&token=${TOKEN}&no=${SNO}" -P "${TEMP_DIR}" "${URL}"
 
     if [ -f ${VHOST_LIST} ]; then
@@ -1762,10 +1776,10 @@ deploy_target() {
 
     repo_path
 
-    TARGET_FILE="${TEMP_DIR}/${FLEET}"
+    TARGET_FILE="${TEMP_DIR}/${PARAM2}"
     rm -rf ${TARGET_FILE}
 
-    URL="${TOAST_URL}/target/deploy/${PHASE}/${FLEET}"
+    URL="${TOAST_URL}/server/deploy/${SNO}/${PARAM2}"
     wget -q -N --post-data "org=${ORG}&token=${TOKEN}&no=${SNO}&t_no=${PARAM2}" -P "${TEMP_DIR}" "${URL}"
 
     if [ -f ${TARGET_FILE} ]; then
@@ -1805,10 +1819,10 @@ deploy_fleet() {
 
     repo_path
 
-    TARGET_FILE="${TEMP_DIR}/${FLEET}"
+    TARGET_FILE="${TEMP_DIR}/${SNO}"
     rm -rf ${TARGET_FILE}
 
-    URL="${TOAST_URL}/target/deploy/${PHASE}/${FLEET}"
+    URL="${TOAST_URL}/server/deploy/${SNO}"
     wget -q -N --post-data "org=${ORG}&token=${TOKEN}&no=${SNO}" -P "${TEMP_DIR}" "${URL}"
 
     if [ -f ${TARGET_FILE} ]; then
