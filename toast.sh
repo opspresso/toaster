@@ -1475,7 +1475,7 @@ nginx_lb() {
     wget -q -N --post-data "org=${ORG}&token=${TOKEN}&no=${SNO}" -P "${TARGET_DIR}" "${URL}"
 
     if [ -f ${LB_CONF} ]; then
-        cat ${LB_CONF}
+        echo_ "`cat ${LB_CONF}`"
 
         TEMP_HTTP="${TARGET_DIR}/toast-lb-http.tmp"
         TEMP_SSL="${TARGET_DIR}/toast-lb-ssl.tmp"
