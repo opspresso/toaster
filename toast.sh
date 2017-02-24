@@ -1465,18 +1465,21 @@ nginx_lb() {
     echo_bar
     echo_ "nginx lb..."
 
-    LB_CONF="${TEMP_DIR}/${SNO}"
+    TARGET_DIR="${TEMP_DIR}/conf"
+    mkdir -p ${TARGET_DIR}
+
+    LB_CONF="${TARGET_DIR}/${SNO}"
     rm -rf ${LB_CONF}
 
     URL="${TOAST_URL}/server/lb/${SNO}"
-    wget -q -N --post-data "org=${ORG}&token=${TOKEN}&no=${SNO}" -P "${TEMP_DIR}" "${URL}"
+    wget -q -N --post-data "org=${ORG}&token=${TOKEN}&no=${SNO}" -P "${TARGET_DIR}" "${URL}"
 
     if [ -f ${LB_CONF} ]; then
         cat ${LB_CONF}
 
-        TEMP_HTTP="${TEMP_DIR}/toast-lb-http.tmp"
-        TEMP_SSL="${TEMP_DIR}/toast-lb-ssl.tmp"
-        TEMP_TCP="${TEMP_DIR}/toast-lb-tcp.tmp"
+        TEMP_HTTP="${TARGET_DIR}/toast-lb-http.tmp"
+        TEMP_SSL="${TARGET_DIR}/toast-lb-ssl.tmp"
+        TEMP_TCP="${TARGET_DIR}/toast-lb-tcp.tmp"
 
         rm -rf ${TEMP_FILE} ${TEMP_HTTP} ${TEMP_SSL} ${TEMP_TCP}
 
@@ -1630,8 +1633,11 @@ vhost_domain() {
     echo_bar
     echo_ "apache..."
 
+    TARGET_DIR="${TEMP_DIR}/conf"
+    mkdir -p ${TARGET_DIR}
+
     TEMPLATE="${SHELL_DIR}/package/apache/${HTTPD_VERSION}/vhost.conf"
-    TEMP_FILE="${TEMP_DIR}/toast-vhost.tmp"
+    TEMP_FILE="${TARGET_DIR}/toast-vhost.tmp"
 
     DOM="${PARAM2}"
 
@@ -1668,17 +1674,20 @@ vhost_fleet() {
 
     ${SUDO} rm -rf ${HTTPD_CONF_DIR}/toast*
 
-    VHOST_LIST="${TEMP_DIR}/${SNO}"
+    TARGET_DIR="${TEMP_DIR}/conf"
+    mkdir -p ${TARGET_DIR}
+
+    VHOST_LIST="${TARGET_DIR}/${SNO}"
     rm -rf ${VHOST_LIST}
 
     URL="${TOAST_URL}/server/vhost/${SNO}"
-    wget -q -N --post-data "org=${ORG}&token=${TOKEN}&no=${SNO}" -P "${TEMP_DIR}" "${URL}"
+    wget -q -N --post-data "org=${ORG}&token=${TOKEN}&no=${SNO}" -P "${TARGET_DIR}" "${URL}"
 
     if [ -f ${VHOST_LIST} ]; then
         echo_ "placement apache..."
 
         TEMPLATE="${SHELL_DIR}/package/apache/${HTTPD_VERSION}/vhost.conf"
-        TEMP_FILE="${TEMP_DIR}/toast-vhost.tmp"
+        TEMP_FILE="${TARGET_DIR}/toast-vhost.tmp"
 
         while read line
         do
@@ -1776,11 +1785,14 @@ deploy_target() {
 
     repo_path
 
-    TARGET_FILE="${TEMP_DIR}/${PARAM2}"
+    TARGET_DIR="${TEMP_DIR}/deploy"
+    mkdir -p ${TARGET_DIR}
+
+    TARGET_FILE="${TARGET_DIR}/${PARAM2}"
     rm -rf ${TARGET_FILE}
 
     URL="${TOAST_URL}/server/deploy/${SNO}/${PARAM2}"
-    wget -q -N --post-data "org=${ORG}&token=${TOKEN}&no=${SNO}&t_no=${PARAM2}" -P "${TEMP_DIR}" "${URL}"
+    wget -q -N --post-data "org=${ORG}&token=${TOKEN}&no=${SNO}&t_no=${PARAM2}" -P "${TARGET_DIR}" "${URL}"
 
     if [ -f ${TARGET_FILE} ]; then
         echo_ "download..."
@@ -1819,11 +1831,14 @@ deploy_fleet() {
 
     repo_path
 
-    TARGET_FILE="${TEMP_DIR}/${SNO}"
+    TARGET_DIR="${TEMP_DIR}/deploy"
+    mkdir -p ${TARGET_DIR}
+
+    TARGET_FILE="${TARGET_DIR}/${SNO}"
     rm -rf ${TARGET_FILE}
 
     URL="${TOAST_URL}/server/deploy/${SNO}"
-    wget -q -N --post-data "org=${ORG}&token=${TOKEN}&no=${SNO}" -P "${TEMP_DIR}" "${URL}"
+    wget -q -N --post-data "org=${ORG}&token=${TOKEN}&no=${SNO}" -P "${TARGET_DIR}" "${URL}"
 
     if [ -f ${TARGET_FILE} ]; then
         echo_ "download..."
