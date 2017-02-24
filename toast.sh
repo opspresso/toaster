@@ -1749,11 +1749,9 @@ deploy_project() {
     PACKAGING="${TYPE}"
     if [ "${PACKAGING}" == "war" ]; then
         DEPLOY_PATH="${WEBAPP_DIR}"
-    fi
-    if [ "${PACKAGING}" == "jar" ]; then
+    elif [ "${PACKAGING}" == "jar" ]; then
         DEPLOY_PATH="${APPS_DIR}"
-    fi
-    if [ "${PACKAGING}" == "php" ]; then
+    elif [ "${PACKAGING}" == "web" ] || [ "${PACKAGING}" == "php" ]; then
         PACKAGING="war"
         DEPLOY_PATH="${SITE_DIR}/${DOMAIN}"
     fi
@@ -1885,11 +1883,9 @@ deploy_value() {
     PACKAGING="${TYPE}"
     if [ "${PACKAGING}" == "war" ]; then
         DEPLOY_PATH="${WEBAPP_DIR}"
-    fi
-    if [ "${PACKAGING}" == "jar" ]; then
+    elif [ "${PACKAGING}" == "jar" ]; then
         DEPLOY_PATH="${APPS_DIR}"
-    fi
-    if [ "${PACKAGING}" == "php" ]; then
+    elif [ "${PACKAGING}" == "web" ] || [ "${PACKAGING}" == "php" ]; then
         if [ "${DOMAIN}" == "" ]; then
             warning "need domain. [${DOMAIN}]"
         fi
@@ -1915,18 +1911,11 @@ download() {
         return 1
     fi
 
-    # war (for tomcat stop/start)
-    if [ "${TYPE}" == "war" ]; then
-        HAS_WAR="TRUE"
-    fi
-
-    # jar (for jar stop/start)
     if [ "${TYPE}" == "jar" ]; then
         HAS_JAR="true"
-    fi
-
-    # php unzip
-    if [ "${TYPE}" == "php" ]; then
+    elif [ "${TYPE}" == "war" ]; then
+        HAS_WAR="TRUE"
+    elif [ "${TYPE}" == "web" ] || [ "${TYPE}" == "php" ]; then
         if [ -d "${UNZIP_DIR}" ] || [ -f "${UNZIP_DIR}" ]; then
             rm -rf "${UNZIP_DIR}"
         fi
@@ -1950,8 +1939,7 @@ download() {
 placement() {
     echo_ "--> ${DEPLOY_PATH}"
 
-    # php
-    if [ "${TYPE}" == "php" ]; then
+    if [ "${TYPE}" == "web" ] || [ "${TYPE}" == "php" ]; then
         rm -rf "${DEPLOY_PATH}.backup"
 
         if [ -d "${DEPLOY_PATH}" ] || [ -f "${DEPLOY_PATH}" ]; then
@@ -1963,10 +1951,7 @@ placement() {
         else
             mv -f "${UNZIP_DIR}" "${DEPLOY_PATH}"
         fi
-    fi
-
-    # war
-    if [ "${TYPE}" == "war" ]; then
+    elif [ "${TYPE}" == "war" ]; then
         DEST_WAR="${DEPLOY_PATH}/${ARTIFACT_ID}.${PACKAGING}"
 
         rm -rf "${DEPLOY_PATH}/${ARTIFACT_ID}"
@@ -1977,10 +1962,7 @@ placement() {
         else
             cp -rf "${FILEPATH}" "${DEST_WAR}"
         fi
-    fi
-
-    # jar
-    if [ "${TYPE}" == "jar" ]; then
+    elif [ "${TYPE}" == "jar" ]; then
         DEST_WAR="${DEPLOY_PATH}/${ARTIFACT_ID}.${PACKAGING}"
 
         rm -rf "${DEST_WAR}"
