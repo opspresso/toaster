@@ -11,9 +11,9 @@ curl -s toast.sh/install | bash
 ```
 #!/bin/bash
 
-runuser -l ${user} -c 'curl -s toast.sh/install | bash'
+runuser -l {user} -c 'curl -s toast.sh/install | bash'
 
-runuser -l ${user} -c '~/toaster/toast.sh auto {fleet} {phase} {org} {token}'
+runuser -l {user} -c '~/toaster/toast.sh auto {fleet} {phase} {org} {token}'
 ```
 
 ```
@@ -25,13 +25,13 @@ cat /var/log/cloud-init-output.log
 ~/toaster/toast.sh auto
 ~/toaster/toast.sh init java
 ~/toaster/toast.sh deploy fleet
-~/toaster/toast.sh deploy target ${no}
+~/toaster/toast.sh deploy target {no}
 ```
 
 ### remote.sh
 ```
-~/toaster/remote.sh ${user} ${host} ${port} auto
-~/toaster/remote.sh ${user} ${host} ${port} init java
-~/toaster/remote.sh ${user} ${host} ${port} deploy fleet
-~/toaster/remote.sh ${user} ${host} ${port} deploy target ${no}
+~/toaster/remote.sh {user} {host} {port} auto
+~/toaster/remote.sh {user} {host} {port} init java
+~/toaster/remote.sh {user} {host} {port} deploy fleet
+~/toaster/remote.sh {user} {host} {port} deploy target {no}
 ```
