@@ -755,7 +755,7 @@ init_aws() {
     # aws cli
     if [ ! command -v aws > /dev/null ]; then
         if [ ! -f "${SHELL_DIR}/.config_aws" ]; then
-            echo "init aws cli..."
+            echo_ "init aws cli..."
 
             wget -q -N https://s3.amazonaws.com/aws-cli/awscli-bundle.zip
 
