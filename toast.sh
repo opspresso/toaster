@@ -464,7 +464,7 @@ prepare() {
     ${SUDO} cp -rf ${SHELL_DIR}/package/linux/i18n.txt /etc/sysconfig/i18n
     ${SUDO} cp -rf ${SHELL_DIR}/package/linux/selinux.txt /etc/selinux/config
 
-    if command -v setenforce > /dev/null; then
+    if [ command -v setenforce > /dev/null ]; then
         ${SUDO} setenforce 0
     fi
 }
@@ -753,7 +753,7 @@ init_aws() {
     fi
 
     # aws cli
-    if command -v aws > /dev/null; then
+    if [ ! command -v aws > /dev/null ]; then
         if [ ! -f "${SHELL_DIR}/.config_aws" ]; then
             echo "init aws cli..."
 
