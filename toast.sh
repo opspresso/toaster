@@ -460,11 +460,13 @@ prepare() {
     ${SUDO} rm -rf /etc/localtime
     ${SUDO} ln -sf /usr/share/zoneinfo/Asia/Seoul /etc/localtime
 
-    # i18n & selinux
+    # i18n
     ${SUDO} cp -rf ${SHELL_DIR}/package/linux/i18n.txt /etc/sysconfig/i18n
+
+    # selinux
     ${SUDO} cp -rf ${SHELL_DIR}/package/linux/selinux.txt /etc/selinux/config
 
-    if [ command -v setenforce > /dev/null ]; then
+    if command -v setenforce > /dev/null; then
         echo_ "selinux disable..."
         ${SUDO} setenforce 0
     fi
@@ -754,7 +756,7 @@ init_aws() {
     fi
 
     # aws cli
-    if [ ! command -v aws > /dev/null ]; then
+    if ! command -v aws > /dev/null; then
         if [ ! -f "${SHELL_DIR}/.config_aws" ]; then
             echo_ "init aws cli..."
 
