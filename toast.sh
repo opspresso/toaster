@@ -6,12 +6,17 @@ echo_() {
 }
 
 success() {
-    echo "$(tput setaf 2)$1$(tput sgr0)"
+    echo -e "$(tput setaf 2)$1$(tput sgr0)"
+    echo "$1" >> /tmp/toast.log
+}
+
+inform() {
+    echo -e "$(tput setaf 6)$1$(tput sgr0)"
     echo "$1" >> /tmp/toast.log
 }
 
 warning() {
-    echo "$(tput setaf 1)$1$(tput sgr0)"
+    echo -e "$(tput setaf 1)$1$(tput sgr0)"
     echo "$1" >> /tmp/toast.log
 }
 
@@ -459,7 +464,7 @@ prepare() {
     ${SUDO} cp -rf ${SHELL_DIR}/package/linux/i18n.txt /etc/sysconfig/i18n
     ${SUDO} cp -rf ${SHELL_DIR}/package/linux/selinux.txt /etc/selinux/config
 
-    if [ -f "/usr/sbin/setenforce" ]; then
+    if [ command -v setenforce > /dev/null ]; then
         ${SUDO} setenforce 0
     fi
 }
@@ -748,7 +753,7 @@ init_aws() {
     fi
 
     # aws cli
-    if [ ! -f "/usr/bin/aws" ]; then
+    if [ ! command -v aws > /dev/null ]; then
         if [ ! -f "${SHELL_DIR}/.config_aws" ]; then
             echo "init aws cli..."
 
