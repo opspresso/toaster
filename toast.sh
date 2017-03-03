@@ -464,11 +464,11 @@ prepare() {
     ${SUDO} cp -rf ${SHELL_DIR}/package/linux/i18n.txt /etc/sysconfig/i18n
 
     # selinux
-    ${SUDO} cp -rf ${SHELL_DIR}/package/linux/selinux.txt /etc/selinux/config
+    #${SUDO} cp -rf ${SHELL_DIR}/package/linux/selinux.txt /etc/selinux/config
 
     if command -v setenforce > /dev/null; then
         echo_ "selinux disable..."
-        ${SUDO} setenforce 0
+        #${SUDO} setenforce 0
     fi
 }
 
