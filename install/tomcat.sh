@@ -6,12 +6,17 @@ echo_() {
 }
 
 success() {
-    echo "$(tput setaf 2)$1$(tput sgr0)"
+    echo -e "$(tput setaf 2)$1$(tput sgr0)"
+    echo "$1" >> /tmp/toast.log
+}
+
+inform() {
+    echo -e "$(tput setaf 6)$1$(tput sgr0)"
     echo "$1" >> /tmp/toast.log
 }
 
 warning() {
-    echo "$(tput setaf 1)$1$(tput sgr0)"
+    echo -e "$(tput setaf 1)$1$(tput sgr0)"
     echo "$1" >> /tmp/toast.log
 }
 
