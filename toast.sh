@@ -465,7 +465,7 @@ prepare() {
     ${SUDO} cp -rf ${SHELL_DIR}/package/linux/selinux.txt /etc/selinux/config
 
     if [ command -v setenforce > /dev/null ]; then
-        echo_ "setenforce 0..."
+        echo_ "selinux disable..."
         ${SUDO} setenforce 0
     fi
 }
