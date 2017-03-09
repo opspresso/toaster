@@ -38,7 +38,7 @@ else
 fi
 
 if [ "${OS_TYPE}" == "" ]; then
-    echo "`uname -a`"
+    uname -a
     warning "Not supported OS - [${OS_NAME}][${OS_TYPE}]"
     exit 1
 fi
