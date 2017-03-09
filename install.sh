@@ -30,6 +30,8 @@ if [ "${OS_NAME}" == "Linux" ]; then
         OS_TYPE="el6"
     elif [ `echo ${OS_FULL} | grep -c "el7"` -gt 0 ]; then
         OS_TYPE="el7"
+    elif [ `echo ${OS_FULL} | grep -c "generic"` -gt 0 ]; then
+        OS_TYPE="generic"
     fi
 else
     if [ "${OS_NAME}" == "Darwin" ]; then
