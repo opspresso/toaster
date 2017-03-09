@@ -1416,7 +1416,13 @@ version_save() {
     echo_ "--> from: ${PACKAGE_PATH}"
     echo_ "--> to  : ${UPLOAD_PATH}"
 
-    aws s3 cp ${PACKAGE_PATH} ${UPLOAD_PATH} # --quiet
+    if [ "${PARAM2}" == "public" ]; then
+        OPTION="--grants read=uri=http://acs.amazonaws.com/groups/global/AllUsers"
+    else
+        OPTION="" # --quiet
+    fi
+
+    aws s3 cp ${PACKAGE_PATH} ${UPLOAD_PATH} ${OPTION}
 
     echo_ "package uploaded."
 
