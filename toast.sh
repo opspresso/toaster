@@ -317,9 +317,6 @@ version() {
     version_parse
 
     case ${PARAM1} in
-        log)
-            version_log
-            ;;
         s|save)
             version_save
             ;;
@@ -327,7 +324,6 @@ version() {
             version_master
             ;;
         *)
-            version_increase
             ;;
     esac
 }
@@ -1340,23 +1336,6 @@ version_parse() {
     echo_ "version=${VERSION}"
 
     GROUP_PATH=`echo "${GROUP_ID}" | sed "s/\./\//"`
-}
-
-increase() {
-    echo 1.2.3.4 | awk -F. -v OFS=. 'NF==1{print ++$NF}; NF>1{if(length($NF+1)>length($NF))$(NF-1)++; $NF=sprintf("%0*d", length($NF), ($NF+1)%(10^length($NF))); print}'
-
-}
-
-version_increase() {
-    if [ "${ARTIFACT_ID}" == "" ]; then
-        warning "Not set artifact_id. [${ARTIFACT_ID}]"
-        return 1
-    fi
-
-
-    echo_ "version=${VERSION}"
-
-    version_replace
 }
 
 version_master() {
