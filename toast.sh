@@ -1455,6 +1455,10 @@ version_note() {
         fi
     done < ${TEMP_FILE}
 
+    echo_bar
+    cat ${GIT_LOG}
+    echo_bar
+
     return "`cat ${GIT_LOG}`"
 }
 
