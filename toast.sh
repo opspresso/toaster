@@ -1235,6 +1235,7 @@ init_jenkins() {
 
     echo_ "download jenkins..."
 
+    # jenkins
     URL="http://mirrors.jenkins.io/war/latest/jenkins.war"
     wget -q -N -P "${WEBAPP_DIR}" "${URL}"
 
@@ -1436,6 +1437,8 @@ version_save() {
 
     echo_ "package uploaded."
 
+    version_log
+
     URL="${TOAST_URL}/version/build/${ARTIFACT_ID}/${VERSION}"
     RES=`curl -s --data "org=${ORG}&token=${TOKEN}&groupId=${GROUP_ID}&artifactId=${ARTIFACT_ID}&packaging=${PACKAGE}&no=${SNO}" ${URL}`
     ARR=(${RES})
@@ -1443,6 +1446,28 @@ version_save() {
     if [ "${ARR[0]}" != "OK" ]; then
         warning "Server Error. [${URL}][${RES}]"
     fi
+}
+
+version_log() {
+    TEMP_FILE="${TEMP_DIR}/toast-git.tmp"
+
+    IGNORE="Merge pull request"
+
+    git log --oneline --since=1day > ${TEMP_FILE}
+
+    while read line
+    do
+        FOUND="`echo ${line} | grep -o "${IGNORE}"`"
+
+        if [ "${FOUND}" == "${IGNORE}" ]; then
+            continue
+        fi
+
+        GIT_MSG="${line:8}"
+
+        echo ">> ${GIT_MSG}"
+
+    done < ${TEMP_FILE}
 }
 
 nginx_conf_dir() {
