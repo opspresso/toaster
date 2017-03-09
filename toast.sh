@@ -1419,7 +1419,8 @@ version_save() {
 
     echo_ "package uploaded."
 
-    NOTE=version_note
+    version_note
+    NOTE="$?"
 
     URL="${TOAST_URL}/version/build/${ARTIFACT_ID}/${VERSION}"
     RES=`curl -s --data "org=${ORG}&token=${TOKEN}&groupId=${GROUP_ID}&artifactId=${ARTIFACT_ID}&packaging=${PACKAGE}&no=${SNO}&note=${NOTE}" ${URL}`
