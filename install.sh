@@ -38,7 +38,8 @@ else
 fi
 
 if [ "${OS_TYPE}" == "" ]; then
-    warning "Not supported OS - ${OS_NAME}"
+    uname -a
+    warning "Not supported OS - [${OS_NAME}][${OS_TYPE}]"
     exit 1
 fi
 

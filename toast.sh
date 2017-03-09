@@ -46,7 +46,8 @@ else
 fi
 
 if [ "${OS_TYPE}" == "" ]; then
-    warning "Not supported OS - ${OS_NAME}"
+    echo_ "`uname -a`"
+    warning "Not supported OS - [${OS_NAME}][${OS_TYPE}]"
     exit 1
 fi
 
@@ -460,14 +461,16 @@ prepare() {
     ${SUDO} rm -rf /etc/localtime
     ${SUDO} ln -sf /usr/share/zoneinfo/Asia/Seoul /etc/localtime
 
-    # i18n & selinux
+    # i18n
     ${SUDO} cp -rf ${SHELL_DIR}/package/linux/i18n.txt /etc/sysconfig/i18n
-    ${SUDO} cp -rf ${SHELL_DIR}/package/linux/selinux.txt /etc/selinux/config
 
-    if [ command -v setenforce > /dev/null ]; then
-        echo_ "selinux disable..."
-        ${SUDO} setenforce 0
-    fi
+    # selinux
+#    ${SUDO} cp -rf ${SHELL_DIR}/package/linux/selinux.txt /etc/selinux/config
+
+#    if command -v setenforce > /dev/null; then
+#        echo_ "selinux disable..."
+#        ${SUDO} setenforce 0
+#    fi
 }
 
 config_auto() {
@@ -754,7 +757,7 @@ init_aws() {
     fi
 
     # aws cli
-    if [ ! command -v aws > /dev/null ]; then
+    if ! command -v aws > /dev/null; then
         if [ ! -f "${SHELL_DIR}/.config_aws" ]; then
             echo_ "init aws cli..."
 
