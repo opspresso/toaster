@@ -208,6 +208,7 @@ auto() {
     prepare
 
     config
+    config_cron
 
     self_info
 
@@ -510,7 +511,6 @@ config_auto() {
 
     config_save
     config_info
-    config_cron
 }
 
 config_save() {
