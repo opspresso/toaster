@@ -1410,16 +1410,16 @@ version_save() {
     echo_ "--> to  : ${UPLOAD_PATH}"
 
     if [ "${PARAM2}" == "public" ]; then
-        OPTION="--grants read=uri=http://acs.amazonaws.com/groups/global/AllUsers"
+        OPTION="--quiet --grants read=uri=http://acs.amazonaws.com/groups/global/AllUsers"
     else
-        OPTION="" # --quiet
+        OPTION="--quiet " # --quiet
     fi
 
     aws s3 cp ${PACKAGE_PATH} ${UPLOAD_PATH} ${OPTION}
 
     echo_ "package uploaded."
 
-    NOTE=version_note
+    NOTE=$(version_note)
 
     URL="${TOAST_URL}/version/build/${ARTIFACT_ID}/${VERSION}"
     RES=`curl -s --data "org=${ORG}&token=${TOKEN}&groupId=${GROUP_ID}&artifactId=${ARTIFACT_ID}&packaging=${PACKAGE}&no=${SNO}&note=${NOTE}" ${URL}`
@@ -1435,9 +1435,6 @@ version_note() {
 
     IGNORE="Merge pull request"
 
-    GIT_LOG="${TEMP_DIR}/toast-git-log.tmp"
-    echo "" > ${GIT_LOG}
-
     git log --oneline --since=1day > ${TEMP_FILE}
 
     while read line
@@ -1451,11 +1448,9 @@ version_note() {
         GIT_MSG="${line:8}"
 
         if [ "${GIT_MSG}" != "" ]; then
-            echo "* ${GIT_MSG}" >> ${GIT_LOG}
+            echo "- ${GIT_MSG}"
         fi
     done < ${TEMP_FILE}
-
-    return "`cat ${GIT_LOG}`"
 }
 
 nginx_conf_dir() {
