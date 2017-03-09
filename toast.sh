@@ -317,6 +317,9 @@ version() {
     version_parse
 
     case ${PARAM1} in
+        log)
+            version_log
+            ;;
         s|save)
             version_save
             ;;
@@ -1437,10 +1440,10 @@ version_save() {
 
     echo_ "package uploaded."
 
-    version_log
+    NOTE=version_log
 
     URL="${TOAST_URL}/version/build/${ARTIFACT_ID}/${VERSION}"
-    RES=`curl -s --data "org=${ORG}&token=${TOKEN}&groupId=${GROUP_ID}&artifactId=${ARTIFACT_ID}&packaging=${PACKAGE}&no=${SNO}" ${URL}`
+    RES=`curl -s --data "org=${ORG}&token=${TOKEN}&groupId=${GROUP_ID}&artifactId=${ARTIFACT_ID}&packaging=${PACKAGE}&no=${SNO}&note=${NOTE}" ${URL}`
     ARR=(${RES})
 
     if [ "${ARR[0]}" != "OK" ]; then
@@ -1453,11 +1456,14 @@ version_log() {
 
     IGNORE="Merge pull request"
 
+    GIT_LOG="${TEMP_DIR}/toast-git-log.tmp"
+    echo "" > ${GIT_LOG}
+
     git log --oneline --since=1day > ${TEMP_FILE}
 
     while read line
     do
-        FOUND="`echo ${line} | grep -o "${IGNORE}"`"
+        FOUND="`echo "${line}" | grep -o "${IGNORE}"`"
 
         if [ "${FOUND}" == "${IGNORE}" ]; then
             continue
@@ -1465,9 +1471,12 @@ version_log() {
 
         GIT_MSG="${line:8}"
 
-        echo ">> ${GIT_MSG}"
-
+        if [ "${GIT_MSG}" != "" ]; then
+            echo "* ${GIT_MSG}" >> ${GIT_LOG}
+        fi
     done < ${TEMP_FILE}
+
+    return "`cat ${GIT_LOG}`"
 }
 
 nginx_conf_dir() {
