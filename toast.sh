@@ -1419,7 +1419,7 @@ version_save() {
 
     echo_ "package uploaded."
 
-    NOTE=version_log
+    NOTE=version_note
 
     URL="${TOAST_URL}/version/build/${ARTIFACT_ID}/${VERSION}"
     RES=`curl -s --data "org=${ORG}&token=${TOKEN}&groupId=${GROUP_ID}&artifactId=${ARTIFACT_ID}&packaging=${PACKAGE}&no=${SNO}&note=${NOTE}" ${URL}`
@@ -1430,7 +1430,7 @@ version_save() {
     fi
 }
 
-version_log() {
+version_note() {
     TEMP_FILE="${TEMP_DIR}/toast-git.tmp"
 
     IGNORE="Merge pull request"
