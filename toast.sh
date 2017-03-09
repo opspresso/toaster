@@ -208,6 +208,7 @@ auto() {
     prepare
 
     config
+    config_cron
 
     self_info
 
@@ -489,7 +490,7 @@ config_auto() {
 
     # .toast
     if [ ! -f "${CONFIG}" ]; then
-        cp -rf ${SHELL_DIR}/package/toast.txt ${CONFIG} 644
+        cp -rf ${SHELL_DIR}/package/toast.txt ${CONFIG}
         source ${CONFIG}
     fi
 
@@ -510,7 +511,6 @@ config_auto() {
 
     config_save
     config_info
-    config_cron
 }
 
 config_save() {
@@ -1238,7 +1238,7 @@ init_jenkins() {
     URL="http://mirrors.jenkins.io/war/latest/jenkins.war"
     wget -q -N -P "${WEBAPP_DIR}" "${URL}"
 
-    cp -rf "${CATALINA_HOME}/conf/web.org.xml" "${CATALINA_HOME}/conf/web.xml" 644
+    cp -rf "${CATALINA_HOME}/conf/web.org.xml" "${CATALINA_HOME}/conf/web.xml"
 
     tomcat_start
 }
