@@ -317,9 +317,6 @@ version() {
     version_parse
 
     case ${PARAM1} in
-        log)
-            version_log
-            ;;
         s|save)
             version_save
             ;;
@@ -327,7 +324,6 @@ version() {
             version_master
             ;;
         *)
-            version_increase
             ;;
     esac
 }
@@ -1342,23 +1338,6 @@ version_parse() {
     GROUP_PATH=`echo "${GROUP_ID}" | sed "s/\./\//"`
 }
 
-increase() {
-    echo 1.2.3.4 | awk -F. -v OFS=. 'NF==1{print ++$NF}; NF>1{if(length($NF+1)>length($NF))$(NF-1)++; $NF=sprintf("%0*d", length($NF), ($NF+1)%(10^length($NF))); print}'
-
-}
-
-version_increase() {
-    if [ "${ARTIFACT_ID}" == "" ]; then
-        warning "Not set artifact_id. [${ARTIFACT_ID}]"
-        return 1
-    fi
-
-
-    echo_ "version=${VERSION}"
-
-    version_replace
-}
-
 version_master() {
     if [ "${ARTIFACT_ID}" == "" ]; then
         warning "Not set artifact_id. [${ARTIFACT_ID}]"
@@ -1440,7 +1419,7 @@ version_save() {
 
     echo_ "package uploaded."
 
-    NOTE=version_log
+    NOTE=version_note
 
     URL="${TOAST_URL}/version/build/${ARTIFACT_ID}/${VERSION}"
     RES=`curl -s --data "org=${ORG}&token=${TOKEN}&groupId=${GROUP_ID}&artifactId=${ARTIFACT_ID}&packaging=${PACKAGE}&no=${SNO}&note=${NOTE}" ${URL}`
@@ -1451,7 +1430,7 @@ version_save() {
     fi
 }
 
-version_log() {
+version_note() {
     TEMP_FILE="${TEMP_DIR}/toast-git.tmp"
 
     IGNORE="Merge pull request"
