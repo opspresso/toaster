@@ -1235,6 +1235,7 @@ init_jenkins() {
 
     echo_ "download jenkins..."
 
+    # jenkins
     URL="http://mirrors.jenkins.io/war/latest/jenkins.war"
     wget -q -N -P "${WEBAPP_DIR}" "${URL}"
 
