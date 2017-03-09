@@ -1451,7 +1451,7 @@ version_note() {
         GIT_MSG="${line:8}"
 
         if [ "${GIT_MSG}" != "" ]; then
-            echo "* ${GIT_MSG}" >> ${GIT_LOG}
+            echo "- ${GIT_MSG}" >> ${GIT_LOG}
         fi
     done < ${TEMP_FILE}
 
