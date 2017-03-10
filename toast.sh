@@ -1436,7 +1436,7 @@ version_note() {
 
     IGNORE="Merge pull request"
 
-    git log --oneline --since=1day > ${TEMP_FILE}
+    git log --oneline --since=12hour > ${TEMP_FILE}
 
     while read line
     do
