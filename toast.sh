@@ -1432,7 +1432,7 @@ version_save() {
 }
 
 version_note() {
-    git log --pretty=format:"- %s" --since=12hour | grep -v "Merge pull request " | grep -v "Merge branch "
+    git log --pretty=format:"- %s" --since=12hour | grep -v "\- Merge pull request " | grep -v "\- Merge branch "
 }
 
 nginx_conf_dir() {
