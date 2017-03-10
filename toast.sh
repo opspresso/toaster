@@ -1432,26 +1432,7 @@ version_save() {
 }
 
 version_note() {
-    TEMP_FILE="${TEMP_DIR}/toast-git.tmp"
-
-    IGNORE="Merge pull request"
-
-    git log --oneline --since=12hour > ${TEMP_FILE}
-
-    while read line
-    do
-        FOUND="`echo "${line}" | grep -o "${IGNORE}"`"
-
-        if [ "${FOUND}" == "${IGNORE}" ]; then
-            continue
-        fi
-
-        GIT_MSG="${line:8}"
-
-        if [ "${GIT_MSG}" != "" ]; then
-            echo "- ${GIT_MSG}"
-        fi
-    done < ${TEMP_FILE}
+    git log --pretty=format:"- %s" --since=12hour | grep -v "Merge pull request " | grep -v "Merge branch "
 }
 
 nginx_conf_dir() {
