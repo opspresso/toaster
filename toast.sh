@@ -858,6 +858,7 @@ init_startup() {
 
         echo "" >> ${TEMP_FILE}
         echo "${RC_HEAD}" >> ${TEMP_FILE}
+        echo "/sbin/runuser -l ${USER} -c '/home/${USER}/toaster/toast.sh update'" >> ${TEMP_FILE}
         echo "/sbin/runuser -l ${USER} -c '/home/${USER}/toaster/toast.sh auto'" >> ${TEMP_FILE}
         echo "" >> ${TEMP_FILE}
 
