@@ -2269,7 +2269,7 @@ process_stop() {
 }
 
 process_start() {
-    java -jar ${DEPLOY_PATH}/${ARTIFACT_ID}.${PACKAGING} >> /dev/null &
+    java -jar ${JAR_OPTS} ${DEPLOY_PATH}/${ARTIFACT_ID}.${PACKAGING} >> /dev/null &
 
     PID=`ps -ef | grep "[${ARTIFACT_ID:0:1}]""${ARTIFACT_ID:1}" | grep "[-]jar" | awk '{print $2}'`
     if [ "${PID}" != "" ]; then
@@ -2444,6 +2444,8 @@ echo_toast() {
 }
 
 ################################################################################
+
+JAR_OPTS=""
 
 toast
 
