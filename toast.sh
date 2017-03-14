@@ -237,6 +237,14 @@ update() {
 }
 
 config() {
+    case ${PARAM1} in
+        c|cron)
+            config_cron
+            ;;
+        *)
+            ;;
+    esac
+
     config_auto
 }
 
