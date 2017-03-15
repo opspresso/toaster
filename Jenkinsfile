@@ -3,7 +3,10 @@
 //echo "JOB_NAME    ${env.JOB_NAME}"
 //echo "BRANCH_NAME ${env.BRANCH_NAME}"
 
-properties([buildDiscarder(logRotator(daysToKeepStr: '60', numToKeepStr: '10')), pipelineTriggers([])])
+properties([
+    buildDiscarder(logRotator(daysToKeepStr: '60', numToKeepStr: '10')),
+    pipelineTriggers([cron('H/10 * * * *')])
+])
 
 node {
     stage('Checkout') {
