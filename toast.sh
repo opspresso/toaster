@@ -1670,12 +1670,15 @@ vhost_domain() {
     TARGET_DIR="${TEMP_DIR}/conf"
     mkdir -p ${TARGET_DIR}
 
-    if [ "${PARAM2}" == "" ]; then
+    DIR="${PARAM2}"
+    DOM="${PARAM2}"
+
+    if [ "${DOM}" == "" ]; then
         warning "need domain. [${DOM}]"
         return
     fi
 
-    vhost_replace "${PARAM2}" "${PARAM2}"
+    vhost_replace "${DIR}" "${DOM}"
 
     httpd_graceful
 
@@ -1708,13 +1711,11 @@ vhost_fleet() {
     if [ -f ${VHOST_LIST} ]; then
         echo_ "placement apache..."
 
-        TEMPLATE="${SHELL_DIR}/package/apache/${HTTPD_VERSION}/vhost.conf"
-        TEMP_FILE="${TARGET_DIR}/toast-vhost.tmp"
-
         while read line
         do
             ARR=(${line})
 
+            DIR="${ARR[0]}"
             DOM="${ARR[0]}"
 
             if [ "${DOM}" == "" ]; then
@@ -1722,7 +1723,7 @@ vhost_fleet() {
                 continue
             fi
 
-            vhost_replace "${DOM}" "${DOM}"
+            vhost_replace "${DIR}" "${DOM}"
         done < ${VHOST_LIST}
     fi
 
