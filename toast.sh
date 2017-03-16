@@ -1645,14 +1645,24 @@ vhost_replace() {
     TEMP_FILE="${TARGET_DIR}/toast-vhost.tmp"
 
     DIR="$1"
-    DOM="$2"
+    DOM="$1"
+
+    echo_ "--> ${DOM}"
 
     make_dir "${SITE_DIR}/${DIR}"
 
     DEST_FILE="${HTTPD_CONF_DIR}/toast-${DOM}.conf"
 
-    sed "s/DIR/$DIR/g" ${TEMPLATE}  > ${TEMP_FILE}
-    sed "s/DOM/$DOM/g" ${TEMP_FILE} > ${DEST_FILE}
+    ${SUDO} sed "s/DIR/$DIR/g" ${TEMPLATE}  > ${TEMP_FILE}
+    ${SUDO} sed "s/DOM/$DOM/g" ${TEMP_FILE} > ${DEST_FILE}
+
+    DOM=`echo "${DOM}" | sed "s/yanolja\.com/yanolja-in\.com/"`
+    DOM=`echo "${DOM}" | sed "s/yanoljanow\.com/yanoljanow-in\.com/"`
+
+    DEST_FILE="${HTTPD_CONF_DIR}/toast-${DOM}.conf"
+
+    ${SUDO} sed "s/DIR/$DIR/g" ${TEMPLATE}  > ${TEMP_FILE}
+    ${SUDO} sed "s/DOM/$DOM/g" ${TEMP_FILE} > ${DEST_FILE}
 }
 
 vhost_domain() {
@@ -1668,7 +1678,6 @@ vhost_domain() {
     TARGET_DIR="${TEMP_DIR}/conf"
     mkdir -p ${TARGET_DIR}
 
-    DIR="${PARAM2}"
     DOM="${PARAM2}"
 
     if [ "${DOM}" == "" ]; then
@@ -1676,9 +1685,7 @@ vhost_domain() {
         return
     fi
 
-    echo_ "--> ${DOM}"
-
-    vhost_replace "${DIR}" "${DOM}"
+    vhost_replace "${DOM}"
 
     httpd_graceful
 
@@ -1715,7 +1722,6 @@ vhost_fleet() {
         do
             ARR=(${line})
 
-            DIR="${ARR[0]}"
             DOM="${ARR[0]}"
 
             if [ "${DOM}" == "" ]; then
@@ -1723,9 +1729,7 @@ vhost_fleet() {
                 continue
             fi
 
-            echo_ "--> ${DOM}"
-
-            vhost_replace "${DIR}" "${DOM}"
+            vhost_replace "${DOM}"
         done < ${VHOST_LIST}
     fi
 
