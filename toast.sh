@@ -1642,7 +1642,8 @@ vhost_local() {
 
 vhost_replace() {
     TEMPLATE="${SHELL_DIR}/package/apache/${HTTPD_VERSION}/vhost.conf"
-    TEMP_FILE="${TARGET_DIR}/toast-vhost.tmp"
+    TEMP_FILE1="${TARGET_DIR}/toast-vhost1.tmp"
+    TEMP_FILE2="${TARGET_DIR}/toast-vhost2.tmp"
 
     DIR="$1"
     DOM="$1"
@@ -1653,16 +1654,18 @@ vhost_replace() {
 
     DEST_FILE="${HTTPD_CONF_DIR}/toast-${DOM}.conf"
 
-    ${SUDO} sed "s/DIR/$DIR/g" ${TEMPLATE}  > ${TEMP_FILE}
-    ${SUDO} sed "s/DOM/$DOM/g" ${TEMP_FILE} > ${DEST_FILE}
+    sed "s/DIR/$DIR/g" ${TEMPLATE}   > ${TEMP_FILE1}
+    sed "s/DOM/$DOM/g" ${TEMP_FILE1} > ${TEMP_FILE2}
+    copy ${TEMP_FILE2} ${DEST_FILE}
 
     DOM=`echo "${DOM}" | sed "s/yanolja\.com/yanolja-in\.com/"`
     DOM=`echo "${DOM}" | sed "s/yanoljanow\.com/yanoljanow-in\.com/"`
 
     DEST_FILE="${HTTPD_CONF_DIR}/toast-${DOM}.conf"
 
-    ${SUDO} sed "s/DIR/$DIR/g" ${TEMPLATE}  > ${TEMP_FILE}
-    ${SUDO} sed "s/DOM/$DOM/g" ${TEMP_FILE} > ${DEST_FILE}
+    sed "s/DIR/$DIR/g" ${TEMPLATE}   > ${TEMP_FILE1}
+    sed "s/DOM/$DOM/g" ${TEMP_FILE1} > ${TEMP_FILE2}
+    copy ${TEMP_FILE2} ${DEST_FILE}
 }
 
 vhost_domain() {
