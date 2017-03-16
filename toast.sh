@@ -208,7 +208,6 @@ auto() {
     prepare
 
     config
-    config_cron
 
     self_info
 
@@ -237,15 +236,8 @@ update() {
 }
 
 config() {
-    case ${PARAM1} in
-        c|cron)
-            config_cron
-            ;;
-        *)
-            ;;
-    esac
-
     config_auto
+    config_cron
 }
 
 init() {
@@ -662,8 +654,8 @@ init_profile() {
 init_master() {
     echo_ "init master..."
 
-    make_dir ${HOME}/.ssh
-    make_dir ${HOME}/.aws
+    mkdir ${HOME}/.ssh
+    mkdir ${HOME}/.aws
 
     # .ssh/id_rsa
     URL="${TOAST_URL}/config/key/rsa_private_key"
@@ -699,8 +691,8 @@ init_master() {
 init_slave() {
     echo_ "init slave..."
 
-    make_dir ${HOME}/.ssh
-    make_dir ${HOME}/.aws
+    mkdir ${HOME}/.ssh
+    mkdir ${HOME}/.aws
 
     # .ssh/authorized_keys
     TARGET="${HOME}/.ssh/authorized_keys"
@@ -753,7 +745,7 @@ init_slave() {
 init_aws() {
     echo_ "init aws..."
 
-    make_dir ${HOME}/.aws
+    mkdir ${HOME}/.aws
 
     # .aws/config
     URL="${TOAST_URL}/config/key/aws_config"
@@ -1648,6 +1640,45 @@ vhost_local() {
     fi
 }
 
+vhost_replace() {
+    DIR="$1"
+    DOM="$1"
+
+    if [ "${DOM}" == "" ]; then
+        warning "--> empty.domain.com"
+        return
+    fi
+
+    echo_ "--> ${DOM}"
+
+    TEMPLATE="${SHELL_DIR}/package/apache/${HTTPD_VERSION}/vhost.conf"
+    TEMP_FILE1="${TARGET_DIR}/toast-vhost1.tmp"
+    TEMP_FILE2="${TARGET_DIR}/toast-vhost2.tmp"
+
+    make_dir "${SITE_DIR}/${DIR}"
+
+    # gen vhost
+    DEST_FILE="${HTTPD_CONF_DIR}/toast-${DOM}.conf"
+    sed "s/DIR/$DIR/g" ${TEMPLATE}   > ${TEMP_FILE1}
+    sed "s/DOM/$DOM/g" ${TEMP_FILE1} > ${TEMP_FILE2}
+    copy ${TEMP_FILE2} ${DEST_FILE}
+
+    # vhost-in.com
+    IN="${DOM}"
+    IN=`echo "${IN}" | sed "s/yanolja\.com/yanolja-in\.com/"`
+    IN=`echo "${IN}" | sed "s/yanoljanow\.com/yanoljanow-in\.com/"`
+
+    if [ "${IN}" == "${DOM}" ]; then
+        return
+    fi
+
+    # gen vhost
+    DEST_FILE="${HTTPD_CONF_DIR}/toast-${DOM}.conf"
+    sed "s/DIR/$DIR/g" ${TEMPLATE}   > ${TEMP_FILE1}
+    sed "s/DOM/$DOM/g" ${TEMP_FILE1} > ${TEMP_FILE2}
+    copy ${TEMP_FILE2} ${DEST_FILE}
+}
+
 vhost_domain() {
     httpd_conf_dir
 
@@ -1661,24 +1692,9 @@ vhost_domain() {
     TARGET_DIR="${TEMP_DIR}/conf"
     mkdir -p ${TARGET_DIR}
 
-    TEMPLATE="${SHELL_DIR}/package/apache/${HTTPD_VERSION}/vhost.conf"
-    TEMP_FILE="${TARGET_DIR}/toast-vhost.tmp"
-
     DOM="${PARAM2}"
 
-    if [ "${DOM}" == "" ]; then
-        warning "need domain. [${DOM}]"
-        return
-    fi
-
-    make_dir "${SITE_DIR}/${DOM}"
-
-    DEST_FILE="${HTTPD_CONF_DIR}/toast-${DOM}.conf"
-
-    echo_ "--> ${DEST_FILE}"
-
-    sed "s/DOM/$DOM/g" ${TEMPLATE} > ${TEMP_FILE}
-    copy ${TEMP_FILE} ${DEST_FILE} 644
+    vhost_replace "${DOM}"
 
     httpd_graceful
 
@@ -1711,28 +1727,13 @@ vhost_fleet() {
     if [ -f ${VHOST_LIST} ]; then
         echo_ "placement apache..."
 
-        TEMPLATE="${SHELL_DIR}/package/apache/${HTTPD_VERSION}/vhost.conf"
-        TEMP_FILE="${TARGET_DIR}/toast-vhost.tmp"
-
         while read line
         do
             ARR=(${line})
 
             DOM="${ARR[0]}"
 
-            if [ "${DOM}" == "" ]; then
-                warning "need domain. [${DOM}]"
-                continue
-            fi
-
-            make_dir "${SITE_DIR}/${DOM}"
-
-            DEST_FILE="${HTTPD_CONF_DIR}/toast-${DOM}.conf"
-
-            echo_ "--> ${DEST_FILE}"
-
-            sed "s/DOM/$DOM/g" ${TEMPLATE} > ${TEMP_FILE}
-            copy ${TEMP_FILE} ${DEST_FILE} 644
+            vhost_replace "${DOM}"
         done < ${VHOST_LIST}
     fi
 
@@ -1906,16 +1907,17 @@ deploy_value() {
     GROUP_PATH=`echo "${GROUP_ID}" | sed "s/\./\//"`
 
     PACKAGING="${TYPE}"
+    DEPLOY_PATH=""
+
     if [ "${PACKAGING}" == "war" ]; then
         DEPLOY_PATH="${WEBAPP_DIR}"
     elif [ "${PACKAGING}" == "jar" ]; then
         DEPLOY_PATH="${APPS_DIR}"
     elif [ "${PACKAGING}" == "web" ] || [ "${PACKAGING}" == "php" ]; then
-        if [ "${DOMAIN}" == "" ]; then
-            warning "need domain. [${DOMAIN}]"
-        fi
         PACKAGING="war"
-        DEPLOY_PATH="${SITE_DIR}/${DOMAIN}"
+        if [ "${DOMAIN}" != "" ]; then
+            DEPLOY_PATH="${SITE_DIR}/${DOMAIN}"
+        fi
     fi
 
     FILENAME="${ARTIFACT_ID}-${VERSION}.${PACKAGING}"
@@ -1933,11 +1935,11 @@ download() {
 
     if [ ! -f "${FILEPATH}" ]; then
         warning "deploy file does not exist. [${FILEPATH}]"
-        return 1
+        return
     fi
 
     if [ "${TYPE}" == "jar" ]; then
-        HAS_JAR="true"
+        HAS_JAR="TRUE"
     elif [ "${TYPE}" == "war" ]; then
         HAS_WAR="TRUE"
     elif [ "${TYPE}" == "web" ] || [ "${TYPE}" == "php" ]; then
@@ -1962,6 +1964,11 @@ download() {
 }
 
 placement() {
+    if [ "${DEPLOY_PATH}" == "" ]; then
+        warning "--> /empty/deploy/path"
+        return
+    fi
+
     echo_ "--> ${DEPLOY_PATH}"
 
     if [ "${TYPE}" == "web" ] || [ "${TYPE}" == "php" ]; then
