@@ -1907,16 +1907,19 @@ deploy_value() {
     GROUP_PATH=`echo "${GROUP_ID}" | sed "s/\./\//"`
 
     PACKAGING="${TYPE}"
+    DEPLOY_PATH=""
+
     if [ "${PACKAGING}" == "war" ]; then
         DEPLOY_PATH="${WEBAPP_DIR}"
     elif [ "${PACKAGING}" == "jar" ]; then
         DEPLOY_PATH="${APPS_DIR}"
     elif [ "${PACKAGING}" == "web" ] || [ "${PACKAGING}" == "php" ]; then
+        PACKAGING="war"
         if [ "${DOMAIN}" == "" ]; then
             warning "need domain. [${DOMAIN}]"
+        else
+            DEPLOY_PATH="${SITE_DIR}/${DOMAIN}"
         fi
-        PACKAGING="war"
-        DEPLOY_PATH="${SITE_DIR}/${DOMAIN}"
     fi
 
     FILENAME="${ARTIFACT_ID}-${VERSION}.${PACKAGING}"
@@ -1938,7 +1941,7 @@ download() {
     fi
 
     if [ "${TYPE}" == "jar" ]; then
-        HAS_JAR="true"
+        HAS_JAR="TRUE"
     elif [ "${TYPE}" == "war" ]; then
         HAS_WAR="TRUE"
     elif [ "${TYPE}" == "web" ] || [ "${TYPE}" == "php" ]; then
@@ -1964,6 +1967,10 @@ download() {
 
 placement() {
     echo_ "--> ${DEPLOY_PATH}"
+
+    if [ "${DEPLOY_PATH}" == "" ]; then
+        return
+    fi
 
     if [ "${TYPE}" == "web" ] || [ "${TYPE}" == "php" ]; then
         rm -rf "${DEPLOY_PATH}.backup"
