@@ -1664,8 +1664,13 @@ vhost_replace() {
     copy ${TEMP_FILE2} ${DEST_FILE}
 
     # vhost-in.com
-    DOM=`echo "${DOM}" | sed "s/yanolja\.com/yanolja-in\.com/"`
-    DOM=`echo "${DOM}" | sed "s/yanoljanow\.com/yanoljanow-in\.com/"`
+    IN="${DOM}"
+    IN=`echo "${IN}" | sed "s/yanolja\.com/yanolja-in\.com/"`
+    IN=`echo "${IN}" | sed "s/yanoljanow\.com/yanoljanow-in\.com/"`
+
+    if [ "${IN}" == "${DOM}" ]; then
+        return
+    fi
 
     # gen vhost
     DEST_FILE="${HTTPD_CONF_DIR}/toast-${DOM}.conf"
