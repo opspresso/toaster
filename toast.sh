@@ -205,6 +205,8 @@ auto() {
 
     echo_toast
 
+    prepare
+
     config
     config_cron
 
@@ -235,8 +237,6 @@ update() {
 }
 
 config() {
-    prepare
-
     case ${PARAM1} in
         c|cron)
             config_cron
