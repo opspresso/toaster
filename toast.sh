@@ -1652,17 +1652,18 @@ vhost_replace() {
 
     make_dir "${SITE_DIR}/${DIR}"
 
+    # gen vhost
     DEST_FILE="${HTTPD_CONF_DIR}/toast-${DOM}.conf"
-
     sed "s/DIR/$DIR/g" ${TEMPLATE}   > ${TEMP_FILE1}
     sed "s/DOM/$DOM/g" ${TEMP_FILE1} > ${TEMP_FILE2}
     copy ${TEMP_FILE2} ${DEST_FILE}
 
+    # vhost-in.com
     DOM=`echo "${DOM}" | sed "s/yanolja\.com/yanolja-in\.com/"`
     DOM=`echo "${DOM}" | sed "s/yanoljanow\.com/yanoljanow-in\.com/"`
 
+    # gen vhost
     DEST_FILE="${HTTPD_CONF_DIR}/toast-${DOM}.conf"
-
     sed "s/DIR/$DIR/g" ${TEMPLATE}   > ${TEMP_FILE1}
     sed "s/DOM/$DOM/g" ${TEMP_FILE1} > ${TEMP_FILE2}
     copy ${TEMP_FILE2} ${DEST_FILE}
@@ -1684,7 +1685,7 @@ vhost_domain() {
     DOM="${PARAM2}"
 
     if [ "${DOM}" == "" ]; then
-        warning "need domain. [${DOM}]"
+        warning "empty.domain.com"
         return
     fi
 
@@ -1728,7 +1729,7 @@ vhost_fleet() {
             DOM="${ARR[0]}"
 
             if [ "${DOM}" == "" ]; then
-                warning "need domain. [${DOM}]"
+                warning "empty.domain.com"
                 continue
             fi
 
