@@ -1641,14 +1641,19 @@ vhost_local() {
 }
 
 vhost_replace() {
-    TEMPLATE="${SHELL_DIR}/package/apache/${HTTPD_VERSION}/vhost.conf"
-    TEMP_FILE1="${TARGET_DIR}/toast-vhost1.tmp"
-    TEMP_FILE2="${TARGET_DIR}/toast-vhost2.tmp"
-
     DIR="$1"
     DOM="$1"
 
+    if [ "${DOM}" == "" ]; then
+        warning "--> empty.domain.com"
+        return
+    fi
+
     echo_ "--> ${DOM}"
+
+    TEMPLATE="${SHELL_DIR}/package/apache/${HTTPD_VERSION}/vhost.conf"
+    TEMP_FILE1="${TARGET_DIR}/toast-vhost1.tmp"
+    TEMP_FILE2="${TARGET_DIR}/toast-vhost2.tmp"
 
     make_dir "${SITE_DIR}/${DIR}"
 
@@ -1683,11 +1688,6 @@ vhost_domain() {
     mkdir -p ${TARGET_DIR}
 
     DOM="${PARAM2}"
-
-    if [ "${DOM}" == "" ]; then
-        warning "empty.domain.com"
-        return
-    fi
 
     vhost_replace "${DOM}"
 
@@ -1727,11 +1727,6 @@ vhost_fleet() {
             ARR=(${line})
 
             DOM="${ARR[0]}"
-
-            if [ "${DOM}" == "" ]; then
-                warning "empty.domain.com"
-                continue
-            fi
 
             vhost_replace "${DOM}"
         done < ${VHOST_LIST}
@@ -1915,9 +1910,7 @@ deploy_value() {
         DEPLOY_PATH="${APPS_DIR}"
     elif [ "${PACKAGING}" == "web" ] || [ "${PACKAGING}" == "php" ]; then
         PACKAGING="war"
-        if [ "${DOMAIN}" == "" ]; then
-            warning "need domain. [${DOMAIN}]"
-        else
+        if [ "${DOMAIN}" != "" ]; then
             DEPLOY_PATH="${SITE_DIR}/${DOMAIN}"
         fi
     fi
@@ -1937,7 +1930,7 @@ download() {
 
     if [ ! -f "${FILEPATH}" ]; then
         warning "deploy file does not exist. [${FILEPATH}]"
-        return 1
+        return
     fi
 
     if [ "${TYPE}" == "jar" ]; then
@@ -1966,11 +1959,12 @@ download() {
 }
 
 placement() {
-    echo_ "--> ${DEPLOY_PATH}"
-
     if [ "${DEPLOY_PATH}" == "" ]; then
+        warning "--> /empty/deploy/path"
         return
     fi
+
+    echo_ "--> ${DEPLOY_PATH}"
 
     if [ "${TYPE}" == "web" ] || [ "${TYPE}" == "php" ]; then
         rm -rf "${DEPLOY_PATH}.backup"
