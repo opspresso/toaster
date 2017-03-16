@@ -1640,6 +1640,23 @@ vhost_local() {
     fi
 }
 
+vhost_replace() {
+    TEMPLATE="${SHELL_DIR}/package/apache/${HTTPD_VERSION}/vhost.conf"
+    TEMP_FILE="${TARGET_DIR}/toast-vhost.tmp"
+
+    DIR="$1"
+    DOM="$2"
+
+    make_dir "${SITE_DIR}/${DIR}"
+
+    DEST_FILE="${HTTPD_CONF_DIR}/toast-${DOM}.conf"
+
+    echo_ "--> ${DEST_FILE}"
+
+    sed "s/DIR/$DIR/g" ${TEMPLATE}  > ${TEMP_FILE}
+    sed "s/DOM/$DOM/g" ${TEMP_FILE} > ${DEST_FILE}
+}
+
 vhost_domain() {
     httpd_conf_dir
 
@@ -1653,24 +1670,12 @@ vhost_domain() {
     TARGET_DIR="${TEMP_DIR}/conf"
     mkdir -p ${TARGET_DIR}
 
-    TEMPLATE="${SHELL_DIR}/package/apache/${HTTPD_VERSION}/vhost.conf"
-    TEMP_FILE="${TARGET_DIR}/toast-vhost.tmp"
-
-    DOM="${PARAM2}"
-
-    if [ "${DOM}" == "" ]; then
+    if [ "${PARAM2}" == "" ]; then
         warning "need domain. [${DOM}]"
         return
     fi
 
-    make_dir "${SITE_DIR}/${DOM}"
-
-    DEST_FILE="${HTTPD_CONF_DIR}/toast-${DOM}.conf"
-
-    echo_ "--> ${DEST_FILE}"
-
-    sed "s/DOM/$DOM/g" ${TEMPLATE} > ${TEMP_FILE}
-    copy ${TEMP_FILE} ${DEST_FILE} 644
+    vhost_replace "${PARAM2}" "${PARAM2}"
 
     httpd_graceful
 
@@ -1717,14 +1722,7 @@ vhost_fleet() {
                 continue
             fi
 
-            make_dir "${SITE_DIR}/${DOM}"
-
-            DEST_FILE="${HTTPD_CONF_DIR}/toast-${DOM}.conf"
-
-            echo_ "--> ${DEST_FILE}"
-
-            sed "s/DOM/$DOM/g" ${TEMPLATE} > ${TEMP_FILE}
-            copy ${TEMP_FILE} ${DEST_FILE} 644
+            vhost_replace "${DOM}" "${DOM}"
         done < ${VHOST_LIST}
     fi
 
