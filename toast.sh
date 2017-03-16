@@ -205,8 +205,6 @@ auto() {
 
     echo_toast
 
-    prepare
-
     config
     config_cron
 
@@ -237,6 +235,8 @@ update() {
 }
 
 config() {
+    prepare
+
     case ${PARAM1} in
         c|cron)
             config_cron
@@ -662,8 +662,8 @@ init_profile() {
 init_master() {
     echo_ "init master..."
 
-    make_dir ${HOME}/.ssh
-    make_dir ${HOME}/.aws
+    mkdir ${HOME}/.ssh
+    mkdir ${HOME}/.aws
 
     # .ssh/id_rsa
     URL="${TOAST_URL}/config/key/rsa_private_key"
@@ -699,8 +699,8 @@ init_master() {
 init_slave() {
     echo_ "init slave..."
 
-    make_dir ${HOME}/.ssh
-    make_dir ${HOME}/.aws
+    mkdir ${HOME}/.ssh
+    mkdir ${HOME}/.aws
 
     # .ssh/authorized_keys
     TARGET="${HOME}/.ssh/authorized_keys"
@@ -753,7 +753,7 @@ init_slave() {
 init_aws() {
     echo_ "init aws..."
 
-    make_dir ${HOME}/.aws
+    mkdir ${HOME}/.aws
 
     # .aws/config
     URL="${TOAST_URL}/config/key/aws_config"
