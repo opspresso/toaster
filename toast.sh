@@ -1651,8 +1651,6 @@ vhost_replace() {
 
     DEST_FILE="${HTTPD_CONF_DIR}/toast-${DOM}.conf"
 
-    echo_ "--> ${DEST_FILE}"
-
     sed "s/DIR/$DIR/g" ${TEMPLATE}  > ${TEMP_FILE}
     sed "s/DOM/$DOM/g" ${TEMP_FILE} > ${DEST_FILE}
 }
@@ -1677,6 +1675,8 @@ vhost_domain() {
         warning "need domain. [${DOM}]"
         return
     fi
+
+    echo_ "--> ${DOM}"
 
     vhost_replace "${DIR}" "${DOM}"
 
@@ -1722,6 +1722,8 @@ vhost_fleet() {
                 warning "need domain. [${DOM}]"
                 continue
             fi
+
+            echo_ "--> ${DOM}"
 
             vhost_replace "${DIR}" "${DOM}"
         done < ${VHOST_LIST}
