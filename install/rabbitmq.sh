@@ -43,7 +43,10 @@ FILE="rabbitmq-server-${VERSION}.el6.noarch"
 
 EXT="rpm"
 
+RABBIT_HOME="/usr/lib/rabbitmq/lib/rabbitmq_server-3.6.6"
+
 # s3://repo.toast.sh/rabbitmq/rabbitmq-server-3.6.6-1.el6.noarch.rpm
+# https://www.rabbitmq.com/releases/rabbitmq-server/v${VERSION}/rabbitmq-server-${VERSION}.el6.noarch.rpm
 
 ################################################################################
 
@@ -82,14 +85,10 @@ ${SUDO} rpm -Uvh "${URL}"
 ${SUDO} yum install -y erlang socat
 
 # rabbitmq-server
-#URL="https://www.rabbitmq.com/releases/rabbitmq-server/v${VERSION}/rabbitmq-server-${VERSION}.el6.noarch.rpm"
-#${SUDO} rpm -Uvh "${URL}"
-
 ${SUDO} rpm -Uvh ${FILE}.${EXT}
 
 # delayed_message_exchange
-DIR="/usr/lib/rabbitmq/lib/rabbitmq_server-${VERSION}/plugins/"
 URL="http://www.rabbitmq.com/community-plugins/v3.6.x/rabbitmq_delayed_message_exchange-0.0.1.ez"
-${SUDO} wget -q -N -P "${DIR}" "${URL}"
+${SUDO} wget -q -N -P "${RABBIT_HOME}/plugins/" "${URL}"
 
 rm -rf ${FILE}.${EXT}
