@@ -227,7 +227,7 @@ auto() {
 }
 
 update() {
-    config_save
+    #config_save
 
     self_info
     self_update
