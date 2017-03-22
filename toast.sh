@@ -2137,7 +2137,7 @@ connect() {
             ARR=(${line})
 
             if [ "${ARR[0]}" != "" ]; then
-                CONN_PARAM="${ARR[1]}@${ARR[2]} -p ${ARR[3]}"
+                CONN_PARAM="${ARR[3]}@${ARR[1]} -p ${ARR[2]}"
             fi
         done < ${CONN_LIST}
     else
