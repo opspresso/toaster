@@ -2158,7 +2158,7 @@ connect() {
         return 1
     fi
 
-    echo_ "connect... ${CONN_PARAM}..."
+    echo_ "connect... ${CONN_PARAM}"
     echo_bar
 
     # ssh
