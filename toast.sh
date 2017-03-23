@@ -186,8 +186,6 @@ usage() {
     echo_
     echo_ " Usage: toast vhost"
     echo_ " Usage: toast vhost lb"
-    echo_ " Usage: toast vhost fleet"
-    echo_ " Usage: toast vhost domain"
     echo_
     echo_ " Usage: toast deploy"
     echo_ " Usage: toast deploy fleet"
@@ -339,9 +337,6 @@ vhost() {
     case ${PARAM1} in
         b|lb)
             nginx_lb
-            ;;
-        d|domain)
-            vhost_domain
             ;;
         *)
             vhost_fleet
@@ -1677,28 +1672,6 @@ vhost_replace() {
     sed "s/DIR/$DIR/g" ${TEMPLATE}   > ${TEMP_FILE1}
     sed "s/DOM/$DOM/g" ${TEMP_FILE1} > ${TEMP_FILE2}
     copy ${TEMP_FILE2} ${DEST_FILE}
-}
-
-vhost_domain() {
-    httpd_conf_dir
-
-    if [ "${HTTPD_CONF_DIR}" == "" ]; then
-        return
-    fi
-
-    echo_bar
-    echo_ "apache..."
-
-    TARGET_DIR="${TEMP_DIR}/conf"
-    mkdir -p ${TARGET_DIR}
-
-    DOM="${PARAM2}"
-
-    vhost_replace "${DOM}"
-
-    httpd_graceful
-
-    echo_bar
 }
 
 vhost_fleet() {
