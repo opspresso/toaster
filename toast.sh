@@ -186,8 +186,6 @@ usage() {
     echo_
     echo_ " Usage: toast vhost"
     echo_ " Usage: toast vhost lb"
-    echo_ " Usage: toast vhost fleet"
-    echo_ " Usage: toast vhost domain"
     echo_
     echo_ " Usage: toast deploy"
     echo_ " Usage: toast deploy fleet"
@@ -339,9 +337,6 @@ vhost() {
     case ${PARAM1} in
         b|lb)
             nginx_lb
-            ;;
-        d|domain)
-            vhost_domain
             ;;
         *)
             vhost_fleet
@@ -1679,28 +1674,6 @@ vhost_replace() {
     copy ${TEMP_FILE2} ${DEST_FILE}
 }
 
-vhost_domain() {
-    httpd_conf_dir
-
-    if [ "${HTTPD_CONF_DIR}" == "" ]; then
-        return
-    fi
-
-    echo_bar
-    echo_ "apache..."
-
-    TARGET_DIR="${TEMP_DIR}/conf"
-    mkdir -p ${TARGET_DIR}
-
-    DOM="${PARAM2}"
-
-    vhost_replace "${DOM}"
-
-    httpd_graceful
-
-    echo_bar
-}
-
 vhost_fleet() {
     httpd_conf_dir
 
@@ -2149,7 +2122,7 @@ connect() {
             ARR=(${line})
 
             if [ "${ARR[0]}" == "${READ_NO}" ]; then
-                CONN_PARAM="${ARR[1]}@${ARR[2]} -p ${ARR[3]}"
+                CONN_PARAM="${ARR[3]}@${ARR[1]} -p ${ARR[2]}"
             fi
         done < ${CONN_LIST}
     fi
