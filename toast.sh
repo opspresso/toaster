@@ -1932,6 +1932,9 @@ download() {
             if [ -d "${UNZIP_DIR}/application/logs" ]; then
                 chmod 777 "${UNZIP_DIR}/application/logs"
             fi
+            if [ -d "${UNZIP_DIR}/application/cache" ]; then
+                chmod 777 "${UNZIP_DIR}/application/cache"
+            fi
         fi
     fi
 }
