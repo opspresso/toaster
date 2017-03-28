@@ -1663,9 +1663,11 @@ vhost_replace() {
     IN=`echo "${IN}" | sed "s/yanolja\.com/yanolja-in\.com/"`
     IN=`echo "${IN}" | sed "s/yanoljanow\.com/yanoljanow-in\.com/"`
 
-    if [ "${IN}" == "${DOM}" ]; then
+    if [ "${DOM}" == "${IN}" ]; then
         return
     fi
+
+    DOM="${IN}"
 
     # gen vhost
     DEST_FILE="${HTTPD_CONF_DIR}/toast-${DOM}.conf"
@@ -1704,9 +1706,7 @@ vhost_fleet() {
         do
             ARR=(${line})
 
-            DOM="${ARR[0]}"
-
-            vhost_replace "${DOM}"
+            vhost_replace "${ARR[0]}"
         done < ${VHOST_LIST}
     fi
 
