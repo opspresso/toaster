@@ -39,7 +39,7 @@ NAME="nginx"
 
 VERSION="1.11.9"
 
-FILE="nginx-${VERSION}"
+FILE="${NAME}-${VERSION}"
 
 EXT="tar.gz"
 

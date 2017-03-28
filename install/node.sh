@@ -39,7 +39,7 @@ NAME="node"
 
 VERSION="6.9.5"
 
-FILE="node-v${VERSION}-linux-x64"
+FILE="${NAME}-v${VERSION}-linux-x64"
 
 EXT="tar.xz"
 

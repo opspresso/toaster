@@ -39,7 +39,7 @@ NAME="rabbitmq"
 
 VERSION="3.6.6-1"
 
-FILE="rabbitmq-server-${VERSION}.el6.noarch"
+FILE="${NAME}-server-${VERSION}.el6.noarch"
 
 EXT="rpm"
 

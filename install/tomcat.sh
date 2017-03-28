@@ -39,7 +39,7 @@ NAME="tomcat"
 
 VERSION="8.0.41"
 
-FILE="apache-tomcat-${VERSION}"
+FILE="apache-${NAME}-${VERSION}"
 
 EXT="tar.gz"
 
