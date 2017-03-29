@@ -261,19 +261,28 @@ init() {
         startup)
             init_startup
             ;;
+        apache)
+            init_apache
+            ;;
         httpd)
             init_httpd
             ;;
         nginx)
             init_nginx
             ;;
-        php5|php55)
+        php5)
+            init_php 5
+            ;;
+        php7)
+            init_php 7
+            ;;
+        php55)
             init_php 55
             ;;
         php56)
             init_php 56
             ;;
-        php7|php70)
+        php70)
             init_php 70
             ;;
         node|node4)
@@ -1007,6 +1016,36 @@ init_httpd() {
 
     echo_bar
     echo_ "`httpd -version`"
+    echo_bar
+}
+
+init_apache() {
+    if [ ! -f "${SHELL_DIR}/.config_apache" ]; then
+        echo_ "init apache..."
+
+        repo_path
+
+        ${SHELL_DIR}/install/httpd.sh ${REPO_PATH}
+
+        echo_ "apache start..."
+        ${SUDO} apache
+
+        touch "${SHELL_DIR}/.config_apache"
+    fi
+
+    if [ -d "/usr/local/apache/html" ]; then
+        TEMP_FILE="${TEMP_DIR}/toast-health.tmp"
+        echo "OK ${NAME}" > ${TEMP_FILE}
+        copy ${TEMP_FILE} "/usr/local/apache/html/index.html"
+        copy ${TEMP_FILE} "/usr/local/apache/html/health.html"
+    fi
+
+    make_dir "${SITE_DIR}"
+    make_dir "${SITE_DIR}/files" 777
+    make_dir "${SITE_DIR}/upload" 777
+
+    echo_bar
+    echo_ "`apache -v`"
     echo_bar
 }
 
