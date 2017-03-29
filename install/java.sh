@@ -21,21 +21,21 @@ warning() {
 }
 
 download() {
-    FILE="$1"
-    PATH="$2"
+    _FILE="$1"
+    _PATH="$2"
 
     if [ "${REPO}" != "" ]; then
-        URL="${REPO}/${PATH}/${FILE}"
+        URL="${REPO}/${_PATH}/${_FILE}"
 
         echo_ "download... [${URL}]"
 
         /usr/bin/aws s3 cp ${URL} ./
     fi
 
-    if [ ! -f ${FILE} ]; then
+    if [ ! -f ${_FILE} ]; then
         warning "Can not download : ${URL}"
 
-        URL="http://repo.toast.sh/${PATH}/${FILE}"
+        URL="http://repo.toast.sh/${_PATH}/${_FILE}"
 
         echo_ "download... [${URL}]"
 
