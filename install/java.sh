@@ -29,7 +29,7 @@ download() {
 
         echo_ "download... [${URL}]"
 
-        aws s3 cp ${URL} ./
+        /usr/bin/aws s3 cp ${URL} ./
     fi
 
     if [ ! -f ${FILE} ]; then
@@ -39,7 +39,7 @@ download() {
 
         echo_ "download... [${URL}]"
 
-        wget -q -N ${URL}
+        /usr/bin/wget -q -N ${URL}
     fi
 }
 
