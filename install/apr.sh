@@ -82,12 +82,14 @@ tar xzfp apr-util-1.5.4.tar.gz
 
 pushd apr-1.5.2
 ./configure --prefix=/usr/local/apr
-make && make install
+make -s
+${SUDO} make install
 popd
 
 pushd apr-util-1.5.4
 ./configure --prefix=/usr/local/apr-util/ --with-apr=/usr/local/apr/
-make && make install
+make -s
+${SUDO} make install
 popd
 
 rm -rf apr-*

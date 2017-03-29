@@ -577,6 +577,8 @@ config_name() {
         ${SUDO} hostname "${NAME}"
 
         mod_conf /etc/sysconfig/network "HOSTNAME" "${NAME}"
+
+        ${SUDO} /etc/init.d/rsyslog restart
     fi
 }
 
