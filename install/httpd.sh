@@ -85,43 +85,17 @@ tar xfp ${FILE}.${EXT}
 
 pushd ${FILE}
 
-./configure --prefix=/usr/local/php \
-            --with-libdir=lib64 \
-            --with-apxs2=/usr/local/apache/bin/apxs \
-            --with-mysql=/usr/local/mariadb \
-            --with-config-file-path=/usr/local/php/lib \
-            --disable-debug \
-            --enable-safe-mode \
-            --enable-sockets \
-            --enable-mod-charset \
-            --enable-sysvsem=yes \
-            --enable-sysvshm=yes \
-            --enable-ftp \
-            --enable-magic-quotes \
-            --enable-gd-native-ttf \
-            --enable-inline-optimization \
-            --enable-bcmath \
-            --enable-sigchild \
-            --enable-mbstring \
-            --enable-pcntl \
-            --enable-shmop \
-            --with-png-dir \
-            --with-zlib \
-            --with-jpeg-dir \
-            --with-png-dir=/usr/lib \
-            --with-freetype-dir=/usr \
-            --with-libxml-dir=/usr \
-            --enable-exif \
-            --with-gd \
-            --with-ttf \
-            --with-gettext \
-            --with-curl \
-            --with-mcrypt \
-            --with-mhash \
-            --with-openssl \
-            --with-xmlrpc \
-            --with-xsl \
-            --enable-maintainer-zts
+./configure --prefix=/usr/local/apache \
+            --enable-rule=SHARED_CORE \
+            --enable-modules=all \
+            --enable-mods-shared=most \
+            --enable-mpms-shared=all \
+            --enable-so \
+            --enable-rewrite \
+            --enable-ssl \
+            --with-include-apr \
+            --with-apr=/usr/local/apr \
+            --with-apr-util=/usr/local/apr-util
 
 make -s
 ${SUDO} make install
