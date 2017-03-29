@@ -56,47 +56,41 @@ if [ "${HOME}" != "/root" ]; then
     SUDO="sudo"
 fi
 
-SHELL_DIR=$(dirname $0)
-
-################################################################################
-
-NAME="java"
-
-FILE="server-jre-8u121-linux-x64"
-
-EXT="tar.gz"
-
-# s3://repo.toast.sh/java/server-jre-8u121-linux-x64.tar.gz
-
 ################################################################################
 
 REPO="$1"
 
-download "${FILE}.${EXT}" "${NAME}"
+download "apr-1.5.2.tar.gz" "httpd"
+download "apr-util-1.5.4.tar.gz" "httpd"
 
-if [ ! -f ${FILE}.${EXT} ]; then
-    warning "Can not download : ${FILE}.${EXT}"
+if [ ! -f apr-1.5.2.tar.gz ]; then
+    warning "Can not download : apr-1.5.2.tar.gz"
+    exit 1
+fi
+
+if [ ! -f apr-util-1.5.4.tar.gz ]; then
+    warning "Can not download : apr-util-1.5.4.tar.gz"
     exit 1
 fi
 
 ################################################################################
 
-tar xzf ${FILE}.${EXT}
+yum remove -y apr apr-docs apr-devel apr-util apr-util-devel apr-util-docs apr-util-mysql
 
-VS1=$(echo ${FILE} | cut -d "-" -f 3)
-VS2="${VS1/u/.0_}"
+tar xzfp apr-1.5.2.tar.gz
+tar xzfp apr-util-1.5.4.tar.gz
 
-JAVA_DIR="jdk1.${VS2}"
-JAVA_HOME="/usr/local/${JAVA_DIR}"
+pushd apr-1.5.2
+./configure --prefix=/usr/local/apr
+make -s
+${SUDO} make install
+popd
 
-${SUDO} rm -rf ${JAVA_HOME}
-${SUDO} mv ${JAVA_DIR} /usr/local/
+pushd apr-util-1.5.4
+./configure --prefix=/usr/local/apr-util/ --with-apr=/usr/local/apr/
+make -s
+${SUDO} make install
+popd
 
-${SUDO} rm -rf /usr/local/java
-${SUDO} ln -s ${JAVA_HOME} /usr/local/java
-
-${SUDO} cp -rf ${SHELL_DIR}/jce8/* ${JAVA_HOME}/jre/lib/security/
-
-echo_ "JAVA_HOME=${JAVA_HOME}"
-
-rm -rf ${FILE}.${EXT}
+rm -rf apr-*
+rm -rf apr-util-*

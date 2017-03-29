@@ -56,17 +56,17 @@ if [ "${HOME}" != "/root" ]; then
     SUDO="sudo"
 fi
 
-SHELL_DIR=$(dirname $0)
-
 ################################################################################
 
-NAME="java"
+NAME="httpd"
 
-FILE="server-jre-8u121-linux-x64"
+VERSION="2.4.25"
 
-EXT="tar.gz"
+FILE="${NAME}-${VERSION}"
 
-# s3://repo.toast.sh/java/server-jre-8u121-linux-x64.tar.gz
+EXT="tar.bz2"
+
+# s3://repo.toast.sh/httpd/httpd-2.4.25.tar.bz2
 
 ################################################################################
 
@@ -81,22 +81,26 @@ fi
 
 ################################################################################
 
-tar xzf ${FILE}.${EXT}
+tar xfp ${FILE}.${EXT}
 
-VS1=$(echo ${FILE} | cut -d "-" -f 3)
-VS2="${VS1/u/.0_}"
+pushd ${FILE}
 
-JAVA_DIR="jdk1.${VS2}"
-JAVA_HOME="/usr/local/${JAVA_DIR}"
+./configure --prefix=/usr/local/apache \
+            --enable-rule=SHARED_CORE \
+            --enable-modules=all \
+            --enable-mods-shared=most \
+            --enable-mpms-shared=all \
+            --enable-so \
+            --enable-rewrite \
+            --enable-ssl \
+            --with-include-apr \
+            --with-apr=/usr/local/apr \
+            --with-apr-util=/usr/local/apr-util
 
-${SUDO} rm -rf ${JAVA_HOME}
-${SUDO} mv ${JAVA_DIR} /usr/local/
+make -s
+${SUDO} make install
 
-${SUDO} rm -rf /usr/local/java
-${SUDO} ln -s ${JAVA_HOME} /usr/local/java
-
-${SUDO} cp -rf ${SHELL_DIR}/jce8/* ${JAVA_HOME}/jre/lib/security/
-
-echo_ "JAVA_HOME=${JAVA_HOME}"
+popd
 
 rm -rf ${FILE}.${EXT}
+rm -rf ${FILE}

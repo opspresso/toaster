@@ -56,17 +56,17 @@ if [ "${HOME}" != "/root" ]; then
     SUDO="sudo"
 fi
 
-SHELL_DIR=$(dirname $0)
-
 ################################################################################
 
-NAME="java"
+NAME="php"
 
-FILE="server-jre-8u121-linux-x64"
+VERSION="5.5.38"
+
+FILE="${NAME}-${VERSION}"
 
 EXT="tar.gz"
 
-# s3://repo.toast.sh/java/server-jre-8u121-linux-x64.tar.gz
+# s3://repo.toast.sh/php/php-5.5.38.tar.gz
 
 ################################################################################
 
@@ -83,20 +83,50 @@ fi
 
 tar xzf ${FILE}.${EXT}
 
-VS1=$(echo ${FILE} | cut -d "-" -f 3)
-VS2="${VS1/u/.0_}"
+pushd ${FILE}
 
-JAVA_DIR="jdk1.${VS2}"
-JAVA_HOME="/usr/local/${JAVA_DIR}"
+./configure --prefix=/usr/local/php \
+            --with-libdir=lib64 \
+            --with-apxs2=/usr/local/apache/bin/apxs \
+            --with-mysql=/usr/local/mariadb \
+            --with-config-file-path=/usr/local/php/lib \
+            --disable-debug \
+            --enable-safe-mode \
+            --enable-sockets \
+            --enable-mod-charset \
+            --enable-sysvsem=yes \
+            --enable-sysvshm=yes \
+            --enable-ftp \
+            --enable-magic-quotes \
+            --enable-gd-native-ttf \
+            --enable-inline-optimization \
+            --enable-bcmath \
+            --enable-sigchild \
+            --enable-mbstring \
+            --enable-pcntl \
+            --enable-shmop \
+            --with-png-dir \
+            --with-zlib \
+            --with-jpeg-dir \
+            --with-png-dir=/usr/lib \
+            --with-freetype-dir=/usr \
+            --with-libxml-dir=/usr \
+            --enable-exif \
+            --with-gd \
+            --with-ttf \
+            --with-gettext \
+            --with-curl \
+            --with-mcrypt \
+            --with-mhash \
+            --with-openssl \
+            --with-xmlrpc \
+            --with-xsl \
+            --enable-maintainer-zts
 
-${SUDO} rm -rf ${JAVA_HOME}
-${SUDO} mv ${JAVA_DIR} /usr/local/
+make -s
+${SUDO} make install
 
-${SUDO} rm -rf /usr/local/java
-${SUDO} ln -s ${JAVA_HOME} /usr/local/java
-
-${SUDO} cp -rf ${SHELL_DIR}/jce8/* ${JAVA_HOME}/jre/lib/security/
-
-echo_ "JAVA_HOME=${JAVA_HOME}"
+popd
 
 rm -rf ${FILE}.${EXT}
+rm -rf ${FILE}

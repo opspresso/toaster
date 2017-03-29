@@ -56,17 +56,17 @@ if [ "${HOME}" != "/root" ]; then
     SUDO="sudo"
 fi
 
-SHELL_DIR=$(dirname $0)
-
 ################################################################################
 
-NAME="java"
+NAME="mariadb"
 
-FILE="server-jre-8u121-linux-x64"
+VERSION="10.0.29"
 
-EXT="tar.gz"
+FILE="${NAME}-${VERSION}"
 
-# s3://repo.toast.sh/java/server-jre-8u121-linux-x64.tar.gz
+EXT="tar.bz2"
+
+# s3://repo.toast.sh/mariadb/mariadb-10.0.29.tar.gz
 
 ################################################################################
 
@@ -81,22 +81,28 @@ fi
 
 ################################################################################
 
-tar xzf ${FILE}.${EXT}
+tar xzfp ${FILE}.${EXT}
 
-VS1=$(echo ${FILE} | cut -d "-" -f 3)
-VS2="${VS1/u/.0_}"
+pushd ${FILE}
 
-JAVA_DIR="jdk1.${VS2}"
-JAVA_HOME="/usr/local/${JAVA_DIR}"
+cmake -DCMAKE_INSTALL_PREFIX=/usr/local/mariadb \
+      -DMYSQL_DATADIR=/usr/local/maria/data \
+      -DWITH_INNOBASE_STORAGE_ENGINE=1 \
+      -DDEFAULT_CHARSET=utf8 \
+      -DDEFAULT_COLLATION=utf8_general_ci \
+      -DENABLED_LOCAL_INFILE=1 \
+      -DWITH_EXTRA_CHARSETS=all \
+      -DMYSQL_UNIX_ADDR=/tmp/maria.sock
 
-${SUDO} rm -rf ${JAVA_HOME}
-${SUDO} mv ${JAVA_DIR} /usr/local/
+make -s
+${SUDO} make install
 
-${SUDO} rm -rf /usr/local/java
-${SUDO} ln -s ${JAVA_HOME} /usr/local/java
+cp support-files/my-large.cnf /etc/my.cnf
 
-${SUDO} cp -rf ${SHELL_DIR}/jce8/* ${JAVA_HOME}/jre/lib/security/
+popd
 
-echo_ "JAVA_HOME=${JAVA_HOME}"
+/usr/local/mariadb/lib/scripts/mysql_install_db --user=maria
+cp -avx /usr/local/mariadb/lib /usr/local/mariadb/lib64
 
 rm -rf ${FILE}.${EXT}
+rm -rf ${FILE}

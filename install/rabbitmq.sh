@@ -6,18 +6,41 @@ echo_() {
 }
 
 success() {
-    echo -e "$(tput setaf 2)$1$(tput sgr0)"
+    echo -e "$(/usr/bin/tput setaf 2)$1$(/usr/bin/tput sgr0)"
     echo "$1" >> /tmp/toast.log
 }
 
 inform() {
-    echo -e "$(tput setaf 6)$1$(tput sgr0)"
+    echo -e "$(/usr/bin/tput setaf 6)$1$(/usr/bin/tput sgr0)"
     echo "$1" >> /tmp/toast.log
 }
 
 warning() {
-    echo -e "$(tput setaf 1)$1$(tput sgr0)"
+    echo -e "$(/usr/bin/tput setaf 1)$1$(/usr/bin/tput sgr0)"
     echo "$1" >> /tmp/toast.log
+}
+
+download() {
+    _FILE="$1"
+    _PATH="$2"
+
+    if [ "${REPO}" != "" ]; then
+        URL="${REPO}/${_PATH}/${_FILE}"
+
+        echo_ "download... [${URL}]"
+
+        /usr/bin/aws s3 cp ${URL} ./
+    fi
+
+    if [ ! -f ${_FILE} ]; then
+        warning "Can not download : ${URL}"
+
+        URL="http://repo.toast.sh/${_PATH}/${_FILE}"
+
+        echo_ "download... [${URL}]"
+
+        /usr/bin/wget -q -N ${URL}
+    fi
 }
 
 ################################################################################
@@ -39,7 +62,7 @@ NAME="rabbitmq"
 
 VERSION="3.6.6-1"
 
-FILE="rabbitmq-server-${VERSION}.el6.noarch"
+FILE="${NAME}-server-${VERSION}.el6.noarch"
 
 EXT="rpm"
 
@@ -52,26 +75,10 @@ RABBIT_HOME="/usr/lib/rabbitmq/lib/rabbitmq_server-3.6.6"
 
 REPO="$1"
 
-if [ "${REPO}" != "" ]; then
-    URL="${REPO}/${NAME}/${FILE}.${EXT}"
-
-    echo_ "download... [${URL}]"
-
-    aws s3 cp ${URL} ./
-fi
+download "${FILE}.${EXT}" "${NAME}"
 
 if [ ! -f ${FILE}.${EXT} ]; then
-    warning "Can not download : ${URL}"
-
-    URL="http://repo.toast.sh/${NAME}/${FILE}.${EXT}"
-
-    echo_ "download... [${URL}]"
-
-    wget -q -N ${URL}
-fi
-
-if [ ! -f ${FILE}.${EXT} ]; then
-    warning "Can not download : ${URL}"
+    warning "Can not download : ${FILE}.${EXT}"
     exit 1
 fi
 
