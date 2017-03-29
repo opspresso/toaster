@@ -288,6 +288,9 @@ init() {
         mysql)
             init_mysql55
             ;;
+        mariadb)
+            init_mariadb
+            ;;
         redis)
             init_redis
             ;;
@@ -1132,6 +1135,18 @@ init_tomcat8() {
 
         echo "CATALINA_HOME=${CATALINA_HOME}"
         echo "CATALINA_HOME=${CATALINA_HOME}" > "${SHELL_DIR}/.config_tomcat"
+    fi
+}
+
+init_mariadb() {
+    if [ ! -f "${SHELL_DIR}/.config_mariadb" ]; then
+        echo_ "init mariadb..."
+
+        repo_path
+
+        ${SHELL_DIR}/install/mariadb.sh ${REPO_PATH}
+
+        touch "${SHELL_DIR}/.config_mariadb"
     fi
 }
 
