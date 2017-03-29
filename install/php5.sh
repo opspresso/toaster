@@ -64,9 +64,9 @@ VERSION="5.5.38"
 
 FILE="${NAME}-${VERSION}"
 
-EXT="tar.bz2"
+EXT="tar.gz"
 
-# s3://repo.toast.sh/php/php-5.5.38.tar.bz2
+# s3://repo.toast.sh/php/php-5.5.38.tar.gz
 
 ################################################################################
 
@@ -81,7 +81,7 @@ fi
 
 ################################################################################
 
-tar xfp ${FILE}.${EXT}
+tar xzf ${FILE}.${EXT}
 
 pushd ${FILE}
 
