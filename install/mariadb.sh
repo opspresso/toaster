@@ -64,7 +64,7 @@ VERSION="10.0.29"
 
 FILE="${NAME}-${VERSION}"
 
-EXT="tar.bz2"
+EXT="tar.gz"
 
 # s3://repo.toast.sh/mariadb/mariadb-10.0.29.tar.gz
 
