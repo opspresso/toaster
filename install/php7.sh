@@ -75,7 +75,7 @@ REPO="$1"
 download "${FILE}.${EXT}" "${NAME}"
 
 if [ ! -f ${FILE}.${EXT} ]; then
-    warning "Can not download : ${URL}"
+    warning "Can not download : ${FILE}.${EXT}"
     exit 1
 fi
 

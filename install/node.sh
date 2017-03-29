@@ -20,6 +20,29 @@ warning() {
     echo "$1" >> /tmp/toast.log
 }
 
+download() {
+    FILE="$1"
+    PATH="$2"
+
+    if [ "${REPO}" != "" ]; then
+        URL="${REPO}/${PATH}/${FILE}"
+
+        echo_ "download... [${URL}]"
+
+        aws s3 cp ${URL} ./
+    fi
+
+    if [ ! -f ${FILE} ]; then
+        warning "Can not download : ${URL}"
+
+        URL="http://repo.toast.sh/${PATH}/${FILE}"
+
+        echo_ "download... [${URL}]"
+
+        wget -q -N ${URL}
+    fi
+}
+
 ################################################################################
 
 OS_NAME=`uname`
@@ -49,26 +72,10 @@ EXT="tar.xz"
 
 REPO="$1"
 
-if [ "${REPO}" != "" ]; then
-    URL="${REPO}/${NAME}/${FILE}.${EXT}"
-
-    echo_ "download... [${URL}]"
-
-    aws s3 cp ${URL} ./
-fi
+download "${FILE}.${EXT}" "${NAME}"
 
 if [ ! -f ${FILE}.${EXT} ]; then
-    warning "Can not download : ${URL}"
-
-    URL="http://repo.toast.sh/${NAME}/${FILE}.${EXT}"
-
-    echo_ "download... [${URL}]"
-
-    wget -q -N ${URL}
-fi
-
-if [ ! -f ${FILE}.${EXT} ]; then
-    warning "Can not download : ${URL}"
+    warning "Can not download : ${FILE}.${EXT}"
     exit 1
 fi
 
