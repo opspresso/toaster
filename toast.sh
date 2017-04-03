@@ -261,20 +261,11 @@ init() {
         startup)
             init_startup
             ;;
-        apache)
-            init_apache
-            ;;
         httpd)
             init_httpd
             ;;
         nginx)
             init_nginx
-            ;;
-        php5)
-            init_php 5
-            ;;
-        php7)
-            init_php 7
             ;;
         php55)
             init_php 55
@@ -296,9 +287,6 @@ init() {
             ;;
         mysql)
             init_mysql55
-            ;;
-        mariadb)
-            init_mariadb
             ;;
         redis)
             init_redis
@@ -1019,36 +1007,6 @@ init_httpd() {
     echo_bar
 }
 
-init_apache() {
-    if [ ! -f "${SHELL_DIR}/.config_apache" ]; then
-        echo_ "init apache..."
-
-        repo_path
-
-        ${SHELL_DIR}/install/httpd.sh ${REPO_PATH}
-
-        echo_ "apache start..."
-        ${SUDO} apache
-
-        touch "${SHELL_DIR}/.config_apache"
-    fi
-
-    if [ -d "/usr/local/apache/html" ]; then
-        TEMP_FILE="${TEMP_DIR}/toast-health.tmp"
-        echo "OK ${NAME}" > ${TEMP_FILE}
-        copy ${TEMP_FILE} "/usr/local/apache/html/index.html"
-        copy ${TEMP_FILE} "/usr/local/apache/html/health.html"
-    fi
-
-    make_dir "${SITE_DIR}"
-    make_dir "${SITE_DIR}/files" 777
-    make_dir "${SITE_DIR}/upload" 777
-
-    echo_bar
-    echo_ "`apache -v`"
-    echo_bar
-}
-
 init_nginx() {
     if [ ! -f "${SHELL_DIR}/.config_nginx" ]; then
         echo_ "init nginx..."
@@ -1174,18 +1132,6 @@ init_tomcat8() {
 
         echo "CATALINA_HOME=${CATALINA_HOME}"
         echo "CATALINA_HOME=${CATALINA_HOME}" > "${SHELL_DIR}/.config_tomcat"
-    fi
-}
-
-init_mariadb() {
-    if [ ! -f "${SHELL_DIR}/.config_mariadb" ]; then
-        echo_ "init mariadb..."
-
-        repo_path
-
-        ${SHELL_DIR}/install/mariadb.sh ${REPO_PATH}
-
-        touch "${SHELL_DIR}/.config_mariadb"
     fi
 }
 
