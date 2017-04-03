@@ -451,9 +451,21 @@ self_update() {
 prepare() {
     service_install "gcc curl wget unzip vim git telnet httpie"
 
+    # data dir
     make_dir ${DATA_DIR}
-    make_dir ${SITE_DIR}
     make_dir ${LOGS_DIR} 777
+
+    # site dir & localhost
+    make_dir "${SITE_DIR}"
+    make_dir "${SITE_DIR}/localhost"
+    make_dir "${SITE_DIR}/files" 777
+    make_dir "${SITE_DIR}/upload" 777
+
+    # health.html
+    TEMP_FILE="${TEMP_DIR}/toast-health.tmp"
+    echo "OK ${NAME}" > ${TEMP_FILE}
+    copy ${TEMP_FILE} "${SITE_DIR}/localhost/index.html"
+    copy ${TEMP_FILE} "${SITE_DIR}/localhost/health.html"
 
     # timezone
     ${SUDO} rm -rf /etc/localtime
@@ -992,17 +1004,6 @@ init_httpd() {
         echo "HTTPD_VERSION=${HTTPD_VERSION}" > "${SHELL_DIR}/.config_httpd"
     fi
 
-    if [ -d "/var/www/html" ]; then
-        TEMP_FILE="${TEMP_DIR}/toast-health.tmp"
-        echo "OK ${HOST}" > ${TEMP_FILE}
-        copy ${TEMP_FILE} "/var/www/html/index.html"
-        copy ${TEMP_FILE} "/var/www/html/health.html"
-    fi
-
-    make_dir "${SITE_DIR}"
-    make_dir "${SITE_DIR}/files" 777
-    make_dir "${SITE_DIR}/upload" 777
-
     echo_bar
     echo_ "`httpd -version`"
     echo_bar
@@ -1021,17 +1022,6 @@ init_nginx() {
 
         touch "${SHELL_DIR}/.config_nginx"
     fi
-
-    if [ -d "/usr/local/nginx/html" ]; then
-        TEMP_FILE="${TEMP_DIR}/toast-health.tmp"
-        echo "OK ${NAME}" > ${TEMP_FILE}
-        copy ${TEMP_FILE} "/usr/local/nginx/html/index.html"
-        copy ${TEMP_FILE} "/usr/local/nginx/html/health.html"
-    fi
-
-    make_dir "${SITE_DIR}"
-    make_dir "${SITE_DIR}/files" 777
-    make_dir "${SITE_DIR}/upload" 777
 
     echo_bar
     echo_ "`nginx -v`"
