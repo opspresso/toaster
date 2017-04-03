@@ -105,7 +105,7 @@ LOGS_DIR="${DATA_DIR}/logs"
 SITE_DIR="${DATA_DIR}/site"
 TEMP_DIR="/tmp"
 
-HTTPD_VERSION="22"
+HTTPD_VERSION="24"
 
 TOMCAT_DIR="${APPS_DIR}/tomcat8"
 WEBAPP_DIR="${TOMCAT_DIR}/webapps"
@@ -1452,7 +1452,7 @@ httpd_conf_dir() {
     fi
 
     if [ "${HTTPD_VERSION}" == "" ]; then
-        HTTPD_VERSION="22"
+        HTTPD_VERSION="24"
     fi
 
     HTTPD_CONF_DIR=""
@@ -1460,8 +1460,12 @@ httpd_conf_dir() {
     if [ -d "/etc/httpd/conf.d" ]; then
         HTTPD_CONF_DIR="/etc/httpd/conf.d"
     else
-        if [ -d "/usr/local/apache/conf/extra" ]; then
-            HTTPD_CONF_DIR="/usr/local/apache/conf/extra"
+        if [ -d "/usr/local/apache/conf/conf.d" ]; then
+            HTTPD_CONF_DIR="/usr/local/apache/conf/conf.d"
+        else
+            if [ -d "/usr/local/apache/conf/extra" ]; then
+                HTTPD_CONF_DIR="/usr/local/apache/conf/extra"
+            fi
         fi
     fi
 }
