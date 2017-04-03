@@ -267,13 +267,13 @@ init() {
         nginx)
             init_nginx
             ;;
-        php5|php55)
+        php55)
             init_php 55
             ;;
         php56)
             init_php 56
             ;;
-        php7|php70)
+        php70)
             init_php 70
             ;;
         node|node4)
@@ -2195,17 +2195,29 @@ service_ctl() {
 httpd_graceful() {
     echo_ "httpd graceful..."
 
-    if [ "${OS_TYPE}" == "el7" ]; then
-        service_ctl httpd restart
+    if [ -f "${SHELL_DIR}/.config_httpd" ]; then
+        if [ "${OS_TYPE}" == "el7" ]; then
+            service_ctl httpd restart
+        else
+            service_ctl httpd graceful
+        fi
     else
-        service_ctl httpd graceful
+        if [ -x "/usr/local/apache/bin/apachectl" ]; then
+            ${SUDO} /usr/local/apache/bin/apachectl -k graceful
+        fi
     fi
 }
 
 httpd_restart() {
     echo_ "httpd restart..."
 
-    service_ctl httpd restart
+    if [ -f "${SHELL_DIR}/.config_httpd" ]; then
+        service_ctl httpd restart
+    else
+        if [ -x "/usr/local/apache/bin/apachectl" ]; then
+            ${SUDO} /usr/local/apache/bin/apachectl -k restart
+        fi
+    fi
 }
 
 tomcat_stop() {
