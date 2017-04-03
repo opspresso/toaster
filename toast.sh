@@ -452,6 +452,7 @@ prepare() {
     service_install "gcc curl wget unzip vim git telnet httpie"
 
     make_dir ${DATA_DIR}
+    make_dir ${SITE_DIR}
     make_dir ${LOGS_DIR} 777
 
     # timezone
