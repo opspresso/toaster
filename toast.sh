@@ -1463,7 +1463,7 @@ httpd_dir() {
             fi
         fi
         if [ "${HTTPD_CONF_DIR}" != "" ]; then
-            HTTPD_BIN_PATH="/usr/local/apache/bin/httpd"
+            HTTPD_BIN_PATH="/usr/local/apache/bin/apachectl"
         fi
     fi
 }
