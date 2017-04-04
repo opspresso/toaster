@@ -842,6 +842,8 @@ init_certificate() {
             fi
         done < ${CERTIFICATE}
 
+        TARGET=
+
         echo "SSL_NAME=${PARAM}" > ${SSL_INFO}
     fi
 }
