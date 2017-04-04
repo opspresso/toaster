@@ -105,7 +105,7 @@ LOGS_DIR="${DATA_DIR}/logs"
 SITE_DIR="${DATA_DIR}/site"
 TEMP_DIR="/tmp"
 
-HTTPD_VERSION="22"
+HTTPD_VERSION="24"
 
 TOMCAT_DIR="${APPS_DIR}/tomcat8"
 WEBAPP_DIR="${TOMCAT_DIR}/webapps"
@@ -451,8 +451,21 @@ self_update() {
 prepare() {
     service_install "gcc curl wget unzip vim git telnet httpie"
 
+    # data dir
     make_dir ${DATA_DIR}
     make_dir ${LOGS_DIR} 777
+
+    # site dir & localhost
+    make_dir "${SITE_DIR}"
+    make_dir "${SITE_DIR}/localhost"
+    make_dir "${SITE_DIR}/files" 777
+    make_dir "${SITE_DIR}/upload" 777
+
+    # health.html
+    TEMP_FILE="${TEMP_DIR}/toast-health.tmp"
+    echo "OK ${NAME}" > ${TEMP_FILE}
+    copy ${TEMP_FILE} "${SITE_DIR}/localhost/index.html"
+    copy ${TEMP_FILE} "${SITE_DIR}/localhost/health.html"
 
     # timezone
     ${SUDO} rm -rf /etc/localtime
@@ -463,7 +476,6 @@ prepare() {
 
     # selinux
 #    ${SUDO} cp -rf ${SHELL_DIR}/package/linux/selinux.txt /etc/selinux/config
-
 #    if command -v setenforce > /dev/null; then
 #        echo_ "selinux disable..."
 #        ${SUDO} setenforce 0
@@ -991,17 +1003,6 @@ init_httpd() {
         echo "HTTPD_VERSION=${HTTPD_VERSION}" > "${SHELL_DIR}/.config_httpd"
     fi
 
-    if [ -d "/var/www/html" ]; then
-        TEMP_FILE="${TEMP_DIR}/toast-health.tmp"
-        echo "OK ${HOST}" > ${TEMP_FILE}
-        copy ${TEMP_FILE} "/var/www/html/index.html"
-        copy ${TEMP_FILE} "/var/www/html/health.html"
-    fi
-
-    make_dir "${SITE_DIR}"
-    make_dir "${SITE_DIR}/files" 777
-    make_dir "${SITE_DIR}/upload" 777
-
     echo_bar
     echo_ "`httpd -version`"
     echo_bar
@@ -1020,17 +1021,6 @@ init_nginx() {
 
         touch "${SHELL_DIR}/.config_nginx"
     fi
-
-    if [ -d "/usr/local/nginx/html" ]; then
-        TEMP_FILE="${TEMP_DIR}/toast-health.tmp"
-        echo "OK ${NAME}" > ${TEMP_FILE}
-        copy ${TEMP_FILE} "/usr/local/nginx/html/index.html"
-        copy ${TEMP_FILE} "/usr/local/nginx/html/health.html"
-    fi
-
-    make_dir "${SITE_DIR}"
-    make_dir "${SITE_DIR}/files" 777
-    make_dir "${SITE_DIR}/upload" 777
 
     echo_bar
     echo_ "`nginx -v`"
@@ -1452,7 +1442,7 @@ httpd_conf_dir() {
     fi
 
     if [ "${HTTPD_VERSION}" == "" ]; then
-        HTTPD_VERSION="22"
+        HTTPD_VERSION="24"
     fi
 
     HTTPD_CONF_DIR=""
@@ -1460,8 +1450,12 @@ httpd_conf_dir() {
     if [ -d "/etc/httpd/conf.d" ]; then
         HTTPD_CONF_DIR="/etc/httpd/conf.d"
     else
-        if [ -d "/usr/local/apache/conf/extra" ]; then
-            HTTPD_CONF_DIR="/usr/local/apache/conf/extra"
+        if [ -d "/usr/local/apache/conf/conf.d" ]; then
+            HTTPD_CONF_DIR="/usr/local/apache/conf/conf.d"
+        else
+            if [ -d "/usr/local/apache/conf/extra" ]; then
+                HTTPD_CONF_DIR="/usr/local/apache/conf/extra"
+            fi
         fi
     fi
 }
