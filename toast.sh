@@ -842,6 +842,8 @@ init_certificate() {
             fi
         done < ${CERTIFICATE}
 
+        TARGET=
+
         echo "SSL_NAME=${PARAM}" > ${SSL_INFO}
     fi
 }
@@ -1422,20 +1424,22 @@ version_note() {
     git log --pretty=format:"- %s" --since=12hour | grep -v "\- Merge pull request " | grep -v "\- Merge branch "
 }
 
-nginx_conf_dir() {
+nginx_dir() {
     TOAST_NGINX="${SHELL_DIR}/.config_nginx"
     if [ ! -f "${TOAST_NGINX}" ]; then
         return 1
     fi
 
+    NGINX_BIN_PATH=""
     NGINX_CONF_DIR=""
 
     if [ -f "/usr/local/nginx/conf/nginx.conf" ]; then
+        NGINX_BIN_PATH="/usr/sbin/nginx"
         NGINX_CONF_DIR="/usr/local/nginx/conf"
     fi
 }
 
-httpd_conf_dir() {
+httpd_dir() {
     TOAST_APACHE="${SHELL_DIR}/.config_httpd"
     if [ -f "${TOAST_APACHE}" ]; then
         source ${TOAST_APACHE}
@@ -1445,6 +1449,7 @@ httpd_conf_dir() {
         HTTPD_VERSION="24"
     fi
 
+    HTTPD_BIN_PATH=""
     HTTPD_CONF_DIR=""
 
     if [ -d "/etc/httpd/conf.d" ]; then
@@ -1457,11 +1462,14 @@ httpd_conf_dir() {
                 HTTPD_CONF_DIR="/usr/local/apache/conf/extra"
             fi
         fi
+        if [ "${HTTPD_CONF_DIR}" != "" ]; then
+            HTTPD_BIN_PATH="/usr/local/apache/bin/apachectl"
+        fi
     fi
 }
 
 nginx_lb() {
-    nginx_conf_dir
+    nginx_dir
 
     if [ "${NGINX_CONF_DIR}" == "" ]; then
         return
@@ -1490,8 +1498,6 @@ nginx_lb() {
         TEMP_TCP="${TARGET_DIR}/toast-lb-tcp.tmp"
 
         rm -rf ${TEMP_FILE} ${TEMP_HTTP} ${TEMP_SSL} ${TEMP_TCP}
-
-        SSL=
 
         while read line
         do
@@ -1624,7 +1630,7 @@ nginx_lb() {
 }
 
 vhost_local() {
-    httpd_conf_dir
+    httpd_dir
 
     if [ "${HTTPD_CONF_DIR}" == "" ]; then
         return
@@ -1679,7 +1685,7 @@ vhost_replace() {
 }
 
 vhost_fleet() {
-    httpd_conf_dir
+    httpd_dir
 
     if [ "${HTTPD_CONF_DIR}" == "" ]; then
         return
@@ -2202,8 +2208,8 @@ httpd_graceful() {
             service_ctl httpd graceful
         fi
     else
-        if [ -x "/usr/local/apache/bin/apachectl" ]; then
-            ${SUDO} /usr/local/apache/bin/apachectl -k graceful
+        if [ -x ${HTTPD_BIN_PATH} ]; then
+            ${SUDO} ${HTTPD_BIN_PATH} -k graceful
         fi
     fi
 }
@@ -2214,8 +2220,8 @@ httpd_restart() {
     if [ -f "${SHELL_DIR}/.config_httpd" ]; then
         service_ctl httpd restart
     else
-        if [ -x "/usr/local/apache/bin/apachectl" ]; then
-            ${SUDO} /usr/local/apache/bin/apachectl -k restart
+        if [ -x ${HTTPD_BIN_PATH} ]; then
+            ${SUDO} ${HTTPD_BIN_PATH} -k restart
         fi
     fi
 }
