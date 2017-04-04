@@ -1491,6 +1491,8 @@ nginx_lb() {
 
         rm -rf ${TEMP_FILE} ${TEMP_HTTP} ${TEMP_SSL} ${TEMP_TCP}
 
+        SSL=
+
         while read line
         do
             ARR=(${line})
@@ -1500,7 +1502,7 @@ nginx_lb() {
             fi
 
             if [ "${ARR[0]}" == "SSL" ]; then
-                init_certificate "${ARR[1]}"
+                SSL="${ARR[1]}"
             fi
 
             if [ "${ARR[0]}" == "HOST" ]; then
@@ -1567,6 +1569,10 @@ nginx_lb() {
                 sed "s/PORT/$PORT/g" ${TEMPLATE} >> ${TEMP_TCP}
             fi
         done < ${LB_CONF}
+
+        if [ "${SSL}" != "" ]; then
+            init_certificate "${SSL}"
+        fi
 
         echo_ "assemble..."
 
