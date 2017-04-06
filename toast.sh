@@ -451,6 +451,10 @@ self_update() {
 prepare() {
     service_install "gcc curl wget unzip vim git telnet httpie"
 
+    # user dir
+    make_dir ${HOME}/.ssh
+    make_dir ${HOME}/.aws
+
     # data dir
     make_dir ${DATA_DIR}
     make_dir ${LOGS_DIR} 777
@@ -664,9 +668,6 @@ init_profile() {
 init_master() {
     echo_ "init master..."
 
-    mkdir ${HOME}/.ssh
-    mkdir ${HOME}/.aws
-
     # .ssh/id_rsa
     URL="${TOAST_URL}/config/key/rsa_private_key"
     RES=`curl -s --data "org=${ORG}&token=${TOKEN}&no=${SNO}" ${URL}`
@@ -700,9 +701,6 @@ init_master() {
 
 init_slave() {
     echo_ "init slave..."
-
-    mkdir ${HOME}/.ssh
-    mkdir ${HOME}/.aws
 
     # .ssh/authorized_keys
     TARGET="${HOME}/.ssh/authorized_keys"
@@ -2410,8 +2408,7 @@ new_file() {
         return
     fi
 
-    ${SUDO} rm -rf $1
-    ${SUDO} touch $1
+    ${SUDO} echo -n "" > $1
 
     mod $1 $2
 }
@@ -2423,13 +2420,17 @@ make_dir() {
 
     if [ ! -d $1 ] && [ ! -f $1 ]; then
         mkdir $1
+
+        if [ "$2" != "" ]; then
+            chmod $2
+        fi
     fi
 
     if [ ! -d $1 ] && [ ! -f $1 ]; then
         ${SUDO} mkdir $1
-    fi
 
-    mod $1 $2
+        mod $1 $2
+    fi
 }
 
 not_darwin() {
