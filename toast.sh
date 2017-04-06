@@ -460,6 +460,7 @@ prepare() {
     make_dir "${SITE_DIR}/localhost"
     make_dir "${SITE_DIR}/files" 777
     make_dir "${SITE_DIR}/upload" 777
+    make_dir "${SITE_DIR}/session" 777
 
     # health.html
     TEMP_FILE="${TEMP_DIR}/toast-health.tmp"
