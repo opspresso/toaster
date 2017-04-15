@@ -580,6 +580,9 @@ config_local() {
 }
 
 config_name() {
+    if [ "${OS_NAME}" != "Linux" ]; then
+        return
+    fi
     if [ "$1" == "" ]; then
         return
     fi
@@ -611,6 +614,10 @@ config_info() {
 }
 
 config_cron() {
+    if [ "${OS_NAME}" != "Linux" ]; then
+        return
+    fi
+
     TEMP_FILE="${TEMP_DIR}/toast-cron.tmp"
 
     echo "# toast cron" > ${TEMP_FILE}
