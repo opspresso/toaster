@@ -227,15 +227,11 @@ auto() {
 
 config() {
     echo_toast
-
-    prepare
     
     config_auto
     config_cron
     
     self_info
-
-    init_slave
 }
 
 update() {
