@@ -205,7 +205,8 @@ auto() {
 
     prepare
 
-    config
+    config_auto
+    config_cron
 
     self_info
 
@@ -224,6 +225,19 @@ auto() {
     nginx_lb
 }
 
+config() {
+    echo_toast
+
+    prepare
+    
+    config_auto
+    config_cron
+    
+    self_info
+
+    init_slave
+}
+
 update() {
     #config_save
 
@@ -231,11 +245,6 @@ update() {
     self_update
 
     #service_update
-}
-
-config() {
-    config_auto
-    config_cron
 }
 
 init() {
