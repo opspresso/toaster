@@ -205,7 +205,8 @@ auto() {
 
     prepare
 
-    config
+    config_auto
+    config_cron
 
     self_info
 
@@ -224,6 +225,15 @@ auto() {
     nginx_lb
 }
 
+config() {
+    echo_toast
+    
+    config_auto
+    config_cron
+    
+    self_info
+}
+
 update() {
     #config_save
 
@@ -231,11 +241,6 @@ update() {
     self_update
 
     #service_update
-}
-
-config() {
-    config_auto
-    config_cron
 }
 
 init() {
@@ -580,6 +585,9 @@ config_local() {
 }
 
 config_name() {
+    if [ "${OS_NAME}" != "Linux" ]; then
+        return
+    fi
     if [ "$1" == "" ]; then
         return
     fi
@@ -611,6 +619,10 @@ config_info() {
 }
 
 config_cron() {
+    if [ "${OS_NAME}" != "Linux" ]; then
+        return
+    fi
+
     TEMP_FILE="${TEMP_DIR}/toast-cron.tmp"
 
     echo "# toast cron" > ${TEMP_FILE}
