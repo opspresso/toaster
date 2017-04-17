@@ -205,7 +205,8 @@ auto() {
 
     prepare
 
-    config
+    config_auto
+    config_cron
 
     self_info
 
@@ -224,6 +225,15 @@ auto() {
     nginx_lb
 }
 
+config() {
+    echo_toast
+    
+    config_auto
+    config_cron
+    
+    self_info
+}
+
 update() {
     #config_save
 
@@ -231,11 +241,6 @@ update() {
     self_update
 
     #service_update
-}
-
-config() {
-    config_auto
-    config_cron
 }
 
 init() {
@@ -451,6 +456,10 @@ self_update() {
 prepare() {
     service_install "gcc curl wget unzip vim git telnet httpie"
 
+    # user dir
+    make_dir ${HOME}/.ssh
+    make_dir ${HOME}/.aws
+
     # data dir
     make_dir ${DATA_DIR}
     make_dir ${LOGS_DIR} 777
@@ -576,6 +585,9 @@ config_local() {
 }
 
 config_name() {
+    if [ "${OS_NAME}" != "Linux" ]; then
+        return
+    fi
     if [ "$1" == "" ]; then
         return
     fi
@@ -607,6 +619,10 @@ config_info() {
 }
 
 config_cron() {
+    if [ "${OS_NAME}" != "Linux" ]; then
+        return
+    fi
+
     TEMP_FILE="${TEMP_DIR}/toast-cron.tmp"
 
     echo "# toast cron" > ${TEMP_FILE}
@@ -664,9 +680,6 @@ init_profile() {
 init_master() {
     echo_ "init master..."
 
-    mkdir ${HOME}/.ssh
-    mkdir ${HOME}/.aws
-
     # .ssh/id_rsa
     URL="${TOAST_URL}/config/key/rsa_private_key"
     RES=`curl -s --data "org=${ORG}&token=${TOKEN}&no=${SNO}" ${URL}`
@@ -700,9 +713,6 @@ init_master() {
 
 init_slave() {
     echo_ "init slave..."
-
-    mkdir ${HOME}/.ssh
-    mkdir ${HOME}/.aws
 
     # .ssh/authorized_keys
     TARGET="${HOME}/.ssh/authorized_keys"
@@ -1228,6 +1238,8 @@ init_jenkins() {
     # jenkins
     URL="http://mirrors.jenkins.io/war/latest/jenkins.war"
     wget -q -N -P "${WEBAPP_DIR}" "${URL}"
+
+    echo_ "download complete."
 
     cp -rf "${CATALINA_HOME}/conf/web.org.xml" "${CATALINA_HOME}/conf/web.xml"
 
@@ -2410,8 +2422,7 @@ new_file() {
         return
     fi
 
-    ${SUDO} rm -rf $1
-    ${SUDO} touch $1
+    ${SUDO} echo -n "" > $1
 
     mod $1 $2
 }
@@ -2423,13 +2434,17 @@ make_dir() {
 
     if [ ! -d $1 ] && [ ! -f $1 ]; then
         mkdir $1
+
+        if [ "$2" != "" ]; then
+            chmod $2
+        fi
     fi
 
     if [ ! -d $1 ] && [ ! -f $1 ]; then
         ${SUDO} mkdir $1
-    fi
 
-    mod $1 $2
+        mod $1 $2
+    fi
 }
 
 not_darwin() {
