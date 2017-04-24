@@ -1362,11 +1362,6 @@ version_master() {
 
     echo_ "version=${VERSION}"
 
-    DATE=`date +%Y-%m-%d" "%H:%M`
-
-    git tag -a "${VERSION}" -m "at ${DATE} by toast"
-    git push origin "${VERSION}"
-
     version_replace
 }
 
@@ -1389,6 +1384,13 @@ version_save() {
         warning "Not set artifact_id. [${ARTIFACT_ID}]"
         return 1
     fi
+
+    echo_ "version tag..."
+
+    DATE=`date +%Y-%m-%d" "%H:%M`
+
+    git tag -a "${VERSION}" -m "at ${DATE} by toast"
+    git push origin "${VERSION}"
 
     echo_ "version save..."
 
