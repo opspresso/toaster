@@ -365,6 +365,9 @@ deploy() {
         t|target)
             deploy_target
             ;;
+        b|bucket)
+            deploy_bucket
+            ;;
         *)
             deploy_fleet
             vhost_fleet
@@ -1758,7 +1761,7 @@ repo_path() {
 }
 
 deploy_project() {
-    echo_ "deploy project..."
+    echo_ "deploy project... [deprecated]"
 
     repo_path
 
@@ -1797,52 +1800,6 @@ deploy_project() {
     placement
 
     tomcat_start
-
-    echo_bar
-}
-
-deploy_target() {
-    echo_bar
-    echo_ "deploy target..."
-
-    repo_path
-
-    TARGET_DIR="${TEMP_DIR}/deploy"
-    mkdir -p ${TARGET_DIR}
-
-    TARGET_FILE="${TARGET_DIR}/${PARAM2}"
-    rm -rf ${TARGET_FILE}
-
-    URL="${TOAST_URL}/server/deploy/${SNO}/${PARAM2}"
-    wget -q -N --post-data "org=${ORG}&token=${TOKEN}&no=${SNO}&t_no=${PARAM2}" -P "${TARGET_DIR}" "${URL}"
-
-    if [ -f ${TARGET_FILE} ]; then
-        echo_ "download..."
-
-        while read line
-        do
-            ARR=(${line})
-
-            deploy_value
-
-            download
-        done < ${TARGET_FILE}
-
-        tomcat_stop
-
-        echo_ "placement..."
-
-        while read line
-        do
-            ARR=(${line})
-
-            deploy_value
-
-            placement
-        done < ${TARGET_FILE}
-
-        tomcat_start
-    fi
 
     echo_bar
 }
@@ -1894,6 +1851,98 @@ deploy_fleet() {
     echo_bar
 }
 
+deploy_target() {
+    echo_bar
+    echo_ "deploy target..."
+
+    repo_path
+
+    TARGET_DIR="${TEMP_DIR}/deploy"
+    mkdir -p ${TARGET_DIR}
+
+    TARGET_FILE="${TARGET_DIR}/${PARAM2}"
+    rm -rf ${TARGET_FILE}
+
+    URL="${TOAST_URL}/server/deploy/${SNO}/${PARAM2}"
+    wget -q -N --post-data "org=${ORG}&token=${TOKEN}&no=${SNO}&t_no=${PARAM2}" -P "${TARGET_DIR}" "${URL}"
+
+    if [ -f ${TARGET_FILE} ]; then
+        echo_ "download..."
+
+        while read line
+        do
+            ARR=(${line})
+
+            deploy_value
+
+            download
+        done < ${TARGET_FILE}
+
+        tomcat_stop
+
+        echo_ "placement..."
+
+        while read line
+        do
+            ARR=(${line})
+
+            deploy_value
+
+            placement
+        done < ${TARGET_FILE}
+
+        tomcat_start
+    fi
+
+    echo_bar
+}
+
+deploy_bucket() {
+    echo_bar
+    echo_ "deploy bucket..."
+
+    repo_path
+
+    TARGET_DIR="${TEMP_DIR}/deploy"
+    mkdir -p ${TARGET_DIR}
+
+    TARGET_FILE="${TARGET_DIR}/${PARAM2}"
+    rm -rf ${TARGET_FILE}
+
+    URL="${TOAST_URL}/target/deploy/${PARAM2}"
+    wget -q -N --post-data "org=${ORG}&token=${TOKEN}&no=${SNO}" -P "${TARGET_DIR}" "${URL}"
+
+    if [ -f ${TARGET_FILE} ]; then
+        echo_ "download..."
+
+        while read line
+        do
+            ARR=(${line})
+
+            deploy_value
+
+            download
+        done < ${TARGET_FILE}
+
+        tomcat_stop
+
+        echo_ "placement..."
+
+        while read line
+        do
+            ARR=(${line})
+
+            deploy_value
+
+            #placement
+        done < ${TARGET_FILE}
+
+        tomcat_start
+    fi
+
+    echo_bar
+}
+
 deploy_value() {
     TNO="${ARR[0]}"
     GROUP_ID="${ARR[1]}"
@@ -1901,6 +1950,7 @@ deploy_value() {
     VERSION="${ARR[3]}"
     TYPE="${ARR[4]}"
     DOMAIN="${ARR[5]}"
+    DEPLOY="${ARR[6]}"
 
     GROUP_PATH=`echo "${GROUP_ID}" | sed "s/\./\//"`
 
@@ -1916,6 +1966,10 @@ deploy_value() {
         if [ "${DOMAIN}" != "" ]; then
             DEPLOY_PATH="${SITE_DIR}/${DOMAIN}"
         fi
+    fi
+
+    if [ "${DEPLOY}" == "s3" ]; then
+        DEPLOY_PATH="s3://${DOMAIN}"
     fi
 
     FILENAME="${ARTIFACT_ID}-${VERSION}.${PACKAGING}"
@@ -1972,40 +2026,49 @@ placement() {
 
     echo_ "--> ${DEPLOY_PATH}"
 
-    if [ "${TYPE}" == "web" ] || [ "${TYPE}" == "php" ]; then
-        rm -rf "${DEPLOY_PATH}.backup"
-
-        if [ -d "${DEPLOY_PATH}" ] || [ -f "${DEPLOY_PATH}" ]; then
-            mv -f "${DEPLOY_PATH}" "${DEPLOY_PATH}.backup"
+    if [ "${DEPLOY}" == "s3" ]; then
+        if [ ! -d "${UNZIP_DIR}" ]; then
+            warning "--> /empty/unzip/path"
+            return
         fi
 
-        if [ -d "${DEPLOY_PATH}" ] || [ -f "${DEPLOY_PATH}" ]; then
-            warning "deploy dir can not copy. [${DEPLOY_PATH}]"
-        else
-            mv -f "${UNZIP_DIR}" "${DEPLOY_PATH}"
-        fi
-    elif [ "${TYPE}" == "war" ]; then
-        DEST_WAR="${DEPLOY_PATH}/${ARTIFACT_ID}.${PACKAGING}"
+        aws s3 sync "${UNZIP_DIR}" "${DEPLOY_PATH}"
+    else
+        if [ "${TYPE}" == "web" ] || [ "${TYPE}" == "php" ]; then
+            rm -rf "${DEPLOY_PATH}.backup"
 
-        rm -rf "${DEPLOY_PATH}/${ARTIFACT_ID}"
-        rm -rf "${DEST_WAR}"
+            if [ -d "${DEPLOY_PATH}" ] || [ -f "${DEPLOY_PATH}" ]; then
+                mv -f "${DEPLOY_PATH}" "${DEPLOY_PATH}.backup"
+            fi
 
-        if [ -d "${DEST_WAR}" ] || [ -f "${DEST_WAR}" ]; then
-            warning "deploy file can not copy. [${DEST_WAR}]"
-        else
-            cp -rf "${FILEPATH}" "${DEST_WAR}"
-        fi
-    elif [ "${TYPE}" == "jar" ]; then
-        DEST_WAR="${DEPLOY_PATH}/${ARTIFACT_ID}.${PACKAGING}"
+            if [ -d "${DEPLOY_PATH}" ] || [ -f "${DEPLOY_PATH}" ]; then
+                warning "deploy dir can not copy. [${DEPLOY_PATH}]"
+            else
+                mv -f "${UNZIP_DIR}" "${DEPLOY_PATH}"
+            fi
+        elif [ "${TYPE}" == "war" ]; then
+            DEST_WAR="${DEPLOY_PATH}/${ARTIFACT_ID}.${PACKAGING}"
 
-        rm -rf "${DEST_WAR}"
+            rm -rf "${DEPLOY_PATH}/${ARTIFACT_ID}"
+            rm -rf "${DEST_WAR}"
 
-        if [ -d "${DEST_WAR}" ] || [ -f "${DEST_WAR}" ]; then
-            warning "deploy file can not copy. [${DEST_WAR}]"
-        else
-            process_stop
-            cp -rf "${FILEPATH}" "${DEST_WAR}"
-            process_start
+            if [ -d "${DEST_WAR}" ] || [ -f "${DEST_WAR}" ]; then
+                warning "deploy file can not copy. [${DEST_WAR}]"
+            else
+                cp -rf "${FILEPATH}" "${DEST_WAR}"
+            fi
+        elif [ "${TYPE}" == "jar" ]; then
+            DEST_WAR="${DEPLOY_PATH}/${ARTIFACT_ID}.${PACKAGING}"
+
+            rm -rf "${DEST_WAR}"
+
+            if [ -d "${DEST_WAR}" ] || [ -f "${DEST_WAR}" ]; then
+                warning "deploy file can not copy. [${DEST_WAR}]"
+            else
+                process_stop
+                cp -rf "${FILEPATH}" "${DEST_WAR}"
+                process_start
+            fi
         fi
     fi
 
