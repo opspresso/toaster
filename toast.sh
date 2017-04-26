@@ -1709,6 +1709,8 @@ vhost_fleet() {
     echo_bar
     echo_ "apache fleet..."
 
+    echo_ "--> ${HTTPD_CONF_DIR}"
+
     vhost_local
 
     ${SUDO} rm -rf ${HTTPD_CONF_DIR}/toast*
