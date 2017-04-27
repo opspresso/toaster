@@ -1753,7 +1753,7 @@ repo_path() {
 
     REPO_PATH="${RES}"
 
-    echo_ "repo_path=${REPO_PATH}"
+    #echo_ "repo : ${REPO_PATH}"
 }
 
 deploy_project() {
