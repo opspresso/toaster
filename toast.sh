@@ -244,6 +244,8 @@ update() {
 }
 
 init() {
+    repo_path
+
     case ${PARAM1} in
         hosts)
             init_hosts
@@ -333,6 +335,8 @@ version() {
 
 vhost() {
     not_darwin
+
+    repo_path
 
     self_info
 
@@ -1028,8 +1032,6 @@ init_nginx() {
     if [ ! -f "${SHELL_DIR}/.config_nginx" ]; then
         echo_ "init nginx..."
 
-        repo_path
-
         ${SHELL_DIR}/install/nginx.sh ${REPO_PATH}
 
         echo_ "nginx start..."
@@ -1075,8 +1077,6 @@ init_node() {
     if [ ! -f "${SHELL_DIR}/.config_node" ]; then
         echo_ "init node..."
 
-        repo_path
-
         ${SHELL_DIR}/install/node.sh ${REPO_PATH}
 
         NODE_HOME="/usr/local/node"
@@ -1097,8 +1097,6 @@ init_node() {
 init_java8() {
     if [ ! -f "${SHELL_DIR}/.config_java" ]; then
         echo_ "init java..."
-
-        repo_path
 
         service_remove "java-1.7.0-openjdk java-1.7.0-openjdk-headless"
         service_remove "java-1.8.0-openjdk java-1.8.0-openjdk-headless java-1.8.0-openjdk-devel"
@@ -1124,8 +1122,6 @@ init_java8() {
 init_tomcat8() {
     if [ ! -f "${SHELL_DIR}/.config_tomcat" ]; then
         echo_ "init tomcat..."
-
-        repo_path
 
         ${SHELL_DIR}/install/tomcat.sh ${REPO_PATH}
 
@@ -1180,8 +1176,6 @@ init_redis() {
 init_rabbitmq() {
     if [ ! -f "${SHELL_DIR}/.config_rabbitmq" ]; then
         echo_ "init rabbitmq..."
-
-        repo_path
 
         ${SHELL_DIR}/install/rabbitmq.sh ${REPO_PATH}
 
@@ -1763,8 +1757,6 @@ repo_path() {
 deploy_project() {
     echo_ "deploy project... [deprecated]"
 
-    repo_path
-
     GROUP_ID="${PARAM2}"
     ARTIFACT_ID="${PARAM3}"
     VERSION="${PARAM4}"
@@ -1807,8 +1799,6 @@ deploy_project() {
 deploy_fleet() {
     echo_bar
     echo_ "deploy fleet..."
-
-    repo_path
 
     TARGET_DIR="${TEMP_DIR}/deploy"
     mkdir -p ${TARGET_DIR}
@@ -1855,8 +1845,6 @@ deploy_target() {
     echo_bar
     echo_ "deploy target..."
 
-    repo_path
-
     TARGET_DIR="${TEMP_DIR}/deploy"
     mkdir -p ${TARGET_DIR}
 
@@ -1900,8 +1888,6 @@ deploy_target() {
 deploy_bucket() {
     echo_bar
     echo_ "deploy bucket..."
-
-    repo_path
 
     TARGET_DIR="${TEMP_DIR}/deploy"
     mkdir -p ${TARGET_DIR}
