@@ -138,6 +138,9 @@ toast() {
         d|deploy)
             deploy
             ;;
+        b|bucket)
+            bucket
+            ;;
         h|health)
             health
             ;;
@@ -338,9 +341,9 @@ version() {
 vhost() {
     not_darwin
 
-    repo_path
-
     self_info
+
+    repo_path
 
     init_hosts
     init_profile
@@ -357,9 +360,9 @@ vhost() {
 deploy() {
     not_darwin
 
-    repo_path
-
     self_info
+
+    repo_path
 
     init_hosts
     init_profile
@@ -372,12 +375,22 @@ deploy() {
             deploy_target
             ;;
         b|bucket)
-            deploy_bucket
+            deploy_bucket "${PARAM2}"
             ;;
         *)
             deploy_fleet
             vhost_fleet
     esac
+}
+
+bucket() {
+    not_darwin
+
+    self_info
+
+    repo_path
+
+    deploy_target "${PARAM1}"
 }
 
 log() {
@@ -1748,7 +1761,7 @@ repo_path() {
 
     if [ "${RES}" == "" ]; then
         warning "Not set repo_path. [${RES}]"
-        return 1
+        exit 1
     fi
 
     REPO_PATH="${RES}"
@@ -1888,16 +1901,22 @@ deploy_target() {
 }
 
 deploy_bucket() {
+    TNO="$1"
+
+    if [ "${TNO}" == "" ]; then
+        return;
+    fi
+
     echo_bar
     echo_ "deploy bucket..."
 
     TARGET_DIR="${TEMP_DIR}/deploy"
     mkdir -p ${TARGET_DIR}
 
-    TARGET_FILE="${TARGET_DIR}/${PARAM2}"
+    TARGET_FILE="${TARGET_DIR}/${TNO}"
     rm -rf ${TARGET_FILE}
 
-    URL="${TOAST_URL}/target/deploy/${PARAM2}"
+    URL="${TOAST_URL}/target/deploy/${TNO}"
     wget -q -N --post-data "org=${ORG}&token=${TOKEN}&no=${SNO}" -P "${TARGET_DIR}" "${URL}"
 
     if [ -f ${TARGET_FILE} ]; then
