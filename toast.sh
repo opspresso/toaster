@@ -1750,6 +1750,8 @@ repo_path() {
     fi
 
     REPO_PATH="${RES}"
+
+    echo_ "repo_path=${REPO_PATH}"
 }
 
 deploy_project() {
