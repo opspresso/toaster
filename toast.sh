@@ -390,7 +390,7 @@ bucket() {
 
     repo_path
 
-    deploy_target "${PARAM1}"
+    deploy_bucket "${PARAM2}"
 }
 
 log() {
