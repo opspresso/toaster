@@ -772,8 +772,6 @@ init_slave() {
 init_aws() {
     echo_ "init aws..."
 
-    mkdir ${HOME}/.aws
-
     # .aws/config
     URL="${TOAST_URL}/config/key/aws_config"
     RES=`curl -s --data "org=${ORG}&token=${TOKEN}&no=${SNO}" ${URL}`
