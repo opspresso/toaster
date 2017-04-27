@@ -210,6 +210,8 @@ auto() {
 
     self_info
 
+    repo_path
+
     init_hosts
     init_profile
 
