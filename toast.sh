@@ -2039,7 +2039,9 @@ placement() {
             return
         fi
 
-        aws s3 sync "${UNZIP_DIR}" "${DEPLOY_PATH}"
+        OPTION="--quiet --grants read=uri=http://acs.amazonaws.com/groups/global/AllUsers"
+
+        aws s3 sync "${UNZIP_DIR}" "${DEPLOY_PATH}" ${OPTION}
     else
         if [ "${TYPE}" == "web" ] || [ "${TYPE}" == "php" ]; then
             rm -rf "${DEPLOY_PATH}.backup"
