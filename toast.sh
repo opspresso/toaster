@@ -341,9 +341,9 @@ version() {
 vhost() {
     not_darwin
 
-    repo_path
-
     self_info
+
+    repo_path
 
     init_hosts
     init_profile
@@ -360,9 +360,9 @@ vhost() {
 deploy() {
     not_darwin
 
-    repo_path
-
     self_info
+
+    repo_path
 
     init_hosts
     init_profile
@@ -386,9 +386,9 @@ deploy() {
 bucket() {
     not_darwin
 
-    repo_path
-
     self_info
+
+    repo_path
 
     deploy_target "${PARAM1}"
 }
