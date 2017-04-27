@@ -1941,7 +1941,7 @@ deploy_bucket() {
 
             deploy_value
 
-            #placement
+            placement
         done < ${TARGET_FILE}
 
         tomcat_start
