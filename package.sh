@@ -11,8 +11,12 @@ if [ "${VERSION}" == "" ]; then
     VERSION=`git rev-parse --short HEAD`
 fi
 
+# install.sh
+cp install.sh target/
+
+# toaster.txt
 echo "version=${VERSION}"
 echo "${VERSION}" > target/toaster.txt
 
-# zip
+# toaster.zip
 zip -q -r target/toaster extra install package *.sh
