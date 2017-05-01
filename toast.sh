@@ -410,8 +410,12 @@ log() {
 }
 
 health() {
+    if [ "${TOAST_URL}" == "" ]; then
+        warning "Not set toast_url."
+        exit 1
+    fi
     if [ "${SNO}" == "" ]; then
-        warning "Not configured server. [${SNO}]"
+        warning "Not set server_no."
         return
     fi
 
@@ -441,8 +445,12 @@ health() {
 }
 
 reset() {
+    if [ "${TOAST_URL}" == "" ]; then
+        warning "Not set toast_url."
+        exit 1
+    fi
     if [ "${SNO}" == "" ]; then
-        warning "Not configured server. [${SNO}]"
+        warning "Not set server_no."
         return
     fi
 
@@ -555,6 +563,11 @@ config_auto() {
 }
 
 config_save() {
+    if [ "${TOAST_URL}" == "" ]; then
+        warning "Not set toast_url."
+        exit 1
+    fi
+
     echo_bar
     echo_ "config save... [${UUID}][${SNO}]"
 
@@ -1334,11 +1347,11 @@ version_parse() {
     ARR_VERSION=($(cat ${POM_FILE} | grep -oP '(?<=version>)[^<]+'))
 
     if [ "${ARR_GROUP[0]}" == "" ]; then
-        warning "groupId does not exist. [${ARR_GROUP[0]}]"
+        warning "Not set groupId."
         exit 1
     fi
     if [ "${ARR_ARTIFACT[0]}" == "" ]; then
-        warning "artifactId does not exist. [${ARR_ARTIFACT[0]}]"
+        warning "Not set artifactId."
         exit 1
     fi
 
@@ -1356,7 +1369,7 @@ version_parse() {
 
 version_master() {
     if [ "${ARTIFACT_ID}" == "" ]; then
-        warning "Not set artifact_id. [${ARTIFACT_ID}]"
+        warning "Not set artifact_id."
         return 1
     fi
 
@@ -1394,7 +1407,7 @@ version_replace() {
 
 version_save() {
     if [ "${ARTIFACT_ID}" == "" ]; then
-        warning "Not set artifact_id. [${ARTIFACT_ID}]"
+        warning "Not set artifact_id."
         return 1
     fi
 
@@ -1418,7 +1431,7 @@ version_save() {
     fi
 
     if [ "${PACKAGE_PATH}" == "" ]; then
-        warning "package does not exist. [${PACKAGE_PATH}]"
+        warning "Not set package_path."
         return 1
     fi
 
@@ -1754,6 +1767,10 @@ vhost_fleet() {
 }
 
 repo_path() {
+    if [ "${TOAST_URL}" == "" ]; then
+        warning "Not set toast_url."
+        exit 1
+    fi
     if [ "${REPO_PATH}" != "" ]; then
         return
     fi
@@ -1763,7 +1780,7 @@ repo_path() {
     RES=`curl -s --data "org=${ORG}&token=${TOKEN}&no=${SNO}" ${URL}`
 
     if [ "${RES}" == "" ]; then
-        warning "Not set repo_path. [${RES}]"
+        warning "Not set repo_path."
         exit 1
     fi
 
