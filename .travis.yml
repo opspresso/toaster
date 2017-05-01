@@ -16,4 +16,4 @@ deploy:
   upload-dir: release
 
 notifications:
-  slack: $SLACK_KEY
+  slack: nalbam:lZm5eyurcsoKxZgHSnNZGQYY
