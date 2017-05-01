@@ -1374,6 +1374,7 @@ version_next() {
     fi
 
     if [ "${PARAM2}" != "" ] && [ "${PARAM2}" != "master" ]; then
+        # branch 가 없거나 master 이면 버전을 발급 받음
         return
     fi
 
@@ -1423,6 +1424,7 @@ version_save() {
     git push origin "${VERSION}"
 
     if [ "${PARAM2}" == "none" ]; then
+        # none 이면 upload 하지 않음
         return
     fi
 
