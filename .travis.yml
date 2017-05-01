@@ -1,10 +1,5 @@
 # .travis.yml
-#install:
-#  - curl -s toast.sh/install | bash
-
-#before_script:
-#  - ~/toaster/toast.sh config travis build nalbam $TOAST_TOKEN
-#  - ~/toaster/toast.sh version $TRAVIS_BRANCH
+install: true
 
 script:
   - ./package.sh
@@ -21,4 +16,4 @@ deploy:
   upload-dir: travis
 
 notifications:
-  slack: nalbam:$SLACK_KEY
+  slack: $SLACK_KEY
