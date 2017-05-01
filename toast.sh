@@ -327,6 +327,7 @@ version() {
     fi
     if [ "${PARAM3}" != "" ]; then
         ORG="${PARAM3}"
+        TOAST_URL="http://${ORG}.toast.sh"
     fi
 
     repo_path
