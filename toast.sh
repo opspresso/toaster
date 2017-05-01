@@ -322,11 +322,11 @@ init() {
 }
 
 version() {
-    if [ "${PARAM2}" != "" ]; then
-        TOKEN="${PARAM2}"
-    fi
     if [ "${PARAM3}" != "" ]; then
-        ORG="${PARAM3}"
+        TOKEN="${PARAM3}"
+    fi
+    if [ "${PARAM4}" != "" ]; then
+        ORG="${PARAM4}"
         TOAST_URL="http://${ORG}.toast.sh"
     fi
 
@@ -338,8 +338,8 @@ version() {
         s|save)
             version_save
             ;;
-        m|master)
-            version_master
+        n|next)
+            version_next
             ;;
     esac
 }
@@ -1367,10 +1367,14 @@ version_parse() {
     GROUP_PATH=`echo "${GROUP_ID}" | sed "s/\./\//"`
 }
 
-version_master() {
+version_next() {
     if [ "${ARTIFACT_ID}" == "" ]; then
         warning "Not set artifact_id."
         return 1
+    fi
+
+    if [ "${PARAM2}" != "" ] && [ "${PARAM2}" != "master" ]; then
+        return
     fi
 
     echo_ "version get..."
@@ -1418,7 +1422,11 @@ version_save() {
     git tag -a "${VERSION}" -m "at ${DATE} by toast"
     git push origin "${VERSION}"
 
-    echo_ "version save..."
+    if [ "${PARAM2}" == "none" ]; then
+        return
+    fi
+
+    echo_ "package upload..."
 
     PACKAGE_PATH=""
     if [ -d "target" ]; then
