@@ -1,0 +1,24 @@
+# .travis.yml
+#install:
+#  - curl -s toast.sh/install | bash
+
+#before_script:
+#  - ~/toaster/toast.sh config travis build nalbam $TOAST_TOKEN
+#  - ~/toaster/toast.sh version $TRAVIS_BRANCH
+
+script:
+  - ./package.sh
+
+deploy:
+  provider: s3
+  region: ap-northeast-2
+  access_key_id: $AWS_ACCESS_KEY
+  secret_access_key: $AWS_SECRET_KEY
+  bucket: $AWS_BUCKET
+  skip_cleanup: true
+  acl: public_read
+  local_dir: target
+  upload-dir: travis
+
+notifications:
+  slack: nalbam:$SLACK_KEY
