@@ -1416,49 +1416,48 @@ version_save() {
         return 1
     fi
 
-    echo_ "version tag..."
+    if [ "${VERSION}" != "0.0.0" ]; then
+        echo_ "version tag... [${VERSION}]"
 
-    DATE=`date +%Y-%m-%d" "%H:%M`
+        DATE=`date +%Y-%m-%d" "%H:%M`
 
-    git tag -a "${VERSION}" -m "at ${DATE} by toast"
-    git push origin "${VERSION}"
-
-    if [ "${PARAM2}" == "none" ]; then
-        # none 이면 upload 하지 않음
-        return
+        git tag -a "${VERSION}" -m "at ${DATE} by toast"
+        git push origin "${VERSION}"
     fi
 
-    echo_ "package upload..."
+    if [ "${PARAM2}" != "none" ]; then
+        echo_ "package upload... [${PARAM2}]"
 
-    PACKAGE_PATH=""
-    if [ -d "target" ]; then
-        if [ -f "target/${ARTIFACT_ID}-${VERSION}.war" ]; then
-            PACKAGE_PATH="target/${ARTIFACT_ID}-${VERSION}.war"
+        PACKAGE_PATH=""
+        if [ -d "target" ]; then
+            if [ -f "target/${ARTIFACT_ID}-${VERSION}.war" ]; then
+                PACKAGE_PATH="target/${ARTIFACT_ID}-${VERSION}.war"
+            fi
+            if [ -f "target/${ARTIFACT_ID}-${VERSION}.jar" ]; then
+                PACKAGE_PATH="target/${ARTIFACT_ID}-${VERSION}.jar"
+            fi
         fi
-        if [ -f "target/${ARTIFACT_ID}-${VERSION}.jar" ]; then
-            PACKAGE_PATH="target/${ARTIFACT_ID}-${VERSION}.jar"
+
+        if [ "${PACKAGE_PATH}" == "" ]; then
+            warning "Not set package_path."
+            return 1
         fi
+
+        UPLOAD_PATH="${REPO_PATH}/maven2/${GROUP_PATH}/${ARTIFACT_ID}/${VERSION}/"
+
+        echo_ "--> from: ${PACKAGE_PATH}"
+        echo_ "--> to  : ${UPLOAD_PATH}"
+
+        if [ "${PARAM2}" == "public" ]; then
+            OPTION="--quiet --grants read=uri=http://acs.amazonaws.com/groups/global/AllUsers"
+        else
+            OPTION="--quiet " # --quiet
+        fi
+
+        aws s3 cp ${PACKAGE_PATH} ${UPLOAD_PATH} ${OPTION}
+
+        echo_ "package uploaded."
     fi
-
-    if [ "${PACKAGE_PATH}" == "" ]; then
-        warning "Not set package_path."
-        return 1
-    fi
-
-    UPLOAD_PATH="${REPO_PATH}/maven2/${GROUP_PATH}/${ARTIFACT_ID}/${VERSION}/"
-
-    echo_ "--> from: ${PACKAGE_PATH}"
-    echo_ "--> to  : ${UPLOAD_PATH}"
-
-    if [ "${PARAM2}" == "public" ]; then
-        OPTION="--quiet --grants read=uri=http://acs.amazonaws.com/groups/global/AllUsers"
-    else
-        OPTION="--quiet " # --quiet
-    fi
-
-    aws s3 cp ${PACKAGE_PATH} ${UPLOAD_PATH} ${OPTION}
-
-    echo_ "package uploaded."
 
     NOTE=$(version_note)
 
