@@ -16,6 +16,7 @@ node {
     stage('Build') {
         try {
             sh './package.sh'
+            sh './publish.sh'
             notify('Build Passed', 'good')
         } catch (e) {
             notify('Build Failed', 'danger')

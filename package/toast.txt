@@ -1,5 +1,5 @@
 # toast.sh config
 TOAST_URL=http://toast.sh
-ORG=yanolja
+ORG=nalbam
 PHASE=dev
 FLEET=demo

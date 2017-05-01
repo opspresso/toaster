@@ -1,5 +1,7 @@
 # toaster
 
+[![Build Status](https://travis-ci.org/nalbam-ya/toaster.svg?branch=master)](https://travis-ci.org/nalbam-ya/toaster) 
+
 ### Install
 ```
 curl -s toast.sh/install | bash

@@ -232,10 +232,10 @@ auto() {
 
 config() {
     echo_toast
-    
+
     config_auto
     config_cron
-    
+
     self_info
 }
 
@@ -322,6 +322,14 @@ init() {
 }
 
 version() {
+    if [ "${PARAM3}" != "" ]; then
+        TOKEN="${PARAM3}"
+    fi
+    if [ "${PARAM4}" != "" ]; then
+        ORG="${PARAM4}"
+        TOAST_URL="http://${ORG}.toast.sh"
+    fi
+
     repo_path
 
     version_parse
@@ -330,10 +338,8 @@ version() {
         s|save)
             version_save
             ;;
-        m|n|master|next)
-            version_master
-            ;;
-        *)
+        n|next)
+            version_next
             ;;
     esac
 }
@@ -374,9 +380,6 @@ deploy() {
         t|target)
             deploy_target
             ;;
-        b|bucket)
-            deploy_bucket "${PARAM2}"
-            ;;
         *)
             deploy_fleet
             vhost_fleet
@@ -390,7 +393,7 @@ bucket() {
 
     repo_path
 
-    deploy_target "${PARAM1}"
+    deploy_bucket
 }
 
 log() {
@@ -407,8 +410,12 @@ log() {
 }
 
 health() {
+    if [ "${TOAST_URL}" == "" ]; then
+        warning "Not set toast_url."
+        exit 1
+    fi
     if [ "${SNO}" == "" ]; then
-        warning "Not configured server. [${SNO}]"
+        warning "Not set server_no."
         return
     fi
 
@@ -438,8 +445,12 @@ health() {
 }
 
 reset() {
+    if [ "${TOAST_URL}" == "" ]; then
+        warning "Not set toast_url."
+        exit 1
+    fi
     if [ "${SNO}" == "" ]; then
-        warning "Not configured server. [${SNO}]"
+        warning "Not set server_no."
         return
     fi
 
@@ -552,6 +563,11 @@ config_auto() {
 }
 
 config_save() {
+    if [ "${TOAST_URL}" == "" ]; then
+        warning "Not set toast_url."
+        exit 1
+    fi
+
     echo_bar
     echo_ "config save... [${UUID}][${SNO}]"
 
@@ -1331,11 +1347,11 @@ version_parse() {
     ARR_VERSION=($(cat ${POM_FILE} | grep -oP '(?<=version>)[^<]+'))
 
     if [ "${ARR_GROUP[0]}" == "" ]; then
-        warning "groupId does not exist. [${ARR_GROUP[0]}]"
+        warning "Not set groupId."
         exit 1
     fi
     if [ "${ARR_ARTIFACT[0]}" == "" ]; then
-        warning "artifactId does not exist. [${ARR_ARTIFACT[0]}]"
+        warning "Not set artifactId."
         exit 1
     fi
 
@@ -1351,10 +1367,15 @@ version_parse() {
     GROUP_PATH=`echo "${GROUP_ID}" | sed "s/\./\//"`
 }
 
-version_master() {
+version_next() {
     if [ "${ARTIFACT_ID}" == "" ]; then
-        warning "Not set artifact_id. [${ARTIFACT_ID}]"
+        warning "Not set artifact_id."
         return 1
+    fi
+
+    if [ "${PARAM2}" != "" ] && [ "${PARAM2}" != "master" ]; then
+        # branch 가 없거나 master 이면 버전을 발급 받음
+        return
     fi
 
     echo_ "version get..."
@@ -1391,48 +1412,52 @@ version_replace() {
 
 version_save() {
     if [ "${ARTIFACT_ID}" == "" ]; then
-        warning "Not set artifact_id. [${ARTIFACT_ID}]"
+        warning "Not set artifact_id."
         return 1
     fi
 
-    echo_ "version tag..."
+    if [ "${VERSION}" != "0.0.0" ]; then
+        echo_ "version tag... [${VERSION}]"
 
-    DATE=`date +%Y-%m-%d" "%H:%M`
+        DATE=`date +%Y-%m-%d" "%H:%M`
 
-    git tag -a "${VERSION}" -m "at ${DATE} by toast"
-    git push origin "${VERSION}"
+        git tag -a "${VERSION}" -m "at ${DATE} by toast"
+        git push origin "${VERSION}"
+    fi
 
-    echo_ "version save..."
+    if [ "${PARAM2}" != "none" ]; then
+        echo_ "package upload... [${PARAM2}]"
 
-    PACKAGE_PATH=""
-    if [ -d "target" ]; then
-        if [ -f "target/${ARTIFACT_ID}-${VERSION}.war" ]; then
-            PACKAGE_PATH="target/${ARTIFACT_ID}-${VERSION}.war"
+        PACKAGE_PATH=""
+        if [ -d "target" ]; then
+            if [ -f "target/${ARTIFACT_ID}-${VERSION}.war" ]; then
+                PACKAGE_PATH="target/${ARTIFACT_ID}-${VERSION}.war"
+            fi
+            if [ -f "target/${ARTIFACT_ID}-${VERSION}.jar" ]; then
+                PACKAGE_PATH="target/${ARTIFACT_ID}-${VERSION}.jar"
+            fi
         fi
-        if [ -f "target/${ARTIFACT_ID}-${VERSION}.jar" ]; then
-            PACKAGE_PATH="target/${ARTIFACT_ID}-${VERSION}.jar"
+
+        if [ "${PACKAGE_PATH}" == "" ]; then
+            warning "Not set package_path."
+            return 1
         fi
+
+        UPLOAD_PATH="${REPO_PATH}/maven2/${GROUP_PATH}/${ARTIFACT_ID}/${VERSION}/"
+
+        echo_ "--> from: ${PACKAGE_PATH}"
+        echo_ "--> to  : ${UPLOAD_PATH}"
+
+        if [ "${PARAM2}" == "public" ]; then
+            OPTION="--quiet --grants read=uri=http://acs.amazonaws.com/groups/global/AllUsers"
+        else
+            OPTION="--quiet " # --quiet
+        fi
+
+        aws s3 cp ${PACKAGE_PATH} ${UPLOAD_PATH} ${OPTION}
+
+        echo_ "package uploaded."
     fi
-
-    if [ "${PACKAGE_PATH}" == "" ]; then
-        warning "package does not exist. [${PACKAGE_PATH}]"
-        return 1
-    fi
-
-    UPLOAD_PATH="${REPO_PATH}/maven2/${GROUP_PATH}/${ARTIFACT_ID}/${VERSION}/"
-
-    echo_ "--> from: ${PACKAGE_PATH}"
-    echo_ "--> to  : ${UPLOAD_PATH}"
-
-    if [ "${PARAM2}" == "public" ]; then
-        OPTION="--quiet --grants read=uri=http://acs.amazonaws.com/groups/global/AllUsers"
-    else
-        OPTION="--quiet " # --quiet
-    fi
-
-    aws s3 cp ${PACKAGE_PATH} ${UPLOAD_PATH} ${OPTION}
-
-    echo_ "package uploaded."
 
     NOTE=$(version_note)
 
@@ -1751,6 +1776,10 @@ vhost_fleet() {
 }
 
 repo_path() {
+    if [ "${TOAST_URL}" == "" ]; then
+        warning "Not set toast_url."
+        exit 1
+    fi
     if [ "${REPO_PATH}" != "" ]; then
         return
     fi
@@ -1760,7 +1789,7 @@ repo_path() {
     RES=`curl -s --data "org=${ORG}&token=${TOKEN}&no=${SNO}" ${URL}`
 
     if [ "${RES}" == "" ]; then
-        warning "Not set repo_path. [${RES}]"
+        warning "Not set repo_path."
         exit 1
     fi
 
@@ -1901,9 +1930,7 @@ deploy_target() {
 }
 
 deploy_bucket() {
-    TNO="$1"
-
-    if [ "${TNO}" == "" ]; then
+    if [ "${PARAM1}" == "" ]; then
         return;
     fi
 
@@ -1913,10 +1940,10 @@ deploy_bucket() {
     TARGET_DIR="${TEMP_DIR}/deploy"
     mkdir -p ${TARGET_DIR}
 
-    TARGET_FILE="${TARGET_DIR}/${TNO}"
+    TARGET_FILE="${TARGET_DIR}/${PARAM1}"
     rm -rf ${TARGET_FILE}
 
-    URL="${TOAST_URL}/target/deploy/${TNO}"
+    URL="${TOAST_URL}/target/deploy/${PARAM1}"
     wget -q -N --post-data "org=${ORG}&token=${TOKEN}&no=${SNO}" -P "${TARGET_DIR}" "${URL}"
 
     if [ -f ${TARGET_FILE} ]; then
@@ -1941,7 +1968,7 @@ deploy_bucket() {
 
             deploy_value
 
-            #placement
+            placement
         done < ${TARGET_FILE}
 
         tomcat_start
@@ -1987,10 +2014,14 @@ deploy_value() {
 
 download() {
     SOURCE="${REPO_PATH}/maven2/${GROUP_PATH}/${ARTIFACT_ID}/${VERSION}/${FILENAME}"
-
     echo_ "--> ${SOURCE}"
-
     aws s3 cp "${SOURCE}" "${TEMP_DIR}" --quiet
+
+    if [ ! -f "${FILEPATH}" ]; then
+        SOURCE="${REPO_PATH}/maven2/${GROUP_PATH}/${ARTIFACT_ID}/${FILENAME}"
+        echo_ "--> ${SOURCE}"
+        aws s3 cp "${SOURCE}" "${TEMP_DIR}" --quiet
+    fi
 
     if [ ! -f "${FILEPATH}" ]; then
         warning "deploy file does not exist. [${FILEPATH}]"
@@ -2039,7 +2070,9 @@ placement() {
             return
         fi
 
-        aws s3 sync "${UNZIP_DIR}" "${DEPLOY_PATH}"
+        OPTION="--quiet --grants read=uri=http://acs.amazonaws.com/groups/global/AllUsers"
+
+        aws s3 sync "${UNZIP_DIR}" "${DEPLOY_PATH}" ${OPTION}
     else
         if [ "${TYPE}" == "web" ] || [ "${TYPE}" == "php" ]; then
             rm -rf "${DEPLOY_PATH}.backup"
