@@ -232,10 +232,10 @@ auto() {
 
 config() {
     echo_toast
-    
+
     config_auto
     config_cron
-    
+
     self_info
 }
 
@@ -322,6 +322,13 @@ init() {
 }
 
 version() {
+    if [ "${PARAM2}" != "" ]; then
+        TOKEN="${PARAM2}"
+    fi
+    if [ "${PARAM3}" != "" ]; then
+        ORG="${PARAM3}"
+    fi
+
     repo_path
 
     version_parse
@@ -330,10 +337,8 @@ version() {
         s|save)
             version_save
             ;;
-        m|n|master|next)
+        m|master)
             version_master
-            ;;
-        *)
             ;;
     esac
 }
@@ -374,9 +379,6 @@ deploy() {
         t|target)
             deploy_target
             ;;
-        b|bucket)
-            deploy_bucket "${PARAM2}"
-            ;;
         *)
             deploy_fleet
             vhost_fleet
@@ -390,7 +392,7 @@ bucket() {
 
     repo_path
 
-    deploy_bucket "${PARAM1}"
+    deploy_bucket
 }
 
 log() {
@@ -1901,9 +1903,7 @@ deploy_target() {
 }
 
 deploy_bucket() {
-    TNO="$1"
-
-    if [ "${TNO}" == "" ]; then
+    if [ "${PARAM1}" == "" ]; then
         return;
     fi
 
@@ -1913,10 +1913,10 @@ deploy_bucket() {
     TARGET_DIR="${TEMP_DIR}/deploy"
     mkdir -p ${TARGET_DIR}
 
-    TARGET_FILE="${TARGET_DIR}/${TNO}"
+    TARGET_FILE="${TARGET_DIR}/${PARAM1}"
     rm -rf ${TARGET_FILE}
 
-    URL="${TOAST_URL}/target/deploy/${TNO}"
+    URL="${TOAST_URL}/target/deploy/${PARAM1}"
     wget -q -N --post-data "org=${ORG}&token=${TOKEN}&no=${SNO}" -P "${TARGET_DIR}" "${URL}"
 
     if [ -f ${TARGET_FILE} ]; then
