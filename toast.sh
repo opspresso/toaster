@@ -184,8 +184,8 @@ usage() {
     echo_ " Usage: toast init redis"
     echo_
     echo_ " Usage: toast version"
-    echo_ " Usage: toast version next"
-    echo_ " Usage: toast version save"
+    echo_ " Usage: toast version next {branch}"
+    echo_ " Usage: toast version save {package}"
     echo_
     echo_ " Usage: toast vhost"
     echo_ " Usage: toast vhost lb"
@@ -193,6 +193,8 @@ usage() {
     echo_ " Usage: toast deploy"
     echo_ " Usage: toast deploy fleet"
     echo_ " Usage: toast deploy target {no}"
+    echo_
+    echo_ " Usage: toast bucket {no}"
     echo_
     echo_ " Usage: toast health"
     echo_
@@ -1396,20 +1398,6 @@ version_next() {
     version_replace
 }
 
-version_replace() {
-    VER1="<version>[0-9a-zA-Z\.\-]\+<\/version>"
-    VER2="<version>${VERSION}<\/version>"
-
-    TEMP_FILE="${TEMP_DIR}/toast-pom.tmp"
-
-    if [ -f ${POM_FILE} ]; then
-        sed "s/$VER1/$VER2/;10q;" ${POM_FILE} > ${TEMP_FILE}
-        sed "1,10d" ${POM_FILE} >> ${TEMP_FILE}
-
-        cp -rf ${TEMP_FILE} ${POM_FILE}
-    fi
-}
-
 version_save() {
     if [ "${ARTIFACT_ID}" == "" ]; then
         warning "Not set artifact_id."
@@ -1425,7 +1413,7 @@ version_save() {
         git push origin "${VERSION}"
     fi
 
-    if [ "${PARAM2}" != "none" ]; then
+    if [ "${PARAM5}" != "none" ]; then
         echo_ "package upload... [${PARAM2}]"
 
         PACKAGE_PATH=""
@@ -1448,7 +1436,7 @@ version_save() {
         echo_ "--> from: ${PACKAGE_PATH}"
         echo_ "--> to  : ${UPLOAD_PATH}"
 
-        if [ "${PARAM2}" == "public" ]; then
+        if [ "${PARAM5}" == "public" ]; then
             OPTION="--quiet --grants read=uri=http://acs.amazonaws.com/groups/global/AllUsers"
         else
             OPTION="--quiet " # --quiet
@@ -1467,6 +1455,20 @@ version_save() {
 
     if [ "${ARR[0]}" != "OK" ]; then
         warning "Server Error. [${URL}][${RES}]"
+    fi
+}
+
+version_replace() {
+    VER1="<version>[0-9a-zA-Z\.\-]\+<\/version>"
+    VER2="<version>${VERSION}<\/version>"
+
+    TEMP_FILE="${TEMP_DIR}/toast-pom.tmp"
+
+    if [ -f ${POM_FILE} ]; then
+        sed "s/$VER1/$VER2/;10q;" ${POM_FILE} > ${TEMP_FILE}
+        sed "1,10d" ${POM_FILE} >> ${TEMP_FILE}
+
+        cp -rf ${TEMP_FILE} ${POM_FILE}
     fi
 }
 
