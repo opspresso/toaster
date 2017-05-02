@@ -1376,7 +1376,6 @@ version_next() {
     fi
 
     if [ "${PARAM2}" != "" ] && [ "${PARAM2}" != "master" ]; then
-        # branch 가 없거나 master 이면 버전을 발급 받음
         return
     fi
 
