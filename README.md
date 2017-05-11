@@ -28,7 +28,7 @@ cat /var/log/cloud-init-output.log
 ~/toaster/toast.sh init java
 ~/toaster/toast.sh deploy fleet
 ~/toaster/toast.sh deploy target {target}
-~/toaster/toast.sh deploy bucket {target}
+~/toaster/toast.sh bucket {target}
 ```
 
 ### remote.sh
