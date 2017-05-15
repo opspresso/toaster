@@ -62,18 +62,18 @@ if [ ! -f /tmp/toaster.txt ]; then
     exit 1
 fi
 
-MSG="installed."
+MSG="Toast.sh installed."
 
 if [ -f toaster/.version.txt ]; then
     NEW="`cat /tmp/toaster.txt`"
     OLD="`cat toaster/.version.txt`"
 
     if [ "${NEW}" == "${OLD}" ]; then
-        success "latest. [${OLD}]"
+        success "Already have latest version. [${OLD}]"
         exit 0
     fi
 
-    MSG="updated."
+    MSG="Latest version updated. [${OLD}]"
 fi
 
 # download
