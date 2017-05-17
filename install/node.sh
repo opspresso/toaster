@@ -39,7 +39,7 @@ download() {
 
         echo_ "download... [${URL}]"
 
-        /usr/bin/wget -q -N ${URL} --show-progress
+        /usr/bin/wget -q -N ${URL}
     fi
 }
 
