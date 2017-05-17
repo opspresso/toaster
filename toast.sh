@@ -1265,7 +1265,7 @@ init_jenkins() {
 
     # jenkins
     URL="http://mirrors.jenkins.io/war/latest/jenkins.war"
-    wget -q -N -P "${WEBAPP_DIR}" "${URL}"
+    wget -q -N -P "${WEBAPP_DIR}" "${URL}" --show-progress
 
     echo_ "download complete."
 
