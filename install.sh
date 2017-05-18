@@ -73,7 +73,7 @@ if [ -f toaster/.version.txt ]; then
         exit 0
     fi
 
-    MSG="Latest version updated. [${NEW}]"
+    MSG="Latest version updated. [${OLD} -> ${NEW}]"
 fi
 
 # download
