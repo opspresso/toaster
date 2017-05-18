@@ -9,11 +9,10 @@ deploy:
   region: ap-northeast-2
   access_key_id: $AWS_ACCESS_KEY
   secret_access_key: $AWS_SECRET_KEY
-  bucket: repo.toast.sh
+  bucket: $AWS_BUCKET
   skip_cleanup: true
   acl: public_read
   local_dir: target
-  upload_dir: release
 
 notifications:
   slack: nalbam:lZm5eyurcsoKxZgHSnNZGQYY
