@@ -11,6 +11,9 @@ if [ "${VERSION}" == "" ]; then
     VERSION=`git rev-parse --short HEAD`
 fi
 
+# index.html
+cp web/index.html target/
+
 # install.sh
 cp install.sh target/
 
