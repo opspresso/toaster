@@ -12,7 +12,7 @@ if [ "${VERSION}" == "" ]; then
 fi
 
 # index.html
-cp web/index.html target/
+cp index.html target/
 
 # install.sh
 cp install.sh target/
