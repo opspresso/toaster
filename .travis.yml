@@ -13,7 +13,7 @@ deploy:
   skip_cleanup: true
   acl: public_read
   local_dir: target
-  upload_dir: release
+  upload_dir: .
 
 notifications:
   slack: nalbam:lZm5eyurcsoKxZgHSnNZGQYY
