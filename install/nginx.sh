@@ -60,7 +60,7 @@ fi
 
 NAME="nginx"
 
-VERSION="1.11.9"
+VERSION="1.13.0"
 
 FILE="${NAME}-${VERSION}"
 
