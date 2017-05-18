@@ -62,7 +62,9 @@ SHELL_DIR=$(dirname $0)
 
 NAME="java"
 
-FILE="server-jre-8u121-linux-x64"
+VERSION="8u131"
+
+FILE="server-jre-${VERSION}-linux-x64"
 
 EXT="tar.gz"
 
