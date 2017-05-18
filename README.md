@@ -4,7 +4,7 @@
 
 ### Install
 ```
-curl -s toast.sh/install | bash
+curl -s toast.sh/install.sh | bash
 
 ~/toaster/toast.sh auto {fleet} {phase} {org} {token}
 ```
