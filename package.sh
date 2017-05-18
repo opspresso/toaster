@@ -19,7 +19,7 @@ echo "${VERSION}" > target/toaster.txt
 zip -q -r target/toaster extra install package *.sh
 
 # install.sh
-cp install.sh target/install
+cp -rf install.sh target/install
 
-# index.html
-cp index.html target/
+# web
+cp -rf web/* target/
