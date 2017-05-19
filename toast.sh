@@ -311,9 +311,6 @@ init() {
         docker)
             init_docker
             ;;
-        munin)
-            init_munin
-            ;;
         jenkins)
             init_jenkins
             ;;
@@ -505,12 +502,6 @@ prepare() {
     make_dir "${SITE_DIR}/files" 777
     make_dir "${SITE_DIR}/upload" 777
     make_dir "${SITE_DIR}/session" 777
-
-    # health.html
-    TEMP_FILE="${TEMP_DIR}/toast-health.tmp"
-    echo "OK ${NAME}" > ${TEMP_FILE}
-    copy ${TEMP_FILE} "${SITE_DIR}/localhost/index.html"
-    copy ${TEMP_FILE} "${SITE_DIR}/localhost/health.html"
 
     # timezone
     ${SUDO} rm -rf /etc/localtime
@@ -1236,18 +1227,6 @@ init_docker() {
     fi
 }
 
-init_munin() {
-    if [ ! -f "${SHELL_DIR}/.config_munin" ]; then
-        echo_ "init munin..."
-
-        service_install munin
-
-        service_ctl munin-node start on
-
-        touch "${SHELL_DIR}/.config_munin"
-    fi
-}
-
 init_jenkins() {
     if [ ! -f "${SHELL_DIR}/.config_tomcat" ]; then
         warning "Not set tomcat."
@@ -1689,6 +1668,14 @@ vhost_local() {
     TEMPLATE="${SHELL_DIR}/package/apache/${HTTPD_VERSION}/localhost.conf"
     if [ -f "${TEMPLATE}" ]; then
         copy ${TEMPLATE} "${HTTPD_CONF_DIR}/localhost.conf" 644
+    fi
+
+    # health.html
+    if [ -d "${SITE_DIR}/localhost" ]; then
+        TEMP_FILE="${TEMP_DIR}/toast-health.tmp"
+        echo "OK ${NAME}" > ${TEMP_FILE}
+        copy ${TEMP_FILE} "${SITE_DIR}/localhost/index.html"
+        copy ${TEMP_FILE} "${SITE_DIR}/localhost/health.html"
     fi
 }
 
