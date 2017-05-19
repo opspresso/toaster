@@ -60,7 +60,7 @@ fi
 
 NAME="tomcat"
 
-VERSION="8.0.41"
+VERSION="8.0.44"
 
 FILE="apache-${NAME}-${VERSION}"
 

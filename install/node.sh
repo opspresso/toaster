@@ -60,7 +60,7 @@ fi
 
 NAME="node"
 
-VERSION="6.9.5"
+VERSION="6.10.3"
 
 FILE="${NAME}-v${VERSION}-linux-x64"
 
