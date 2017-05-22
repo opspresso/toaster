@@ -64,7 +64,7 @@ NAME="maven"
 
 VERSION="5.2.0"
 
-FILE="apache-${NAME}-${VERSION}"
+FILE="apache-${NAME}-${VERSION}-bin"
 
 EXT="tar.gz"
 
