@@ -1153,6 +1153,7 @@ init_maven3() {
 
         MAVEN_HOME="${APPS_DIR}/maven3"
 
+        add_path "${MAVEN_HOME}/bin"
         mod_env "MAVEN_HOME" "${MAVEN_HOME}"
 
         echo "MAVEN_HOME=${MAVEN_HOME}"
