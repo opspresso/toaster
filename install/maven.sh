@@ -56,19 +56,21 @@ if [ "${HOME}" != "/root" ]; then
     SUDO="sudo"
 fi
 
+SHELL_DIR=$(dirname $0)
+
 ################################################################################
 
-NAME="tomcat"
+NAME="maven"
 
-VERSION="8.0.44"
+VERSION="5.2.0"
 
-FILE="apache-${NAME}-${VERSION}"
+FILE="apache-${NAME}-${VERSION}-bin"
 
 EXT="tar.gz"
 
-TOMCAT_DIR="/data/apps/tomcat8"
+MAVEN_DIR="/data/apps/maven3"
 
-# s3://repo.toast.sh/tomcat/apache-tomcat-8.0.41.tar.gz
+# s3://repo.toast.sh/maven/apache-maven-3.5.0-bin.tar.gz
 
 ################################################################################
 
@@ -85,12 +87,8 @@ fi
 
 tar xzf ${FILE}.${EXT}
 
-mv apache-${NAME}-${VERSION} ${TOMCAT_DIR}
+mv apache-${NAME}-${VERSION} ${MAVEN_DIR}
 
-chmod 755 ${TOMCAT_DIR}/bin/*.sh
-
-rm -rf ${TOMCAT_DIR}/webapps/*
-
-echo_ "CATALINA_HOME=${TOMCAT_DIR}"
+echo_ "MAVEN_HOME=${MAVEN_DIR}"
 
 rm -rf ${FILE}.${EXT}

@@ -179,6 +179,7 @@ usage() {
     echo_ " Usage: toast init php7"
     echo_ " Usage: toast init node"
     echo_ " Usage: toast init java"
+    echo_ " Usage: toast init maven"
     echo_ " Usage: toast init tomcat"
     echo_ " Usage: toast init mysql"
     echo_ " Usage: toast init redis"
@@ -296,6 +297,9 @@ init() {
         java|java8)
             init_java8
             ;;
+        maven|maven3)
+            init_maven3
+            ;;
         tomcat|tomcat8)
             init_tomcat8
             ;;
@@ -310,9 +314,6 @@ init() {
             ;;
         docker)
             init_docker
-            ;;
-        munin)
-            init_munin
             ;;
         jenkins)
             init_jenkins
@@ -505,12 +506,6 @@ prepare() {
     make_dir "${SITE_DIR}/files" 777
     make_dir "${SITE_DIR}/upload" 777
     make_dir "${SITE_DIR}/session" 777
-
-    # health.html
-    TEMP_FILE="${TEMP_DIR}/toast-health.tmp"
-    echo "OK ${NAME}" > ${TEMP_FILE}
-    copy ${TEMP_FILE} "${SITE_DIR}/localhost/index.html"
-    copy ${TEMP_FILE} "${SITE_DIR}/localhost/health.html"
 
     # timezone
     ${SUDO} rm -rf /etc/localtime
@@ -1150,6 +1145,22 @@ init_java8() {
     echo_bar
 }
 
+init_maven3() {
+    if [ ! -f "${SHELL_DIR}/.config_maven" ]; then
+        echo_ "init maven..."
+
+        ${SHELL_DIR}/install/maven.sh ${REPO_PATH}
+
+        MAVEN_HOME="${APPS_DIR}/maven3"
+
+        add_path "${MAVEN_HOME}/bin"
+        mod_env "MAVEN_HOME" "${MAVEN_HOME}"
+
+        echo "MAVEN_HOME=${MAVEN_HOME}"
+        echo "MAVEN_HOME=${MAVEN_HOME}" > "${SHELL_DIR}/.config_maven"
+    fi
+}
+
 init_tomcat8() {
     if [ ! -f "${SHELL_DIR}/.config_tomcat" ]; then
         echo_ "init tomcat..."
@@ -1233,18 +1244,6 @@ init_docker() {
         service_ctl docker start on
 
         touch "${SHELL_DIR}/.config_docker"
-    fi
-}
-
-init_munin() {
-    if [ ! -f "${SHELL_DIR}/.config_munin" ]; then
-        echo_ "init munin..."
-
-        service_install munin
-
-        service_ctl munin-node start on
-
-        touch "${SHELL_DIR}/.config_munin"
     fi
 }
 
@@ -1689,6 +1688,14 @@ vhost_local() {
     TEMPLATE="${SHELL_DIR}/package/apache/${HTTPD_VERSION}/localhost.conf"
     if [ -f "${TEMPLATE}" ]; then
         copy ${TEMPLATE} "${HTTPD_CONF_DIR}/localhost.conf" 644
+    fi
+
+    # health.html
+    if [ -d "${SITE_DIR}/localhost" ]; then
+        TEMP_FILE="${TEMP_DIR}/toast-health.tmp"
+        echo "OK ${NAME}" > ${TEMP_FILE}
+        copy ${TEMP_FILE} "${SITE_DIR}/localhost/index.html"
+        copy ${TEMP_FILE} "${SITE_DIR}/localhost/health.html"
     fi
 }
 
