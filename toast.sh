@@ -179,6 +179,7 @@ usage() {
     echo_ " Usage: toast init php7"
     echo_ " Usage: toast init node"
     echo_ " Usage: toast init java"
+    echo_ " Usage: toast init maven"
     echo_ " Usage: toast init tomcat"
     echo_ " Usage: toast init mysql"
     echo_ " Usage: toast init redis"
@@ -295,6 +296,9 @@ init() {
             ;;
         java|java8)
             init_java8
+            ;;
+        maven|maven3)
+            init_maven3
             ;;
         tomcat|tomcat8)
             init_tomcat8
@@ -1139,6 +1143,21 @@ init_java8() {
     echo_bar
     echo_ "`java -version`"
     echo_bar
+}
+
+init_maven3() {
+    if [ ! -f "${SHELL_DIR}/.config_maven" ]; then
+        echo_ "init maven..."
+
+        ${SHELL_DIR}/install/maven.sh ${REPO_PATH}
+
+        MAVEN_HOME="${APPS_DIR}/maven3"
+
+        mod_env "MAVEN_HOME" "${MAVEN_HOME}"
+
+        echo "MAVEN_HOME=${MAVEN_HOME}"
+        echo "MAVEN_HOME=${MAVEN_HOME}" > "${SHELL_DIR}/.config_maven"
+    fi
 }
 
 init_tomcat8() {
