@@ -1485,7 +1485,7 @@ version_save() {
         if [ "${PARAM3}" == "public" ]; then
             OPTION="--quiet --grants read=uri=http://acs.amazonaws.com/groups/global/AllUsers"
         else
-            OPTION="--region ap-northeast-2" # --quiet
+            OPTION="" # --quiet
         fi
 
         aws s3 cp ${PACKAGE_PATH} ${UPLOAD_PATH} ${OPTION}
