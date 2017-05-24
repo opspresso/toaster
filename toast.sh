@@ -561,9 +561,10 @@ config_save() {
     fi
 
     echo_bar
-    echo_ "config save... [${UUID}][${SNO}]"
 
     if [ "${PHASE}" != "local" ]; then
+        echo_ "config save... [${UUID}][${SNO}]"
+
         URL="${TOAST_URL}/server/config"
         RES=`curl -s --data "org=${ORG}&token=${TOKEN}&phase=${PHASE}&fleet=${FLEET}&id=${UUID}&name=${NAME}&host=${HOST}&port=${PORT}&user=${USER}&no=${SNO}" ${URL}`
         ARR=(${RES})
