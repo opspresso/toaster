@@ -62,7 +62,7 @@ SHELL_DIR=$(dirname $0)
 
 NAME="maven"
 
-VERSION="5.2.0"
+VERSION="3.5.0"
 
 FILE="apache-${NAME}-${VERSION}-bin"
 

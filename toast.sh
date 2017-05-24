@@ -271,7 +271,7 @@ init() {
             init_aws
             ;;
         certificate)
-            init_certificate "${PARAM2}"
+            init_certificate
             ;;
         startup)
             init_startup
@@ -325,14 +325,6 @@ init() {
 }
 
 version() {
-    if [ "${PARAM3}" != "" ]; then
-        TOKEN="${PARAM3}"
-    fi
-    if [ "${PARAM4}" != "" ]; then
-        ORG="${PARAM4}"
-        TOAST_URL="http://${ORG}.toast.sh"
-    fi
-
     repo_path
 
     version_parse
@@ -414,11 +406,11 @@ log() {
 
 health() {
     if [ "${TOAST_URL}" == "" ]; then
-        warning "Not set toast_url."
+        warning "Not set TOAST_URL."
         exit 1
     fi
     if [ "${SNO}" == "" ]; then
-        warning "Not set server_no."
+        warning "Not set SNO."
         return
     fi
 
@@ -449,11 +441,11 @@ health() {
 
 reset() {
     if [ "${TOAST_URL}" == "" ]; then
-        warning "Not set toast_url."
+        warning "Not set TOAST_URL."
         exit 1
     fi
     if [ "${SNO}" == "" ]; then
-        warning "Not set server_no."
+        warning "Not set SNO."
         return
     fi
 
@@ -549,10 +541,13 @@ config_auto() {
     fi
     if [ "${PARAM3}" != "" ]; then
         ORG="${PARAM3}"
-        TOAST_URL="http://${ORG}.toast.sh"
     fi
     if [ "${PARAM4}" != "" ]; then
         TOKEN="${PARAM4}"
+    fi
+
+    if [ "${ORG}" != "" ]; then
+        TOAST_URL="http://${ORG}.toast.sh"
     fi
 
     config_save
@@ -561,40 +556,42 @@ config_auto() {
 
 config_save() {
     if [ "${TOAST_URL}" == "" ]; then
-        warning "Not set toast_url."
+        warning "Not set TOAST_URL."
         exit 1
     fi
 
     echo_bar
     echo_ "config save... [${UUID}][${SNO}]"
 
-    URL="${TOAST_URL}/server/config"
-    RES=`curl -s --data "org=${ORG}&token=${TOKEN}&phase=${PHASE}&fleet=${FLEET}&id=${UUID}&name=${NAME}&host=${HOST}&port=${PORT}&user=${USER}&no=${SNO}" ${URL}`
-    ARR=(${RES})
+    if [ "${PHASE}" != "local" ]; then
+        URL="${TOAST_URL}/server/config"
+        RES=`curl -s --data "org=${ORG}&token=${TOKEN}&phase=${PHASE}&fleet=${FLEET}&id=${UUID}&name=${NAME}&host=${HOST}&port=${PORT}&user=${USER}&no=${SNO}" ${URL}`
+        ARR=(${RES})
 
-    if [ "${ARR[0]}" == "OK" ]; then
-        if [ "${ARR[1]}" != "" ]; then
-            SNO="${ARR[1]}"
-        fi
-        if [ "${ARR[2]}" != "" ]; then
-            HOST="${ARR[2]}"
-        fi
-        if [ "${ARR[3]}" != "" ]; then
-            PHASE="${ARR[3]}"
-        fi
-        if [ "${ARR[4]}" != "" ]; then
-            FLEET="${ARR[4]}"
-        fi
-        if [ "${ARR[5]}" != "" ]; then
-            if [ "${ARR[5]}" != "${NAME}" ]; then
-                config_name "${ARR[5]}"
+        if [ "${ARR[0]}" != "OK" ]; then
+            warning "Server Error. [${URL}][${RES}]"
+        else
+            if [ "${ARR[1]}" != "" ]; then
+                SNO="${ARR[1]}"
+            fi
+            if [ "${ARR[2]}" != "" ]; then
+                HOST="${ARR[2]}"
+            fi
+            if [ "${ARR[3]}" != "" ]; then
+                PHASE="${ARR[3]}"
+            fi
+            if [ "${ARR[4]}" != "" ]; then
+                FLEET="${ARR[4]}"
+            fi
+            if [ "${ARR[5]}" != "" ]; then
+                if [ "${ARR[5]}" != "${NAME}" ]; then
+                    config_name "${ARR[5]}"
+                fi
             fi
         fi
-
-        config_local
-    else
-        warning "Server Error. [${URL}][${RES}]"
     fi
+
+    config_local
 
     echo_bar
 }
@@ -619,8 +616,22 @@ config_local() {
     source ${CONFIG}
 }
 
+config_info() {
+    if [ ! -f "${CONFIG}" ]; then
+        warning "Not exist file. [${CONFIG}]"
+        return
+    fi
+
+    echo_bar
+    cat ${CONFIG}
+    echo_bar
+}
+
 config_name() {
     if [ "${OS_NAME}" != "Linux" ]; then
+        return
+    fi
+    if [ "${PHASE}" == "local" ]; then
         return
     fi
     if [ "$1" == "" ]; then
@@ -642,19 +653,11 @@ config_name() {
     fi
 }
 
-config_info() {
-    if [ ! -f "${CONFIG}" ]; then
-        warning "Not exist file. [${CONFIG}]"
-        return
-    fi
-
-    echo_bar
-    cat ${CONFIG}
-    echo_bar
-}
-
 config_cron() {
     if [ "${OS_NAME}" != "Linux" ]; then
+        return
+    fi
+    if [ "${PHASE}" == "local" ]; then
         return
     fi
 
@@ -841,12 +844,17 @@ init_aws() {
 
 init_certificate() {
     if [ "$1" == "" ]; then
+        CERT_NAME="${PARAM2}"
+    else
+        CERT_NAME="$1"
+    fi
+
+    if [ "${CERT_NAME}" == "" ]; then
+        warning "Not set CERT_NAME."
         return
     fi
 
-    PARAM="$1"
-
-    echo_ "init certificate... [${PARAM}]"
+    echo_ "init certificate... [${CERT_NAME}]"
 
     SSL_DIR="/data/conf"
     make_dir ${SSL_DIR}
@@ -858,13 +866,13 @@ init_certificate() {
         source ${SSL_INFO}
     fi
 
-    if [ "${PARAM}" == "${SSL_NAME}" ]; then
+    if [ "${CERT_NAME}" == "${SSL_NAME}" ]; then
         return
     fi
 
-    CERTIFICATE="${TEMP_DIR}/${PARAM}"
+    CERTIFICATE="${TEMP_DIR}/${CERT_NAME}"
 
-    URL="${TOAST_URL}/certificate/name/${PARAM}"
+    URL="${TOAST_URL}/certificate/name/${CERT_NAME}"
     wget -q -N --post-data "org=${ORG}&token=${TOKEN}&no=${SNO}" -P "${TEMP_DIR}" "${URL}"
 
     if [ -f ${CERTIFICATE} ]; then
@@ -888,7 +896,7 @@ init_certificate() {
 
         TARGET=
 
-        echo "SSL_NAME=${PARAM}" > ${SSL_INFO}
+        echo "SSL_NAME=${CERT_NAME}" > ${SSL_INFO}
     fi
 }
 
@@ -1249,7 +1257,7 @@ init_docker() {
 
 init_jenkins() {
     if [ ! -f "${SHELL_DIR}/.config_tomcat" ]; then
-        warning "Not set tomcat."
+        warning "Not set Tomcat."
         return 1
     fi
 
@@ -1368,12 +1376,8 @@ version_parse() {
 
 version_next() {
     if [ "${ARTIFACT_ID}" == "" ]; then
-        warning "Not set artifact_id."
+        warning "Not set ARTIFACT_ID."
         return 1
-    fi
-
-    if [ "${PARAM2}" != "" ] && [ "${PARAM2}" != "master" ]; then
-        return
     fi
 
     echo_ "version get..."
@@ -1396,7 +1400,7 @@ version_next() {
 
 version_save() {
     if [ "${ARTIFACT_ID}" == "" ]; then
-        warning "Not set artifact_id."
+        warning "Not set ARTIFACT_ID."
         return 1
     fi
 
@@ -1409,7 +1413,7 @@ version_save() {
         git push origin "${VERSION}"
     fi
 
-    if [ "${PARAM5}" != "none" ]; then
+    if [ "${PARAM3}" != "none" ]; then
         echo_ "package upload... [${PARAM2}]"
 
         PACKAGE_PATH=""
@@ -1423,7 +1427,7 @@ version_save() {
         fi
 
         if [ "${PACKAGE_PATH}" == "" ]; then
-            warning "Not set package_path."
+            warning "Not set PACKAGE_PATH."
             return 1
         fi
 
@@ -1432,7 +1436,7 @@ version_save() {
         echo_ "--> from: ${PACKAGE_PATH}"
         echo_ "--> to  : ${UPLOAD_PATH}"
 
-        if [ "${PARAM5}" == "public" ]; then
+        if [ "${PARAM3}" == "public" ]; then
             OPTION="--quiet --grants read=uri=http://acs.amazonaws.com/groups/global/AllUsers"
         else
             OPTION="--quiet " # --quiet
@@ -1783,7 +1787,7 @@ vhost_fleet() {
 
 repo_path() {
     if [ "${TOAST_URL}" == "" ]; then
-        warning "Not set toast_url."
+        warning "Not set TOAST_URL."
         exit 1
     fi
     if [ "${REPO_PATH}" != "" ]; then
@@ -1795,7 +1799,7 @@ repo_path() {
     RES=`curl -s --data "org=${ORG}&token=${TOKEN}&no=${SNO}" ${URL}`
 
     if [ "${RES}" == "" ]; then
-        warning "Not set repo_path."
+        warning "Not set REPO_PATH."
         exit 1
     fi
 
