@@ -621,6 +621,9 @@ config_info() {
         warning "Not exist file. [${CONFIG}]"
         return
     fi
+    if [ "${PHASE}" == "local" ]; then
+        return
+    fi
 
     echo_bar
     cat ${CONFIG}
