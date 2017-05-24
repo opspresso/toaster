@@ -844,10 +844,12 @@ init_aws() {
 
 init_certificate() {
     if [ "$1" == "" ]; then
-        return
+        CERT_NAME="${PARAM2}"
+    else
+        CERT_NAME="$1"
     fi
 
-    echo_ "init certificate... [${PARAM2}]"
+    echo_ "init certificate... [${CERT_NAME}]"
 
     SSL_DIR="/data/conf"
     make_dir ${SSL_DIR}
@@ -859,13 +861,13 @@ init_certificate() {
         source ${SSL_INFO}
     fi
 
-    if [ "${PARAM2}" == "${SSL_NAME}" ]; then
+    if [ "${CERT_NAME}" == "${SSL_NAME}" ]; then
         return
     fi
 
-    CERTIFICATE="${TEMP_DIR}/${PARAM2}"
+    CERTIFICATE="${TEMP_DIR}/${CERT_NAME}"
 
-    URL="${TOAST_URL}/certificate/name/${PARAM2}"
+    URL="${TOAST_URL}/certificate/name/${CERT_NAME}"
     wget -q -N --post-data "org=${ORG}&token=${TOKEN}&no=${SNO}" -P "${TEMP_DIR}" "${URL}"
 
     if [ -f ${CERTIFICATE} ]; then
@@ -889,7 +891,7 @@ init_certificate() {
 
         TARGET=
 
-        echo "SSL_NAME=${PARAM2}" > ${SSL_INFO}
+        echo "SSL_NAME=${CERT_NAME}" > ${SSL_INFO}
     fi
 }
 
