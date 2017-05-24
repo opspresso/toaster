@@ -2596,7 +2596,7 @@ make_dir() {
     fi
 
     if [ ! -d $1 ] && [ ! -f $1 ]; then
-        mkdir $1
+        mkdir -p $1
 
         if [ "$2" != "" ]; then
             chmod $2
@@ -2604,7 +2604,7 @@ make_dir() {
     fi
 
     if [ ! -d $1 ] && [ ! -f $1 ]; then
-        ${SUDO} mkdir $1
+        ${SUDO} mkdir -p $1
 
         mod $1 $2
     fi
