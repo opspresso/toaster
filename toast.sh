@@ -851,7 +851,7 @@ init_certificate() {
 
     if [ "${CERT_NAME}" == "" ]; then
         warning "Not set CERT_NAME."
-        return 1
+        return
     fi
 
     echo_ "init certificate... [${CERT_NAME}]"
