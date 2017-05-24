@@ -742,6 +742,18 @@ init_master() {
         chmod 644 ${TARGET}
     fi
 
+    # .aws/config
+    TARGET="${HOME}/.aws/config"
+    if [ ! -f ${TARGET} ]; then
+        URL="${TOAST_URL}/config/key/aws_config"
+        RES=`curl -s --data "org=${ORG}&token=${TOKEN}&no=${SNO}" ${URL}`
+
+        if [ "${RES}" != "" ]; then
+            echo "${RES}" > ${TARGET}
+            chmod 600 ${TARGET}
+        fi
+    fi
+
     # .aws/credentials
     URL="${TOAST_URL}/config/key/aws_master"
     RES=`curl -s --data "org=${ORG}&token=${TOKEN}&no=${SNO}" ${URL}`
@@ -788,6 +800,18 @@ init_slave() {
         chmod 600 ${TARGET}
     fi
 
+    # .aws/config
+    TARGET="${HOME}/.aws/config"
+    if [ ! -f ${TARGET} ]; then
+        URL="${TOAST_URL}/config/key/aws_config"
+        RES=`curl -s --data "org=${ORG}&token=${TOKEN}&no=${SNO}" ${URL}`
+
+        if [ "${RES}" != "" ]; then
+            echo "${RES}" > ${TARGET}
+            chmod 600 ${TARGET}
+        fi
+    fi
+
     # .aws/credentials
     URL="${TOAST_URL}/config/key/aws_slave"
     RES=`curl -s --data "org=${ORG}&token=${TOKEN}&no=${SNO}" ${URL}`
@@ -808,13 +832,15 @@ init_aws() {
     echo_ "init aws..."
 
     # .aws/config
-    URL="${TOAST_URL}/config/key/aws_config"
-    RES=`curl -s --data "org=${ORG}&token=${TOKEN}&no=${SNO}" ${URL}`
+    TARGET="${HOME}/.aws/config"
+    if [ ! -f ${TARGET} ]; then
+        URL="${TOAST_URL}/config/key/aws_config"
+        RES=`curl -s --data "org=${ORG}&token=${TOKEN}&no=${SNO}" ${URL}`
 
-    if [ "${RES}" != "" ]; then
-        TARGET="${HOME}/.aws/config"
-        echo "${RES}" > ${TARGET}
-        chmod 600 ${TARGET}
+        if [ "${RES}" != "" ]; then
+            echo "${RES}" > ${TARGET}
+            chmod 600 ${TARGET}
+        fi
     fi
 
     # aws cli
