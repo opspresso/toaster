@@ -849,6 +849,11 @@ init_certificate() {
         CERT_NAME="$1"
     fi
 
+    if [ "${CERT_NAME}" == "" ]; then
+        warning "Not set CERT_NAME."
+        return 1
+    fi
+
     echo_ "init certificate... [${CERT_NAME}]"
 
     SSL_DIR="/data/conf"
