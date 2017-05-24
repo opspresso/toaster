@@ -722,6 +722,9 @@ init_profile() {
 init_master() {
     echo_ "init master..."
 
+    mkdir -p ${HOME}/.ssh
+    mkdir -p ${HOME}/.aws
+
     # .ssh/id_rsa
     URL="${TOAST_URL}/config/key/rsa_private_key"
     RES=`curl -s --data "org=${ORG}&token=${TOKEN}&no=${SNO}" ${URL}`
@@ -767,6 +770,9 @@ init_master() {
 
 init_slave() {
     echo_ "init slave..."
+
+    mkdir -p ${HOME}/.ssh
+    mkdir -p ${HOME}/.aws
 
     # .ssh/authorized_keys
     TARGET="${HOME}/.ssh/authorized_keys"
@@ -830,6 +836,9 @@ init_slave() {
 
 init_aws() {
     echo_ "init aws..."
+
+    mkdir -p ${HOME}/.ssh
+    mkdir -p ${HOME}/.aws
 
     # .aws/config
     URL="${TOAST_URL}/config/key/aws_config"
