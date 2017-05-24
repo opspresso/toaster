@@ -1419,6 +1419,9 @@ version_save() {
 
         DATE=`date +%Y-%m-%d" "%H:%M`
 
+        git config --global user.email "toast@yanolja.com"
+        git config --global user.name "toast"
+
         git tag -a "${VERSION}" -m "at ${DATE} by toast"
         git push origin "${VERSION}"
     fi
