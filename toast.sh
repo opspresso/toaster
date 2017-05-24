@@ -1380,6 +1380,12 @@ version_next() {
         return 1
     fi
 
+    if [ "${PARAM2}" != "" ]; then
+        if [ "${PARAM2}" != "master" ]; then
+            return
+        fi
+    fi
+
     echo_ "version get..."
 
     URL="${TOAST_URL}/version/latest/${ARTIFACT_ID}"
