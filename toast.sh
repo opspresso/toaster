@@ -1483,7 +1483,7 @@ version_save() {
         echo_ "--> to  : ${UPLOAD_PATH}"
 
         if [ "${PARAM3}" == "public" ]; then
-            OPTION="--grants read=uri=http://acs.amazonaws.com/groups/global/AllUsers" # --quiet
+            OPTION="--acl public-read" # --quiet
         else
             OPTION="" # --quiet
         fi
@@ -2126,7 +2126,7 @@ placement() {
             return
         fi
 
-        OPTION="--quiet --grants read=uri=http://acs.amazonaws.com/groups/global/AllUsers"
+        OPTION="--quiet --acl public-read"
 
         aws s3 sync "${UNZIP_DIR}" "${DEPLOY_PATH}" ${OPTION}
     else
