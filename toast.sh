@@ -2114,7 +2114,7 @@ download() {
 
 placement() {
     if [ "${DEPLOY_PATH}" == "" ]; then
-        warning "--> /empty/deploy/path"
+        warning "--> empty DEPLOY_PATH [${DEPLOY_PATH}]"
         return
     fi
 
@@ -2122,11 +2122,11 @@ placement() {
 
     if [ "${DEPLOY}" == "s3" ]; then
         if [ ! -d "${UNZIP_DIR}" ]; then
-            warning "--> /empty/unzip/path"
+            warning "--> empty UNZIP_DIR [${UNZIP_DIR}]"
             return
         fi
 
-        OPTION="--quiet --grants read=uri=http://acs.amazonaws.com/groups/global/AllUsers"
+        OPTION="--grants read=uri=http://acs.amazonaws.com/groups/global/AllUsers" # --quiet
 
         aws s3 sync "${UNZIP_DIR}" "${DEPLOY_PATH}" ${OPTION}
     else
