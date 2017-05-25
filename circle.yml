@@ -7,6 +7,7 @@ dependencies:
     - curl -s toast.sh/install | bash
     - ~/toaster/toast.sh config circle local nalbam $TOAST_TOKEN
     - ~/toaster/toast.sh version next $CIRCLE_BRANCH
+    - ~/toaster/toast.sh init aws
     - ~/toaster/toast.sh init master
 
 compile:
