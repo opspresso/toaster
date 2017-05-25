@@ -1,0 +1,24 @@
+machine:
+  java:
+    version: oraclejdk8
+
+dependencies:
+  post:
+    - curl -s toast.sh/install | bash
+    - ~/toaster/toast.sh config circle local nalbam $TOAST_TOKEN
+    - ~/toaster/toast.sh version next $CIRCLE_BRANCH
+    - ~/toaster/toast.sh init master
+
+compile:
+  override:
+    - ./package.sh
+
+deployment:
+  development:
+    branch: /^(?!master$).*$/
+    commands:
+      - ~/toaster/toast.sh version save web
+  production:
+    branch: master
+    commands:
+      - ~/toaster/toast.sh version save web
