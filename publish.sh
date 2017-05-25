@@ -1,9 +1,8 @@
 #!/bin/bash
 
-TARGET_PATH="target/"
-DEPLOY_PATH="s3://toast.sh/circle/"
+TARGET_PATH="target"
+DEPLOY_PATH="s3://toast.sh/circle"
 
-#OPTION="--acl public-read"
 OPTION="--grants read=uri=http://acs.amazonaws.com/groups/global/AllUsers"
 
 # upload
