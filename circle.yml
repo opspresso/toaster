@@ -12,6 +12,10 @@ compile:
   override:
     - ./package.sh
 
+test:
+  override:
+    - echo "test"
+
 deployment:
   production:
     branch: master
