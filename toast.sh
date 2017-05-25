@@ -2126,7 +2126,7 @@ placement() {
             return
         fi
 
-        OPTION="--grants read=uri=http://acs.amazonaws.com/groups/global/AllUsers" # --quiet
+        OPTION="--quiet --grants read=uri=http://acs.amazonaws.com/groups/global/AllUsers"
 
         aws s3 sync "${UNZIP_DIR}" "${DEPLOY_PATH}" ${OPTION}
     else
