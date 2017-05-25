@@ -14,11 +14,7 @@ compile:
     - ./package.sh
 
 deployment:
-  development:
-    branch: /^(?!master$).*$/
-    commands:
-      - ~/toaster/toast.sh version save web
   production:
     branch: master
     commands:
-      - ~/toaster/toast.sh version save web
+      - ./publish.sh
