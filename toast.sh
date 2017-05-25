@@ -49,12 +49,9 @@ fi
 
 if [ "${OS_TYPE}" == "" ]; then
     echo_ "`uname -a`"
-    warning "Not supported OS - [${OS_NAME}][${OS_TYPE}]"
+    warning "Not supported OS. [${OS_NAME}][${OS_TYPE}]"
     exit 1
 fi
-
-# sudo
-SUDO="sudo"
 
 ################################################################################
 
@@ -81,6 +78,8 @@ fi
 if [ "${ORG}" != "" ]; then
     TOAST_URL="http://${ORG}.toast.sh"
 fi
+
+SUDO="sudo"
 
 UUID=`curl -s http://instance-data/latest/meta-data/instance-id`
 USER=`whoami`
@@ -484,34 +483,25 @@ self_update() {
 prepare() {
     service_install "gcc curl wget unzip vim git telnet httpie"
 
-    # user dir
-    make_dir ${HOME}/.ssh
-    make_dir ${HOME}/.aws
+    # /data
+    make_dir "${DATA_DIR}"
 
-    # data dir
-    make_dir ${DATA_DIR}
-    make_dir ${LOGS_DIR} 777
+    # /data/logs
+    make_dir "${LOGS_DIR}" 777
 
-    # site dir & localhost
+    # /data/site
     make_dir "${SITE_DIR}"
     make_dir "${SITE_DIR}/localhost"
     make_dir "${SITE_DIR}/files" 777
     make_dir "${SITE_DIR}/upload" 777
     make_dir "${SITE_DIR}/session" 777
 
-    # timezone
+    # time
     ${SUDO} rm -rf /etc/localtime
     ${SUDO} ln -sf /usr/share/zoneinfo/Asia/Seoul /etc/localtime
 
     # i18n
     ${SUDO} cp -rf ${SHELL_DIR}/package/linux/i18n.txt /etc/sysconfig/i18n
-
-    # selinux
-#    ${SUDO} cp -rf ${SHELL_DIR}/package/linux/selinux.txt /etc/selinux/config
-#    if command -v setenforce > /dev/null; then
-#        echo_ "selinux disable..."
-#        ${SUDO} setenforce 0
-#    fi
 }
 
 config_auto() {
