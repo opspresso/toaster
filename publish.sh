@@ -3,7 +3,7 @@
 TARGET_PATH="target/"
 DEPLOY_PATH="s3://toast.sh/"
 
-OPTION="--acl public-read"
+OPTION="--quiet --acl public-read"
 
 # upload
 aws s3 sync "${TARGET_PATH}" "${DEPLOY_PATH}" ${OPTION}
