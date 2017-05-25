@@ -1,6 +1,9 @@
 #!/bin/bash
 
-OPTION="--quiet --grants read=uri=http://acs.amazonaws.com/groups/global/AllUsers"
+TARGET_PATH="target/"
+DEPLOY_PATH="s3://toast.sh/"
+
+OPTION="--acl public-read"
 
 # upload
-aws s3 cp target/* s3://toast.sh/ ${OPTION}
+aws s3 sync "${TARGET_PATH}" "${DEPLOY_PATH}" ${OPTION}

@@ -561,9 +561,10 @@ config_save() {
     fi
 
     echo_bar
-    echo_ "config save... [${UUID}][${SNO}]"
 
     if [ "${PHASE}" != "local" ]; then
+        echo_ "config save... [${UUID}][${SNO}]"
+
         URL="${TOAST_URL}/server/config"
         RES=`curl -s --data "org=${ORG}&token=${TOKEN}&phase=${PHASE}&fleet=${FLEET}&id=${UUID}&name=${NAME}&host=${HOST}&port=${PORT}&user=${USER}&no=${SNO}" ${URL}`
         ARR=(${RES})
@@ -619,6 +620,9 @@ config_local() {
 config_info() {
     if [ ! -f "${CONFIG}" ]; then
         warning "Not exist file. [${CONFIG}]"
+        return
+    fi
+    if [ "${PHASE}" == "local" ]; then
         return
     fi
 
@@ -718,6 +722,9 @@ init_profile() {
 init_master() {
     echo_ "init master..."
 
+    mkdir -p ${HOME}/.ssh
+    mkdir -p ${HOME}/.aws
+
     # .ssh/id_rsa
     URL="${TOAST_URL}/config/key/rsa_private_key"
     RES=`curl -s --data "org=${ORG}&token=${TOKEN}&no=${SNO}" ${URL}`
@@ -738,6 +745,18 @@ init_master() {
         chmod 644 ${TARGET}
     fi
 
+    # .aws/config
+    TARGET="${HOME}/.aws/config"
+    if [ ! -f ${TARGET} ]; then
+        URL="${TOAST_URL}/config/key/aws_config"
+        RES=`curl -s --data "org=${ORG}&token=${TOKEN}&no=${SNO}" ${URL}`
+
+        if [ "${RES}" != "" ]; then
+            echo "${RES}" > ${TARGET}
+            chmod 600 ${TARGET}
+        fi
+    fi
+
     # .aws/credentials
     URL="${TOAST_URL}/config/key/aws_master"
     RES=`curl -s --data "org=${ORG}&token=${TOKEN}&no=${SNO}" ${URL}`
@@ -751,6 +770,9 @@ init_master() {
 
 init_slave() {
     echo_ "init slave..."
+
+    mkdir -p ${HOME}/.ssh
+    mkdir -p ${HOME}/.aws
 
     # .ssh/authorized_keys
     TARGET="${HOME}/.ssh/authorized_keys"
@@ -784,6 +806,18 @@ init_slave() {
         chmod 600 ${TARGET}
     fi
 
+    # .aws/config
+    TARGET="${HOME}/.aws/config"
+    if [ ! -f ${TARGET} ]; then
+        URL="${TOAST_URL}/config/key/aws_config"
+        RES=`curl -s --data "org=${ORG}&token=${TOKEN}&no=${SNO}" ${URL}`
+
+        if [ "${RES}" != "" ]; then
+            echo "${RES}" > ${TARGET}
+            chmod 600 ${TARGET}
+        fi
+    fi
+
     # .aws/credentials
     URL="${TOAST_URL}/config/key/aws_slave"
     RES=`curl -s --data "org=${ORG}&token=${TOKEN}&no=${SNO}" ${URL}`
@@ -802,6 +836,9 @@ init_slave() {
 
 init_aws() {
     echo_ "init aws..."
+
+    mkdir -p ${HOME}/.ssh
+    mkdir -p ${HOME}/.aws
 
     # .aws/config
     URL="${TOAST_URL}/config/key/aws_config"
@@ -1380,6 +1417,12 @@ version_next() {
         return 1
     fi
 
+    if [ "${PARAM2}" != "" ]; then
+        if [ "${PARAM2}" != "master" ]; then
+            return
+        fi
+    fi
+
     echo_ "version get..."
 
     URL="${TOAST_URL}/version/latest/${ARTIFACT_ID}"
@@ -1409,6 +1452,9 @@ version_save() {
 
         DATE=`date +%Y-%m-%d" "%H:%M`
 
+        git config --global user.email "toast@yanolja.com"
+        git config --global user.name "toast"
+
         git tag -a "${VERSION}" -m "at ${DATE} by toast"
         git push origin "${VERSION}"
     fi
@@ -1437,9 +1483,9 @@ version_save() {
         echo_ "--> to  : ${UPLOAD_PATH}"
 
         if [ "${PARAM3}" == "public" ]; then
-            OPTION="--quiet --grants read=uri=http://acs.amazonaws.com/groups/global/AllUsers"
+            OPTION="--grants read=uri=http://acs.amazonaws.com/groups/global/AllUsers" # --quiet
         else
-            OPTION="--quiet " # --quiet
+            OPTION="" # --quiet
         fi
 
         aws s3 cp ${PACKAGE_PATH} ${UPLOAD_PATH} ${OPTION}
@@ -2068,7 +2114,7 @@ download() {
 
 placement() {
     if [ "${DEPLOY_PATH}" == "" ]; then
-        warning "--> /empty/deploy/path"
+        warning "--> empty DEPLOY_PATH [${DEPLOY_PATH}]"
         return
     fi
 
@@ -2076,7 +2122,7 @@ placement() {
 
     if [ "${DEPLOY}" == "s3" ]; then
         if [ ! -d "${UNZIP_DIR}" ]; then
-            warning "--> /empty/unzip/path"
+            warning "--> empty UNZIP_DIR [${UNZIP_DIR}]"
             return
         fi
 
@@ -2550,7 +2596,7 @@ make_dir() {
     fi
 
     if [ ! -d $1 ] && [ ! -f $1 ]; then
-        mkdir $1
+        mkdir -p $1
 
         if [ "$2" != "" ]; then
             chmod $2
@@ -2558,7 +2604,7 @@ make_dir() {
     fi
 
     if [ ! -d $1 ] && [ ! -f $1 ]; then
-        ${SUDO} mkdir $1
+        ${SUDO} mkdir -p $1
 
         mod $1 $2
     fi

@@ -1,0 +1,23 @@
+machine:
+  java:
+    version: oraclejdk8
+
+dependencies:
+  post:
+    - curl -s toast.sh/install | bash
+    - ~/toaster/toast.sh config circle local nalbam $TOAST_TOKEN
+    - ~/toaster/toast.sh init master
+
+compile:
+  override:
+    - ./package.sh
+
+test:
+  override:
+    - echo "test"
+
+deployment:
+  production:
+    branch: master
+    commands:
+      - aws s3 sync target/ s3://toast.sh/ --acl public-read
