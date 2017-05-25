@@ -3,9 +3,7 @@
 TARGET_PATH="target"
 DEPLOY_PATH="s3://toast.sh/circle"
 
-OPTION=""
-#OPTION="--acl public-read"
-#OPTION="--grants read=uri=http://acs.amazonaws.com/groups/global/AllUsers"
+OPTION="--acl public-read --region=ap-northeast-2"
 
 # upload
 aws s3 sync "${TARGET_PATH}" "${DEPLOY_PATH}" ${OPTION}
