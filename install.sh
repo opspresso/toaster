@@ -41,12 +41,9 @@ fi
 
 if [ "${OS_TYPE}" == "" ]; then
     uname -a
-    warning "Not supported OS - [${OS_NAME}][${OS_TYPE}]"
+    warning "Not supported OS. [${OS_NAME}][${OS_TYPE}]"
     exit 1
 fi
-
-# sudo
-SUDO="sudo"
 
 REPO="http://toast.sh"
 
@@ -62,8 +59,6 @@ if [ ! -f /tmp/toaster.txt ]; then
     exit 1
 fi
 
-MSG="Toast.sh installed."
-
 if [ -f toaster/.version.txt ]; then
     NEW="`cat /tmp/toaster.txt`"
     OLD="`cat toaster/.version.txt`"
@@ -74,6 +69,8 @@ if [ -f toaster/.version.txt ]; then
     fi
 
     MSG="Latest version updated. [${OLD} -> ${NEW}]"
+else
+    MSG="Toast.sh installed."
 fi
 
 # download
