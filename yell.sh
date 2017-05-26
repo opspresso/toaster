@@ -53,7 +53,7 @@ function ch_app_dir() {
 
 function rm_app_dir() {
   rm -rf "${NOW_DIR}/${PRJ}"
-  rm -rf "${YEL_DIR}/${PRJ}.*"
+  rm -rf "${YEL_DIR}/${PRJ}".*
 }
 
 function git_clone() {
