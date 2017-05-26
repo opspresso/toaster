@@ -45,7 +45,7 @@ download() {
 
 ################################################################################
 
-OS_NAME=`uname`
+OS_NAME=$(uname)
 if [ ${OS_NAME} != "Linux" ]; then
     warning "Not supported OS : ${OS_NAME}"
     exit 1

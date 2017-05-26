@@ -1102,7 +1102,7 @@ init_nginx() {
     fi
 
     echo_bar
-    echo_ "`nginx -v`"
+    echo_ "$(nginx -v)"
     echo_bar
 }
 
@@ -1130,7 +1130,7 @@ init_php() {
     fi
 
     echo_bar
-    echo_ "`php -version`"
+    echo_ "$(php -version)"
     echo_bar
 }
 
@@ -1579,13 +1579,13 @@ nginx_lb() {
     wget -q -N --post-data "org=${ORG}&token=${TOKEN}&no=${SNO}" -P "${TARGET_DIR}" "${URL}"
 
     if [ -f ${LB_CONF} ]; then
-        echo_ "`cat ${LB_CONF}`"
+        echo_ "$(cat ${LB_CONF})"
 
         TEMP_HTTP="${TARGET_DIR}/toast-lb-http.tmp"
         TEMP_SSL="${TARGET_DIR}/toast-lb-ssl.tmp"
         TEMP_TCP="${TARGET_DIR}/toast-lb-tcp.tmp"
 
-        rm -rf ${TEMP_FILE} ${TEMP_HTTP} ${TEMP_SSL} ${TEMP_TCP}
+        rm -rf "${TEMP_FILE}" "${TEMP_HTTP}" "${TEMP_SSL}" "${TEMP_TCP}"
 
         while read line
         do
@@ -2234,7 +2234,7 @@ connect() {
         cat ${CONN_LIST}
         echo_bar
 
-        if [ `cat ${CONN_LIST} | wc -l` -lt 2 ]; then
+        if [ $(cat ${CONN_LIST} | wc -l) -lt 2 ]; then
             while read line
             do
                 ARR=(${line})
