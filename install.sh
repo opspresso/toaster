@@ -21,16 +21,16 @@ if [ "${HOME}" == "/root" ]; then
 fi
 
 # linux
-OS_NAME=`uname`
+OS_NAME=$(uname)
 if [ "${OS_NAME}" == "Linux" ]; then
-    OS_FULL=`uname -a`
-    if [ `echo ${OS_FULL} | grep -c "amzn1"` -gt 0 ]; then
+    OS_FULL=$(uname -a)
+    if [ $(echo "${OS_FULL}" | grep -c "amzn1") -gt 0 ]; then
         OS_TYPE="amzn1"
-    elif [ `echo ${OS_FULL} | grep -c "el6"` -gt 0 ]; then
+    elif [ $(echo "${OS_FULL}" | grep -c "el6") -gt 0 ]; then
         OS_TYPE="el6"
-    elif [ `echo ${OS_FULL} | grep -c "el7"` -gt 0 ]; then
+    elif [ $(echo "${OS_FULL}" | grep -c "el7") -gt 0 ]; then
         OS_TYPE="el7"
-    elif [ `echo ${OS_FULL} | grep -c "generic"` -gt 0 ]; then
+    elif [ $(echo "${OS_FULL}" | grep -c "generic") -gt 0 ]; then
         OS_TYPE="generic"
     fi
 else
@@ -49,7 +49,7 @@ REPO="http://toast.sh"
 
 ################################################################################
 
-pushd ${HOME}
+pushd "${HOME}"
 
 # version
 wget -q -N -P /tmp ${REPO}/toaster.txt
@@ -60,8 +60,8 @@ if [ ! -f /tmp/toaster.txt ]; then
 fi
 
 if [ -f toaster/.version.txt ]; then
-    NEW="`cat /tmp/toaster.txt`"
-    OLD="`cat toaster/.version.txt`"
+    NEW="$(cat /tmp/toaster.txt)"
+    OLD="$(cat toaster/.version.txt)"
 
     if [ "${NEW}" == "${OLD}" ]; then
         success "Already have latest version. [${OLD}]"
@@ -74,7 +74,7 @@ else
 fi
 
 # download
-wget -q -N -P /tmp ${REPO}/toaster.zip
+wget -q -N -P /tmp "${REPO}/toaster.zip"
 
 if [ ! -f /tmp/toaster.zip ]; then
     warning "Can not download. [toast.sh]"
