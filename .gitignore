@@ -19,16 +19,10 @@ $RECYCLE.BIN/
 .settings/
 .metadata/
 
-# java
-*.class
-*.jar
-*.war
-*.ear
-
-# maven
+# Build
 target/
 build/
 
-# local
+# Temp
 .config_*
 .toast_*

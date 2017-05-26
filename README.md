@@ -1,7 +1,5 @@
 # toaster
 
-[![Build Status](https://travis-ci.org/nalbam-ya/toaster.svg?branch=master)](https://travis-ci.org/nalbam-ya/toaster) 
-
 ### Install
 ```
 curl -s toast.sh/install | bash
@@ -37,4 +35,5 @@ cat /var/log/cloud-init-output.log
 ~/toaster/remote.sh {user} {host} {port} init java
 ~/toaster/remote.sh {user} {host} {port} deploy fleet
 ~/toaster/remote.sh {user} {host} {port} deploy target {target}
+~/toaster/remote.sh {user} {host} {port} bucket {target}
 ```
