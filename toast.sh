@@ -1473,9 +1473,9 @@ version_save() {
         echo_ "--> to  : ${UPLOAD_PATH}"
 
         if [ "${PARAM3}" == "public" ]; then
-            OPTION="--acl public-read" # --quiet
+            OPTION="--quiet --acl public-read" # --quiet
         else
-            OPTION="" # --quiet
+            OPTION="--quiet" # --quiet
         fi
 
         aws s3 cp ${PACKAGE_PATH} ${UPLOAD_PATH} ${OPTION}
