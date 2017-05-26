@@ -24,7 +24,7 @@ function get_up_id() {
     read UP_ID
 
     if [ "${UP_ID}" == "" ]; then
-      UP_ID=${MY_ID}
+      UP_ID="${MY_ID}"
     fi
 
     echo "UP_ID=${UP_ID}" >> ${CONFIG}
