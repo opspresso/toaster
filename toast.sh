@@ -29,16 +29,16 @@ if [ "${HOME}" == "/root" ]; then
 fi
 
 # linux
-OS_NAME=`uname`
+OS_NAME=$(uname)
 if [ "${OS_NAME}" == "Linux" ]; then
-    OS_FULL=`uname -a`
-    if [ `echo ${OS_FULL} | grep -c "amzn1"` -gt 0 ]; then
+    OS_FULL=$(uname -a)
+    if [ $(echo "${OS_FULL}" | grep -c "amzn1") -gt 0 ]; then
         OS_TYPE="amzn1"
-    elif [ `echo ${OS_FULL} | grep -c "el6"` -gt 0 ]; then
+    elif [ $(echo "${OS_FULL}" | grep -c "el6") -gt 0 ]; then
         OS_TYPE="el6"
-    elif [ `echo ${OS_FULL} | grep -c "el7"` -gt 0 ]; then
+    elif [ $(echo "${OS_FULL}" | grep -c "el7") -gt 0 ]; then
         OS_TYPE="el7"
-    elif [ `echo ${OS_FULL} | grep -c "generic"` -gt 0 ]; then
+    elif [ $(echo "${OS_FULL}" | grep -c "generic") -gt 0 ]; then
         OS_TYPE="generic"
     fi
 else
@@ -48,14 +48,14 @@ else
 fi
 
 if [ "${OS_TYPE}" == "" ]; then
-    echo_ "`uname -a`"
+    echo_ "$(uname -a)"
     warning "Not supported OS. [${OS_NAME}][${OS_TYPE}]"
     exit 1
 fi
 
 ################################################################################
 
-SHELL_DIR=$(dirname $0)
+SHELL_DIR=$(dirname "$0")
 
 TOAST_URL=
 REPO_PATH=
@@ -72,7 +72,7 @@ SNO=
 
 CONFIG="${HOME}/.toast"
 if [ -f "${CONFIG}" ]; then
-    source ${CONFIG}
+    source "${CONFIG}"
 fi
 
 if [ "${ORG}" != "" ]; then
@@ -81,8 +81,8 @@ fi
 
 SUDO="sudo"
 
-UUID=`curl -s http://instance-data/latest/meta-data/instance-id`
-USER=`whoami`
+UUID="$(curl -s http://instance-data/latest/meta-data/instance-id)"
+USER="$(whoami)"
 
 ################################################################################
 
@@ -415,15 +415,15 @@ health() {
 
     #echo_ "server health..."
 
-    UNAME=`uname -a`
-    UPTIME=`uptime`
-    CPU=`grep 'cpu ' /proc/stat | awk '{usage=($2+$4)*100/($2+$4+$5)} END {print usage}'`
+    UNAME="$(uname -a)"
+    UPTIME="$(uptime)"
+    CPU="$(grep 'cpu ' /proc/stat | awk '{usage=($2+$4)*100/($2+$4+$5)} END {print usage}')"
 
     #echo_ "server uptime    [${UPTIME}]"
     #echo_ "server cpu usage [${CPU}]"
 
     URL="${TOAST_URL}/server/health/${SNO}"
-    RES=`curl -s --data "org=${ORG}&token=${TOKEN}&id=${UUID}&cpu=${CPU}&uname=${UNAME}&uptime=${UPTIME}" ${URL}`
+    RES=$(curl -s --data "org=${ORG}&token=${TOKEN}&id=${UUID}&cpu=${CPU}&uname=${UNAME}&uptime=${UPTIME}" "${URL}")
     ARR=(${RES})
 
     if [ "${ARR[0]}" == "OK" ]; then
@@ -449,7 +449,7 @@ reset() {
     fi
 
     URL="${TOAST_URL}/server/info/${SNO}"
-    RES=`curl -s --data "org=${ORG}&token=${TOKEN}&id=${UUID}" ${URL}`
+    RES=$(curl -s --data "org=${ORG}&token=${TOKEN}&id=${UUID}" "${URL}")
     ARR=(${RES})
 
     if [ "${ARR[0]}" == "OK" ]; then
@@ -477,7 +477,7 @@ self_info() {
 }
 
 self_update() {
-    ${SHELL_DIR}/install.sh
+    "${SHELL_DIR}/install.sh"
 }
 
 prepare() {
@@ -497,19 +497,19 @@ prepare() {
     make_dir "${SITE_DIR}/session" 777
 
     # time
-    ${SUDO} rm -rf /etc/localtime
-    ${SUDO} ln -sf /usr/share/zoneinfo/Asia/Seoul /etc/localtime
+    ${SUDO} rm -rf "/etc/localtime"
+    ${SUDO} ln -sf "/usr/share/zoneinfo/Asia/Seoul" "/etc/localtime"
 
     # i18n
-    ${SUDO} cp -rf ${SHELL_DIR}/package/linux/i18n.txt /etc/sysconfig/i18n
+    ${SUDO} cp -rf "${SHELL_DIR}/package/linux/i18n.txt" "/etc/sysconfig/i18n"
 }
 
 config_auto() {
     # port
     if [ -r /etc/ssh/sshd_config ]; then
-        SSH="`cat /etc/ssh/sshd_config | egrep ^\#?Port`"
+        SSH=$(cat /etc/ssh/sshd_config | grep -E ^\#?Port)
     else
-        SSH="`${SUDO} cat /etc/ssh/sshd_config | egrep ^\#?Port`"
+        SSH=$(${SUDO} cat /etc/ssh/sshd_config | grep -E ^\#?Port)
     fi
     if [ "${SSH}" != "" ]; then
         ARR=(${SSH})
@@ -518,8 +518,8 @@ config_auto() {
 
     # .toast
     if [ ! -f "${CONFIG}" ]; then
-        cp -rf ${SHELL_DIR}/package/toast.txt ${CONFIG}
-        source ${CONFIG}
+        cp -rf "${SHELL_DIR}/package/toast.txt" "${CONFIG}"
+        source "${CONFIG}"
     fi
 
     #  fleet phase org token
@@ -556,7 +556,7 @@ config_save() {
         echo_ "config save... [${UUID}][${SNO}]"
 
         URL="${TOAST_URL}/server/config"
-        RES=`curl -s --data "org=${ORG}&token=${TOKEN}&phase=${PHASE}&fleet=${FLEET}&id=${UUID}&name=${NAME}&host=${HOST}&port=${PORT}&user=${USER}&no=${SNO}" ${URL}`
+        RES=$(curl -s --data "org=${ORG}&token=${TOKEN}&phase=${PHASE}&fleet=${FLEET}&id=${UUID}&name=${NAME}&host=${HOST}&port=${PORT}&user=${USER}&no=${SNO}" "${URL}")
         ARR=(${RES})
 
         if [ "${ARR[0]}" != "OK" ]; then
@@ -590,21 +590,21 @@ config_save() {
 config_local() {
     echo_ "config local... [${SNO}][${NAME}]"
 
-    echo "# toast config" > ${CONFIG}
-    echo "TOAST_URL=\"${TOAST_URL}\"" >> ${CONFIG}
-    echo "ORG=\"${ORG}\"" >> ${CONFIG}
-    echo "PHASE=\"${PHASE}\"" >> ${CONFIG}
-    echo "FLEET=\"${FLEET}\"" >> ${CONFIG}
-    echo "UUID=\"${UUID}\"" >> ${CONFIG}
-    echo "NAME=\"${NAME}\"" >> ${CONFIG}
-    echo "HOST=\"${HOST}\"" >> ${CONFIG}
-    echo "PORT=\"${PORT}\"" >> ${CONFIG}
-    echo "USER=\"${USER}\"" >> ${CONFIG}
-    echo "TOKEN=\"${TOKEN}\"" >> ${CONFIG}
-    echo "SNO=\"${SNO}\"" >> ${CONFIG}
+    echo "# toast config" > "${CONFIG}"
+    echo "TOAST_URL=\"${TOAST_URL}\"" >> "${CONFIG}"
+    echo "ORG=\"${ORG}\"" >> "${CONFIG}"
+    echo "PHASE=\"${PHASE}\"" >> "${CONFIG}"
+    echo "FLEET=\"${FLEET}\"" >> "${CONFIG}"
+    echo "UUID=\"${UUID}\"" >> "${CONFIG}"
+    echo "NAME=\"${NAME}\"" >> "${CONFIG}"
+    echo "HOST=\"${HOST}\"" >> "${CONFIG}"
+    echo "PORT=\"${PORT}\"" >> "${CONFIG}"
+    echo "USER=\"${USER}\"" >> "${CONFIG}"
+    echo "TOKEN=\"${TOKEN}\"" >> "${CONFIG}"
+    echo "SNO=\"${SNO}\"" >> "${CONFIG}"
 
-    chmod 644 ${CONFIG}
-    source ${CONFIG}
+    chmod 644 "${CONFIG}"
+    source "${CONFIG}"
 }
 
 config_info() {
@@ -617,7 +617,7 @@ config_info() {
     fi
 
     echo_bar
-    cat ${CONFIG}
+    cat "${CONFIG}"
     echo_bar
 }
 
@@ -684,7 +684,7 @@ init_hosts() {
 
     # hosts
     URL="${TOAST_URL}/server/hosts/${SNO}"
-    RES=`curl -s --data "org=${ORG}&token=${TOKEN}&no=${SNO}" ${URL}`
+    RES=$(curl -s --data "org=${ORG}&token=${TOKEN}&no=${SNO}" "${URL}")
 
     if [ "${RES}" != "" ]; then
         echo "${RES}" > ${TEMP_FILE}
@@ -697,11 +697,11 @@ init_profile() {
 
     TARGET="${HOME}/.toast_profile"
 
-    add_source ${TARGET}
+    add_source "${TARGET}"
 
     # profile
     URL="${TOAST_URL}/server/profile/${SNO}"
-    RES=`curl -s --data "org=${ORG}&token=${TOKEN}&no=${SNO}" ${URL}`
+    RES=$(curl -s --data "org=${ORG}&token=${TOKEN}&no=${SNO}" "${URL}")
 
     if [ "${RES}" != "" ]; then
         echo "${RES}" > ${TARGET}
@@ -717,7 +717,7 @@ init_master() {
 
     # .ssh/id_rsa
     URL="${TOAST_URL}/config/key/rsa_private_key"
-    RES=`curl -s --data "org=${ORG}&token=${TOKEN}&no=${SNO}" ${URL}`
+    RES=$(curl -s --data "org=${ORG}&token=${TOKEN}&no=${SNO}" "${URL}")
 
     if [ "${RES}" != "" ]; then
         TARGET="${HOME}/.ssh/id_rsa"
@@ -727,7 +727,7 @@ init_master() {
 
     # .ssh/id_rsa.pub
     URL="${TOAST_URL}/config/key/rsa_public_key"
-    RES=`curl -s --data "org=${ORG}&token=${TOKEN}&no=${SNO}" ${URL}`
+    RES=$(curl -s --data "org=${ORG}&token=${TOKEN}&no=${SNO}" "${URL}")
 
     if [ "${RES}" != "" ]; then
         TARGET="${HOME}/.ssh/id_rsa.pub"
@@ -739,7 +739,7 @@ init_master() {
     TARGET="${HOME}/.aws/config"
     if [ ! -f ${TARGET} ]; then
         URL="${TOAST_URL}/config/key/aws_config"
-        RES=`curl -s --data "org=${ORG}&token=${TOKEN}&no=${SNO}" ${URL}`
+        RES=$(curl -s --data "org=${ORG}&token=${TOKEN}&no=${SNO}" "${URL}")
 
         if [ "${RES}" != "" ]; then
             echo "${RES}" > ${TARGET}
@@ -749,7 +749,7 @@ init_master() {
 
     # .aws/credentials
     URL="${TOAST_URL}/config/key/aws_master"
-    RES=`curl -s --data "org=${ORG}&token=${TOKEN}&no=${SNO}" ${URL}`
+    RES=$(curl -s --data "org=${ORG}&token=${TOKEN}&no=${SNO}" "${URL}")
 
     if [ "${RES}" != "" ]; then
         TARGET="${HOME}/.aws/credentials"
@@ -768,9 +768,9 @@ init_slave() {
     TARGET="${HOME}/.ssh/authorized_keys"
     touch ${TARGET}
 
-    if [ `cat ${TARGET} | grep -c "toast@yanolja.in"` -eq 0 ]; then
+    if [ $(cat ${TARGET} | grep -c "toast@yanolja.in") -eq 0 ]; then
         URL="${TOAST_URL}/config/key/rsa_public_key"
-        RES=`curl -s --data "org=${ORG}&token=${TOKEN}&no=${SNO}" ${URL}`
+        RES=$(curl -s --data "org=${ORG}&token=${TOKEN}&no=${SNO}" "${URL}")
 
         if [ "${RES}" != "" ]; then
             echo "${RES}" >> ${TARGET}
@@ -788,7 +788,7 @@ init_slave() {
 
     # .ssh/config
     URL="${TOAST_URL}/config/key/ssh_config"
-    RES=`curl -s --data "org=${ORG}&token=${TOKEN}&no=${SNO}" ${URL}`
+    RES=$(curl -s --data "org=${ORG}&token=${TOKEN}&no=${SNO}" "${URL}")
 
     if [ "${RES}" != "" ]; then
         TARGET="${HOME}/.ssh/config"
@@ -800,7 +800,7 @@ init_slave() {
     TARGET="${HOME}/.aws/config"
     if [ ! -f ${TARGET} ]; then
         URL="${TOAST_URL}/config/key/aws_config"
-        RES=`curl -s --data "org=${ORG}&token=${TOKEN}&no=${SNO}" ${URL}`
+        RES=$(curl -s --data "org=${ORG}&token=${TOKEN}&no=${SNO}" "${URL}")
 
         if [ "${RES}" != "" ]; then
             echo "${RES}" > ${TARGET}
@@ -810,7 +810,7 @@ init_slave() {
 
     # .aws/credentials
     URL="${TOAST_URL}/config/key/aws_slave"
-    RES=`curl -s --data "org=${ORG}&token=${TOKEN}&no=${SNO}" ${URL}`
+    RES=$(curl -s --data "org=${ORG}&token=${TOKEN}&no=${SNO}" "${URL}")
 
     if [ "${RES}" != "" ]; then
         TARGET="${HOME}/.aws/credentials"
@@ -832,7 +832,7 @@ init_aws() {
 
     # .aws/config
     URL="${TOAST_URL}/config/key/aws_config"
-    RES=`curl -s --data "org=${ORG}&token=${TOKEN}&no=${SNO}" ${URL}`
+    RES=$(curl -s --data "org=${ORG}&token=${TOKEN}&no=${SNO}" "${URL}")
 
     if [ "${RES}" != "" ]; then
         TARGET="${HOME}/.aws/config"
@@ -865,7 +865,7 @@ init_aws() {
     fi
 
     echo_bar
-    echo_ "`aws --version`"
+    echo_ "$(aws --version)"
     echo_bar
 }
 
@@ -884,7 +884,7 @@ init_certificate() {
     echo_ "init certificate... [${CERT_NAME}]"
 
     SSL_DIR="/data/conf"
-    make_dir ${SSL_DIR}
+    make_dir "${SSL_DIR}"
 
     SSL_NAME=
     SSL_INFO="${SSL_DIR}/info"
@@ -958,7 +958,7 @@ init_startup() {
 
 init_auto() {
     URL="${TOAST_URL}/server/apps/${SNO}"
-    RES=`curl -s --data "org=${ORG}&token=${TOKEN}&no=${SNO}" ${URL}`
+    RES=$(curl -s --data "org=${ORG}&token=${TOKEN}&no=${SNO}" "${URL}")
     ARR=(${RES})
 
     for VAL in "${ARR[@]}"; do
@@ -1008,7 +1008,7 @@ init_script() {
 
     # script
     URL="${TOAST_URL}/server/script/${SNO}"
-    RES=`curl -s --data "org=${ORG}&token=${TOKEN}&no=${SNO}" ${URL}`
+    RES=$(curl -s --data "org=${ORG}&token=${TOKEN}&no=${SNO}" "${URL}")
 
     if [ "${RES}" != "" ]; then
         echo "${RES}" > ${TARGET}
@@ -1039,7 +1039,7 @@ init_webtatic() {
         return 1
     fi
 
-    status=`${SUDO} yum list | grep php56 | wc -l | awk '{print $1}'`
+    status=$(${SUDO} yum list | grep php56 | wc -l | awk '{print $1}')
 
     if [ ${status} -lt 1 ]; then
         if [ "${OS_TYPE}" == "el7" ]; then
@@ -1058,7 +1058,7 @@ init_httpd() {
 
         service_install "openssl openssl-devel"
 
-        status=`${SUDO} yum list | grep httpd24 | wc -l | awk '{print $1}'`
+        status=$(${SUDO} yum list | grep httpd24 | wc -l | awk '{print $1}')
 
         if [ ${status} -ge 1 ]; then
             service_install "httpd24"
@@ -1066,7 +1066,7 @@ init_httpd() {
             service_install "httpd"
         fi
 
-        VERSION=$(httpd -version | egrep -o "Apache\/2.4")
+        VERSION=$(httpd -version | grep -o "Apache\/2.4")
 
         if [ "${VERSION}" != "" ]; then
             HTTPD_VERSION="24"
@@ -1085,7 +1085,7 @@ init_httpd() {
     fi
 
     echo_bar
-    echo_ "`httpd -version`"
+    echo_ "$(httpd -version)"
     echo_bar
 }
 
@@ -1093,7 +1093,7 @@ init_nginx() {
     if [ ! -f "${SHELL_DIR}/.config_nginx" ]; then
         echo_ "init nginx..."
 
-        ${SHELL_DIR}/install/nginx.sh ${REPO_PATH}
+        ${SHELL_DIR}/install/nginx.sh "${REPO_PATH}"
 
         echo_ "nginx start..."
         ${SUDO} nginx
@@ -1114,7 +1114,7 @@ init_php() {
 
         echo_ "init php${VERSION}..."
 
-        status=`${SUDO} yum list | grep php${VERSION}w | wc -l | awk '{print $1}'`
+        status=$(${SUDO} yum list | grep php${VERSION}w | wc -l | awk '{print $1}')
 
         if [ ${status} -ge 1 ]; then
             service_install "php${VERSION}w php${VERSION}w-mysqlnd php${VERSION}w-mcrypt php${VERSION}w-gd php${VERSION}w-mbstring php${VERSION}w-bcmath"
@@ -1138,7 +1138,7 @@ init_node() {
     if [ ! -f "${SHELL_DIR}/.config_node" ]; then
         echo_ "init node..."
 
-        ${SHELL_DIR}/install/node.sh ${REPO_PATH}
+        ${SHELL_DIR}/install/node.sh "${REPO_PATH}"
 
         NODE_HOME="/usr/local/node"
 
@@ -1150,8 +1150,8 @@ init_node() {
     fi
 
     echo_bar
-    echo_ "node version `node -v`"
-    echo_ "npm version `npm -v`"
+    echo_ "node version $(node -v)"
+    echo_ "npm version $(npm -v)"
     echo_bar
 }
 
@@ -1162,7 +1162,7 @@ init_java8() {
         service_remove "java-1.7.0-openjdk java-1.7.0-openjdk-headless"
         service_remove "java-1.8.0-openjdk java-1.8.0-openjdk-headless java-1.8.0-openjdk-devel"
 
-        ${SHELL_DIR}/install/java.sh ${REPO_PATH}
+        ${SHELL_DIR}/install/java.sh "${REPO_PATH}"
 
         JAVA_HOME="/usr/local/java"
 
@@ -1176,7 +1176,7 @@ init_java8() {
     make_dir "${APPS_DIR}"
 
     echo_bar
-    echo_ "`java -version`"
+    echo_ "$(java -version)"
     echo_bar
 }
 
@@ -1184,7 +1184,7 @@ init_maven3() {
     if [ ! -f "${SHELL_DIR}/.config_maven" ]; then
         echo_ "init maven..."
 
-        ${SHELL_DIR}/install/maven.sh ${REPO_PATH}
+        ${SHELL_DIR}/install/maven.sh "${REPO_PATH}"
 
         MAVEN_HOME="${APPS_DIR}/maven3"
 
@@ -1200,7 +1200,7 @@ init_tomcat8() {
     if [ ! -f "${SHELL_DIR}/.config_tomcat" ]; then
         echo_ "init tomcat..."
 
-        ${SHELL_DIR}/install/tomcat.sh ${REPO_PATH}
+        ${SHELL_DIR}/install/tomcat.sh "${REPO_PATH}"
 
         CATALINA_HOME="${APPS_DIR}/tomcat8"
 
@@ -1254,7 +1254,7 @@ init_rabbitmq() {
     if [ ! -f "${SHELL_DIR}/.config_rabbitmq" ]; then
         echo_ "init rabbitmq..."
 
-        ${SHELL_DIR}/install/rabbitmq.sh ${REPO_PATH}
+        ${SHELL_DIR}/install/rabbitmq.sh "${REPO_PATH}"
 
         service_ctl rabbitmq-server start on
 
@@ -1292,8 +1292,8 @@ init_jenkins() {
 
     tomcat_stop
 
-    rm -rf ${WEBAPP_DIR}/jenkins.war
-    rm -rf ${WEBAPP_DIR}/jenkins
+    rm -rf "${WEBAPP_DIR}/jenkins.war"
+    rm -rf "${WEBAPP_DIR}/jenkins"
 
     echo_ "download jenkins..."
 
@@ -1389,16 +1389,16 @@ version_parse() {
         exit 1
     fi
 
-    GROUP_ID=${ARR_GROUP[0]}
-    ARTIFACT_ID=${ARR_ARTIFACT[0]}
-    VERSION=${ARR_VERSION[0]}
+    GROUP_ID="${ARR_GROUP[0]}"
+    ARTIFACT_ID="${ARR_ARTIFACT[0]}"
+    VERSION="${ARR_VERSION[0]}"
     PACKAGE="${PARAM2}"
 
     echo_ "groupId=${GROUP_ID}"
     echo_ "artifactId=${ARTIFACT_ID}"
     echo_ "version=${VERSION}"
 
-    GROUP_PATH=`echo "${GROUP_ID}" | sed "s/\./\//"`
+    GROUP_PATH=$(echo "${GROUP_ID}" | sed "s/\./\//")
 }
 
 version_next() {
@@ -1416,7 +1416,7 @@ version_next() {
     echo_ "version get..."
 
     URL="${TOAST_URL}/version/latest/${ARTIFACT_ID}"
-    RES=`curl -s --data "org=${ORG}&token=${TOKEN}&groupId=${GROUP_ID}&artifactId=${ARTIFACT_ID}&packaging=${PACKAGE}&no=${SNO}" ${URL}`
+    RES=$(curl -s --data "org=${ORG}&token=${TOKEN}&groupId=${GROUP_ID}&artifactId=${ARTIFACT_ID}&packaging=${PACKAGE}&no=${SNO}" "${URL}")
     ARR=(${RES})
 
     if [ "${ARR[0]}" != "OK" ]; then
@@ -1440,7 +1440,7 @@ version_save() {
     if [ "${VERSION}" != "0.0.0" ]; then
         echo_ "version tag... [${VERSION}]"
 
-        DATE=`date +%Y-%m-%d" "%H:%M`
+        DATE=$(date +%Y-%m-%d" "%H:%M)
 
         git config --global user.email "toast@yanolja.com"
         git config --global user.name "toast"
@@ -1483,10 +1483,10 @@ version_save() {
         echo_ "package uploaded."
     fi
 
-    NOTE=$(version_note)
+    NOTE="$(version_note)"
 
     URL="${TOAST_URL}/version/build/${ARTIFACT_ID}/${VERSION}"
-    RES=`curl -s --data "org=${ORG}&token=${TOKEN}&groupId=${GROUP_ID}&artifactId=${ARTIFACT_ID}&packaging=${PACKAGE}&no=${SNO}&note=${NOTE}" ${URL}`
+    RES=$(curl -s --data "org=${ORG}&token=${TOKEN}&groupId=${GROUP_ID}&artifactId=${ARTIFACT_ID}&packaging=${PACKAGE}&no=${SNO}&note=${NOTE}" "${URL}")
     ARR=(${RES})
 
     if [ "${ARR[0]}" != "OK" ]; then
@@ -1605,7 +1605,7 @@ nginx_lb() {
 
             if [ "${ARR[0]}" == "CUSTOM" ]; then
                 URL="${TOAST_URL}/fleet/custom/${FNO}"
-                RES=`curl -s --data "org=${ORG}&token=${TOKEN}&no=${SNO}" ${URL}`
+                RES=$(curl -s --data "org=${ORG}&token=${TOKEN}&no=${SNO}" "${URL}")
 
                 if [ "${RES}" != "" ]; then
                     CUSTOM="${RES}"
@@ -1764,8 +1764,8 @@ vhost_replace() {
 
     # vhost-in.com
     IN="${DOM}"
-    IN=`echo "${IN}" | sed "s/yanolja\.com/yanolja-in\.com/"`
-    IN=`echo "${IN}" | sed "s/yanoljanow\.com/yanoljanow-in\.com/"`
+    IN=$(echo "${IN}" | sed "s/yanolja\.com/yanolja-in\.com/")
+    IN=$(echo "${IN}" | sed "s/yanoljanow\.com/yanoljanow-in\.com/")
 
     if [ "${DOM}" == "${IN}" ]; then
         return
@@ -1832,7 +1832,7 @@ repo_path() {
 
     # repo_path
     URL="${TOAST_URL}/config/key/repo_path"
-    RES=`curl -s --data "org=${ORG}&token=${TOKEN}&no=${SNO}" ${URL}`
+    RES=$(curl -s --data "org=${ORG}&token=${TOKEN}&no=${SNO}" "${URL}")
 
     if [ "${RES}" == "" ]; then
         warning "Not set REPO_PATH."
@@ -1853,7 +1853,7 @@ deploy_project() {
     TYPE="${PARAM5}"
     DOMAIN="${PARAM6}"
 
-    GROUP_PATH=`echo "${GROUP_ID}" | sed "s/\./\//"`
+    GROUP_PATH=$(echo "${GROUP_ID}" | sed "s/\./\//")
 
     PACKAGING="${TYPE}"
     if [ "${PACKAGING}" == "war" ]; then
@@ -2032,7 +2032,7 @@ deploy_value() {
     DOMAIN="${ARR[5]}"
     DEPLOY="${ARR[6]}"
 
-    GROUP_PATH=`echo "${GROUP_ID}" | sed "s/\./\//"`
+    GROUP_PATH=$(echo "${GROUP_ID}" | sed "s/\./\//")
 
     PACKAGING="${TYPE}"
     DEPLOY_PATH=""
@@ -2160,7 +2160,7 @@ placement() {
 
     # version status
     URL="${TOAST_URL}/version/deploy/${ARTIFACT_ID}/${VERSION}"
-    RES=`curl -s --data "org=${ORG}&token=${TOKEN}&phase=${PHASE}&fleet=${FLEET}&name=${NAME}&groupId=${GROUP_ID}&no=${SNO}&t_no=${TNO}" ${URL}`
+    RES=$(curl -s --data "org=${ORG}&token=${TOKEN}&phase=${PHASE}&fleet=${FLEET}&name=${NAME}&groupId=${GROUP_ID}&no=${SNO}&t_no=${TNO}" "${URL}")
     ARR=(${RES})
 
     if [ "${ARR[0]}" != "OK" ]; then
@@ -2189,7 +2189,7 @@ connect() {
         cat ${CONN_LIST}
         echo_bar
 
-        if [ `cat ${CONN_LIST} | wc -l` -lt 2 ]; then
+        if [ $(cat ${CONN_LIST} | wc -l) -lt 2 ]; then
             while read line
             do
                 ARR=(${line})
@@ -2281,7 +2281,7 @@ connect() {
     cat ${CONN_LIST}
     echo_bar
 
-    if [ `cat ${CONN_LIST} | wc -l` -lt 2 ]; then
+    if [ $(cat ${CONN_LIST} | wc -l) -lt 2 ]; then
         while read line
         do
             ARR=(${line})
@@ -2320,7 +2320,7 @@ log_tomcat() {
 }
 
 log_webapp() {
-    TODAY=`date +%Y-%m-%d`
+    TODAY=$(date +%Y-%m-%d)
 
     tail -f -n 500 "${SITE_DIR}/${PARAM1}/application/logs/log-${TODAY}.php"
 }
@@ -2394,7 +2394,7 @@ httpd_restart() {
 
 tomcat_stop() {
     if [ "${HAS_WAR}" == "TRUE" ]; then
-        status=`ps -ef | grep catalina | grep java | grep -v grep | wc -l | awk '{print $1}'`
+        status=$(ps -ef | grep catalina | grep java | grep -v grep | wc -l | awk '{print $1}')
         if [ ${status} -ge 1 ]; then
             echo_ "tomcat stop..."
             ${TOMCAT_DIR}/bin/shutdown.sh
@@ -2405,21 +2405,21 @@ tomcat_stop() {
 
 tomcat_start() {
     if [ "${HAS_WAR}" == "TRUE" ]; then
-        status=`ps -ef | grep catalina | grep java | grep -v grep | wc -l | awk '{print $1}'`
+        status=$(ps -ef | grep catalina | grep java | grep -v grep | wc -l | awk '{print $1}')
         count=0
         while [ ${status} -ge 1 ]; do
             echo_ "wait tomcat..."
             sleep 3
 
             if [ ${count} -ge 5 ]; then
-                pid=`ps -ef | grep catalina | grep java | grep -v grep | awk '{print $2}'`
+                pid=$(ps -ef | grep catalina | grep java | grep -v grep | awk '{print $2}')
                 kill -9 ${pid}
                 echo_ "tomcat (${pid}) was killed."
             fi
 
             sleep 2
-            status=`ps -ef | grep catalina | grep java | grep -v grep | wc -l | awk '{print $1}'`
-            count=`expr ${count} + 1`
+            status=$(ps -ef | grep catalina | grep java | grep -v grep | wc -l | awk '{print $1}')
+            count=$(expr ${count} + 1)
         done
 
         echo_ "tomcat start..."
@@ -2429,7 +2429,7 @@ tomcat_start() {
 
 process_stop_all() {
     if [ "${HAS_JAR}" == "TRUE" ]; then
-        PID=`ps -ef | grep "[j]ava" | grep "[-]jar" | awk '{print $2}'`
+        PID=$(ps -ef | grep "[j]ava" | grep "[-]jar" | awk '{print $2}')
         if [ "${PID}" != "" ]; then
             kill -9 ${PID}
             echo_ "killed (${PID})"
@@ -2438,7 +2438,7 @@ process_stop_all() {
 }
 
 process_stop() {
-    PID=`ps -ef | grep "[${ARTIFACT_ID:0:1}]""${ARTIFACT_ID:1}" | grep "[-]jar" | awk '{print $2}'`
+    PID=$(ps -ef | grep "[${ARTIFACT_ID:0:1}]""${ARTIFACT_ID:1}" | grep "[-]jar" | awk '{print $2}')
     if [ "${PID}" != "" ]; then
         kill -9 ${PID}
         echo_ "killed (${PID})"
@@ -2448,7 +2448,7 @@ process_stop() {
 process_start() {
     java -jar ${JAR_OPTS} ${DEPLOY_PATH}/${ARTIFACT_ID}.${PACKAGING} >> /dev/null &
 
-    PID=`ps -ef | grep "[${ARTIFACT_ID:0:1}]""${ARTIFACT_ID:1}" | grep "[-]jar" | awk '{print $2}'`
+    PID=$(ps -ef | grep "[${ARTIFACT_ID:0:1}]""${ARTIFACT_ID:1}" | grep "[-]jar" | awk '{print $2}')
     if [ "${PID}" != "" ]; then
         echo_ "startup (${PID})"
     fi
