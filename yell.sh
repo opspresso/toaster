@@ -14,7 +14,7 @@ function get_my_id() {
       exit 1
     fi
 
-    echo "MY_ID=${MY_ID}" >> ${CONFIG}
+    echo "MY_ID=${MY_ID}" >> "${CONFIG}"
   fi
 }
 
@@ -27,12 +27,12 @@ function get_up_id() {
       UP_ID="${MY_ID}"
     fi
 
-    echo "UP_ID=${UP_ID}" >> ${CONFIG}
+    echo "UP_ID=${UP_ID}" >> "${CONFIG}"
   fi
 }
 
 function ch_now_dir() {
-  cd ${NOW_DIR}
+  cd "${NOW_DIR}"
 }
 
 function ch_app_dir() {
@@ -40,10 +40,10 @@ function ch_app_dir() {
     exit 1
   fi
 
-  cd ${NOW_DIR}/${PRJ}
+  cd "${NOW_DIR}/${PRJ}"
 
-  if [ -f ${BCH} ]; then
-    read BRANCH < ${BCH}
+  if [ -f "${BCH}" ]; then
+    read BRANCH < "${BCH}"
   fi
 
   if [ "${BRANCH}" == "" ]; then
@@ -52,12 +52,12 @@ function ch_app_dir() {
 }
 
 function rm_app_dir() {
-  rm -rf ${NOW_DIR}/${PRJ}
-  rm -rf ${YEL_DIR}/${PRJ}.*
+  rm -rf "${NOW_DIR}/${PRJ}"
+  rm -rf "${YEL_DIR}/${PRJ}.*"
 }
 
 function git_clone() {
-  git clone git@github.com:${MY_ID}/${APP}.git ${PRJ}
+  git clone "git@github.com:${MY_ID}/${APP}.git" "${PRJ}"
 
   if [ ! -d "${NOW_DIR}/${PRJ}" ]; then
     exit 1
@@ -66,7 +66,7 @@ function git_clone() {
   ch_app_dir
 
   if [ "${MY_ID}" != "${UP_ID}" ]; then
-    git remote add --track master upstream git@github.com:${UP_ID}/${APP}.git
+    git remote add --track master upstream "git@github.com:${UP_ID}/${APP}.git"
   fi
 
   git branch -v
@@ -85,16 +85,16 @@ function git_commit() {
 
 function git_pull() {
   git branch -v
-  git pull origin ${BRANCH}
+  git pull origin "${BRANCH}"
 
   if [ "${MY_ID}" != "${UP_ID}" ]; then
-    git pull upstream ${BRANCH}
+    git pull upstream "${BRANCH}"
   fi
 }
 
 function git_push() {
   git branch -v
-  git push origin ${BRANCH}
+  git push origin "${BRANCH}"
 }
 
 function git_tag() {
@@ -112,22 +112,22 @@ function git_branch() {
     exit 1
   fi
 
-  BRANCH=${MSG}
+  BRANCH="${MSG}"
 
-  git checkout ${BRANCH}
-  echo "${BRANCH}" > ${BCH}
+  git checkout "${BRANCH}"
+  echo "${BRANCH}" > "${BCH}"
 
   git branch -v
 }
 
 ############################################################
 
-APP=`echo $1 | sed -e "s/\///g"`
+APP=$(echo "$1" | sed -e "s/\///g")
 CMD=$2
 MSG=$3
 PRJ=""
 
-NOW_DIR=`pwd`
+NOW_DIR=$(pwd)
 YEL_DIR="${NOW_DIR}/.yell"
 
 CONFIG="${YEL_DIR}/config.sh"
@@ -136,11 +136,11 @@ MY_ID=""
 UP_ID=""
 
 if [ ! -d "${YEL_DIR}" ]; then
-  mkdir ${YEL_DIR}
+  mkdir "${YEL_DIR}"
 fi
 
 if [ -f "${CONFIG}" ]; then
-  . ${CONFIG}
+  . "${CONFIG}"
 fi
 
 if [ "${APP}" == "" ]; then
