@@ -1473,19 +1473,19 @@ version_save() {
         echo_ "--> to  : ${UPLOAD_PATH}"
 
         if [ "${PARAM3}" == "public" ]; then
-            OPTION="--acl public-read" # --quiet
+            OPTION="--quiet --acl public-read" # --quiet
         else
-            OPTION="" # --quiet
+            OPTION="--quiet" # --quiet
         fi
 
-        aws s3 cp "${PACKAGE_PATH}" "${UPLOAD_PATH}" "${OPTION}"
+        aws s3 cp "${PACKAGE_PATH}" "${UPLOAD_PATH}" ${OPTION}
 
         echo_ "package uploaded."
 
         # pom.xml
         POM_FILE="./pom.xml"
         if [ -f "${POM_FILE}" ]; then
-            aws s3 cp "${POM_FILE}" "${UPLOAD_PATH}/${ARTIFACT_ID}-${VERSION}.pom" "${OPTION}"
+            aws s3 cp "${POM_FILE}" "${UPLOAD_PATH}/${ARTIFACT_ID}-${VERSION}.pom" ${OPTION}
 
             echo_ "pom.xml uploaded."
         fi
