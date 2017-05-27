@@ -1467,10 +1467,10 @@ version_save() {
             return 1
         fi
 
-        UPLOAD_PATH="${REPO_PATH}/maven2/${GROUP_PATH}/${ARTIFACT_ID}/${VERSION}/"
+        UPLOAD_PATH="${REPO_PATH}/maven2/${GROUP_PATH}/${ARTIFACT_ID}/${VERSION}"
 
         echo_ "--> from: ${PACKAGE_PATH}"
-        echo_ "--> to  : ${UPLOAD_PATH}"
+        echo_ "--> to  : ${UPLOAD_PATH}/"
 
         if [ "${PARAM3}" == "public" ]; then
             OPTION="--quiet --acl public-read" # --quiet
@@ -1478,14 +1478,14 @@ version_save() {
             OPTION="--quiet" # --quiet
         fi
 
-        aws s3 cp "${PACKAGE_PATH}" "${UPLOAD_PATH}" "${OPTION}"
+        aws s3 cp "${PACKAGE_PATH}" "${UPLOAD_PATH}/" ${OPTION}
 
         echo_ "package uploaded."
 
         # pom.xml
         POM_FILE="./pom.xml"
         if [ -f "${POM_FILE}" ]; then
-            aws s3 cp "${POM_FILE}" "${UPLOAD_PATH}/${ARTIFACT_ID}-${VERSION}.pom" "${OPTION}"
+            aws s3 cp "${POM_FILE}" "${UPLOAD_PATH}/${ARTIFACT_ID}-${VERSION}.pom" ${OPTION}
 
             echo_ "pom.xml uploaded."
         fi
