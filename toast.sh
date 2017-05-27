@@ -1473,9 +1473,9 @@ version_save() {
         echo_ "--> to  : ${UPLOAD_PATH}"
 
         if [ "${PARAM3}" == "public" ]; then
-            OPTION="--quiet --grants read=uri=http://acs.amazonaws.com/groups/global/AllUsers" # --quiet
+            OPTION="--acl public-read" # --quiet
         else
-            OPTION="--quiet" # --quiet
+            OPTION="" # --quiet
         fi
 
         aws s3 cp "${PACKAGE_PATH}" "${UPLOAD_PATH}" "${OPTION}"
