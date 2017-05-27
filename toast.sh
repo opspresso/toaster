@@ -1473,7 +1473,7 @@ version_save() {
         echo_ "--> to  : ${UPLOAD_PATH}"
 
         if [ "${PARAM3}" == "public" ]; then
-            OPTION="--quiet --acl public-read" # --quiet
+            OPTION="--quiet --grants read=uri=http://acs.amazonaws.com/groups/global/AllUsers" # --quiet
         else
             OPTION="--quiet" # --quiet
         fi
