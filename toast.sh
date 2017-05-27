@@ -1480,12 +1480,15 @@ version_save() {
 
         aws s3 cp "${PACKAGE_PATH}" "${UPLOAD_PATH}" "${OPTION}"
 
+        echo_ "package uploaded."
+
         # pom.xml
+        POM_FILE="./pom.xml"
         if [ -f "${POM_FILE}" ]; then
             aws s3 cp "${POM_FILE}" "${UPLOAD_PATH}/${ARTIFACT_ID}-${VERSION}.pom" "${OPTION}"
-        fi
 
-        echo_ "package uploaded."
+            echo_ "pom.xml uploaded."
+        fi
     fi
 
     NOTE="$(version_note)"
