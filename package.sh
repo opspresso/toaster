@@ -6,10 +6,7 @@ fi
 
 mkdir target
 
-VERSION=${1}
-if [ "${VERSION}" == "" ]; then
-    VERSION=$(git rev-parse --short HEAD)
-fi
+VERSION=$(git rev-parse --short HEAD)
 
 # toaster.txt
 echo "version=${VERSION}"
