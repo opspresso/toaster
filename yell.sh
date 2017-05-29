@@ -1,7 +1,7 @@
 #!/bin/bash
 
 function usage() {
-    echo "Usage: $0 {name} {clone|remove|branch|diff|commit|pull|push|pp}"
+    echo "Usage: $0 {name} {clone|remove|branch|tag|diff|commit|pull|push|pp}"
 }
 
 function yell() {
@@ -206,6 +206,12 @@ function git_branch() {
 
     BRANCH="${MSG}"
 
+    if [ "${TAG}" != "" ]; then
+        if [ "${BRANCH}" != "${TAG}" ]; then
+            git branch "${BRANCH}" "${TAG}"
+        fi
+    fi
+
     git checkout "${BRANCH}"
     echo "${BRANCH}" > "${BCH}"
 
@@ -217,6 +223,7 @@ function git_branch() {
 APP=$(echo "$1" | sed -e "s/\///g")
 CMD="$2"
 MSG="$3"
+TAG="$4"
 
 PROJECT=""
 BRANCH=""
