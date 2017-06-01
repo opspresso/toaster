@@ -43,9 +43,9 @@ curl -s toast.sh/install | bash
                     <pre>
 #!/bin/bash
 
-runuser -l ec2-user -c 'curl -s toast.sh/install | bash'
+runuser -l {user} -c 'curl -s toast.sh/install | bash'
 
-runuser -l ec2-user -c '~/toaster/toast.sh auto {fleet} {phase} {org} {token}'</pre>
+runuser -l {user} -c '~/toaster/toast.sh auto {fleet} {phase} {org} {token}'</pre>
                 </div>
                 <div class="x_content">
                         <pre>
