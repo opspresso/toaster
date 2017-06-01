@@ -1,15 +1,23 @@
 #!/bin/bash
 
+success() {
+    echo -e "$(tput setaf 2)$1$(tput sgr0)"
+}
+
+warning() {
+    echo -e "$(tput setaf 1)$1$(tput sgr0)"
+}
+
 # root
 #if [ "${HOME}" == "/root" ]; then
-#    echo -e "Not supported ROOT."
+#    warning "Not supported ROOT."
 #    exit 1
 #fi
 
 # linux
-OS_NAME=$(uname)
+OS_NAME="$(uname)"
+OS_FULL="$(uname -a)"
 if [ "${OS_NAME}" == "Linux" ]; then
-    OS_FULL=$(uname -a)
     if [ $(echo "${OS_FULL}" | grep -c "amzn1") -gt 0 ]; then
         OS_TYPE="amzn1"
     elif [ $(echo "${OS_FULL}" | grep -c "el6") -gt 0 ]; then
@@ -21,15 +29,13 @@ if [ "${OS_NAME}" == "Linux" ]; then
     elif [ $(echo "${OS_FULL}" | grep -c "coreos") -gt 0 ]; then
         OS_TYPE="coreos"
     fi
-else
-    if [ "${OS_NAME}" == "Darwin" ]; then
-        OS_TYPE="${OS_NAME}"
-    fi
+elif [ "${OS_NAME}" == "Darwin" ]; then
+    OS_TYPE="${OS_NAME}"
 fi
 
 if [ "${OS_TYPE}" == "" ]; then
-    uname -a
-    echo -e "Not supported OS. [${OS_NAME}][${OS_TYPE}]"
+    warning "${OS_FULL}"
+    warning "Not supported OS. [${OS_NAME}][${OS_TYPE}]"
     exit 1
 fi
 
@@ -43,7 +49,7 @@ pushd "${HOME}"
 wget -q -N -P /tmp ${REPO}/toaster.txt
 
 if [ ! -f /tmp/toaster.txt ]; then
-    echo -e "Can not download. [version]"
+    warning "Can not download. [version]"
     exit 1
 fi
 
@@ -52,7 +58,7 @@ if [ -f toaster/.version.txt ]; then
     OLD="$(cat toaster/.version.txt)"
 
     if [ "${NEW}" == "${OLD}" ]; then
-        echo -e "Already have latest version. [${OLD}]"
+        success "Already have latest version. [${OLD}]"
         exit 0
     fi
 
@@ -65,7 +71,7 @@ fi
 wget -q -N -P /tmp "${REPO}/toaster.zip"
 
 if [ ! -f /tmp/toaster.zip ]; then
-    echo -e "Can not download. [toast.sh]"
+    warning "Can not download. [toast.sh]"
     exit 1
 fi
 
@@ -78,4 +84,4 @@ cp -rf /tmp/toaster.txt toaster/.version.txt
 popd
 
 # done
-echo -e "${MSG}"
+success "${MSG}"
