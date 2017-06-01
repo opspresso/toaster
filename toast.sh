@@ -839,7 +839,7 @@ init_aws() {
     fi
 
     # aws cli
-    if ! command -v aws > /dev/null; then
+    if [ ! command -v aws > /dev/null ]; then
         if [ ! -f "${SHELL_DIR}/.config_aws" ]; then
             echo_ "init aws cli..."
 
