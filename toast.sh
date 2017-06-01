@@ -506,12 +506,10 @@ config_auto() {
     # port
     if [ -r /etc/ssh/sshd_config ]; then
         SSH=$(cat /etc/ssh/sshd_config | grep -E ^\#?Port)
-    else
-        SSH=$(${SUDO} cat /etc/ssh/sshd_config | grep -E ^\#?Port)
-    fi
-    if [ "${SSH}" != "" ]; then
-        ARR=(${SSH})
-        PORT="${ARR[1]}"
+        if [ "${SSH}" != "" ]; then
+            ARR=(${SSH})
+            PORT="${ARR[1]}"
+        fi
     fi
 
     # .toast
