@@ -17,12 +17,6 @@ warning() {
 
 ################################################################################
 
-# root
-if [ "${HOME}" == "/root" ]; then
-    warning "Not supported ROOT."
-    #exit 1
-fi
-
 # linux
 OS_NAME="$(uname)"
 OS_FULL="$(uname -a)"
@@ -46,6 +40,12 @@ if [ "${OS_TYPE}" == "" ]; then
     warning "${OS_FULL}"
     warning "Not supported OS. [${OS_NAME}][${OS_TYPE}]"
     exit 1
+fi
+
+# root
+if [ "${HOME}" == "/root" ]; then
+    warning "Not supported ROOT."
+    #exit 1
 fi
 
 SUDO=""
