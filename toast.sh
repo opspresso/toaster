@@ -397,7 +397,7 @@ log() {
             log_webapp
             ;;
         *)
-            log_cron
+            log_reduce
     esac
 }
 
@@ -2322,16 +2322,14 @@ connect() {
 }
 
 log_tomcat() {
-    tail -f -n 500 "${TOMCAT_DIR}/logs/catalina.out"
+    tail -f -n 500 ${TOMCAT_DIR}/logs/catalina.out
 }
 
 log_webapp() {
-    TODAY=$(date +%Y-%m-%d)
-
-    tail -f -n 500 "${SITE_DIR}/${PARAM1}/application/logs/log-${TODAY}.php"
+    tail -f -n 500 ${LOGS_DIR}/*
 }
 
-log_cron() {
+log_reduce() {
     find ${LOGS_DIR}/** -type f -mtime +10 | xargs gzip
     find ${LOGS_DIR}/** -type f -mtime +20 | xargs rm -rf
 }
