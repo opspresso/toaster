@@ -98,7 +98,9 @@ function get_cmd() {
 
 function get_provider() {
     if [ "${PROVIDER}" == "" ]; then
-        echo "Please enter your provider no. [1. github.com 2. bitbucket.org]"
+        echo "Please enter provider no."
+        echo " 1. github.com"
+        echo " 2. bitbucket.org"
         read PROVIDER
 
         if [ "${PROVIDER}" == "1" ]; then
