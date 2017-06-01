@@ -861,7 +861,7 @@ init_aws() {
     fi
 
     echo_bar
-    echo_ "$(aws --version)"
+    echo_ "$(/usr/bin/aws --version)"
     echo_bar
 }
 
