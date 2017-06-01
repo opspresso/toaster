@@ -37,7 +37,7 @@ fi
 
 # root
 if [ "${HOME}" == "/root" ]; then
-    warning "Not supported ROOT."
+    warning "ROOT account is not supported."
     #exit 1
 fi
 
