@@ -4,26 +4,16 @@ success() {
     echo -e "$(tput setaf 2)$1$(tput sgr0)"
 }
 
-inform() {
-    echo -e "$(tput setaf 6)$1$(tput sgr0)"
-}
-
 warning() {
     echo -e "$(tput setaf 1)$1$(tput sgr0)"
 }
 
 ################################################################################
 
-# root
-if [ "${HOME}" == "/root" ]; then
-    warning "Not supported ROOT."
-    exit 1
-fi
-
 # linux
-OS_NAME=$(uname)
+OS_NAME="$(uname)"
+OS_FULL="$(uname -a)"
 if [ "${OS_NAME}" == "Linux" ]; then
-    OS_FULL=$(uname -a)
     if [ $(echo "${OS_FULL}" | grep -c "amzn1") -gt 0 ]; then
         OS_TYPE="amzn1"
     elif [ $(echo "${OS_FULL}" | grep -c "el6") -gt 0 ]; then
@@ -32,18 +22,26 @@ if [ "${OS_NAME}" == "Linux" ]; then
         OS_TYPE="el7"
     elif [ $(echo "${OS_FULL}" | grep -c "generic") -gt 0 ]; then
         OS_TYPE="generic"
+    elif [ $(echo "${OS_FULL}" | grep -c "coreos") -gt 0 ]; then
+        OS_TYPE="coreos"
     fi
-else
-    if [ "${OS_NAME}" == "Darwin" ]; then
-        OS_TYPE="${OS_NAME}"
-    fi
+elif [ "${OS_NAME}" == "Darwin" ]; then
+    OS_TYPE="${OS_NAME}"
 fi
 
 if [ "${OS_TYPE}" == "" ]; then
-    uname -a
+    warning "${OS_FULL}"
     warning "Not supported OS. [${OS_NAME}][${OS_TYPE}]"
     exit 1
 fi
+
+# root
+if [ "${HOME}" == "/root" ]; then
+    warning "Not supported ROOT."
+    #exit 1
+fi
+
+################################################################################
 
 REPO="http://toast.sh"
 

@@ -1,17 +1,12 @@
 #!/bin/bash
 
 echo_() {
-    echo "$1"
+    echo -e "$1"
     echo "$1" >> /tmp/toast.log
 }
 
 success() {
     echo -e "$(tput setaf 2)$1$(tput sgr0)"
-    echo "$1" >> /tmp/toast.log
-}
-
-inform() {
-    echo -e "$(tput setaf 6)$1$(tput sgr0)"
     echo "$1" >> /tmp/toast.log
 }
 
@@ -22,16 +17,10 @@ warning() {
 
 ################################################################################
 
-# root
-if [ "${HOME}" == "/root" ]; then
-    warning "Not supported ROOT."
-    exit 1
-fi
-
 # linux
-OS_NAME=$(uname)
+OS_NAME="$(uname)"
+OS_FULL="$(uname -a)"
 if [ "${OS_NAME}" == "Linux" ]; then
-    OS_FULL=$(uname -a)
     if [ $(echo "${OS_FULL}" | grep -c "amzn1") -gt 0 ]; then
         OS_TYPE="amzn1"
     elif [ $(echo "${OS_FULL}" | grep -c "el6") -gt 0 ]; then
@@ -40,17 +29,28 @@ if [ "${OS_NAME}" == "Linux" ]; then
         OS_TYPE="el7"
     elif [ $(echo "${OS_FULL}" | grep -c "generic") -gt 0 ]; then
         OS_TYPE="generic"
+    elif [ $(echo "${OS_FULL}" | grep -c "coreos") -gt 0 ]; then
+        OS_TYPE="coreos"
     fi
-else
-    if [ "${OS_NAME}" == "Darwin" ]; then
-        OS_TYPE="${OS_NAME}"
-    fi
+elif [ "${OS_NAME}" == "Darwin" ]; then
+    OS_TYPE="${OS_NAME}"
 fi
 
 if [ "${OS_TYPE}" == "" ]; then
-    echo_ "$(uname -a)"
+    warning "${OS_FULL}"
     warning "Not supported OS. [${OS_NAME}][${OS_TYPE}]"
     exit 1
+fi
+
+# root
+if [ "${HOME}" == "/root" ]; then
+    warning "Not supported ROOT."
+    #exit 1
+fi
+
+SUDO=""
+if [ "${HOME}" != "/root" ]; then
+    SUDO="sudo"
 fi
 
 ################################################################################
@@ -78,8 +78,6 @@ fi
 if [ "${ORG}" != "" ]; then
     TOAST_URL="http://${ORG}.toast.sh"
 fi
-
-SUDO="sudo"
 
 UUID="$(curl -s http://instance-data/latest/meta-data/instance-id)"
 USER="$(whoami)"
