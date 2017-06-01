@@ -1431,16 +1431,15 @@ version_save() {
         return 1
     fi
 
-    if [ "${VERSION}" != "0.0.0" ]; then
-        echo_ "version tag... [${VERSION}]"
+    if [ "${PHASE}" == "build" ]; then
+        if [ "${VERSION}" != "0.0.0" ]; then
+            echo_ "version tag... [${VERSION}]"
 
-        DATE=$(date +%Y-%m-%d" "%H:%M)
+            DATE=$(date "+%Y-%m-%d %H:%M")
 
-        git config --global user.email "toast@yanolja.com"
-        git config --global user.name "toast"
-
-        git tag -a "${VERSION}" -m "at ${DATE} by toast"
-        git push origin "${VERSION}"
+            git tag -a "${VERSION}" -m "at ${DATE} by toast"
+            git push origin "${VERSION}"
+        fi
     fi
 
     if [ "${PARAM3}" != "none" ]; then
