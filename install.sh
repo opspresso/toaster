@@ -8,11 +8,13 @@ warning() {
     echo -e "$(tput setaf 1)$1$(tput sgr0)"
 }
 
+################################################################################
+
 # root
-#if [ "${HOME}" == "/root" ]; then
-#    warning "Not supported ROOT."
-#    exit 1
-#fi
+if [ "${HOME}" == "/root" ]; then
+    warning "Not supported ROOT."
+    #exit 1
+fi
 
 # linux
 OS_NAME="$(uname)"
