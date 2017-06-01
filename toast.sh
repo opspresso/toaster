@@ -1431,7 +1431,7 @@ version_save() {
         return 1
     fi
 
-    if [ "${PHASE}" == "build" ]; then
+    #if [ "${PHASE}" == "build" ]; then
         if [ "${VERSION}" != "0.0.0" ]; then
             echo_ "version tag... [${VERSION}]"
 
@@ -1440,7 +1440,7 @@ version_save() {
             git tag -a "${VERSION}" -m "at ${DATE} by toast"
             git push origin "${VERSION}"
         fi
-    fi
+    #fi
 
     if [ "${PARAM3}" != "none" ]; then
         echo_ "package upload... [${PARAM2}]"
