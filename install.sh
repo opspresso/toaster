@@ -1,24 +1,10 @@
 #!/bin/bash
 
-success() {
-    echo -e "$(tput setaf 2)$1$(tput sgr0)"
-}
-
-inform() {
-    echo -e "$(tput setaf 6)$1$(tput sgr0)"
-}
-
-warning() {
-    echo -e "$(tput setaf 1)$1$(tput sgr0)"
-}
-
-################################################################################
-
 # root
-if [ "${HOME}" == "/root" ]; then
-    warning "Not supported ROOT."
-    exit 1
-fi
+#if [ "${HOME}" == "/root" ]; then
+#    echo -e "Not supported ROOT."
+#    exit 1
+#fi
 
 # linux
 OS_NAME=$(uname)
@@ -41,7 +27,7 @@ fi
 
 if [ "${OS_TYPE}" == "" ]; then
     uname -a
-    warning "Not supported OS. [${OS_NAME}][${OS_TYPE}]"
+    echo -e "Not supported OS. [${OS_NAME}][${OS_TYPE}]"
     exit 1
 fi
 
@@ -55,7 +41,7 @@ pushd "${HOME}"
 wget -q -N -P /tmp ${REPO}/toaster.txt
 
 if [ ! -f /tmp/toaster.txt ]; then
-    warning "Can not download. [version]"
+    echo -e "Can not download. [version]"
     exit 1
 fi
 
@@ -64,7 +50,7 @@ if [ -f toaster/.version.txt ]; then
     OLD="$(cat toaster/.version.txt)"
 
     if [ "${NEW}" == "${OLD}" ]; then
-        success "Already have latest version. [${OLD}]"
+        echo -e "Already have latest version. [${OLD}]"
         exit 0
     fi
 
@@ -77,7 +63,7 @@ fi
 wget -q -N -P /tmp "${REPO}/toaster.zip"
 
 if [ ! -f /tmp/toaster.zip ]; then
-    warning "Can not download. [toast.sh]"
+    echo -e "Can not download. [toast.sh]"
     exit 1
 fi
 
@@ -90,4 +76,4 @@ cp -rf /tmp/toaster.txt toaster/.version.txt
 popd
 
 # done
-success "${MSG}"
+echo -e "${MSG}"
