@@ -839,27 +839,24 @@ init_aws() {
     fi
 
     # aws cli
-    AWS="$(which aws)"
-    if [ "${AWS}" == "" ]; then
-        if [ ! -f "${SHELL_DIR}/.config_aws" ]; then
-            echo_ "init aws cli..."
+    if [ ! -f "${SHELL_DIR}/.config_aws" ]; then
+        echo_ "init aws cli..."
 
-            wget -q -N https://s3.amazonaws.com/aws-cli/awscli-bundle.zip
+        wget -q -N https://s3.amazonaws.com/aws-cli/awscli-bundle.zip
 
-            if [ -f "${HOME}/awscli-bundle.zip" ]; then
-                unzip -q awscli-bundle.zip
+        if [ -f "${HOME}/awscli-bundle.zip" ]; then
+            unzip -q awscli-bundle.zip
 
-                AWS_HOME="/usr/local/aws"
+            AWS_HOME="/usr/local/aws"
 
-                ${SUDO} ./awscli-bundle/install -i ${AWS_HOME} -b /usr/bin/aws
+            ${SUDO} ./awscli-bundle/install -i ${AWS_HOME} -b /usr/bin/aws
 
-                add_path "${AWS_HOME}/bin"
+            add_path "${AWS_HOME}/bin"
 
-                rm -rf awscli-bundle
-                rm -rf awscli-bundle.zip
+            rm -rf awscli-bundle
+            rm -rf awscli-bundle.zip
 
-                touch "${SHELL_DIR}/.config_aws"
-            fi
+            touch "${SHELL_DIR}/.config_aws"
         fi
     fi
 
