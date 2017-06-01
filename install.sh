@@ -18,6 +18,8 @@ if [ "${OS_NAME}" == "Linux" ]; then
         OS_TYPE="el7"
     elif [ $(echo "${OS_FULL}" | grep -c "generic") -gt 0 ]; then
         OS_TYPE="generic"
+    elif [ $(echo "${OS_FULL}" | grep -c "coreos") -gt 0 ]; then
+        OS_TYPE="coreos"
     fi
 else
     if [ "${OS_NAME}" == "Darwin" ]; then
