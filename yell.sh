@@ -106,7 +106,7 @@ function get_provider() {
         elif [ "${PROVIDER}" == "2" ]; then
             PROVIDER="bitbucket.org"
         else
-            echo "provider no is null."
+            echo "provider is empty."
             exit 1
         fi
 
@@ -120,7 +120,7 @@ function get_my_id() {
         read MY_ID
 
         if [ "${MY_ID}" == "" ]; then
-            echo "${PROVIDER} account is null."
+            echo "${PROVIDER} account is empty."
             exit 1
         fi
 
