@@ -44,7 +44,7 @@ fi
 
 # root
 if [ "${HOME}" == "/root" ]; then
-    warning "Not supported ROOT."
+    warning "ROOT account is not supported."
     #exit 1
 fi
 
@@ -506,12 +506,10 @@ config_auto() {
     # port
     if [ -r /etc/ssh/sshd_config ]; then
         SSH=$(cat /etc/ssh/sshd_config | grep -E ^\#?Port)
-    else
-        SSH=$(${SUDO} cat /etc/ssh/sshd_config | grep -E ^\#?Port)
-    fi
-    if [ "${SSH}" != "" ]; then
-        ARR=(${SSH})
-        PORT="${ARR[1]}"
+        if [ "${SSH}" != "" ]; then
+            ARR=(${SSH})
+            PORT="${ARR[1]}"
+        fi
     fi
 
     # .toast
@@ -839,31 +837,29 @@ init_aws() {
     fi
 
     # aws cli
-    if [ ! command -v aws > /dev/null ]; then
-        if [ ! -f "${SHELL_DIR}/.config_aws" ]; then
-            echo_ "init aws cli..."
+    if [ ! -f "${SHELL_DIR}/.config_aws" ]; then
+        echo_ "init aws cli..."
 
-            wget -q -N https://s3.amazonaws.com/aws-cli/awscli-bundle.zip
+        wget -q -N https://s3.amazonaws.com/aws-cli/awscli-bundle.zip
 
-            if [ -f "${HOME}/awscli-bundle.zip" ]; then
-                unzip -q awscli-bundle.zip
+        if [ -f "${HOME}/awscli-bundle.zip" ]; then
+            unzip -q awscli-bundle.zip
 
-                AWS_HOME="/usr/local/aws"
+            AWS_HOME="/usr/local/aws"
 
-                ${SUDO} ./awscli-bundle/install -i ${AWS_HOME} -b /usr/bin/aws
+            ${SUDO} ./awscli-bundle/install -i ${AWS_HOME} -b /usr/bin/aws
 
-                add_path "${AWS_HOME}/bin"
+            add_path "${AWS_HOME}/bin"
 
-                rm -rf awscli-bundle
-                rm -rf awscli-bundle.zip
+            rm -rf awscli-bundle
+            rm -rf awscli-bundle.zip
 
-                touch "${SHELL_DIR}/.config_aws"
-            fi
+            touch "${SHELL_DIR}/.config_aws"
         fi
     fi
 
     echo_bar
-    echo_ "$(aws --version)"
+    echo_ "$(/usr/bin/aws --version)"
     echo_bar
 }
 
