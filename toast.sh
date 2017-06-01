@@ -48,6 +48,11 @@ if [ "${OS_TYPE}" == "" ]; then
     exit 1
 fi
 
+SUDO=""
+if [ "${HOME}" != "/root" ]; then
+    SUDO="sudo"
+fi
+
 ################################################################################
 
 SHELL_DIR=$(dirname "$0")
@@ -73,8 +78,6 @@ fi
 if [ "${ORG}" != "" ]; then
     TOAST_URL="http://${ORG}.toast.sh"
 fi
-
-SUDO="sudo"
 
 UUID="$(curl -s http://instance-data/latest/meta-data/instance-id)"
 USER="$(whoami)"
