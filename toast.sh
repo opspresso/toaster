@@ -2327,7 +2327,7 @@ log_webapp() {
 
 log_reduce() {
     find ${LOGS_DIR}/** -type f -mtime +10 | xargs gzip
-    find ${LOGS_DIR}/** -type f -mtime +20 | xargs rm -rf
+    find ${LOGS_DIR}/** -type f -mtime +15 | xargs rm -rf
 }
 
 service_update() {
