@@ -96,13 +96,33 @@ function get_cmd() {
     esac
 }
 
+function get_provider() {
+    if [ "${PROVIDER}" == "" ]; then
+        echo "Please enter provider no."
+        echo " 1. github.com"
+        echo " 2. bitbucket.org"
+        read PROVIDER
+
+        if [ "${PROVIDER}" == "1" ]; then
+            PROVIDER="github.com"
+        elif [ "${PROVIDER}" == "2" ]; then
+            PROVIDER="bitbucket.org"
+        else
+            echo "provider is empty."
+            exit 1
+        fi
+
+        echo "PROVIDER=${PROVIDER}" >> "${CONFIG}"
+    fi
+}
+
 function get_my_id() {
     if [ "${MY_ID}" == "" ]; then
-        echo "Please enter your github account. [example:nalbam]"
+        echo "Please enter your ${PROVIDER} account. [example:nalbam]"
         read MY_ID
 
         if [ "${MY_ID}" == "" ]; then
-            echo "github account is null."
+            echo "${PROVIDER} account is empty."
             exit 1
         fi
 
@@ -112,7 +132,7 @@ function get_my_id() {
 
 function get_up_id() {
     if [ "${UP_ID}" == "" ]; then
-        echo "Please enter github upstream account. [default:${MY_ID}]"
+        echo "Please enter ${PROVIDER} upstream account. [default:${MY_ID}]"
         read UP_ID
 
         if [ "${UP_ID}" == "" ]; then
@@ -149,7 +169,7 @@ function rm_app_dir() {
 }
 
 function git_clone() {
-    git clone "git@github.com:${MY_ID}/${APP}.git" "${PROJECT}"
+    git clone "git@${PROVIDER}:${MY_ID}/${APP}.git" "${PROJECT}"
 
     if [ ! -d "${NOW_DIR}/${PROJECT}" ]; then
         exit 1
@@ -158,7 +178,7 @@ function git_clone() {
     ch_app_dir
 
     if [ "${MY_ID}" != "${UP_ID}" ]; then
-        git remote add --track master upstream "git@github.com:${UP_ID}/${APP}.git"
+        git remote add --track master upstream "git@${PROVIDER}:${UP_ID}/${APP}.git"
     fi
 
     git branch -v
@@ -234,11 +254,13 @@ YEL_DIR="${NOW_DIR}/.yell"
 
 CONFIG="${YEL_DIR}/config.sh"
 
+PROVIDER=""
 MY_ID=""
 UP_ID=""
 
 prepare
 
+get_provider
 get_my_id
 get_up_id
 
