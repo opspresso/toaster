@@ -1454,10 +1454,11 @@ version_save() {
 
         PACKAGE_PATH=""
         if [ -d "target" ]; then
-            if [ -f "target/${ARTIFACT_ID}-${VERSION}.war" ]; then
+            if [ -f "target/${ARTIFACT_ID}-${VERSION}.zip" ]; then
+                PACKAGE_PATH="target/${ARTIFACT_ID}-${VERSION}.zip"
+            elif [ -f "target/${ARTIFACT_ID}-${VERSION}.war" ]; then
                 PACKAGE_PATH="target/${ARTIFACT_ID}-${VERSION}.war"
-            fi
-            if [ -f "target/${ARTIFACT_ID}-${VERSION}.jar" ]; then
+            elif [ -f "target/${ARTIFACT_ID}-${VERSION}.jar" ]; then
                 PACKAGE_PATH="target/${ARTIFACT_ID}-${VERSION}.jar"
             fi
         fi
