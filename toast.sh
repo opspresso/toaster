@@ -1513,8 +1513,9 @@ version_docker() {
         mkdir "target/docker"
     fi
 
-    cp -rf Docker* target/docker/
-    cp -rf target/${ARTIFACT_ID}-${VERSION}.${PACKAGE} target/docker/docker.${PACKAGING}
+    cp -rf "Dockerfile" "target/docker/Dockerfile"
+    cp -rf "Dockerrun.aws.json" "target/docker/Dockerrun.aws.json"
+    cp -rf "target/${ARTIFACT_ID}-${VERSION}.${PACKAGE}" "target/docker/docker.${PACKAGING}"
 
     pushd target/docker
 
