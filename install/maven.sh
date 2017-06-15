@@ -33,8 +33,6 @@ download() {
     fi
 
     if [ ! -f ${_FILE} ]; then
-        warning "Can not download : ${URL}"
-
         URL="http://repo.toast.sh/${_PATH}/${_FILE}"
 
         echo_ "download... [${URL}]"

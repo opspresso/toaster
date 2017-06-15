@@ -333,6 +333,9 @@ version() {
         n|next)
             version_next
             ;;
+        d|docker)
+            version_docker
+            ;;
     esac
 }
 
@@ -1373,6 +1376,7 @@ version_parse() {
     ARR_GROUP=($(cat ${POM_FILE} | grep -oP '(?<=groupId>)[^<]+'))
     ARR_ARTIFACT=($(cat ${POM_FILE} | grep -oP '(?<=artifactId>)[^<]+'))
     ARR_VERSION=($(cat ${POM_FILE} | grep -oP '(?<=version>)[^<]+'))
+    ARR_PACKAGING=($(cat ${POM_FILE} | grep -oP '(?<=packaging>)[^<]+'))
 
     if [ "${ARR_GROUP[0]}" == "" ]; then
         warning "Not set groupId."
@@ -1386,11 +1390,13 @@ version_parse() {
     GROUP_ID="${ARR_GROUP[0]}"
     ARTIFACT_ID="${ARR_ARTIFACT[0]}"
     VERSION="${ARR_VERSION[0]}"
+    PACKAGING="${ARR_PACKAGING[0]}"
     PACKAGE="${PARAM2}"
 
     echo_ "groupId=${GROUP_ID}"
     echo_ "artifactId=${ARTIFACT_ID}"
     echo_ "version=${VERSION}"
+    echo_ "packaging=${PACKAGING}"
 
     GROUP_PATH=$(echo "${GROUP_ID}" | sed "s/\./\//")
 }
@@ -1494,6 +1500,26 @@ version_save() {
     if [ "${ARR[0]}" != "OK" ]; then
         warning "Server Error. [${URL}][${RES}]"
     fi
+}
+
+version_docker() {
+    if [ "${ARTIFACT_ID}" == "" ]; then
+        warning "Not set ARTIFACT_ID."
+        return 1
+    fi
+
+    if [ ! -d "target/docker" ]; then
+        mkdir "target/docker"
+    fi
+
+    cp -rf "Dockerfile" "target/docker/Dockerfile"
+    cp -rf "target/${ARTIFACT_ID}-${VERSION}.${PACKAGE}" "target/docker/${ARTIFACT_ID}.${PACKAGING}"
+
+    pushd target/docker
+
+    zip -q -r ../target/${ARTIFACT_ID}-${VERSION} *
+
+    popd
 }
 
 version_replace() {
