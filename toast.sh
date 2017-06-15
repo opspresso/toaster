@@ -1515,7 +1515,7 @@ version_docker() {
 
     cp -rf "Dockerfile" "target/docker/Dockerfile"
     cp -rf "Dockerrun.aws.json" "target/docker/Dockerrun.aws.json"
-    cp -rf "target/${ARTIFACT_ID}-${VERSION}.${PACKAGE}" "target/docker/docker.${PACKAGING}"
+    cp -rf "target/${ARTIFACT_ID}-${VERSION}.${PACKAGING}" "target/docker/docker.${PACKAGING}"
 
     pushd target/docker
 
