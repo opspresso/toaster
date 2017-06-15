@@ -1513,8 +1513,8 @@ version_docker() {
         mkdir "target/docker"
     fi
 
-    cp -rf "Dockerfile" "target/docker/Dockerfile"
-    cp -rf "target/${ARTIFACT_ID}-${VERSION}.${PACKAGE}" "target/docker/docker.${PACKAGING}"
+    cp -rf Docker* target/docker/
+    cp -rf target/${ARTIFACT_ID}-${VERSION}.${PACKAGE} target/docker/docker.${PACKAGING}
 
     pushd target/docker
 
