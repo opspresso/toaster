@@ -1514,11 +1514,11 @@ version_docker() {
     fi
 
     cp -rf "Dockerfile" "target/docker/Dockerfile"
-    cp -rf "target/${ARTIFACT_ID}-${VERSION}.${PACKAGE}" "target/docker/${ARTIFACT_ID}.${PACKAGING}"
+    cp -rf "target/${ARTIFACT_ID}-${VERSION}.${PACKAGE}" "target/docker/docker.${PACKAGING}"
 
     pushd target/docker
 
-    zip -q -r ../docker.zip *
+    zip -q -r ../${ARTIFACT_ID}-${VERSION}.zip *
 
     popd
 }
