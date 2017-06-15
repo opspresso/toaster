@@ -1517,7 +1517,7 @@ version_docker() {
 
     pushd target/docker
 
-    zip -q -r ../target/${ARTIFACT_ID}-${VERSION} *
+    zip -q -r ../${ARTIFACT_ID}-${VERSION} *
 
     popd
 }
