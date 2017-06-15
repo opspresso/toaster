@@ -1508,8 +1508,8 @@ version_docker() {
         return 1
     fi
 
-    if [ ! -d target/docker ]; then
-        mkdir target/docker
+    if [ ! -d "target/docker" ]; then
+        mkdir "target/docker"
     fi
 
     cp -rf "Dockerfile" "target/docker/Dockerfile"
