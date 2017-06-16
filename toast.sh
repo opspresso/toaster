@@ -1439,7 +1439,7 @@ version_save() {
 
     POM_FILE="./pom.xml"
     if [ -f "${POM_FILE}" ]; then
-        cp -rf "${POM_FILE}" "target/${ARTIFACT_ID}-${VERSION}.xml"
+        cp -rf "${POM_FILE}" "target/${ARTIFACT_ID}-${VERSION}.pom"
     fi
 
     if [ "${VERSION}" != "0.0.0" ]; then
@@ -1460,7 +1460,7 @@ version_save() {
         upload_repo "zip"
         upload_repo "war"
         upload_repo "jar"
-        upload_repo "xml"
+        upload_repo "pom"
 
         echo_ "package uploaded."
     fi
