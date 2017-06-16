@@ -1495,6 +1495,8 @@ version_docker() {
     zip -q -r ../${ARTIFACT_ID}-${VERSION}.zip *
 
     popd
+
+    version_save
 }
 
 version_replace() {
