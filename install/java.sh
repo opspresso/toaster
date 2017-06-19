@@ -99,12 +99,12 @@ rm -rf ${FILE}.${EXT}
 
 download "local_policy.jar.bin" "${NAME}"
 if [ -f local_policy.jar.bin ]; then
-    ${SUDO} mv local_policy.jar.bin ${JAVA_HOME}/jre/lib/security/
+    ${SUDO} mv local_policy.jar.bin ${JAVA_HOME}/jre/lib/security/local_policy.jar
 fi
 
 download "US_export_policy.jar.bin" "${NAME}"
 if [ -f US_export_policy.jar.bin ]; then
-    ${SUDO} mv US_export_policy.jar.bin ${JAVA_HOME}/jre/lib/security/
+    ${SUDO} mv US_export_policy.jar.bin ${JAVA_HOME}/jre/lib/security/US_export_policy.jar
 fi
 
 echo_ "JAVA_HOME=${JAVA_HOME}"
