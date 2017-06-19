@@ -47,9 +47,7 @@ REPO="http://toast.sh"
 
 ################################################################################
 
-#pushd "${HOME}"
-
-if [ ! -f ~/toaster ]; then
+if [ ! -d ~/toaster ]; then
     mkdir ~/toaster
 fi
 
@@ -83,16 +81,11 @@ if [ ! -f /tmp/toaster.tar.gz ]; then
     exit 1
 fi
 
-# unzip
-#unzip -q -o /tmp/toaster.zip -d toaster
-
 # install
 tar -zxf /tmp/toaster.zip -C ~/toaster
 
 # cp version
 cp -rf /tmp/toaster.txt ~/toaster/.version.txt
-
-#popd
 
 # done
 success "${MSG}"
