@@ -37,7 +37,7 @@ download() {
 
         echo_ "download... [${URL}]"
 
-        /usr/bin/wget -N ${URL}
+        /usr/bin/curl -O ${URL}
     fi
 }
 
@@ -90,6 +90,6 @@ ${SUDO} mv ${FILE} /usr/local/
 
 ${SUDO} ln -s ${NODE_HOME} /usr/local/node
 
-echo_ "NODE_HOME=${NODE_HOME}"
-
 rm -rf ${FILE}.${EXT}
+
+echo_ "NODE_HOME=${NODE_HOME}"

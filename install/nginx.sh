@@ -37,7 +37,7 @@ download() {
 
         echo_ "download... [${URL}]"
 
-        /usr/bin/wget -N ${URL}
+        /usr/bin/curl -O ${URL}
     fi
 }
 

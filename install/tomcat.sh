@@ -37,7 +37,7 @@ download() {
 
         echo_ "download... [${URL}]"
 
-        /usr/bin/wget -N ${URL}
+        /usr/bin/curl -O ${URL}
     fi
 }
 
@@ -89,6 +89,6 @@ chmod 755 ${TOMCAT_DIR}/bin/*.sh
 
 rm -rf ${TOMCAT_DIR}/webapps/*
 
-echo_ "CATALINA_HOME=${TOMCAT_DIR}"
-
 rm -rf ${FILE}.${EXT}
+
+echo_ "CATALINA_HOME=${TOMCAT_DIR}"
