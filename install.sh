@@ -82,7 +82,7 @@ if [ ! -f /tmp/toaster.tar.gz ]; then
 fi
 
 # install
-tar -zxf /tmp/toaster.zip -C ~/toaster
+tar -zxf /tmp/toaster.tar.gz -C ~/toaster
 
 # cp version
 cp -rf /tmp/toaster.txt ~/toaster/.version.txt
