@@ -47,17 +47,21 @@ REPO="http://toast.sh"
 
 ################################################################################
 
-pushd "${HOME}"
+#pushd "${HOME}"
+
+if [ ! -f ~/toaster ]; then
+    mkdir ~/toaster
+fi
 
 # version
-curl -s -o "/tmp/toaster.txt" "${REPO}/toaster.txt"
+curl -s -o /tmp/toaster.txt ${REPO}/toaster.txt
 
-if [ ! -f "/tmp/toaster.txt" ]; then
+if [ ! -f /tmp/toaster.txt ]; then
     warning "Can not download. [version]"
     exit 1
 fi
 
-if [ -f "~/toaster/.version.txt" ]; then
+if [ -f ~/toaster/.version.txt ]; then
     NEW="$(cat /tmp/toaster.txt)"
     OLD="$(cat ~/toaster/.version.txt)"
 
@@ -72,20 +76,23 @@ else
 fi
 
 # download
-curl -s -o "/tmp/toaster.zip" "${REPO}/toaster.zip"
+curl -s -o /tmp/toaster.tar.gz ${REPO}/toaster.tar.gz
 
-if [ ! -f "/tmp/toaster.zip" ]; then
+if [ ! -f /tmp/toaster.tar.gz ]; then
     warning "Can not download. [toast.sh]"
     exit 1
 fi
 
 # unzip
-unzip -q -o "/tmp/toaster.zip" -d toaster
+#unzip -q -o /tmp/toaster.zip -d toaster
+
+# install
+tar -zxf /tmp/toaster.zip -C ~/toaster
 
 # cp version
-cp -rf "/tmp/toaster.txt" "~/toaster/.version.txt"
+cp -rf /tmp/toaster.txt ~/toaster/.version.txt
 
-popd
+#popd
 
 # done
 success "${MSG}"
