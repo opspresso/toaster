@@ -4,8 +4,9 @@ machine:
 
 dependencies:
   post:
+    - curl -s toast.sh/install | bash
     - ~/toaster/toast.sh config circle local nalbam $TOAST_TOKEN
-    - ~/toaster/toast.sh init master
+    - ~/toaster/toast.sh init slave
 
 compile:
   override:
@@ -19,4 +20,4 @@ deployment:
   production:
     branch: master
     commands:
-      - aws s3 sync target/ s3://toast.sh/ --quiet --acl public-read
+      - ./publish.sh
