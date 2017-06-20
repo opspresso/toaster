@@ -233,6 +233,8 @@ auto() {
 config() {
     echo_toast
 
+    prepare
+
     config_auto
     config_cron
 
@@ -493,6 +495,7 @@ prepare() {
     # /data/site
     make_dir "${SITE_DIR}"
     make_dir "${SITE_DIR}/localhost"
+    make_dir "${SITE_DIR}/cache" 777
     make_dir "${SITE_DIR}/files" 777
     make_dir "${SITE_DIR}/upload" 777
     make_dir "${SITE_DIR}/session" 777
