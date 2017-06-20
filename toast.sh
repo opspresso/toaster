@@ -233,6 +233,8 @@ auto() {
 config() {
     echo_toast
 
+    prepare
+
     config_auto
     config_cron
 
@@ -493,6 +495,7 @@ prepare() {
     # /data/site
     make_dir "${SITE_DIR}"
     make_dir "${SITE_DIR}/localhost"
+    make_dir "${SITE_DIR}/cache" 777
     make_dir "${SITE_DIR}/files" 777
     make_dir "${SITE_DIR}/upload" 777
     make_dir "${SITE_DIR}/session" 777
@@ -1437,6 +1440,11 @@ version_save() {
         return 1
     fi
 
+    POM_FILE="./pom.xml"
+    if [ -f "${POM_FILE}" ]; then
+        cp -rf "${POM_FILE}" "target/${ARTIFACT_ID}-${VERSION}.pom"
+    fi
+
     if [ "${VERSION}" != "0.0.0" ]; then
         echo_ "version tag... [${VERSION}]"
 
@@ -1452,44 +1460,12 @@ version_save() {
     if [ "${PARAM3}" != "none" ]; then
         echo_ "package upload... [${PARAM2}]"
 
-        PACKAGE_PATH=""
-        if [ -d "target" ]; then
-            if [ -f "target/${ARTIFACT_ID}-${VERSION}.zip" ]; then
-                PACKAGE_PATH="target/${ARTIFACT_ID}-${VERSION}.zip"
-            elif [ -f "target/${ARTIFACT_ID}-${VERSION}.war" ]; then
-                PACKAGE_PATH="target/${ARTIFACT_ID}-${VERSION}.war"
-            elif [ -f "target/${ARTIFACT_ID}-${VERSION}.jar" ]; then
-                PACKAGE_PATH="target/${ARTIFACT_ID}-${VERSION}.jar"
-            fi
-        fi
-
-        if [ "${PACKAGE_PATH}" == "" ]; then
-            warning "Not set PACKAGE_PATH."
-            return 1
-        fi
-
-        UPLOAD_PATH="${REPO_PATH}/maven2/${GROUP_PATH}/${ARTIFACT_ID}/${VERSION}"
-
-        echo_ "--> from: ${PACKAGE_PATH}"
-        echo_ "--> to  : ${UPLOAD_PATH}/"
-
-        if [ "${PARAM3}" == "public" ]; then
-            OPTION="--quiet --acl public-read" # --quiet
-        else
-            OPTION="--quiet" # --quiet
-        fi
-
-        aws s3 cp "${PACKAGE_PATH}" "${UPLOAD_PATH}/" ${OPTION}
+        upload_repo "zip"
+        upload_repo "war"
+        upload_repo "jar"
+        upload_repo "pom"
 
         echo_ "package uploaded."
-
-        # pom.xml
-        POM_FILE="./pom.xml"
-        if [ -f "${POM_FILE}" ]; then
-            aws s3 cp "${POM_FILE}" "${UPLOAD_PATH}/${ARTIFACT_ID}-${VERSION}.pom" ${OPTION}
-
-            echo_ "pom.xml uploaded."
-        fi
     fi
 
     NOTE="$(version_note)"
@@ -1522,6 +1498,8 @@ version_docker() {
     zip -q -r ../${ARTIFACT_ID}-${VERSION}.zip *
 
     popd
+
+    version_save
 }
 
 version_replace() {
@@ -1540,6 +1518,29 @@ version_replace() {
 
 version_note() {
     git log --pretty=format:"- %s" --since=12hour | grep -v "\- Merge pull request " | grep -v "\- Merge branch "
+}
+
+upload_repo() {
+    EXT="$1"
+
+    PACKAGE_PATH="target/${ARTIFACT_ID}-${VERSION}.${EXT}"
+
+    if [ ! -f "${PACKAGE_PATH}" ]; then
+        return
+    fi
+
+    UPLOAD_PATH="${REPO_PATH}/maven2/${GROUP_PATH}/${ARTIFACT_ID}/${VERSION}/"
+
+    echo_ "--> from: ${PACKAGE_PATH}"
+    echo_ "--> to  : ${UPLOAD_PATH}"
+
+    if [ "${PARAM3}" == "public" ]; then
+        OPTION="--quiet --acl public-read" # --quiet
+    else
+        OPTION="--quiet" # --quiet
+    fi
+
+    aws s3 cp "${PACKAGE_PATH}" "${UPLOAD_PATH}" ${OPTION}
 }
 
 nginx_dir() {

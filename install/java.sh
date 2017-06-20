@@ -37,7 +37,7 @@ download() {
 
         echo_ "download... [${URL}]"
 
-        /usr/bin/wget -N ${URL}
+        /usr/bin/curl -O ${URL}
     fi
 }
 
@@ -95,8 +95,16 @@ ${SUDO} mv ${JAVA_DIR} /usr/local/
 ${SUDO} rm -rf /usr/local/java
 ${SUDO} ln -s ${JAVA_HOME} /usr/local/java
 
-${SUDO} cp -rf ${SHELL_DIR}/jce8/* ${JAVA_HOME}/jre/lib/security/
+rm -rf ${FILE}.${EXT}
+
+download "local_policy.jar.bin" "${NAME}"
+if [ -f local_policy.jar.bin ]; then
+    ${SUDO} mv local_policy.jar.bin ${JAVA_HOME}/jre/lib/security/local_policy.jar
+fi
+
+download "US_export_policy.jar.bin" "${NAME}"
+if [ -f US_export_policy.jar.bin ]; then
+    ${SUDO} mv US_export_policy.jar.bin ${JAVA_HOME}/jre/lib/security/US_export_policy.jar
+fi
 
 echo_ "JAVA_HOME=${JAVA_HOME}"
-
-rm -rf ${FILE}.${EXT}

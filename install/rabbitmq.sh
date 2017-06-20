@@ -37,7 +37,7 @@ download() {
 
         echo_ "download... [${URL}]"
 
-        /usr/bin/wget -N ${URL}
+        /usr/bin/curl -O ${URL}
     fi
 }
 
@@ -92,8 +92,8 @@ ${SUDO} yum install -y erlang socat
 # rabbitmq-server
 ${SUDO} rpm -Uvh ${FILE}.${EXT}
 
+rm -rf ${FILE}.${EXT}
+
 # delayed_message_exchange
 URL="http://www.rabbitmq.com/community-plugins/v3.6.x/rabbitmq_delayed_message_exchange-0.0.1.ez"
-${SUDO} wget -q -N -P "${RABBIT_HOME}/plugins/" "${URL}"
-
-rm -rf ${FILE}.${EXT}
+${SUDO} curl -o "${RABBIT_HOME}/plugins/rabbitmq_delayed_message_exchange-0.0.1.ez" "${URL}"

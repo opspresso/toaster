@@ -12,11 +12,11 @@ VERSION=$(git rev-parse --short HEAD)
 echo "version=${VERSION}"
 echo "${VERSION}" > target/toaster.txt
 
-# toaster.zip
-zip -q -r target/toaster ./extra ./install ./package ./*.sh
+# web
+cp -rf web/* target/
 
 # install.sh
 cp -rf install.sh target/install
 
-# web
-cp -rf web/* target/
+# toaster.tar.gz
+tar -czf target/toaster.tar.gz ./extra ./install ./package ./*.sh

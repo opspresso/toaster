@@ -37,7 +37,7 @@ download() {
 
         echo_ "download... [${URL}]"
 
-        /usr/bin/wget -N ${URL}
+        /usr/bin/curl -O ${URL}
     fi
 }
 
@@ -87,6 +87,6 @@ tar xzf ${FILE}.${EXT}
 
 mv apache-${NAME}-${VERSION} ${MAVEN_DIR}
 
-echo_ "MAVEN_HOME=${MAVEN_DIR}"
-
 rm -rf ${FILE}.${EXT}
+
+echo_ "MAVEN_HOME=${MAVEN_DIR}"

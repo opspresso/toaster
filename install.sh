@@ -47,19 +47,21 @@ REPO="http://toast.sh"
 
 ################################################################################
 
-pushd "${HOME}"
+if [ ! -d ~/toaster ]; then
+    mkdir ~/toaster
+fi
 
 # version
-wget -q -N -P /tmp ${REPO}/toaster.txt
+curl -s -o /tmp/toaster.txt ${REPO}/toaster.txt
 
 if [ ! -f /tmp/toaster.txt ]; then
     warning "Can not download. [version]"
     exit 1
 fi
 
-if [ -f toaster/.version.txt ]; then
+if [ -f ~/toaster/.version.txt ]; then
     NEW="$(cat /tmp/toaster.txt)"
-    OLD="$(cat toaster/.version.txt)"
+    OLD="$(cat ~/toaster/.version.txt)"
 
     if [ "${NEW}" == "${OLD}" ]; then
         success "Already have latest version. [${OLD}]"
@@ -72,20 +74,18 @@ else
 fi
 
 # download
-wget -q -N -P /tmp "${REPO}/toaster.zip"
+curl -s -o /tmp/toaster.tar.gz ${REPO}/toaster.tar.gz
 
-if [ ! -f /tmp/toaster.zip ]; then
+if [ ! -f /tmp/toaster.tar.gz ]; then
     warning "Can not download. [toast.sh]"
     exit 1
 fi
 
-# unzip
-unzip -q -o /tmp/toaster.zip -d toaster
+# install
+tar -zxf /tmp/toaster.tar.gz -C ~/toaster
 
 # cp version
-cp -rf /tmp/toaster.txt toaster/.version.txt
-
-popd
+cp -rf /tmp/toaster.txt ~/toaster/.version.txt
 
 # done
 success "${MSG}"
