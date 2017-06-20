@@ -2,11 +2,6 @@ machine:
   java:
     version: oraclejdk8
 
-dependencies:
-  post:
-    - ~/toaster/toast.sh config circle local nalbam $TOAST_TOKEN
-    - ~/toaster/toast.sh init master
-
 compile:
   override:
     - ./package.sh
@@ -19,4 +14,4 @@ deployment:
   production:
     branch: master
     commands:
-      - aws s3 sync target/ s3://toast.sh/ --quiet --acl public-read
+      - ./publish.sh
