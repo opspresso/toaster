@@ -26,3 +26,8 @@ build/
 # Temp
 .config_*
 .toast_*
+
+# Temp
+*.pid
+*.log
+*.tmp
