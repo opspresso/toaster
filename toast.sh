@@ -1660,7 +1660,7 @@ nginx_lb() {
                     sed "1,9d" ${TEMPLATE} >> ${TEMP_HTTP}
                 fi
 
-                LEN=${#ARR[@]}
+                LEN="${#ARR[@]}"
                 echo_ "LEN : ${LEN}"
                 for (( i=2; i<${LEN}; i++ )); do
                     echo_ "${i} : ${ARR[$i]}"
