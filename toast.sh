@@ -907,16 +907,15 @@ init_certificate() {
 
         TARGET=
 
-        while read line
-        do
-            ARR=(${line})
+        while read LINE; do
+            ARR=(${LINE})
 
             if [ "${ARR[0]}" == "#" ]; then
                 TARGET="${SSL_DIR}/${ARR[1]}"
                 new_file ${TARGET} 600
             else
                 if [ -w ${TARGET} ]; then
-                    echo "${line}" >> ${TARGET}
+                    echo "${LINE}" >> ${TARGET}
                 fi
             fi
         done < ${CERTIFICATE}
@@ -934,8 +933,7 @@ init_startup() {
 
     HAS_LINE="false"
 
-    while read LINE
-    do
+    while read LINE; do
         if [ "${LINE}" == "${RC_HEAD}" ]; then
             HAS_LINE="true"
         fi
@@ -1618,9 +1616,8 @@ nginx_lb() {
 
         rm -rf "${TEMP_FILE}" "${TEMP_HTTP}" "${TEMP_SSL}" "${TEMP_TCP}"
 
-        while read line
-        do
-            ARR=(${line})
+        while read LINE; do
+            ARR=(${LINE})
 
             if [ "${ARR[0]}" == "NO" ]; then
                 FNO="${ARR[1]}"
@@ -1631,7 +1628,7 @@ nginx_lb() {
             fi
 
             if [ "${ARR[0]}" == "HOST" ]; then
-                HOST_ARR=(${line:5})
+                HOST_ARR=(${LINE:5})
             fi
 
             if [ "${ARR[0]}" == "CUSTOM" ]; then
@@ -1648,9 +1645,8 @@ nginx_lb() {
 
                 echo "    upstream toast {" >> ${TEMP_HTTP}
 
-                for i in "${HOST_ARR[@]}"
-                do
-                   echo "        server ${i}:${PORT} max_fails=3 fail_timeout=10s;" >> ${TEMP_HTTP}
+                for VAL in "${HOST_ARR[@]}"; do
+                   echo "        server ${VAL}:${PORT} max_fails=3 fail_timeout=10s;" >> ${TEMP_HTTP}
                 done
 
                 echo "    }" >> ${TEMP_HTTP}
@@ -1683,9 +1679,8 @@ nginx_lb() {
 
                 echo "    upstream toast_${PORT} {" >> ${TEMP_TCP}
 
-                for i in "${HOST_ARR[@]}"
-                do
-                   echo "        server ${i}:${PORT} max_fails=3 fail_timeout=10s;" >> ${TEMP_TCP}
+                for VAL in "${HOST_ARR[@]}"; do
+                   echo "        server ${VAL}:${PORT} max_fails=3 fail_timeout=10s;" >> ${TEMP_TCP}
                 done
 
                 echo "    }" >> ${TEMP_TCP}
@@ -1830,21 +1825,20 @@ vhost_fleet() {
     TARGET_DIR="${TEMP_DIR}/conf"
     mkdir -p ${TARGET_DIR}
 
-    VHOST_LIST="${TARGET_DIR}/${SNO}"
-    rm -rf ${VHOST_LIST}
+    HOST_LIST="${TARGET_DIR}/${SNO}"
+    rm -rf ${HOST_LIST}
 
     URL="${TOAST_URL}/server/vhost/${SNO}"
     wget -q -N --post-data "org=${ORG}&token=${TOKEN}&no=${SNO}" -P "${TARGET_DIR}" "${URL}"
 
-    if [ -f ${VHOST_LIST} ]; then
+    if [ -f ${HOST_LIST} ]; then
         echo_ "placement apache..."
 
-        while read line
-        do
-            ARR=(${line})
+        while read LINE; do
+            ARR=(${LINE})
 
             vhost_replace "${ARR[0]}"
-        done < ${VHOST_LIST}
+        done < ${HOST_LIST}
     fi
 
     httpd_graceful
@@ -1933,9 +1927,8 @@ deploy_fleet() {
     if [ -f ${TARGET_FILE} ]; then
         echo_ "download..."
 
-        while read line
-        do
-            ARR=(${line})
+        while read LINE; do
+            ARR=(${LINE})
 
             deploy_value
 
@@ -1947,9 +1940,8 @@ deploy_fleet() {
 
         echo_ "placement..."
 
-        while read line
-        do
-            ARR=(${line})
+        while read LINE; do
+            ARR=(${LINE})
 
             deploy_value
 
@@ -1978,9 +1970,8 @@ deploy_target() {
     if [ -f ${TARGET_FILE} ]; then
         echo_ "download..."
 
-        while read line
-        do
-            ARR=(${line})
+        while read LINE; do
+            ARR=(${LINE})
 
             deploy_value
 
@@ -1991,9 +1982,8 @@ deploy_target() {
 
         echo_ "placement..."
 
-        while read line
-        do
-            ARR=(${line})
+        while read LINE; do
+            ARR=(${LINE})
 
             deploy_value
 
@@ -2026,9 +2016,8 @@ deploy_bucket() {
     if [ -f ${TARGET_FILE} ]; then
         echo_ "download..."
 
-        while read line
-        do
-            ARR=(${line})
+        while read LINE; do
+            ARR=(${LINE})
 
             deploy_value
 
@@ -2039,9 +2028,8 @@ deploy_bucket() {
 
         echo_ "placement..."
 
-        while read line
-        do
-            ARR=(${line})
+        while read LINE; do
+            ARR=(${LINE})
 
             deploy_value
 
@@ -2221,9 +2209,8 @@ connect() {
         echo_bar
 
         if [ $(cat ${CONN_LIST} | wc -l) -lt 2 ]; then
-            while read line
-            do
-                ARR=(${line})
+            while read LINE; do
+                ARR=(${LINE})
 
                 if [ "${ARR[0]}" != "" ]; then
                     PHASE="${ARR[1]}"
@@ -2233,9 +2220,8 @@ connect() {
             echo "Please input phase no."
             read READ_NO
 
-            while read line
-            do
-                ARR=(${line})
+            while read LINE; do
+                ARR=(${LINE})
 
                 if [ "${ARR[0]}" == "${READ_NO}" ]; then
                     PHASE="${ARR[1]}"
@@ -2313,9 +2299,8 @@ connect() {
     echo_bar
 
     if [ $(cat ${CONN_LIST} | wc -l) -lt 2 ]; then
-        while read line
-        do
-            ARR=(${line})
+        while read LINE; do
+            ARR=(${LINE})
 
             if [ "${ARR[0]}" != "" ]; then
                 CONN_PARAM="${ARR[3]}@${ARR[1]} -p ${ARR[2]}"
@@ -2325,9 +2310,8 @@ connect() {
         echo "Please input server no."
         read READ_NO
 
-        while read line
-        do
-            ARR=(${line})
+        while read LINE; do
+            ARR=(${LINE})
 
             if [ "${ARR[0]}" == "${READ_NO}" ]; then
                 CONN_PARAM="${ARR[3]}@${ARR[1]} -p ${ARR[2]}"
@@ -2553,8 +2537,7 @@ mod_conf() {
 
     HAS_KEY="false"
 
-    while read LINE
-    do
+    while read LINE; do
         KEY1=$(echo ${LINE} | cut -d "=" -f 1)
 
         if [ "${KEY1}" == "${KEY}" ]; then
