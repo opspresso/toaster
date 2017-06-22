@@ -1627,6 +1627,10 @@ nginx_lb() {
                 SSL="${ARR[1]}"
             fi
 
+            if [ "${ARR[0]}" == "DOM" ]; then
+                DOM_ARR=(${LINE:4})
+            fi
+
             if [ "${ARR[0]}" == "HOST" ]; then
                 HOST_ARR=(${LINE:5})
             fi
@@ -1660,10 +1664,10 @@ nginx_lb() {
                     sed "1,9d" ${TEMPLATE} >> ${TEMP_HTTP}
                 fi
 
-                LEN="${#ARR[@]}"
+                LEN="${#DOM_ARR[@]}"
                 echo_ "LEN : ${LEN}"
                 for (( i=2; i<${LEN}; i++ )); do
-                    echo_ "${i} : ${ARR[$i]}"
+                    echo_ "${i} : ${DOM_ARR[$i]}"
                 done
             fi
 

@@ -16,7 +16,7 @@ echo "${VERSION}" > target/toaster.txt
 cp -rf web/* target/
 
 # install.sh
-cp -rf install.sh target/install
+cp -rf install.sh target/
 
 # toaster.tar.gz
 tar -czf target/toaster.tar.gz ./extra ./install ./package ./*.sh
