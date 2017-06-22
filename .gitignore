@@ -11,13 +11,12 @@ $RECYCLE.BIN/
 # Windows shortcuts
 *.lnk
 
+# Mac
+.DS_Store
+
 # JetBrains
 .idea/
 *.iml
-
-# Eclipse
-.settings/
-.metadata/
 
 # Build
 target/
@@ -26,8 +25,3 @@ build/
 # Temp
 .config_*
 .toast_*
-
-# Temp
-*.pid
-*.log
-*.tmp
