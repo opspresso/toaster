@@ -1661,6 +1661,7 @@ nginx_lb() {
                 fi
 
                 LEN=${#ARR[@]}
+                echo_ "LEN : ${LEN}"
                 for (( i=2; i<${LEN}; i++ )); do
                     echo_ "${i} : ${ARR[$i]}"
                 done
