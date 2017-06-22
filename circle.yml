@@ -11,6 +11,7 @@ dependencies:
 compile:
   override:
     - ./package.sh
+    - zip -q -r target/toaster.zip extra install package *.sh
 
 test:
   override:
