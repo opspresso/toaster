@@ -15,6 +15,7 @@ compile:
 test:
   override:
     - echo "test"
+    - ls -al target
 
 deployment:
   production:

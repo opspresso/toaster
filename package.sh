@@ -6,7 +6,7 @@ fi
 
 mkdir target
 
-VERSION=$(git rev-parse --short HEAD)
+VERSION="$(git rev-parse --short HEAD)"
 
 # toaster.txt
 echo "version=${VERSION}"
@@ -19,4 +19,7 @@ cp -rf web/* target/
 cp -rf install.sh target/install
 
 # toaster.tar.gz
-tar -czf target/toaster.tar.gz ./extra ./install ./package ./*.sh
+tar -czf target/toaster.tar.gz extra install package *.sh
+
+# toaster.zip
+zip -r target/toaster.zip extra install package *.sh
