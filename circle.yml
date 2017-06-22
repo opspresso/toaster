@@ -3,8 +3,6 @@ machine:
     version: oraclejdk8
 
 dependencies:
-  pre:
-    - sudo apt-get install zip
   post:
     - curl -s toast.sh/install | bash
     - ~/toaster/toast.sh config circle local nalbam $TOAST_TOKEN
@@ -22,4 +20,4 @@ deployment:
   production:
     branch: master
     commands:
-      - aws s3 sync target/ s3://toast.sh/ --acl public-read
+      - ./publish.sh
