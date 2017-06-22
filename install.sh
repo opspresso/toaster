@@ -52,16 +52,16 @@ if [ ! -d ~/toaster ]; then
 fi
 
 # version
-curl -s -o /tmp/toaster.txt ${REPO}/toaster.txt
+curl -s -o /tmp/toaster.new ${REPO}/toaster.txt
 
-if [ ! -f /tmp/toaster.txt ]; then
+if [ ! -f /tmp/toaster.new ]; then
     warning "Can not download. [version]"
     exit 1
 fi
 
-if [ -f ~/toaster/.version.txt ]; then
-    NEW="$(cat /tmp/toaster.txt)"
-    OLD="$(cat ~/toaster/.version.txt)"
+if [ -f /tmp/toaster.old ]; then
+    NEW="$(cat /tmp/toaster.new)"
+    OLD="$(cat /tmp/toaster.old)"
 
     if [ "${NEW}" == "${OLD}" ]; then
         success "Already have latest version. [${OLD}]"
@@ -85,7 +85,7 @@ fi
 tar -zxf /tmp/toaster.tar.gz -C ~/toaster
 
 # cp version
-cp -rf /tmp/toaster.txt ~/toaster/.version.txt
+cp -rf /tmp/toaster.new /tmp/toaster.old
 
 # done
 success "${MSG}"
