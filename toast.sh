@@ -1659,6 +1659,11 @@ nginx_lb() {
                     echo "${CUSTOM}" >> ${TEMP_HTTP}
                     sed "1,9d" ${TEMPLATE} >> ${TEMP_HTTP}
                 fi
+
+                LEN=${#ARR[@]}
+                for (( i=2; i<${LEN}; i++ )); do
+                    echo "${i} : ${ARR[$i]}"
+                done
             fi
 
             if [ "${ARR[0]}" == "HTTPS" ]; then
