@@ -10,12 +10,9 @@ dependencies:
 compile:
   override:
     - ./package.sh
-    - tar -czf target/toaster.tar.gz extra install package *.sh
-    - zip -r target/toaster.zip extra install package *.sh
 
 test:
   override:
-    - echo "test"
     - ls -al target
 
 deployment:
