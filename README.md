@@ -37,4 +37,3 @@ cat /var/log/cloud-init-output.log
 ~/toaster/remote.sh {user} {host} {port} deploy target {target}
 ~/toaster/remote.sh {user} {host} {port} bucket {target}
 ```
-.
