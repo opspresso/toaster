@@ -19,7 +19,7 @@ cp -rf web/* target/
 cp -rf install.sh target/install
 
 # toaster.tar.gz
-tar -czf target/toaster.tar.gz ./extra ./install ./package ./*.sh
+tar -czf target/toaster.tar.gz extra install package *.sh
 
 # toaster.zip
-zip -q -r target/toaster.zip ./extra ./install ./package ./*.sh
+zip -q -r target/toaster.zip extra install package *.sh
