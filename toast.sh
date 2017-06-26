@@ -2008,7 +2008,7 @@ deploy_target() {
 
 deploy_bucket() {
     if [ "${PARAM1}" == "" ]; then
-        return;
+        return
     fi
 
     echo_bar
