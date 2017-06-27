@@ -480,7 +480,8 @@ self_info() {
 }
 
 self_update() {
-    "${SHELL_DIR}/install.sh"
+    #"${SHELL_DIR}/install.sh"
+    curl -s toast.sh/install | bash
 }
 
 prepare() {
