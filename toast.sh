@@ -1664,11 +1664,11 @@ nginx_lb() {
                     sed "1,9d" ${TEMPLATE} >> ${TEMP_HTTP}
                 fi
 
-                LEN="${#DOM_ARR[@]}"
-                echo_ "LEN : ${LEN}"
-                for (( i=2; i<${LEN}; i++ )); do
-                    echo_ "${i} : ${DOM_ARR[$i]}"
-                done
+                #LEN="${#DOM_ARR[@]}"
+                #echo_ "LEN : ${LEN}"
+                #for (( i=0; i<${LEN}; i++ )); do
+                #    echo_ "${i} : ${DOM_ARR[$i]}"
+                #done
             fi
 
             if [ "${ARR[0]}" == "HTTPS" ]; then
@@ -2008,7 +2008,7 @@ deploy_target() {
 
 deploy_bucket() {
     if [ "${PARAM1}" == "" ]; then
-        return;
+        return
     fi
 
     echo_bar
