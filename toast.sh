@@ -27,6 +27,8 @@ if [ "${OS_NAME}" == "Linux" ]; then
         OS_TYPE="el6"
     elif [ $(echo "${OS_FULL}" | grep -c "el7") -gt 0 ]; then
         OS_TYPE="el7"
+    elif [ $(echo "${OS_FULL}" | grep -c "Ubuntu") -gt 0 ]; then
+        OS_TYPE="Ubuntu"
     elif [ $(echo "${OS_FULL}" | grep -c "generic") -gt 0 ]; then
         OS_TYPE="generic"
     elif [ $(echo "${OS_FULL}" | grep -c "coreos") -gt 0 ]; then
@@ -639,6 +641,8 @@ config_name() {
     echo_ "hostname... [${NAME}]"
 
     if [ "${OS_TYPE}" == "el7" ]; then
+        ${SUDO} hostnamectl set-hostname "${NAME}"
+    elif [ "${OS_TYPE}" == "Ubuntu" ]; then
         ${SUDO} hostnamectl set-hostname "${NAME}"
     else
         ${SUDO} hostname "${NAME}"
@@ -1408,7 +1412,12 @@ version_next() {
         return 1
     fi
 
-    echo_ "version get..."
+    # TODO remove someday...
+    if [ "${PARAM2}" == "" ]; then
+        PARAM2="master"
+    fi
+
+    echo_ "version get... [${PARAM2}]"
 
     if [ "${PARAM2}" == "master" ]; then
         URL="${TOAST_URL}/version/latest/${ARTIFACT_ID}"
@@ -1425,7 +1434,7 @@ version_next() {
         if [ "${PARAM2}" != "" ]; then
             VERSION="0.0.0-${PARAM2}"
         else
-            VERSION="0.0.0"
+            VERSION=""
         fi
     fi
 
@@ -1503,6 +1512,10 @@ version_docker() {
 }
 
 version_replace() {
+    if [ "${VERSION}" == "" ]; then
+        return
+    fi
+
     VER1="<version>[0-9a-zA-Z\.\-]\+<\/version>"
     VER2="<version>${VERSION}<\/version>"
 
@@ -2356,15 +2369,27 @@ log_reduce() {
 }
 
 service_update() {
-    ${SUDO} yum update -y
+    if [ "${OS_TYPE}" == "Ubuntu" ]; then
+        ${SUDO} apt-get update
+    else
+        ${SUDO} yum update -y
+    fi
 }
 
 service_install() {
-    ${SUDO} yum install -y $1
+    if [ "${OS_TYPE}" == "Ubuntu" ]; then
+        ${SUDO} apt-get install -y $1
+    else
+        ${SUDO} yum install -y $1
+    fi
 }
 
 service_remove() {
-    ${SUDO} yum remove -y $1
+    if [ "${OS_TYPE}" == "Ubuntu" ]; then
+        ${SUDO} apt-get remove -y $1
+    else
+        ${SUDO} yum remove -y $1
+    fi
 }
 
 service_ctl() {
