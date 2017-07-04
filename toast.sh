@@ -1408,7 +1408,12 @@ version_next() {
         return 1
     fi
 
-    echo_ "version get..."
+    # TODO remove someday...
+    if [ "${PARAM2}" == "" ]; then
+        PARAM2="master"
+    fi
+
+    echo_ "version get... [${PARAM2}]"
 
     if [ "${PARAM2}" == "master" ]; then
         URL="${TOAST_URL}/version/latest/${ARTIFACT_ID}"
@@ -1425,7 +1430,7 @@ version_next() {
         if [ "${PARAM2}" != "" ]; then
             VERSION="0.0.0-${PARAM2}"
         else
-            VERSION="0.0.0"
+            VERSION=""
         fi
     fi
 
@@ -1503,6 +1508,10 @@ version_docker() {
 }
 
 version_replace() {
+    if [ "${VERSION}" == "" ]; then
+        return
+    fi
+
     VER1="<version>[0-9a-zA-Z\.\-]\+<\/version>"
     VER2="<version>${VERSION}<\/version>"
 
