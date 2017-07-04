@@ -2369,15 +2369,27 @@ log_reduce() {
 }
 
 service_update() {
-    ${SUDO} yum update -y
+    if [ "${OS_TYPE}" == "Ubuntu" ]; then
+        ${SUDO} apt-get update
+    else
+        ${SUDO} yum update -y
+    fi
 }
 
 service_install() {
-    ${SUDO} yum install -y $1
+    if [ "${OS_TYPE}" == "Ubuntu" ]; then
+        ${SUDO} apt-get install -y $1
+    else
+        ${SUDO} yum install -y $1
+    fi
 }
 
 service_remove() {
-    ${SUDO} yum remove -y $1
+    if [ "${OS_TYPE}" == "Ubuntu" ]; then
+        ${SUDO} apt-get remove -y $1
+    else
+        ${SUDO} yum remove -y $1
+    fi
 }
 
 service_ctl() {
