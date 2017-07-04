@@ -642,6 +642,8 @@ config_name() {
 
     if [ "${OS_TYPE}" == "el7" ]; then
         ${SUDO} hostnamectl set-hostname "${NAME}"
+    elif [ "${OS_TYPE}" == "Ubuntu" ]; then
+        ${SUDO} hostnamectl set-hostname "${NAME}"
     else
         ${SUDO} hostname "${NAME}"
 
