@@ -1790,14 +1790,48 @@ vhost_local() {
     fi
 }
 
-vhost_replace() {
-    DIR="$1"
+vhost_proxy() {
     DOM="$1"
+    PORT="$2"
 
-    if [ "${DOM}" == "" ]; then
-        warning "--> empty.domain.com"
+    echo_ "--> ${DOM}:${PORT}"
+
+    TEMPLATE="${SHELL_DIR}/package/apache/${HTTPD_VERSION}/vhost-proxy.conf"
+    TEMP_FILE1="${TARGET_DIR}/toast-vhost1.tmp"
+    TEMP_FILE2="${TARGET_DIR}/toast-vhost2.tmp"
+    TEMP_FILE3="${TARGET_DIR}/toast-vhost3.tmp"
+
+    DIR="${DOM}"
+    make_dir "${SITE_DIR}/${DIR}"
+
+    # gen vhost
+    DEST_FILE="${HTTPD_CONF_DIR}/toast-${DOM}.conf"
+    sed "s/PORT/$PORT/g" ${TEMPLATE} > ${TEMP_FILE1}
+    sed "s/DIR/$DIR/g" ${TEMP_FILE1} > ${TEMP_FILE2}
+    sed "s/DOM/$DOM/g" ${TEMP_FILE2} > ${TEMP_FILE3}
+    copy ${TEMP_FILE3} ${DEST_FILE}
+
+    # vhost-in.com
+    IN="${DOM}"
+    IN=$(echo "${IN}" | sed "s/yanolja\.com/yanolja-in\.com/")
+    IN=$(echo "${IN}" | sed "s/yanoljanow\.com/yanoljanow-in\.com/")
+
+    if [ "${DOM}" == "${IN}" ]; then
         return
     fi
+
+    DOM="${IN}"
+
+    # gen vhost
+    DEST_FILE="${HTTPD_CONF_DIR}/toast-${DOM}.conf"
+    sed "s/PORT/$PORT/g" ${TEMPLATE} > ${TEMP_FILE1}
+    sed "s/DIR/$DIR/g" ${TEMP_FILE1} > ${TEMP_FILE2}
+    sed "s/DOM/$DOM/g" ${TEMP_FILE2} > ${TEMP_FILE3}
+    copy ${TEMP_FILE3} ${DEST_FILE}
+}
+
+vhost_replace() {
+    DOM="$1"
 
     echo_ "--> ${DOM}"
 
@@ -1805,6 +1839,7 @@ vhost_replace() {
     TEMP_FILE1="${TARGET_DIR}/toast-vhost1.tmp"
     TEMP_FILE2="${TARGET_DIR}/toast-vhost2.tmp"
 
+    DIR="${DOM}"
     make_dir "${SITE_DIR}/${DIR}"
 
     # gen vhost
@@ -1862,7 +1897,16 @@ vhost_fleet() {
         while read LINE; do
             ARR=(${LINE})
 
-            vhost_replace "${ARR[0]}"
+            if [ "${ARR[0]}" == "" ]; then
+                warning "--> empty.domain.com"
+                continue
+            fi
+
+            if [ "${ARR[1]}" == "" ] || [ "${ARR[1]}" == "80" ]; then
+                vhost_replace "${ARR[0]}"
+            else
+                vhost_proxy "${ARR[0]}" "${ARR[1]}"
+            fi
         done < ${HOST_LIST}
     fi
 
