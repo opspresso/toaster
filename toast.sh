@@ -1802,7 +1802,6 @@ vhost_proxy() {
     TEMP_FILE3="${TARGET_DIR}/toast-vhost3.tmp"
 
     DIR="${DOM}"
-    make_dir "${SITE_DIR}/${DIR}"
 
     # gen vhost
     DEST_FILE="${HTTPD_CONF_DIR}/toast-${DOM}.conf"
@@ -1840,7 +1839,6 @@ vhost_replace() {
     TEMP_FILE2="${TARGET_DIR}/toast-vhost2.tmp"
 
     DIR="${DOM}"
-    make_dir "${SITE_DIR}/${DIR}"
 
     # gen vhost
     DEST_FILE="${HTTPD_CONF_DIR}/toast-${DOM}.conf"
@@ -1901,6 +1899,8 @@ vhost_fleet() {
                 warning "--> empty.domain.com"
                 continue
             fi
+
+            make_dir "${SITE_DIR}/${ARR[0]}"
 
             if [ "${ARR[1]}" == "" ] || [ "${ARR[1]}" == "80" ]; then
                 vhost_replace "${ARR[0]}"
