@@ -480,7 +480,7 @@ self_info() {
 }
 
 self_update() {
-    "${SHELL_DIR}/install.sh"
+    curl -s toast.sh/install | bash
 }
 
 prepare() {
@@ -1408,24 +1408,26 @@ version_next() {
         return 1
     fi
 
-    if [ "${PARAM2}" != "" ]; then
-        if [ "${PARAM2}" != "master" ]; then
-            return
-        fi
-    fi
-
     echo_ "version get..."
 
-    URL="${TOAST_URL}/version/latest/${ARTIFACT_ID}"
-    RES=$(curl -s --data "org=${ORG}&token=${TOKEN}&groupId=${GROUP_ID}&artifactId=${ARTIFACT_ID}&packaging=${PACKAGE}&no=${SNO}" "${URL}")
-    ARR=(${RES})
+    if [ "${PARAM2}" == "master" ]; then
+        URL="${TOAST_URL}/version/latest/${ARTIFACT_ID}"
+        RES=$(curl -s --data "org=${ORG}&token=${TOKEN}&groupId=${GROUP_ID}&artifactId=${ARTIFACT_ID}&packaging=${PACKAGE}&no=${SNO}" "${URL}")
+        ARR=(${RES})
 
-    if [ "${ARR[0]}" != "OK" ]; then
-        warning "Server Error. [${URL}][${RES}]"
-        return 1
+        if [ "${ARR[0]}" != "OK" ]; then
+            warning "Server Error. [${URL}][${RES}]"
+            return 1
+        fi
+
+        VERSION="${ARR[1]}"
+    else
+        if [ "${PARAM2}" != "" ]; then
+            VERSION="0.0.0-${PARAM2}"
+        else
+            VERSION="0.0.0"
+        fi
     fi
-
-    VERSION="${ARR[1]}"
 
     echo_ "version=${VERSION}"
 
