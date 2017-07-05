@@ -159,7 +159,6 @@ toast() {
 
 usage() {
     echo_toast
-
     echo_ " Usage: toast {auto|update|config|init|version|deploy}"
     echo_bar
     echo_
@@ -169,19 +168,7 @@ usage() {
     echo_
     echo_ " Usage: toast config"
     echo_
-    echo_ " Usage: toast init"
-    echo_ " Usage: toast init master"
-    echo_ " Usage: toast init slave"
-    echo_ " Usage: toast init httpd"
-    echo_ " Usage: toast init nginx"
-    echo_ " Usage: toast init php5"
-    echo_ " Usage: toast init php7"
-    echo_ " Usage: toast init node"
-    echo_ " Usage: toast init java"
-    echo_ " Usage: toast init maven"
-    echo_ " Usage: toast init tomcat"
-    echo_ " Usage: toast init mysql"
-    echo_ " Usage: toast init redis"
+    echo_ " Usage: toast init {package}"
     echo_
     echo_ " Usage: toast version"
     echo_ " Usage: toast version next {branch}"
@@ -420,7 +407,12 @@ health() {
 
     #echo_ "server health..."
 
-    UNAME="$(uname -a)"
+    if [ -f /tmp/toaster.old ]; then
+        TOAST="$(cat /tmp/toaster.old)"
+    else
+        TOAST=""
+    fi
+
     UPTIME="$(uptime)"
     CPU="$(grep 'cpu ' /proc/stat | awk '{usage=($2+$4)*100/($2+$4+$5)} END {print usage}')"
 
@@ -428,7 +420,7 @@ health() {
     #echo_ "server cpu usage [${CPU}]"
 
     URL="${TOAST_URL}/server/health/${SNO}"
-    RES=$(curl -s --data "org=${ORG}&token=${TOKEN}&id=${UUID}&cpu=${CPU}&uname=${UNAME}&uptime=${UPTIME}" "${URL}")
+    RES=$(curl -s --data "org=${ORG}&token=${TOKEN}&id=${UUID}&cpu=${CPU}&os=${OS_FULL}&uptime=${UPTIME}&toast=${TOAST}" "${URL}")
     ARR=(${RES})
 
     if [ "${ARR[0]}" == "OK" ]; then
