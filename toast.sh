@@ -1551,7 +1551,7 @@ version_note() {
 }
 
 version_git() {
-    git log --pretty=format:'%h' -n 1
+    git log --pretty=format:"%h" -n 1
 }
 
 upload_repo() {
