@@ -1409,19 +1409,17 @@ version_next() {
         return 1
     fi
 
-    # TODO remove someday...
-    if [ "${PARAM2}" == "" ]; then
-        PARAM2="master"
-    fi
-    if [ "${PARAM2}" != "master" ]; then
+    BRANCH="$(version_branch)"
+
+    if [ "${BRANCH}" != "master" ]; then
         return
     fi
 
-    echo_ "version get... [${PARAM2}]"
+    echo_ "version get... [${BRANCH}]"
 
-    if [ "${PARAM2}" == "master" ]; then
+    if [ "${BRANCH}" == "master" ]; then
         URL="${TOAST_URL}/version/latest/${ARTIFACT_ID}"
-        RES=$(curl -s --data "org=${ORG}&token=${TOKEN}&groupId=${GROUP_ID}&artifactId=${ARTIFACT_ID}&packaging=${PACKAGE}&no=${SNO}" "${URL}")
+        RES=$(curl -s --data "org=${ORG}&token=${TOKEN}&groupId=${GROUP_ID}&artifactId=${ARTIFACT_ID}&packaging=${PACKAGE}&no=${SNO}&branch=${BRANCH}" "${URL}")
         ARR=(${RES})
 
         if [ "${ARR[0]}" != "OK" ]; then
@@ -1430,9 +1428,16 @@ version_next() {
         fi
 
         VERSION="${ARR[1]}"
+
+        if [ "${ARR[2]}" != "" ]; then
+            if [ ! -d target ]; then
+                mkdir target
+            fi
+            echo "${ARR[2]}" > target/.git_id
+        fi
     else
-        if [ "${PARAM2}" != "" ]; then
-            VERSION="0.0.0-${PARAM2}"
+        if [ "${BRANCH}" != "" ]; then
+            VERSION="0.0.0-${BRANCH}"
         else
             VERSION=""
         fi
@@ -1467,7 +1472,7 @@ version_save() {
     fi
 
     if [ "${PARAM3}" != "none" ]; then
-        echo_ "package upload... [${PARAM2}]"
+        echo_ "package upload..."
 
         upload_repo "zip"
         upload_repo "war"
@@ -1477,11 +1482,15 @@ version_save() {
         echo_ "package uploaded."
     fi
 
-    NOTE="$(version_note)"
-    GIT="$(version_git)"
+    BRANCH="$(version_branch)"
+
+    version_note
+
+    GIT="$(cat target/.git_id)"
+    NOTE="$(cat target/.git_note)"
 
     URL="${TOAST_URL}/version/build/${ARTIFACT_ID}/${VERSION}"
-    RES=$(curl -s --data "org=${ORG}&token=${TOKEN}&groupId=${GROUP_ID}&artifactId=${ARTIFACT_ID}&packaging=${PACKAGE}&no=${SNO}&note=${NOTE}&git=${GIT}" "${URL}")
+    RES=$(curl -s --data "org=${ORG}&token=${TOKEN}&groupId=${GROUP_ID}&artifactId=${ARTIFACT_ID}&packaging=${PACKAGE}&no=${SNO}&branch=${BRANCH}&git=${GIT}&note=${NOTE}" "${URL}")
     ARR=(${RES})
 
     if [ "${ARR[0]}" != "OK" ]; then
@@ -1546,12 +1555,37 @@ version_replace() {
     fi
 }
 
-version_note() {
-    git log --pretty=format:"- %s" --since=12hour | grep -v "\- Merge pull request " | grep -v "\- Merge branch "
+version_branch() {
+    git branch | grep \* | cut -d " " -f2
 }
 
-version_git() {
-    git log --pretty=format:"%h" -n 1
+version_note() {
+    NEW_GIT_ID=""
+    OLD_GIT_ID=""
+
+    if [ -f target/.git_id ]; then
+        OLD_GIT_ID="$(cat target/.git_id)"
+    fi
+
+    git log --pretty=format:"%h - %s" | grep -v "\- Merge pull request " | grep -v "\- Merge branch " | grep -v "\- Merge remote-tracking " > target/.git_log
+
+    > target/.git_note
+
+    while read LINE; do
+        GIT_ID=${LINE:0:7}
+
+        if [ "${NEW_GIT_ID}" == "" ]; then
+            NEW_GIT_ID="${GIT_ID}"
+        fi
+
+        if [ "${OLD_GIT_ID}" == "${GIT_ID}" ]; then
+            break
+        fi
+
+        echo "${LINE:8}" >> target/.git_note
+    done < target/.git_log
+
+    echo "${NEW_GIT_ID}" > target/.git_id
 }
 
 upload_repo() {
