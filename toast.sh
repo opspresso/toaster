@@ -1409,9 +1409,20 @@ version_next() {
         return 1
     fi
 
-    BRANCH="$(version_branch)"
+    if [ ! -d target ]; then
+        mkdir target
+    fi
+
+    BRANCH="${PARAM2}"
+
+    if [ "${BRANCH}" == "" ]; then
+        BRANCH="master"
+    fi
+
+    echo "${BRANCH}" > target/.git_branch
 
     if [ "${BRANCH}" != "master" ]; then
+        echo_ "not master branch. [${BRANCH}]"
         return
     fi
 
@@ -1430,10 +1441,10 @@ version_next() {
         VERSION="${ARR[1]}"
 
         if [ "${ARR[2]}" != "" ]; then
-            if [ ! -d target ]; then
-                mkdir target
-            fi
             echo "${ARR[2]}" > target/.git_id
+
+            GIT="$(cat target/.git_id)"
+            echo "git_commit_id=${GIT}"
         fi
     else
         if [ "${BRANCH}" != "" ]; then
@@ -1487,6 +1498,8 @@ version_save() {
     version_note
 
     GIT="$(cat target/.git_id)"
+    echo "git_commit_id=${GIT}"
+
     NOTE="$(cat target/.git_note)"
 
     URL="${TOAST_URL}/version/build/${ARTIFACT_ID}/${VERSION}"
@@ -1556,23 +1569,29 @@ version_replace() {
 }
 
 version_branch() {
-    git branch | grep \* | cut -d " " -f2
+    if [ -r target/.git_branch ]; then
+        cat target/.git_branch
+    else
+        git branch | grep \* | cut -d " " -f2
+    fi
 }
 
 version_note() {
     NEW_GIT_ID=""
     OLD_GIT_ID=""
 
-    if [ -f target/.git_id ]; then
+    if [ -r target/.git_id ]; then
         OLD_GIT_ID="$(cat target/.git_id)"
     fi
 
-    git log --pretty=format:"%h - %s" | grep -v "\- Merge pull request " | grep -v "\- Merge branch " | grep -v "\- Merge remote-tracking " > target/.git_log
-
     > target/.git_note
 
+    git log --pretty=format:"%h - %s" --since=1week | grep -v "\- Merge pull request " | grep -v "\- Merge branch " | grep -v "\- Merge remote-tracking " > target/.git_log
+
     while read LINE; do
-        GIT_ID=${LINE:0:7}
+        ARR=(${LINE})
+
+        GIT_ID="${ARR[0]}"
 
         if [ "${NEW_GIT_ID}" == "" ]; then
             NEW_GIT_ID="${GIT_ID}"
@@ -1582,7 +1601,7 @@ version_note() {
             break
         fi
 
-        echo "${LINE:8}" >> target/.git_note
+        echo "${LINE}" >> target/.git_note
     done < target/.git_log
 
     echo "${NEW_GIT_ID}" > target/.git_id
