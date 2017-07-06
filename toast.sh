@@ -320,16 +320,19 @@ version() {
     version_parse
 
     case ${PARAM1} in
-        s|save)
+        save)
             version_save
             ;;
-        n|next)
+        next)
             version_next
             ;;
-        d|docker)
+        branch)
+            version_branch
+            ;;
+        docker)
             version_docker
             ;;
-        b|eb)
+        eb)
             version_eb
             ;;
     esac
@@ -1418,9 +1421,6 @@ version_next() {
     if [ "${BRANCH}" == "" ]; then
         BRANCH="master"
     fi
-
-    echo "${BRANCH}" > target/.git_branch
-
     if [ "${BRANCH}" != "master" ]; then
         echo_ "not master branch. [${BRANCH}]"
         return
@@ -1569,6 +1569,12 @@ version_replace() {
 }
 
 version_branch() {
+    BRANCH="${PARAM2}"
+
+    if [ "${BRANCH}" != "" ]; then
+        echo "${BRANCH}" > target/.git_branch
+    fi
+
     if [ -r target/.git_branch ]; then
         cat target/.git_branch
     else
