@@ -60,7 +60,6 @@ fi
 SHELL_DIR=$(dirname "$0")
 
 TOAST_URL=
-REPO_PATH=
 ORG=
 PHASE=
 FLEET=
@@ -71,6 +70,9 @@ PORT=
 USER=
 TOKEN=
 SNO=
+
+REPO_BUCKET=
+REPO_PATH=
 
 CONFIG="${HOME}/.toast"
 if [ -f "${CONFIG}" ]; then
@@ -318,14 +320,17 @@ version() {
     version_parse
 
     case ${PARAM1} in
-        s|save)
+        save)
             version_save
             ;;
-        n|next)
+        next)
             version_next
             ;;
-        d|docker)
+        docker)
             version_docker
+            ;;
+        eb)
+            version_eb
             ;;
     esac
 }
@@ -341,7 +346,7 @@ vhost() {
     init_profile
 
     case ${PARAM1} in
-        b|lb)
+        lb)
             nginx_lb
             ;;
         *)
@@ -1503,6 +1508,22 @@ version_docker() {
     version_save
 }
 
+version_eb() {
+    if [ "${ARTIFACT_ID}" == "" ]; then
+        warning "Not set ARTIFACT_ID."
+        return 1
+    fi
+
+    DATE=$(date "+%Y%m%d%H%M")
+
+    aws elasticbeanstalk create-application-version \
+     --application-name "${ARTIFACT_ID}" \
+     --version-label "${DATE}-${VERSION}" \
+     --description "${ARTIFACT_ID}-${VERSION}" \
+     --source-bundle S3Bucket="${REPO_BUCKET}",S3Key="maven2/${GROUP_PATH}/${ARTIFACT_ID}/${VERSION}/${ARTIFACT_ID}-${VERSION}.zip" \
+     --auto-create-application
+}
+
 version_replace() {
     if [ "${VERSION}" == "" ]; then
         return
@@ -1916,18 +1937,28 @@ repo_path() {
         return
     fi
 
+    # repo_bucket
+    URL="${TOAST_URL}/config/key/repo_bucket"
+    RES=$(curl -s --data "org=${ORG}&token=${TOKEN}&no=${SNO}" "${URL}")
+
+    if [ "${RES}" != "" ]; then
+        REPO_BUCKET="${RES}"
+        REPO_PATH="s3://${REPO_BUCKET}"
+        return
+    fi
+
     # repo_path
     URL="${TOAST_URL}/config/key/repo_path"
     RES=$(curl -s --data "org=${ORG}&token=${TOKEN}&no=${SNO}" "${URL}")
 
-    if [ "${RES}" == "" ]; then
-        warning "Not set REPO_PATH."
-        exit 1
+    if [ "${RES}" != "" ]; then
+        REPO_BUCKET=""
+        REPO_PATH="${RES}"
+        return
     fi
 
-    REPO_PATH="${RES}"
-
-    #echo_ "repo : ${REPO_PATH}"
+    warning "Not set REPO_PATH."
+    exit 1
 }
 
 deploy_project() {
