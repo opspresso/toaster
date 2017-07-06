@@ -1563,16 +1563,18 @@ version_note() {
     NEW_GIT_ID=""
     OLD_GIT_ID=""
 
-    if [ -f target/.git_id ]; then
+    if [ -r target/.git_id ]; then
         OLD_GIT_ID="$(cat target/.git_id)"
     fi
 
-    git log --pretty=format:"%h - %s" | grep -v "\- Merge pull request " | grep -v "\- Merge branch " | grep -v "\- Merge remote-tracking " > target/.git_log
+    git log --pretty=format:"%h - %s" --since=1week | grep -v "\- Merge pull request " | grep -v "\- Merge branch " | grep -v "\- Merge remote-tracking " > target/.git_log
 
     > target/.git_note
 
     while read LINE; do
-        GIT_ID="${LINE:0:7}"
+        ARR=(${LINE})
+
+        GIT_ID="${ARR[0]}"
 
         if [ "${NEW_GIT_ID}" == "" ]; then
             NEW_GIT_ID="${GIT_ID}"
@@ -1582,7 +1584,7 @@ version_note() {
             break
         fi
 
-        echo "${LINE:8}" >> target/.git_note
+        echo "${LINE}" >> target/.git_note
     done < target/.git_log
 
     echo "${NEW_GIT_ID}" > target/.git_id
