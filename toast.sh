@@ -1434,6 +1434,9 @@ version_next() {
                 mkdir target
             fi
             echo "${ARR[2]}" > target/.git_id
+
+            GIT="$(cat target/.git_id)"
+            echo "git_commit_id=${GIT}"
         fi
     else
         if [ "${BRANCH}" != "" ]; then
@@ -1487,6 +1490,8 @@ version_save() {
     version_note
 
     GIT="$(cat target/.git_id)"
+    echo "git_commit_id=${GIT}"
+
     NOTE="$(cat target/.git_note)"
 
     URL="${TOAST_URL}/version/build/${ARTIFACT_ID}/${VERSION}"
