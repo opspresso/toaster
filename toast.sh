@@ -1517,11 +1517,11 @@ version_eb() {
         return 1
     fi
 
-    DATE=$(date "+%Y%m%d%H%M")
+    DATE=$(date "+%Y-%m-%d %H:%M")
 
     aws elasticbeanstalk create-application-version \
      --application-name "${ARTIFACT_ID}" \
-     --version-label "${DATE}-${VERSION}" \
+     --version-label "${DATE} - ${VERSION}" \
      --description "${ARTIFACT_ID}-${VERSION}" \
      --source-bundle S3Bucket="${REPO_BUCKET}",S3Key="maven2/${GROUP_PATH}/${ARTIFACT_ID}/${VERSION}/${ARTIFACT_ID}-${VERSION}.zip" \
      --auto-create-application
