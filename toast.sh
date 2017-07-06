@@ -326,8 +326,20 @@ build() {
         return
     fi
 
-    version_branch
-
+    case ${PARAM1} in
+        version)
+            version_next
+            ;;
+        docker)
+            version_docker
+            ;;
+        eb)
+            version_eb
+            ;;
+        *)
+            version_save
+            ;;
+    esac
 }
 
 version() {
@@ -341,9 +353,6 @@ version() {
             ;;
         next)
             version_next
-            ;;
-        branch)
-            version_branch
             ;;
         docker)
             version_docker
@@ -1509,7 +1518,7 @@ version_save() {
 
     version_note
 
-    GIT="$(cat target/.git_id)"
+    GIT="$(cat .git_id)"
     echo "git_commit_id=${GIT}"
 
     NOTE="$(cat target/.git_note)"
