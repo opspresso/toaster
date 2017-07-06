@@ -320,16 +320,16 @@ version() {
     version_parse
 
     case ${PARAM1} in
-        save)
+        s|save)
             version_save
             ;;
-        next)
+        n|next)
             version_next
             ;;
-        docker)
+        d|docker)
             version_docker
             ;;
-        eb)
+        b|eb)
             version_eb
             ;;
     esac
