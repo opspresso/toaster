@@ -60,7 +60,6 @@ fi
 SHELL_DIR=$(dirname "$0")
 
 TOAST_URL=
-REPO_PATH=
 ORG=
 PHASE=
 FLEET=
@@ -71,6 +70,9 @@ PORT=
 USER=
 TOKEN=
 SNO=
+
+REPO_BUCKET=
+REPO_PATH=
 
 CONFIG="${HOME}/.toast"
 if [ -f "${CONFIG}" ]; then
@@ -327,6 +329,9 @@ version() {
         d|docker)
             version_docker
             ;;
+        b|eb)
+            version_eb
+            ;;
     esac
 }
 
@@ -341,7 +346,7 @@ vhost() {
     init_profile
 
     case ${PARAM1} in
-        b|lb)
+        lb)
             nginx_lb
             ;;
         *)
@@ -1408,6 +1413,9 @@ version_next() {
     if [ "${PARAM2}" == "" ]; then
         PARAM2="master"
     fi
+    if [ "${PARAM2}" != "master" ]; then
+        return
+    fi
 
     echo_ "version get... [${PARAM2}]"
 
@@ -1470,9 +1478,10 @@ version_save() {
     fi
 
     NOTE="$(version_note)"
+    GIT="$(version_git)"
 
     URL="${TOAST_URL}/version/build/${ARTIFACT_ID}/${VERSION}"
-    RES=$(curl -s --data "org=${ORG}&token=${TOKEN}&groupId=${GROUP_ID}&artifactId=${ARTIFACT_ID}&packaging=${PACKAGE}&no=${SNO}&note=${NOTE}" "${URL}")
+    RES=$(curl -s --data "org=${ORG}&token=${TOKEN}&groupId=${GROUP_ID}&artifactId=${ARTIFACT_ID}&packaging=${PACKAGE}&no=${SNO}&note=${NOTE}&git=${GIT}" "${URL}")
     ARR=(${RES})
 
     if [ "${ARR[0]}" != "OK" ]; then
@@ -1503,6 +1512,22 @@ version_docker() {
     version_save
 }
 
+version_eb() {
+    if [ "${ARTIFACT_ID}" == "" ]; then
+        warning "Not set ARTIFACT_ID."
+        return 1
+    fi
+
+    DATE=$(date "+%Y-%m-%d %H:%M")
+
+    aws elasticbeanstalk create-application-version \
+     --application-name "${ARTIFACT_ID}" \
+     --version-label "${DATE} - ${VERSION}" \
+     --description "${ARTIFACT_ID}-${VERSION}" \
+     --source-bundle S3Bucket="${REPO_BUCKET}",S3Key="maven2/${GROUP_PATH}/${ARTIFACT_ID}/${VERSION}/${ARTIFACT_ID}-${VERSION}.zip" \
+     --auto-create-application
+}
+
 version_replace() {
     if [ "${VERSION}" == "" ]; then
         return
@@ -1523,6 +1548,10 @@ version_replace() {
 
 version_note() {
     git log --pretty=format:"- %s" --since=12hour | grep -v "\- Merge pull request " | grep -v "\- Merge branch "
+}
+
+version_git() {
+    git log --pretty=format:"%h" -n 1
 }
 
 upload_repo() {
@@ -1916,18 +1945,28 @@ repo_path() {
         return
     fi
 
+    # repo_bucket
+    URL="${TOAST_URL}/config/key/repo_bucket"
+    RES=$(curl -s --data "org=${ORG}&token=${TOKEN}&no=${SNO}" "${URL}")
+
+    if [ "${RES}" != "" ]; then
+        REPO_BUCKET="${RES}"
+        REPO_PATH="s3://${REPO_BUCKET}"
+        return
+    fi
+
     # repo_path
     URL="${TOAST_URL}/config/key/repo_path"
     RES=$(curl -s --data "org=${ORG}&token=${TOKEN}&no=${SNO}" "${URL}")
 
-    if [ "${RES}" == "" ]; then
-        warning "Not set REPO_PATH."
-        exit 1
+    if [ "${RES}" != "" ]; then
+        REPO_BUCKET=""
+        REPO_PATH="${RES}"
+        return
     fi
 
-    REPO_PATH="${RES}"
-
-    #echo_ "repo : ${REPO_PATH}"
+    warning "Not set REPO_PATH."
+    exit 1
 }
 
 deploy_project() {
