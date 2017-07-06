@@ -1572,9 +1572,9 @@ version_note() {
         OLD_GIT_ID="$(cat target/.git_id)"
     fi
 
-    git log --pretty=format:"%h - %s" --since=1week | grep -v "\- Merge pull request " | grep -v "\- Merge branch " | grep -v "\- Merge remote-tracking " > target/.git_log
-
     > target/.git_note
+
+    git log --pretty=format:"%h - %s" --since=1week | grep -v "\- Merge pull request " | grep -v "\- Merge branch " | grep -v "\- Merge remote-tracking " > target/.git_log
 
     while read LINE; do
         ARR=(${LINE})
