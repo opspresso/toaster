@@ -1478,9 +1478,10 @@ version_save() {
     fi
 
     NOTE="$(version_note)"
+    GIT="$(version_git)"
 
     URL="${TOAST_URL}/version/build/${ARTIFACT_ID}/${VERSION}"
-    RES=$(curl -s --data "org=${ORG}&token=${TOKEN}&groupId=${GROUP_ID}&artifactId=${ARTIFACT_ID}&packaging=${PACKAGE}&no=${SNO}&note=${NOTE}" "${URL}")
+    RES=$(curl -s --data "org=${ORG}&token=${TOKEN}&groupId=${GROUP_ID}&artifactId=${ARTIFACT_ID}&packaging=${PACKAGE}&no=${SNO}&note=${NOTE}&git=${GIT}" "${URL}")
     ARR=(${RES})
 
     if [ "${ARR[0]}" != "OK" ]; then
@@ -1547,6 +1548,10 @@ version_replace() {
 
 version_note() {
     git log --pretty=format:"- %s" --since=12hour | grep -v "\- Merge pull request " | grep -v "\- Merge branch "
+}
+
+version_git() {
+    git log --pretty=format:'%h' -n 1
 }
 
 upload_repo() {
