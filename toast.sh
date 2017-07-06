@@ -1413,6 +1413,9 @@ version_next() {
     if [ "${PARAM2}" == "" ]; then
         PARAM2="master"
     fi
+    if [ "${PARAM2}" != "master" ]; then
+        return
+    fi
 
     echo_ "version get... [${PARAM2}]"
 
