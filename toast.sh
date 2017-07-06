@@ -1561,6 +1561,10 @@ version_eb() {
         return 1
     fi
 
+    if [ ! -d "target/docker" ]; then
+        version_docker
+    fi
+
     DATE=$(date "+%Y-%m-%d %H:%M")
 
     aws elasticbeanstalk create-application-version \
