@@ -1572,7 +1572,7 @@ version_note() {
     > target/.git_note
 
     while read LINE; do
-        GIT_ID=${LINE:0:7}
+        GIT_ID="${LINE:0:7}"
 
         if [ "${NEW_GIT_ID}" == "" ]; then
             NEW_GIT_ID="${GIT_ID}"
