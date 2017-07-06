@@ -1409,7 +1409,12 @@ version_next() {
         return 1
     fi
 
-    BRANCH="$(version_branch)"
+    if [ ! -d target ]; then
+        mkdir target
+    fi
+
+    BRANCH="${PARAM2}"
+    echo "${BRANCH}" > target/.git_branch
 
     if [ "${BRANCH}" != "master" ]; then
         echo_ "not master branch. [${BRANCH}]"
@@ -1431,9 +1436,6 @@ version_next() {
         VERSION="${ARR[1]}"
 
         if [ "${ARR[2]}" != "" ]; then
-            if [ ! -d target ]; then
-                mkdir target
-            fi
             echo "${ARR[2]}" > target/.git_id
 
             GIT="$(cat target/.git_id)"
@@ -1562,7 +1564,11 @@ version_replace() {
 }
 
 version_branch() {
-    git branch | grep \* | cut -d " " -f2
+    if [ -r target/.git_branch ]; then
+        cat target/.git_branch
+    else
+        git branch | grep \* | cut -d " " -f2
+    fi
 }
 
 version_note() {
