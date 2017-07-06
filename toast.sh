@@ -1414,6 +1414,11 @@ version_next() {
     fi
 
     BRANCH="${PARAM2}"
+
+    if [ "${BRANCH}" == "" ]; then
+        BRANCH="master"
+    fi
+
     echo "${BRANCH}" > target/.git_branch
 
     if [ "${BRANCH}" != "master" ]; then
