@@ -133,13 +133,16 @@ toast() {
         v|version)
             version
             ;;
+        b|build)
+            build
+            ;;
         o|vhost)
             vhost
             ;;
         d|deploy)
             deploy
             ;;
-        b|bucket)
+        k|bucket)
             bucket
             ;;
         h|health)
@@ -312,6 +315,19 @@ init() {
             self_info
             init_auto
     esac
+}
+
+build() {
+    repo_path
+
+    version_parse
+
+    if [ "${PARAM1}" == "" ]; then
+        return
+    fi
+
+    version_branch
+
 }
 
 version() {
@@ -1412,15 +1428,14 @@ version_next() {
         return 1
     fi
 
-    if [ ! -d target ]; then
-        mkdir target
-    fi
-
     BRANCH="${PARAM2}"
 
     if [ "${BRANCH}" == "" ]; then
         BRANCH="master"
     fi
+
+    echo "${BRANCH}" > .git_branch
+
     if [ "${BRANCH}" != "master" ]; then
         echo_ "not master branch. [${BRANCH}]"
         return
@@ -1441,10 +1456,7 @@ version_next() {
         VERSION="${ARR[1]}"
 
         if [ "${ARR[2]}" != "" ]; then
-            echo "${ARR[2]}" > target/.git_id
-
-            GIT="$(cat target/.git_id)"
-            echo "git_commit_id=${GIT}"
+            echo "${ARR[2]}" > .git_id
         fi
     else
         if [ "${BRANCH}" != "" ]; then
@@ -1569,14 +1581,8 @@ version_replace() {
 }
 
 version_branch() {
-    BRANCH="${PARAM2}"
-
-    if [ "${BRANCH}" != "" ]; then
-        echo "${BRANCH}" > target/.git_branch
-    fi
-
-    if [ -r target/.git_branch ]; then
-        cat target/.git_branch
+    if [ -r .git_branch ]; then
+        cat .git_branch
     else
         git branch | grep \* | cut -d " " -f2
     fi
@@ -1586,8 +1592,8 @@ version_note() {
     NEW_GIT_ID=""
     OLD_GIT_ID=""
 
-    if [ -r target/.git_id ]; then
-        OLD_GIT_ID="$(cat target/.git_id)"
+    if [ -r .git_id ]; then
+        OLD_GIT_ID="$(cat .git_id)"
     fi
 
     > target/.git_note
@@ -1610,7 +1616,7 @@ version_note() {
         echo "${LINE}" >> target/.git_note
     done < target/.git_log
 
-    echo "${NEW_GIT_ID}" > target/.git_id
+    echo "${NEW_GIT_ID}" > .git_id
 }
 
 upload_repo() {
