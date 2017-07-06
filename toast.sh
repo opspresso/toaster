@@ -1412,6 +1412,7 @@ version_next() {
     BRANCH="$(version_branch)"
 
     if [ "${BRANCH}" != "master" ]; then
+        echo_ "not master branch. [${BRANCH}]"
         return
     fi
 
