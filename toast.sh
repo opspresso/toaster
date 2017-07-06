@@ -2770,6 +2770,10 @@ echo_bar() {
 }
 
 echo_toast() {
+    if [ -r /tmp/toaster.old ]; then
+        VER="$(cat /tmp/toaster.old)"
+    fi
+
     echo_bar
     echo_ "                              _  _          _                  _        "
     echo_ "      _   _  __ _ _ __   ___ | |(_) __ _   | |_ ___   __ _ ___| |_      "
@@ -2777,7 +2781,7 @@ echo_toast() {
     echo_ "     | |_| | (_| | | | | (_) | || | (_| |  | || (_) | (_| \__ \ |_      "
     echo_ "      \__, |\__,_|_| |_|\___/|_|/ |\__,_|   \__\___/ \__,_|___/\__|     "
     echo_ "      |___/                   |__/                                      "
-    echo_ "                                                         by nalbam      "
+    echo_ "                                               by nalbam (${VER})      "
     echo_bar
 }
 
