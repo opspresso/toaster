@@ -130,10 +130,7 @@ toast() {
         i|init|install)
             init
             ;;
-        v|version)
-            version
-            ;;
-        b|build)
+        b|build|version)
             build
             ;;
         o|vhost)
@@ -320,45 +317,20 @@ init() {
 build() {
     repo_path
 
-    version_parse
-
-    if [ "${PARAM1}" == "" ]; then
-        return
-    fi
+    build_parse
 
     case ${PARAM1} in
-        version)
-            version_next
+        version|next)
+            build_version
             ;;
-        docker)
-            version_docker
-            ;;
-        eb)
-            version_eb
-            ;;
-        *)
-            version_save
-            ;;
-    esac
-}
-
-version() {
-    repo_path
-
-    version_parse
-
-    case ${PARAM1} in
         save)
-            version_save
-            ;;
-        next)
-            version_next
+            build_save
             ;;
         docker)
-            version_docker
+            build_docker
             ;;
         eb)
-            version_eb
+            build_eb
             ;;
     esac
 }
@@ -1395,7 +1367,7 @@ custom_php_ini() {
     fi
 }
 
-version_parse() {
+build_parse() {
     POM_FILE="./pom.xml"
 
     if [ ! -f "${POM_FILE}" ]; then
@@ -1431,7 +1403,7 @@ version_parse() {
     GROUP_PATH=$(echo "${GROUP_ID}" | sed "s/\./\//")
 }
 
-version_next() {
+build_version() {
     if [ "${ARTIFACT_ID}" == "" ]; then
         warning "Not set ARTIFACT_ID."
         return 1
@@ -1477,10 +1449,10 @@ version_next() {
 
     echo_ "version=${VERSION}"
 
-    version_replace
+    replace_version
 }
 
-version_save() {
+build_save() {
     if [ "${ARTIFACT_ID}" == "" ]; then
         warning "Not set ARTIFACT_ID."
         return 1
@@ -1514,9 +1486,9 @@ version_save() {
         echo_ "package uploaded."
     fi
 
-    BRANCH="$(version_branch)"
+    BRANCH="$(build_branch)"
 
-    version_note
+    build_note
 
     GIT="$(cat .git_id)"
     echo "git_commit_id=${GIT}"
@@ -1532,7 +1504,7 @@ version_save() {
     fi
 }
 
-version_docker() {
+build_docker() {
     if [ "${ARTIFACT_ID}" == "" ]; then
         warning "Not set ARTIFACT_ID."
         return 1
@@ -1552,17 +1524,17 @@ version_docker() {
 
     popd
 
-    version_save
+    build_save
 }
 
-version_eb() {
+build_eb() {
     if [ "${ARTIFACT_ID}" == "" ]; then
         warning "Not set ARTIFACT_ID."
         return 1
     fi
 
     if [ ! -d "target/docker" ]; then
-        version_docker
+        build_docker
     fi
 
     DATE=$(date "+%Y-%m-%d %H:%M")
@@ -1575,25 +1547,7 @@ version_eb() {
      --auto-create-application
 }
 
-version_replace() {
-    if [ "${VERSION}" == "" ]; then
-        return
-    fi
-
-    VER1="<version>[0-9a-zA-Z\.\-]\+<\/version>"
-    VER2="<version>${VERSION}<\/version>"
-
-    TEMP_FILE="${TEMP_DIR}/toast-pom.tmp"
-
-    if [ -f ${POM_FILE} ]; then
-        sed "s/$VER1/$VER2/;10q;" ${POM_FILE} > ${TEMP_FILE}
-        sed "1,10d" ${POM_FILE} >> ${TEMP_FILE}
-
-        cp -rf ${TEMP_FILE} ${POM_FILE}
-    fi
-}
-
-version_branch() {
+build_branch() {
     if [ -r .git_branch ]; then
         cat .git_branch
     else
@@ -1601,7 +1555,7 @@ version_branch() {
     fi
 }
 
-version_note() {
+build_note() {
     NEW_GIT_ID=""
     OLD_GIT_ID=""
 
@@ -1630,6 +1584,24 @@ version_note() {
     done < target/.git_log
 
     echo "${NEW_GIT_ID}" > .git_id
+}
+
+replace_version() {
+    if [ "${VERSION}" == "" ]; then
+        return
+    fi
+
+    VER1="<version>[0-9a-zA-Z\.\-]\+<\/version>"
+    VER2="<version>${VERSION}<\/version>"
+
+    TEMP_FILE="${TEMP_DIR}/toast-pom.tmp"
+
+    if [ -f ${POM_FILE} ]; then
+        sed "s/$VER1/$VER2/;10q;" ${POM_FILE} > ${TEMP_FILE}
+        sed "1,10d" ${POM_FILE} >> ${TEMP_FILE}
+
+        cp -rf ${TEMP_FILE} ${POM_FILE}
+    fi
 }
 
 upload_repo() {
