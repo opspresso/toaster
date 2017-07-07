@@ -1490,13 +1490,13 @@ build_save() {
 
     build_note
 
+    URL="$(git config --get remote.origin.url)"
     GIT="$(cat .git_id)"
-    echo "git_commit_id=${GIT}"
 
     NOTE="$(cat target/.git_note)"
 
     URL="${TOAST_URL}/version/build/${ARTIFACT_ID}/${VERSION}"
-    RES=$(curl -s --data "org=${ORG}&token=${TOKEN}&groupId=${GROUP_ID}&artifactId=${ARTIFACT_ID}&packaging=${PACKAGE}&no=${SNO}&branch=${BRANCH}&git=${GIT}&note=${NOTE}" "${URL}")
+    RES=$(curl -s --data "org=${ORG}&token=${TOKEN}&groupId=${GROUP_ID}&artifactId=${ARTIFACT_ID}&packaging=${PACKAGE}&no=${SNO}&branch=${BRANCH}&url=${URL}&git=${GIT}&note=${NOTE}" "${URL}")
     ARR=(${RES})
 
     if [ "${ARR[0]}" != "OK" ]; then
