@@ -1,11 +1,11 @@
 # Dockerfile
 
-FROM nalbam/nalbam-docker:java8
+FROM java:8
 
-MAINTAINER jyyu@yanolja.com
+MAINTAINER toast@yanolja.com
 
 ADD ROOT.jar /
 
-EXPOSE PORT
+EXPOSE 8080
 
 CMD ["java", "-jar", "/ROOT.jar"]

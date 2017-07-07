@@ -2,7 +2,17 @@
   "AWSEBDockerrunVersion": "1",
   "Ports": [
     {
-      "ContainerPort": "PORT"
+      "ContainerPort": "8080"
+    }
+  ],
+  "Volumes": [
+    {
+      "HostDirectory": "/home/ec2-user",
+      "ContainerDirectory": "/home-ec2-user"
+    },
+    {
+      "HostDirectory": "/home/ec2-user",
+      "ContainerDirectory": "/data/logs"
     }
   ]
 }

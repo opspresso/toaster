@@ -1502,8 +1502,18 @@ build_docker() {
         mkdir "target/docker"
     fi
 
-    cp -rf "Dockerfile" "target/docker/Dockerfile"
-    cp -rf "Dockerrun.aws.json" "target/docker/Dockerrun.aws.json"
+    if [ -f Dockerfile ]; then
+        cp -rf "Dockerfile" "target/docker/Dockerfile"
+    else
+        cp -rf "${SHELL_DIR}/package/docker/Dockerfile" "target/docker/Dockerfile"
+    fi
+
+    if [ -f Dockerrun.aws.json ]; then
+        cp -rf "Dockerfile" "target/docker/Dockerrun.aws.json"
+    else
+        cp -rf "${SHELL_DIR}/package/docker/Dockerrun.aws.json" "target/docker/Dockerrun.aws.json"
+    fi
+
     cp -rf "target/${ARTIFACT_ID}-${VERSION}.${PACKAGING}" "target/docker/ROOT.${PACKAGING}"
 
     pushd target/docker
