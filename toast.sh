@@ -1486,12 +1486,11 @@ build_save() {
         echo_ "package uploaded."
     fi
 
-    BRANCH="$(build_branch)"
-
     build_note
 
     URL="$(git config --get remote.origin.url)"
     GIT="$(cat .git_id)"
+    BRANCH="$(cat .git_branch)"
 
     NOTE="$(cat target/.git_note)"
 
@@ -1545,14 +1544,6 @@ build_eb() {
      --description "${ARTIFACT_ID}-${VERSION}" \
      --source-bundle S3Bucket="${REPO_BUCKET}",S3Key="maven2/${GROUP_PATH}/${ARTIFACT_ID}/${VERSION}/${ARTIFACT_ID}-${VERSION}.zip" \
      --auto-create-application
-}
-
-build_branch() {
-    if [ -r .git_branch ]; then
-        cat .git_branch
-    else
-        git branch | grep \* | cut -d " " -f2
-    fi
 }
 
 build_note() {
