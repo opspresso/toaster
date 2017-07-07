@@ -1568,9 +1568,7 @@ build_note() {
     git log --pretty=format:"%h - %s" --since=1week | grep -v "\- Merge pull request " | grep -v "\- Merge branch " | grep -v "\- Merge remote-tracking " > target/.git_log
 
     while read LINE; do
-        ARR=(${LINE})
-
-        GIT_ID="${ARR[0]}"
+        GIT_ID=$(echo ${LINE} | cut -d' ' -f 1)
 
         if [ "${NEW_GIT_ID}" == "" ]; then
             NEW_GIT_ID="${GIT_ID}"
@@ -1580,7 +1578,7 @@ build_note() {
             break
         fi
 
-        echo "${LINE}" >> target/.git_note
+        echo "${LINE#*\s}" >> target/.git_note
     done < target/.git_log
 
     echo "${NEW_GIT_ID}" > .git_id
