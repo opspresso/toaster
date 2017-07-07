@@ -1372,7 +1372,7 @@ build_parse() {
 
     if [ ! -f "${POM_FILE}" ]; then
         warning "Not exist file. [${POM_FILE}]"
-        return 1
+        return
     fi
 
     ARR_GROUP=($(cat ${POM_FILE} | grep -oP '(?<=groupId>)[^<]+'))
@@ -1406,7 +1406,7 @@ build_parse() {
 build_version() {
     if [ "${ARTIFACT_ID}" == "" ]; then
         warning "Not set ARTIFACT_ID."
-        return 1
+        return
     fi
 
     BRANCH="${PARAM2}"
@@ -1416,38 +1416,27 @@ build_version() {
     fi
 
     echo "${BRANCH}" > .git_branch
+    echo_ "branch... [${BRANCH}]"
 
-    if [ "${BRANCH}" != "master" ]; then
-        echo_ "not master branch. [${BRANCH}]"
+    URL="${TOAST_URL}/version/latest/${ARTIFACT_ID}"
+    RES=$(curl -s --data "org=${ORG}&token=${TOKEN}&groupId=${GROUP_ID}&artifactId=${ARTIFACT_ID}&packaging=${PACKAGE}&no=${SNO}&branch=${BRANCH}" "${URL}")
+    ARR=(${RES})
+
+    if [ "${ARR[0]}" != "OK" ]; then
+        warning "Server Error. [${URL}][${RES}]"
         return
     fi
 
-    echo_ "version get... [${BRANCH}]"
-
-    if [ "${BRANCH}" == "master" ]; then
-        URL="${TOAST_URL}/version/latest/${ARTIFACT_ID}"
-        RES=$(curl -s --data "org=${ORG}&token=${TOKEN}&groupId=${GROUP_ID}&artifactId=${ARTIFACT_ID}&packaging=${PACKAGE}&no=${SNO}&branch=${BRANCH}" "${URL}")
-        ARR=(${RES})
-
-        if [ "${ARR[0]}" != "OK" ]; then
-            warning "Server Error. [${URL}][${RES}]"
-            return 1
-        fi
-
-        VERSION="${ARR[1]}"
-
-        if [ "${ARR[2]}" != "" ]; then
-            echo "${ARR[2]}" > .git_id
-        fi
-    else
-        if [ "${BRANCH}" != "" ]; then
-            VERSION="0.0.0-${BRANCH}"
-        else
-            VERSION=""
-        fi
+    if [ "${ARR[2]}" != "" ]; then
+        echo "${ARR[2]}" > .git_id
+        echo_ "git id... [${ARR[2]}]"
     fi
 
-    echo_ "version=${VERSION}"
+    if [ "${BRANCH}" != "master" ]; then
+        return
+    fi
+
+    VERSION="${ARR[1]}"
 
     replace_version
 }
@@ -1455,7 +1444,7 @@ build_version() {
 build_save() {
     if [ "${ARTIFACT_ID}" == "" ]; then
         warning "Not set ARTIFACT_ID."
-        return 1
+        return
     fi
 
     POM_FILE="./pom.xml"
@@ -1486,17 +1475,16 @@ build_save() {
         echo_ "package uploaded."
     fi
 
-    BRANCH="$(build_branch)"
-
     build_note
 
-    GIT="$(cat .git_id)"
-    echo "git_commit_id=${GIT}"
+    GIT_URL="$(git config --get remote.origin.url)"
+    GIT_ID="$(cat .git_id)"
+    BRANCH="$(cat .git_branch)"
 
     NOTE="$(cat target/.git_note)"
 
     URL="${TOAST_URL}/version/build/${ARTIFACT_ID}/${VERSION}"
-    RES=$(curl -s --data "org=${ORG}&token=${TOKEN}&groupId=${GROUP_ID}&artifactId=${ARTIFACT_ID}&packaging=${PACKAGE}&no=${SNO}&branch=${BRANCH}&git=${GIT}&note=${NOTE}" "${URL}")
+    RES=$(curl -s --data "org=${ORG}&token=${TOKEN}&groupId=${GROUP_ID}&artifactId=${ARTIFACT_ID}&packaging=${PACKAGE}&no=${SNO}&url=${GIT_URL}&git=${GIT_ID}&branch=${BRANCH}&note=${NOTE}" "${URL}")
     ARR=(${RES})
 
     if [ "${ARR[0]}" != "OK" ]; then
@@ -1507,7 +1495,7 @@ build_save() {
 build_docker() {
     if [ "${ARTIFACT_ID}" == "" ]; then
         warning "Not set ARTIFACT_ID."
-        return 1
+        return
     fi
 
     if [ ! -d "target/docker" ]; then
@@ -1530,7 +1518,7 @@ build_docker() {
 build_eb() {
     if [ "${ARTIFACT_ID}" == "" ]; then
         warning "Not set ARTIFACT_ID."
-        return 1
+        return
     fi
 
     if [ ! -d "target/docker" ]; then
@@ -1547,49 +1535,41 @@ build_eb() {
      --auto-create-application
 }
 
-build_branch() {
-    if [ -r .git_branch ]; then
-        cat .git_branch
-    else
-        git branch | grep \* | cut -d " " -f2
-    fi
-}
-
 build_note() {
-    NEW_GIT_ID=""
-    OLD_GIT_ID=""
+    NEW_ID=""
+    OLD_ID=""
 
     if [ -r .git_id ]; then
-        OLD_GIT_ID="$(cat .git_id)"
+        OLD_ID="$(cat .git_id)"
     fi
 
     > target/.git_note
 
-    git log --pretty=format:"%h - %s" --since=1week | grep -v "\- Merge pull request " | grep -v "\- Merge branch " | grep -v "\- Merge remote-tracking " > target/.git_log
+    git log --pretty=format:"%h.- %s" --since=1week | grep -v "\- Merge pull request " | grep -v "\- Merge branch " | grep -v "\- Merge remote-tracking " > target/.git_log
 
     while read LINE; do
-        ARR=(${LINE})
+        GIT_ID=$(echo ${LINE} | cut -d'.' -f 1)
 
-        GIT_ID="${ARR[0]}"
-
-        if [ "${NEW_GIT_ID}" == "" ]; then
-            NEW_GIT_ID="${GIT_ID}"
+        if [ "${NEW_ID}" == "" ]; then
+            NEW_ID="${GIT_ID}"
         fi
 
-        if [ "${OLD_GIT_ID}" == "${GIT_ID}" ]; then
+        if [ "${OLD_ID}" == "${GIT_ID}" ]; then
             break
         fi
 
-        echo "${LINE}" >> target/.git_note
+        echo "${LINE#*.}" >> target/.git_note
     done < target/.git_log
 
-    echo "${NEW_GIT_ID}" > .git_id
+    echo "${NEW_ID}" > .git_id
 }
 
 replace_version() {
     if [ "${VERSION}" == "" ]; then
         return
     fi
+
+    echo_ "version=${VERSION}"
 
     VER1="<version>[0-9a-zA-Z\.\-]\+<\/version>"
     VER2="<version>${VERSION}<\/version>"
