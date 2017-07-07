@@ -1502,14 +1502,14 @@ build_docker() {
         mkdir "target/docker"
     fi
 
-    if [ -f Dockerfile ]; then
+    if [ -f "Dockerfile" ]; then
         cp -rf "Dockerfile" "target/docker/Dockerfile"
     else
         cp -rf "${SHELL_DIR}/package/docker/Dockerfile" "target/docker/Dockerfile"
     fi
 
-    if [ -f Dockerrun.aws.json ]; then
-        cp -rf "Dockerfile" "target/docker/Dockerrun.aws.json"
+    if [ -f "Dockerrun.aws.json" ]; then
+        cp -rf "Dockerrun.aws.json" "target/docker/Dockerrun.aws.json"
     else
         cp -rf "${SHELL_DIR}/package/docker/Dockerrun.aws.json" "target/docker/Dockerrun.aws.json"
     fi
