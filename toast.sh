@@ -136,7 +136,7 @@ toast() {
         b|build|version)
             build
             ;;
-        o|vhost)
+        v|vhost)
             vhost
             ;;
         d|deploy)
@@ -2230,26 +2230,32 @@ deploy_value() {
     VERSION="${ARR[3]}"
     TYPE="${ARR[4]}"
     DOMAIN="${ARR[5]}"
-    DEPLOY="${ARR[6]}"
+    DEPLOY_TYPE="${ARR[6]}"
+    DEPLOY_PORT="${ARR[7]}"
 
     GROUP_PATH=$(echo "${GROUP_ID}" | sed "s/\./\//")
 
     PACKAGING="${TYPE}"
-    DEPLOY_PATH=""
 
-    if [ "${PACKAGING}" == "war" ]; then
-        DEPLOY_PATH="${WEBAPP_DIR}"
-    elif [ "${PACKAGING}" == "jar" ]; then
-        DEPLOY_PATH="${APPS_DIR}"
-    elif [ "${PACKAGING}" == "web" ] || [ "${PACKAGING}" == "php" ]; then
-        PACKAGING="war"
-        if [ "${DOMAIN}" != "" ]; then
-            DEPLOY_PATH="${SITE_DIR}/${DOMAIN}"
+    if [ "${DEPLOY_TYPE}" == "s3" ]; then
+        if [ "${DOMAIN}" == "" ]; then
+            DEPLOY_PATH=""
+        else
+            DEPLOY_PATH="s3://${DOMAIN}"
         fi
-    fi
-
-    if [ "${DEPLOY}" == "s3" ]; then
-        DEPLOY_PATH="s3://${DOMAIN}"
+    else
+        if [ "${PACKAGING}" == "war" ]; then
+            DEPLOY_PATH="${WEBAPP_DIR}"
+        elif [ "${PACKAGING}" == "jar" ]; then
+            DEPLOY_PATH="${APPS_DIR}"
+        elif [ "${PACKAGING}" == "web" ] || [ "${PACKAGING}" == "php" ]; then
+            if [ "${DOMAIN}" == "" ]; then
+                DEPLOY_PATH=""
+            else
+                DEPLOY_PATH="${SITE_DIR}/${DOMAIN}"
+            fi
+            PACKAGING="war"
+        fi
     fi
 
     FILENAME="${ARTIFACT_ID}-${VERSION}.${PACKAGING}"
@@ -2310,7 +2316,7 @@ placement() {
 
     echo_ "--> ${DEPLOY_PATH}"
 
-    if [ "${DEPLOY}" == "s3" ]; then
+    if [ "${DEPLOY_TYPE}" == "s3" ]; then
         if [ ! -d "${UNZIP_DIR}" ]; then
             warning "--> empty UNZIP_DIR [${UNZIP_DIR}]"
             return
@@ -2652,7 +2658,11 @@ process_stop() {
 }
 
 process_start() {
-    java -jar ${JAR_OPTS} ${DEPLOY_PATH}/${ARTIFACT_ID}.${PACKAGING} >> /dev/null &
+    if [ "${DEPLOY_PORT}" != "" ]; then
+        java -jar ${JAR_OPTS} -Dserver.port=${DEPLOY_PORT} ${DEPLOY_PATH}/${ARTIFACT_ID}.${PACKAGING} >> /dev/null &
+    else
+        java -jar ${JAR_OPTS} ${DEPLOY_PATH}/${ARTIFACT_ID}.${PACKAGING} >> /dev/null &
+    fi
 
     PID=$(ps -ef | grep "[${ARTIFACT_ID:0:1}]""${ARTIFACT_ID:1}" | grep "[-]jar" | awk '{print $2}')
     if [ "${PID}" != "" ]; then
