@@ -108,6 +108,9 @@ TEMP_DIR="/tmp"
 
 HTTPD_VERSION="24"
 
+HTTPD_CONF_DIR=
+NGINX_CONF_DIR=
+
 TOMCAT_DIR="${APPS_DIR}/tomcat8"
 WEBAPP_DIR="${TOMCAT_DIR}/webapps"
 
@@ -894,10 +897,6 @@ init_certificate() {
         source ${SSL_INFO}
     fi
 
-    if [ "${CERT_NAME}" == "${SSL_NAME}" ]; then
-        return
-    fi
-
     CERTIFICATE="${TEMP_DIR}/${CERT_NAME}"
 
     URL="${TOAST_URL}/certificate/name/${CERT_NAME}"
@@ -906,22 +905,20 @@ init_certificate() {
     if [ -f ${CERTIFICATE} ]; then
         echo_ "save certificate..."
 
-        TARGET=
+        SSL_TARGET=
 
         while read LINE; do
             ARR=(${LINE})
 
             if [ "${ARR[0]}" == "#" ]; then
-                TARGET="${SSL_DIR}/${ARR[1]}"
-                new_file ${TARGET} 600
+                SSL_TARGET="${SSL_DIR}/${ARR[1]}"
+                new_file ${SSL_TARGET} 600
             else
-                if [ -w ${TARGET} ]; then
-                    echo "${LINE}" >> ${TARGET}
+                if [ -w ${SSL_TARGET} ]; then
+                    echo "${LINE}" >> ${SSL_TARGET}
                 fi
             fi
         done < ${CERTIFICATE}
-
-        TARGET=
 
         echo "SSL_NAME=${CERT_NAME}" > ${SSL_INFO}
     fi
@@ -1073,6 +1070,8 @@ init_httpd() {
             HTTPD_VERSION="22"
         fi
 
+        touch "${SHELL_DIR}/.config_httpd"
+
         custom_httpd_conf
 
         vhost_local
@@ -1080,7 +1079,8 @@ init_httpd() {
         echo_ "httpd start..."
         service_ctl httpd start on
 
-        echo "HTTPD_VERSION=${HTTPD_VERSION}" > "${SHELL_DIR}/.config_httpd"
+        echo "HTTPD_VERSION=${HTTPD_VERSION}" >> "${SHELL_DIR}/.config_httpd"
+        echo "HTTPD_CONF_DIR=${HTTPD_CONF_DIR}" >> "${SHELL_DIR}/.config_httpd"
     fi
 
     echo_bar
@@ -1094,10 +1094,14 @@ init_nginx() {
 
         ${SHELL_DIR}/install/nginx.sh "${REPO_PATH}"
 
+        touch "${SHELL_DIR}/.config_nginx"
+
+        nginx_local
+
         echo_ "nginx start..."
         ${SUDO} nginx
 
-        touch "${SHELL_DIR}/.config_nginx"
+        echo "NGINX_CONF_DIR=${NGINX_CONF_DIR}" >> "${SHELL_DIR}/.config_nginx"
     fi
 
     echo_bar
@@ -1502,8 +1506,18 @@ build_docker() {
         mkdir "target/docker"
     fi
 
-    cp -rf "Dockerfile" "target/docker/Dockerfile"
-    cp -rf "Dockerrun.aws.json" "target/docker/Dockerrun.aws.json"
+    if [ -f "Dockerfile" ]; then
+        cp -rf "Dockerfile" "target/docker/Dockerfile"
+    else
+        cp -rf "${SHELL_DIR}/package/docker/Dockerfile" "target/docker/Dockerfile"
+    fi
+
+    if [ -f "Dockerrun.aws.json" ]; then
+        cp -rf "Dockerrun.aws.json" "target/docker/Dockerrun.aws.json"
+    else
+        cp -rf "${SHELL_DIR}/package/docker/Dockerrun.aws.json" "target/docker/Dockerrun.aws.json"
+    fi
+
     cp -rf "target/${ARTIFACT_ID}-${VERSION}.${PACKAGING}" "target/docker/ROOT.${PACKAGING}"
 
     pushd target/docker
@@ -1609,8 +1623,8 @@ upload_repo() {
 
 nginx_dir() {
     TOAST_NGINX="${SHELL_DIR}/.config_nginx"
-    if [ ! -f "${TOAST_NGINX}" ]; then
-        return 1
+    if [ -f "${TOAST_NGINX}" ]; then
+        source ${TOAST_NGINX}
     fi
 
     NGINX_BIN_PATH=""
@@ -1687,18 +1701,35 @@ nginx_lb() {
 
             if [ "${ARR[0]}" == "NO" ]; then
                 FNO="${ARR[1]}"
+                continue
             fi
 
-            if [ "${ARR[0]}" == "SSL" ]; then
-                SSL="${ARR[1]}"
-            fi
-
-            if [ "${ARR[0]}" == "DOM" ]; then
-                DOM_ARR=(${LINE:4})
+            if [ "${ARR[0]}" == "FLEET" ]; then
+                TNO="${ARR[1]}"
+                HOST_ARR=
+                DOM_ARR=
+                SSL=
+                continue
             fi
 
             if [ "${ARR[0]}" == "HOST" ]; then
                 HOST_ARR=(${LINE:5})
+                continue
+            fi
+
+            if [ "${ARR[0]}" == "DOM" ]; then
+                DOM_ARR=(${LINE:4})
+                continue
+            fi
+
+            if [ "${ARR[0]}" == "SSL" ]; then
+                SSL="${ARR[1]}"
+
+                if [ "${SSL}" != "" ]; then
+                    init_certificate "${SSL}"
+                fi
+
+                continue
             fi
 
             if [ "${ARR[0]}" == "CUSTOM" ]; then
@@ -1708,6 +1739,8 @@ nginx_lb() {
                 if [ "${RES}" != "" ]; then
                     CUSTOM="${RES}"
                 fi
+
+                continue
             fi
 
             if [ "${ARR[0]}" == "HTTP" ]; then
@@ -1735,6 +1768,8 @@ nginx_lb() {
                 #for (( i=0; i<${LEN}; i++ )); do
                 #    echo_ "${i} : ${DOM_ARR[$i]}"
                 #done
+
+                continue
             fi
 
             if [ "${ARR[0]}" == "HTTPS" ]; then
@@ -1748,6 +1783,8 @@ nginx_lb() {
                     echo "${CUSTOM}" >> ${TEMP_SSL}
                     sed "1,8d" ${TEMPLATE} >> ${TEMP_SSL}
                 fi
+
+                continue
             fi
 
             if [ "${ARR[0]}" == "TCP" ]; then
@@ -1763,12 +1800,10 @@ nginx_lb() {
 
                 TEMPLATE="${SHELL_DIR}/package/nginx/nginx-tcp-server.conf"
                 sed "s/PORT/$PORT/g" ${TEMPLATE} >> ${TEMP_TCP}
+
+                continue
             fi
         done < ${LB_CONF}
-
-        if [ "${SSL}" != "" ]; then
-            init_certificate "${SSL}"
-        fi
 
         echo_ "assemble..."
 
@@ -1817,6 +1852,22 @@ nginx_lb() {
     fi
 
     echo_bar
+}
+
+nginx_local() {
+    nginx_dir
+
+    if [ "${NGINX_CONF_DIR}" == "" ]; then
+        return
+    fi
+
+    # health.html
+    if [ -d "${SITE_DIR}/localhost" ]; then
+        TEMP_FILE="${TEMP_DIR}/toast-health.tmp"
+        echo "OK ${NAME}" > ${TEMP_FILE}
+        copy ${TEMP_FILE} "/usr/local/nginx/html/index.html"
+        copy ${TEMP_FILE} "/usr/local/nginx/html/health.html"
+    fi
 }
 
 vhost_local() {
