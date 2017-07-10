@@ -2236,21 +2236,26 @@ deploy_value() {
     GROUP_PATH=$(echo "${GROUP_ID}" | sed "s/\./\//")
 
     PACKAGING="${TYPE}"
-    DEPLOY_PATH=""
-
-    if [ "${PACKAGING}" == "war" ]; then
-        DEPLOY_PATH="${WEBAPP_DIR}"
-    elif [ "${PACKAGING}" == "jar" ]; then
-        DEPLOY_PATH="${APPS_DIR}"
-    elif [ "${PACKAGING}" == "web" ] || [ "${PACKAGING}" == "php" ]; then
-        PACKAGING="war"
-        if [ "${DOMAIN}" != "" ]; then
-            DEPLOY_PATH="${SITE_DIR}/${DOMAIN}"
-        fi
-    fi
 
     if [ "${DEPLOY_TYPE}" == "s3" ]; then
-        DEPLOY_PATH="s3://${DOMAIN}"
+        if [ "${DOMAIN}" == "" ]; then
+            DEPLOY_PATH=""
+        else
+            DEPLOY_PATH="s3://${DOMAIN}"
+        fi
+    else
+        if [ "${PACKAGING}" == "war" ]; then
+            DEPLOY_PATH="${WEBAPP_DIR}"
+        elif [ "${PACKAGING}" == "jar" ]; then
+            DEPLOY_PATH="${APPS_DIR}"
+        elif [ "${PACKAGING}" == "web" ] || [ "${PACKAGING}" == "php" ]; then
+            if [ "${DOMAIN}" == "" ]; then
+                DEPLOY_PATH=""
+            else
+                DEPLOY_PATH="${SITE_DIR}/${DOMAIN}"
+            fi
+            PACKAGING="war"
+        fi
     fi
 
     FILENAME="${ARTIFACT_ID}-${VERSION}.${PACKAGING}"
