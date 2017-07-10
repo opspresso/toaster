@@ -136,7 +136,7 @@ toast() {
         b|build|version)
             build
             ;;
-        o|vhost)
+        v|vhost)
             vhost
             ;;
         d|deploy)
@@ -2230,7 +2230,8 @@ deploy_value() {
     VERSION="${ARR[3]}"
     TYPE="${ARR[4]}"
     DOMAIN="${ARR[5]}"
-    DEPLOY="${ARR[6]}"
+    DEPLOY_TYPE="${ARR[6]}"
+    DEPLOY_PORT="${ARR[7]}"
 
     GROUP_PATH=$(echo "${GROUP_ID}" | sed "s/\./\//")
 
@@ -2248,7 +2249,7 @@ deploy_value() {
         fi
     fi
 
-    if [ "${DEPLOY}" == "s3" ]; then
+    if [ "${DEPLOY_TYPE}" == "s3" ]; then
         DEPLOY_PATH="s3://${DOMAIN}"
     fi
 
@@ -2310,7 +2311,7 @@ placement() {
 
     echo_ "--> ${DEPLOY_PATH}"
 
-    if [ "${DEPLOY}" == "s3" ]; then
+    if [ "${DEPLOY_TYPE}" == "s3" ]; then
         if [ ! -d "${UNZIP_DIR}" ]; then
             warning "--> empty UNZIP_DIR [${UNZIP_DIR}]"
             return
@@ -2652,7 +2653,11 @@ process_stop() {
 }
 
 process_start() {
-    java -jar ${JAR_OPTS} ${DEPLOY_PATH}/${ARTIFACT_ID}.${PACKAGING} >> /dev/null &
+    if [ "${DEPLOY_PORT}" != "" ]; then
+        java -jar -Dserver.port=${DEPLOY_PORT} ${JAR_OPTS} ${DEPLOY_PATH}/${ARTIFACT_ID}.${PACKAGING} >> /dev/null &
+    else
+        java -jar ${JAR_OPTS} ${DEPLOY_PATH}/${ARTIFACT_ID}.${PACKAGING} >> /dev/null &
+    fi
 
     PID=$(ps -ef | grep "[${ARTIFACT_ID:0:1}]""${ARTIFACT_ID:1}" | grep "[-]jar" | awk '{print $2}')
     if [ "${PID}" != "" ]; then
