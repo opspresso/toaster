@@ -2659,7 +2659,7 @@ process_stop() {
 
 process_start() {
     if [ "${DEPLOY_PORT}" != "" ]; then
-        java -jar -Dserver.port=${DEPLOY_PORT} ${JAR_OPTS} ${DEPLOY_PATH}/${ARTIFACT_ID}.${PACKAGING} >> /dev/null &
+        java -jar ${JAR_OPTS} -Dserver.port=${DEPLOY_PORT} ${DEPLOY_PATH}/${ARTIFACT_ID}.${PACKAGING} >> /dev/null &
     else
         java -jar ${JAR_OPTS} ${DEPLOY_PATH}/${ARTIFACT_ID}.${PACKAGING} >> /dev/null &
     fi
