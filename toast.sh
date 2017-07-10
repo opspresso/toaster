@@ -108,6 +108,9 @@ TEMP_DIR="/tmp"
 
 HTTPD_VERSION="24"
 
+HTTPD_CONF_DIR=
+NGINX_CONF_DIR=
+
 TOMCAT_DIR="${APPS_DIR}/tomcat8"
 WEBAPP_DIR="${TOMCAT_DIR}/webapps"
 
@@ -1081,6 +1084,7 @@ init_httpd() {
         service_ctl httpd start on
 
         echo "HTTPD_VERSION=${HTTPD_VERSION}" > "${SHELL_DIR}/.config_httpd"
+        echo "HTTPD_CONF_DIR=${HTTPD_CONF_DIR}" >> "${SHELL_DIR}/.config_httpd"
     fi
 
     echo_bar
@@ -1097,7 +1101,9 @@ init_nginx() {
         echo_ "nginx start..."
         ${SUDO} nginx
 
-        touch "${SHELL_DIR}/.config_nginx"
+        nginx_dir
+
+        echo "NGINX_CONF_DIR=${NGINX_CONF_DIR}" > "${SHELL_DIR}/.config_nginx"
     fi
 
     echo_bar
