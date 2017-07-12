@@ -352,6 +352,9 @@ vhost() {
         lb)
             nginx_lb
             ;;
+        lb2)
+            nginx_lb2
+            ;;
         *)
             vhost_fleet
     esac
@@ -1708,7 +1711,6 @@ nginx_lb() {
                 TNO="${ARR[1]}"
                 HOST_ARR=
                 DOM_ARR=
-                SSL=
                 continue
             fi
 
@@ -1763,12 +1765,6 @@ nginx_lb() {
                     sed "1,9d" ${TEMPLATE} >> ${TEMP_HTTP}
                 fi
 
-                #LEN="${#DOM_ARR[@]}"
-                #echo_ "LEN : ${LEN}"
-                #for (( i=0; i<${LEN}; i++ )); do
-                #    echo_ "${i} : ${DOM_ARR[$i]}"
-                #done
-
                 continue
             fi
 
@@ -1783,6 +1779,197 @@ nginx_lb() {
                     echo "${CUSTOM}" >> ${TEMP_SSL}
                     sed "1,8d" ${TEMPLATE} >> ${TEMP_SSL}
                 fi
+
+                continue
+            fi
+
+            if [ "${ARR[0]}" == "TCP" ]; then
+                PORT="${ARR[1]}"
+
+                echo "    upstream toast_${PORT} {" >> ${TEMP_TCP}
+
+                for VAL in "${HOST_ARR[@]}"; do
+                   echo "        server ${VAL}:${PORT} max_fails=3 fail_timeout=10s;" >> ${TEMP_TCP}
+                done
+
+                echo "    }" >> ${TEMP_TCP}
+
+                TEMPLATE="${SHELL_DIR}/package/nginx/nginx-tcp-server.conf"
+                sed "s/PORT/$PORT/g" ${TEMPLATE} >> ${TEMP_TCP}
+
+                continue
+            fi
+        done < ${LB_CONF}
+
+        echo_ "assemble..."
+
+        # default
+        TEMPLATE="${SHELL_DIR}/package/nginx/nginx-default.conf"
+        cat ${TEMPLATE} >> ${TEMP_FILE}
+
+        # http
+        if [ -f ${TEMP_HTTP} ]; then
+            echo "" >> ${TEMP_FILE}
+            echo "http {" >> ${TEMP_FILE}
+
+            TEMPLATE="${SHELL_DIR}/package/nginx/nginx-http-default.conf"
+            cat ${TEMPLATE} >> ${TEMP_FILE}
+
+            # http
+            echo "" >> ${TEMP_FILE}
+            cat ${TEMP_HTTP} >> ${TEMP_FILE}
+
+            # https
+            if [ -f ${TEMP_SSL} ]; then
+                echo "" >> ${TEMP_FILE}
+                cat ${TEMP_SSL} >> ${TEMP_FILE}
+            fi
+
+            echo "}" >> ${TEMP_FILE}
+        fi
+
+        # tcp
+        if [ -f ${TEMP_TCP} ]; then
+            echo "stream {" >> ${TEMP_FILE}
+
+            TEMPLATE="${SHELL_DIR}/package/nginx/nginx-tcp-default.conf"
+            cat ${TEMPLATE} >> ${TEMP_FILE}
+
+            echo "" >> ${TEMP_FILE}
+            cat ${TEMP_TCP} >> ${TEMP_FILE}
+
+            echo "}" >> ${TEMP_FILE}
+        fi
+
+        # done
+        copy ${TEMP_FILE} ${TARGET} 644
+
+        ${SUDO} nginx -s reload
+    fi
+
+    echo_bar
+}
+
+nginx_lb2() {
+    nginx_dir
+
+    if [ "${NGINX_CONF_DIR}" == "" ]; then
+        return
+    fi
+
+    TEMP_FILE="${TEMP_DIR}/toast-lb.tmp"
+    TARGET="${NGINX_CONF_DIR}/nginx.conf"
+
+    echo_bar
+    echo_ "nginx lb2..."
+
+    TARGET_DIR="${TEMP_DIR}/conf"
+    mkdir -p ${TARGET_DIR}
+
+    LB_CONF="${TARGET_DIR}/${SNO}"
+    rm -rf ${LB_CONF}
+
+    URL="${TOAST_URL}/server/lb/${SNO}"
+    wget -q -N --post-data "org=${ORG}&token=${TOKEN}&no=${SNO}" -P "${TARGET_DIR}" "${URL}"
+
+    if [ -f ${LB_CONF} ]; then
+        echo_ "$(cat ${LB_CONF})"
+
+        TEMP_TEMP="${TARGET_DIR}/toast-lb2-temp.tmp"
+        TEMP_HTTP="${TARGET_DIR}/toast-lb2-http.tmp"
+        TEMP_SSL="${TARGET_DIR}/toast-lb2-ssl.tmp"
+        TEMP_TCP="${TARGET_DIR}/toast-lb2-tcp.tmp"
+
+        rm -rf "${TEMP_FILE}" "${TEMP_HTTP}" "${TEMP_SSL}" "${TEMP_TCP}"
+
+        while read LINE; do
+            ARR=(${LINE})
+
+            if [ "${ARR[0]}" == "NO" ]; then
+                FNO="${ARR[1]}"
+                continue
+            fi
+
+            if [ "${ARR[0]}" == "FLEET" ]; then
+                TNO="${ARR[1]}"
+                HOST_ARR=
+                DOM_ARR=
+                continue
+            fi
+
+            if [ "${ARR[0]}" == "HOST" ]; then
+                HOST_ARR=(${LINE:5})
+                continue
+            fi
+
+            if [ "${ARR[0]}" == "DOM" ]; then
+                DOM_ARR=(${LINE:4})
+                continue
+            fi
+
+            if [ "${ARR[0]}" == "SSL" ]; then
+                SSL="${ARR[1]}"
+
+                if [ "${SSL}" != "" ]; then
+                    init_certificate "${SSL}"
+                fi
+
+                continue
+            fi
+
+            if [ "${ARR[0]}" == "CUSTOM" ]; then
+                URL="${TOAST_URL}/fleet/custom/${FNO}"
+                RES=$(curl -s --data "org=${ORG}&token=${TOKEN}&no=${SNO}" "${URL}")
+
+                if [ "${RES}" != "" ]; then
+                    CUSTOM="${RES}"
+                fi
+
+                continue
+            fi
+
+            if [ "${ARR[0]}" == "HTTP" ]; then
+                PORT="${ARR[1]}"
+
+                for DOMAIN in "${DOM_ARR[@]}"; do
+                    echo "    upstream toast {" >> ${TEMP_HTTP}
+
+                    for HOST in "${HOST_ARR[@]}"; do
+                       echo "        server ${HOST}:${PORT} max_fails=3 fail_timeout=10s;" >> ${TEMP_HTTP}
+                    done
+
+                    echo "    }" >> ${TEMP_HTTP}
+
+                    TEMPLATE="${SHELL_DIR}/package/nginx/nginx-http-server-domain.conf"
+                    if [ "${CUSTOM}" == "" ]; then
+                        sed "s/DOMAIN/$DOMAIN/g" ${TEMPLATE} > ${TEMP_TEMP}
+                        sed "s/PORT/$PORT/g" ${TEMP_TEMP} >> ${TEMP_HTTP}
+                    else
+                        sed "s/DOMAIN/$DOMAIN/g" ${TEMPLATE} > ${TEMP_TEMP}
+                        sed "s/PORT/$PORT/;5q;" ${TEMP_TEMP} >> ${TEMP_HTTP}
+                        echo "${CUSTOM}" >> ${TEMP_HTTP}
+                        sed "1,9d" ${TEMP_TEMP} >> ${TEMP_HTTP}
+                    fi
+                done
+
+                continue
+            fi
+
+            if [ "${ARR[0]}" == "HTTPS" ]; then
+                PORT="${ARR[1]}"
+
+                for DOMAIN in "${DOM_ARR[@]}"; do
+                    TEMPLATE="${SHELL_DIR}/package/nginx/nginx-http-ssl.conf"
+                    if [ "${CUSTOM}" == "" ]; then
+                        sed "s/DOMAIN/$DOMAIN/g" ${TEMPLATE} > ${TEMP_TEMP}
+                        sed "s/PORT/$PORT/g" ${TEMP_TEMP} > ${TEMP_SSL}
+                    else
+                        sed "s/DOMAIN/$DOMAIN/g" ${TEMPLATE} > ${TEMP_TEMP}
+                        sed "s/PORT/$PORT/;4q;" ${TEMP_TEMP} >> ${TEMP_SSL}
+                        echo "${CUSTOM}" >> ${TEMP_SSL}
+                        sed "1,8d" ${TEMP_TEMP} >> ${TEMP_SSL}
+                    fi
+                done
 
                 continue
             fi
