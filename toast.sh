@@ -1697,6 +1697,9 @@ nginx_lb() {
 
         rm -rf "${TEMP_FILE}" "${TEMP_HTTP}" "${TEMP_SSL}" "${TEMP_TCP}"
 
+        CUSTOM_HTTP=
+        CUSTOM_HTTPS=
+
         while read LINE; do
             ARR=(${LINE})
 
@@ -1724,11 +1727,7 @@ nginx_lb() {
 
                     if [ "${RES}" != "" ]; then
                         CUSTOM_HTTP="${RES}"
-                    else
-                        CUSTOM_HTTP=
                     fi
-                else
-                    CUSTOM_HTTP=
                 fi
 
                 if [ "${CUSTOM}" != "" ]; then
@@ -1737,11 +1736,7 @@ nginx_lb() {
 
                     if [ "${RES}" != "" ]; then
                         CUSTOM_HTTPS="${RES}"
-                    else
-                        CUSTOM_HTTPS=
                     fi
-                else
-                    CUSTOM_HTTPS=
                 fi
 
                 continue
