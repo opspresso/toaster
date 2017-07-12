@@ -1796,6 +1796,7 @@ nginx_lb() {
                         sed "s/DOMAIN/$DOMAIN/g" ${TEMP_TEMP1} > ${TEMP_TEMP2}
                         sed "s/PORT/$PORT/;5q;" ${TEMP_TEMP2} >> ${TEMP_HTTP}
                         echo "${CUSTOM_HTTP}" >> ${TEMP_HTTP}
+                        echo "" >> ${TEMP_HTTP}
                         sed "1,9d" ${TEMP_TEMP2} >> ${TEMP_HTTP}
                     fi
                     echo "" >> ${TEMP_HTTP}
@@ -1816,6 +1817,7 @@ nginx_lb() {
                         sed "s/DOMAIN/$DOMAIN/g" ${TEMPLATE} > ${TEMP_TEMP1}
                         sed "s/PORT/$PORT/;4q;" ${TEMP_TEMP1} >> ${TEMP_SSL}
                         echo "${CUSTOM_HTTPS}" >> ${TEMP_SSL}
+                        echo "" >> ${TEMP_SSL}
                         sed "1,8d" ${TEMP_TEMP1} >> ${TEMP_SSL}
                     fi
                     echo "" >> ${TEMP_SSL}
