@@ -1690,7 +1690,9 @@ nginx_lb() {
     if [ -f ${LB_CONF} ]; then
         echo_ "$(cat ${LB_CONF})"
 
-        TEMP_TEMP="${TARGET_DIR}/toast-lb-temp.tmp"
+        TEMP_TEMP1="${TARGET_DIR}/toast-lb-temp1.tmp"
+        TEMP_TEMP2="${TARGET_DIR}/toast-lb-temp2.tmp"
+
         TEMP_HTTP="${TARGET_DIR}/toast-lb-http.tmp"
         TEMP_SSL="${TARGET_DIR}/toast-lb-ssl.tmp"
         TEMP_TCP="${TARGET_DIR}/toast-lb-tcp.tmp"
@@ -1777,18 +1779,22 @@ nginx_lb() {
                     IN=$(echo "${IN}" | sed "s/yanoljanow\.com/yanoljanow-in\.com/")
 
                     if [ "${DOMAIN}" != "${IN}" ]; then
-                        DOMAIN="${DOMAIN} ${IN}"
+                        SERVER="${DOMAIN} ${IN}"
+                    else
+                        SERVER="${DOMAIN}"
                     fi
 
                     TEMPLATE="${SHELL_DIR}/package/nginx/nginx-http-server-domain.conf"
                     if [ "${CUSTOM_HTTP}" == "" ]; then
-                        sed "s/DOMAIN/$DOMAIN/g" ${TEMPLATE} > ${TEMP_TEMP}
-                        sed "s/PORT/$PORT/g" ${TEMP_TEMP} >> ${TEMP_HTTP}
+                        sed "s/SERVER/$SERVER/g" ${TEMPLATE} > ${TEMP_TEMP1}
+                        sed "s/DOMAIN/$DOMAIN/g" ${TEMP_TEMP1} > ${TEMP_TEMP2}
+                        sed "s/PORT/$PORT/g" ${TEMP_TEMP2} >> ${TEMP_HTTP}
                     else
-                        sed "s/DOMAIN/$DOMAIN/g" ${TEMPLATE} > ${TEMP_TEMP}
-                        sed "s/PORT/$PORT/;5q;" ${TEMP_TEMP} >> ${TEMP_HTTP}
+                        sed "s/SERVER/$SERVER/g" ${TEMPLATE} > ${TEMP_TEMP1}
+                        sed "s/DOMAIN/$DOMAIN/g" ${TEMP_TEMP1} > ${TEMP_TEMP2}
+                        sed "s/PORT/$PORT/;5q;" ${TEMP_TEMP2} >> ${TEMP_HTTP}
                         echo "${CUSTOM_HTTP}" >> ${TEMP_HTTP}
-                        sed "1,9d" ${TEMP_TEMP} >> ${TEMP_HTTP}
+                        sed "1,9d" ${TEMP_TEMP2} >> ${TEMP_HTTP}
                     fi
                 done
 
@@ -1801,13 +1807,13 @@ nginx_lb() {
                 for DOMAIN in "${DOM_ARR[@]}"; do
                     TEMPLATE="${SHELL_DIR}/package/nginx/nginx-http-ssl-domain.conf"
                     if [ "${CUSTOM_HTTPS}" == "" ]; then
-                        sed "s/DOMAIN/$DOMAIN/g" ${TEMPLATE} > ${TEMP_TEMP}
-                        sed "s/PORT/$PORT/g" ${TEMP_TEMP} >> ${TEMP_SSL}
+                        sed "s/DOMAIN/$DOMAIN/g" ${TEMPLATE} > ${TEMP_TEMP1}
+                        sed "s/PORT/$PORT/g" ${TEMP_TEMP1} >> ${TEMP_SSL}
                     else
-                        sed "s/DOMAIN/$DOMAIN/g" ${TEMPLATE} > ${TEMP_TEMP}
-                        sed "s/PORT/$PORT/;4q;" ${TEMP_TEMP} >> ${TEMP_SSL}
+                        sed "s/DOMAIN/$DOMAIN/g" ${TEMPLATE} > ${TEMP_TEMP1}
+                        sed "s/PORT/$PORT/;4q;" ${TEMP_TEMP1} >> ${TEMP_SSL}
                         echo "${CUSTOM_HTTPS}" >> ${TEMP_SSL}
-                        sed "1,8d" ${TEMP_TEMP} >> ${TEMP_SSL}
+                        sed "1,8d" ${TEMP_TEMP1} >> ${TEMP_SSL}
                     fi
                 done
 
