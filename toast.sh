@@ -1959,7 +1959,7 @@ nginx_lb2() {
                 PORT="${ARR[1]}"
 
                 for DOMAIN in "${DOM_ARR[@]}"; do
-                    TEMPLATE="${SHELL_DIR}/package/nginx/nginx-http-ssl.conf"
+                    TEMPLATE="${SHELL_DIR}/package/nginx/nginx-http-ssl-domain.conf"
                     if [ "${CUSTOM}" == "" ]; then
                         sed "s/DOMAIN/$DOMAIN/g" ${TEMPLATE} > ${TEMP_TEMP}
                         sed "s/PORT/$PORT/g" ${TEMP_TEMP} > ${TEMP_SSL}
