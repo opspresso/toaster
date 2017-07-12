@@ -1775,31 +1775,53 @@ nginx_lb() {
 
                     echo "    }" >> ${TEMP_HTTP}
 
+                    SERVER="${DOMAIN}"
+
+                    if [ "${CUSTOM}" == "S" ]; then
+                        TEMPLATE="${SHELL_DIR}/package/nginx/nginx-http-server-redirect.conf"
+                        sed "s/SERVER/$SERVER/g" ${TEMPLATE} > ${TEMP_TEMP1}
+                        sed "s/DOMAIN/$DOMAIN/g" ${TEMP_TEMP1} > ${TEMP_TEMP2}
+                        sed "s/PORT/$PORT/g" ${TEMP_TEMP2} >> ${TEMP_HTTP}
+                    else
+                        TEMPLATE="${SHELL_DIR}/package/nginx/nginx-http-server-domain.conf"
+                        if [ "${CUSTOM_HTTP}" == "" ]; then
+                            sed "s/SERVER/$SERVER/g" ${TEMPLATE} > ${TEMP_TEMP1}
+                            sed "s/DOMAIN/$DOMAIN/g" ${TEMP_TEMP1} > ${TEMP_TEMP2}
+                            sed "s/PORT/$PORT/g" ${TEMP_TEMP2} >> ${TEMP_HTTP}
+                        else
+                            sed "s/SERVER/$SERVER/g" ${TEMPLATE} > ${TEMP_TEMP1}
+                            sed "s/DOMAIN/$DOMAIN/g" ${TEMP_TEMP1} > ${TEMP_TEMP2}
+                            sed "s/PORT/$PORT/;5q;" ${TEMP_TEMP2} >> ${TEMP_HTTP}
+                            echo "${CUSTOM_HTTP}" >> ${TEMP_HTTP}
+                            echo "" >> ${TEMP_HTTP}
+                            sed "1,9d" ${TEMP_TEMP2} >> ${TEMP_HTTP}
+                        fi
+                    fi
+                    echo "" >> ${TEMP_HTTP}
+
                     # domain-in.com
                     IN="${DOMAIN}"
                     IN=$(echo "${IN}" | sed "s/yanolja\.com/yanolja-in\.com/")
                     IN=$(echo "${IN}" | sed "s/yanoljanow\.com/yanoljanow-in\.com/")
 
                     if [ "${DOMAIN}" != "${IN}" ]; then
-                        SERVER="${DOMAIN} ${IN}"
-                    else
-                        SERVER="${DOMAIN}"
-                    fi
+                        SERVER="${IN}"
 
-                    TEMPLATE="${SHELL_DIR}/package/nginx/nginx-http-server-domain.conf"
-                    if [ "${CUSTOM_HTTP}" == "" ]; then
-                        sed "s/SERVER/$SERVER/g" ${TEMPLATE} > ${TEMP_TEMP1}
-                        sed "s/DOMAIN/$DOMAIN/g" ${TEMP_TEMP1} > ${TEMP_TEMP2}
-                        sed "s/PORT/$PORT/g" ${TEMP_TEMP2} >> ${TEMP_HTTP}
-                    else
-                        sed "s/SERVER/$SERVER/g" ${TEMPLATE} > ${TEMP_TEMP1}
-                        sed "s/DOMAIN/$DOMAIN/g" ${TEMP_TEMP1} > ${TEMP_TEMP2}
-                        sed "s/PORT/$PORT/;5q;" ${TEMP_TEMP2} >> ${TEMP_HTTP}
-                        echo "${CUSTOM_HTTP}" >> ${TEMP_HTTP}
+                        TEMPLATE="${SHELL_DIR}/package/nginx/nginx-http-server-domain.conf"
+                        if [ "${CUSTOM_HTTP}" == "" ]; then
+                            sed "s/SERVER/$SERVER/g" ${TEMPLATE} > ${TEMP_TEMP1}
+                            sed "s/DOMAIN/$DOMAIN/g" ${TEMP_TEMP1} > ${TEMP_TEMP2}
+                            sed "s/PORT/$PORT/g" ${TEMP_TEMP2} >> ${TEMP_HTTP}
+                        else
+                            sed "s/SERVER/$SERVER/g" ${TEMPLATE} > ${TEMP_TEMP1}
+                            sed "s/DOMAIN/$DOMAIN/g" ${TEMP_TEMP1} > ${TEMP_TEMP2}
+                            sed "s/PORT/$PORT/;5q;" ${TEMP_TEMP2} >> ${TEMP_HTTP}
+                            echo "${CUSTOM_HTTP}" >> ${TEMP_HTTP}
+                            echo "" >> ${TEMP_HTTP}
+                            sed "1,9d" ${TEMP_TEMP2} >> ${TEMP_HTTP}
+                        fi
                         echo "" >> ${TEMP_HTTP}
-                        sed "1,9d" ${TEMP_TEMP2} >> ${TEMP_HTTP}
                     fi
-                    echo "" >> ${TEMP_HTTP}
                 done
 
                 continue
