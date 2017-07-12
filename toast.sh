@@ -1701,8 +1701,7 @@ nginx_lb() {
 
         rm -rf "${TEMP_FILE}" "${TEMP_HTTP}" "${TEMP_SSL}" "${TEMP_TCP}"
 
-        CUSTOM_HTTP=
-        CUSTOM_HTTPS=
+        CUSTOM_CONFIG=
 
         while read LINE; do
             ARR=(${LINE})
@@ -1726,20 +1725,11 @@ nginx_lb() {
                 CUSTOM="${ARR[1]}"
 
                 if [ "${CUSTOM}" != "" ]; then
-                    URL="${TOAST_URL}/fleet/custom/${FNO}/http"
+                    URL="${TOAST_URL}/fleet/custom/${FNO}"
                     RES=$(curl -s --data "org=${ORG}&token=${TOKEN}&no=${SNO}" "${URL}")
 
                     if [ "${RES}" != "" ]; then
-                        CUSTOM_HTTP="${RES}"
-                    fi
-                fi
-
-                if [ "${CUSTOM}" != "" ]; then
-                    URL="${TOAST_URL}/fleet/custom/${FNO}/https"
-                    RES=$(curl -s --data "org=${ORG}&token=${TOKEN}&no=${SNO}" "${URL}")
-
-                    if [ "${RES}" != "" ]; then
-                        CUSTOM_HTTPS="${RES}"
+                        CUSTOM_CONFIG="${RES}"
                     fi
                 fi
 
@@ -1784,7 +1774,7 @@ nginx_lb() {
                         sed "s/PORT/$PORT/g" ${TEMP_TEMP2} >> ${TEMP_HTTP}
                     else
                         TEMPLATE="${SHELL_DIR}/package/nginx/nginx-http-server-domain.conf"
-                        if [ "${CUSTOM_HTTP}" == "" ]; then
+                        if [ "${CUSTOM_CONFIG}" == "" ]; then
                             sed "s/SERVER/$SERVER/g" ${TEMPLATE} > ${TEMP_TEMP1}
                             sed "s/DOMAIN/$DOMAIN/g" ${TEMP_TEMP1} > ${TEMP_TEMP2}
                             sed "s/PORT/$PORT/g" ${TEMP_TEMP2} >> ${TEMP_HTTP}
@@ -1792,7 +1782,7 @@ nginx_lb() {
                             sed "s/SERVER/$SERVER/g" ${TEMPLATE} > ${TEMP_TEMP1}
                             sed "s/DOMAIN/$DOMAIN/g" ${TEMP_TEMP1} > ${TEMP_TEMP2}
                             sed "s/PORT/$PORT/;5q;" ${TEMP_TEMP2} >> ${TEMP_HTTP}
-                            echo "${CUSTOM_HTTP}" >> ${TEMP_HTTP}
+                            echo "${CUSTOM_CONFIG}" >> ${TEMP_HTTP}
                             echo "" >> ${TEMP_HTTP}
                             sed "1,9d" ${TEMP_TEMP2} >> ${TEMP_HTTP}
                         fi
@@ -1808,7 +1798,7 @@ nginx_lb() {
                         SERVER="${IN}"
 
                         TEMPLATE="${SHELL_DIR}/package/nginx/nginx-http-server-domain.conf"
-                        if [ "${CUSTOM_HTTP}" == "" ]; then
+                        if [ "${CUSTOM_CONFIG}" == "" ]; then
                             sed "s/SERVER/$SERVER/g" ${TEMPLATE} > ${TEMP_TEMP1}
                             sed "s/DOMAIN/$DOMAIN/g" ${TEMP_TEMP1} > ${TEMP_TEMP2}
                             sed "s/PORT/$PORT/g" ${TEMP_TEMP2} >> ${TEMP_HTTP}
@@ -1816,7 +1806,7 @@ nginx_lb() {
                             sed "s/SERVER/$SERVER/g" ${TEMPLATE} > ${TEMP_TEMP1}
                             sed "s/DOMAIN/$DOMAIN/g" ${TEMP_TEMP1} > ${TEMP_TEMP2}
                             sed "s/PORT/$PORT/;5q;" ${TEMP_TEMP2} >> ${TEMP_HTTP}
-                            echo "${CUSTOM_HTTP}" >> ${TEMP_HTTP}
+                            echo "${CUSTOM_CONFIG}" >> ${TEMP_HTTP}
                             echo "" >> ${TEMP_HTTP}
                             sed "1,9d" ${TEMP_TEMP2} >> ${TEMP_HTTP}
                         fi
@@ -1832,13 +1822,13 @@ nginx_lb() {
 
                 for DOMAIN in "${DOM_ARR[@]}"; do
                     TEMPLATE="${SHELL_DIR}/package/nginx/nginx-http-ssl-domain.conf"
-                    if [ "${CUSTOM_HTTPS}" == "" ]; then
+                    if [ "${CUSTOM_CONFIG}" == "" ]; then
                         sed "s/DOMAIN/$DOMAIN/g" ${TEMPLATE} > ${TEMP_TEMP1}
                         sed "s/PORT/$PORT/g" ${TEMP_TEMP1} >> ${TEMP_SSL}
                     else
                         sed "s/DOMAIN/$DOMAIN/g" ${TEMPLATE} > ${TEMP_TEMP1}
                         sed "s/PORT/$PORT/;4q;" ${TEMP_TEMP1} >> ${TEMP_SSL}
-                        echo "${CUSTOM_HTTPS}" >> ${TEMP_SSL}
+                        echo "${CUSTOM_CONFIG}" >> ${TEMP_SSL}
                         echo "" >> ${TEMP_SSL}
                         sed "1,8d" ${TEMP_TEMP1} >> ${TEMP_SSL}
                     fi
