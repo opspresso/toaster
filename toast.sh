@@ -1719,6 +1719,7 @@ nginx_lb() {
                 TNO="${ARR[1]}"
                 HOST_ARR=
                 DOM_ARR=
+                CUSTOM=
                 continue
             fi
 
@@ -1733,18 +1734,25 @@ nginx_lb() {
             fi
 
             if [ "${ARR[0]}" == "CUSTOM" ]; then
-                URL="${TOAST_URL}/fleet/custom/${FNO}"
-                RES=$(curl -s --data "org=${ORG}&token=${TOKEN}&no=${SNO}" "${URL}")
-
-                if [ "${RES}" != "" ]; then
-                    CUSTOM="${RES}"
-                fi
-
+                CUSTOM="${ARR[1]}"
                 continue
             fi
 
             if [ "${ARR[0]}" == "HTTP" ]; then
                 PORT="${ARR[1]}"
+
+                if [ "${CUSTOM}" != "" ]; then
+                    URL="${TOAST_URL}/fleet/custom/${FNO}/http"
+                    RES=$(curl -s --data "org=${ORG}&token=${TOKEN}&no=${SNO}" "${URL}")
+
+                    if [ "${RES}" != "" ]; then
+                        CUSTOM_HTTP="${RES}"
+                    else
+                        CUSTOM_HTTP=
+                    fi
+                else
+                    CUSTOM_HTTP=
+                fi
 
                 for DOMAIN in "${DOM_ARR[@]}"; do
                     echo "    upstream ${DOMAIN} {" >> ${TEMP_HTTP}
@@ -1756,13 +1764,13 @@ nginx_lb() {
                     echo "    }" >> ${TEMP_HTTP}
 
                     TEMPLATE="${SHELL_DIR}/package/nginx/nginx-http-server-domain.conf"
-                    if [ "${CUSTOM}" == "" ]; then
+                    if [ "${CUSTOM_HTTP}" == "" ]; then
                         sed "s/DOMAIN/$DOMAIN/g" ${TEMPLATE} > ${TEMP_TEMP}
                         sed "s/PORT/$PORT/g" ${TEMP_TEMP} >> ${TEMP_HTTP}
                     else
                         sed "s/DOMAIN/$DOMAIN/g" ${TEMPLATE} > ${TEMP_TEMP}
                         sed "s/PORT/$PORT/;5q;" ${TEMP_TEMP} >> ${TEMP_HTTP}
-                        echo "${CUSTOM}" >> ${TEMP_HTTP}
+                        echo "${CUSTOM_HTTP}" >> ${TEMP_HTTP}
                         sed "1,9d" ${TEMP_TEMP} >> ${TEMP_HTTP}
                     fi
                 done
@@ -1773,15 +1781,28 @@ nginx_lb() {
             if [ "${ARR[0]}" == "HTTPS" ]; then
                 PORT="${ARR[1]}"
 
+                if [ "${CUSTOM}" != "" ]; then
+                    URL="${TOAST_URL}/fleet/custom/${FNO}/https"
+                    RES=$(curl -s --data "org=${ORG}&token=${TOKEN}&no=${SNO}" "${URL}")
+
+                    if [ "${RES}" != "" ]; then
+                        CUSTOM_HTTPS="${RES}"
+                    else
+                        CUSTOM_HTTPS=
+                    fi
+                else
+                    CUSTOM_HTTPS=
+                fi
+
                 for DOMAIN in "${DOM_ARR[@]}"; do
                     TEMPLATE="${SHELL_DIR}/package/nginx/nginx-http-ssl-domain.conf"
-                    if [ "${CUSTOM}" == "" ]; then
+                    if [ "${CUSTOM_HTTPS}" == "" ]; then
                         sed "s/DOMAIN/$DOMAIN/g" ${TEMPLATE} > ${TEMP_TEMP}
                         sed "s/PORT/$PORT/g" ${TEMP_TEMP} > ${TEMP_SSL}
                     else
                         sed "s/DOMAIN/$DOMAIN/g" ${TEMPLATE} > ${TEMP_TEMP}
                         sed "s/PORT/$PORT/;4q;" ${TEMP_TEMP} >> ${TEMP_SSL}
-                        echo "${CUSTOM}" >> ${TEMP_SSL}
+                        echo "${CUSTOM_HTTPS}" >> ${TEMP_SSL}
                         sed "1,8d" ${TEMP_TEMP} >> ${TEMP_SSL}
                     fi
                 done
