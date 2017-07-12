@@ -1787,7 +1787,6 @@ nginx_lb() {
                             sed "1,9d" ${TEMP_TEMP2} >> ${TEMP_HTTP}
                         fi
                     fi
-                    echo "" >> ${TEMP_HTTP}
 
                     # domain-in.com
                     IN="${DOMAIN}"
@@ -1810,8 +1809,9 @@ nginx_lb() {
                             echo "" >> ${TEMP_HTTP}
                             sed "1,9d" ${TEMP_TEMP2} >> ${TEMP_HTTP}
                         fi
-                        echo "" >> ${TEMP_HTTP}
                     fi
+
+                    echo "" >> ${TEMP_HTTP}
                 done
 
                 continue
@@ -1832,6 +1832,7 @@ nginx_lb() {
                         echo "" >> ${TEMP_SSL}
                         sed "1,8d" ${TEMP_TEMP1} >> ${TEMP_SSL}
                     fi
+
                     echo "" >> ${TEMP_SSL}
                 done
 
@@ -1851,6 +1852,8 @@ nginx_lb() {
 
                 TEMPLATE="${SHELL_DIR}/package/nginx/nginx-tcp-server.conf"
                 sed "s/PORT/$PORT/g" ${TEMPLATE} >> ${TEMP_TCP}
+
+                echo "" >> ${TEMP_TCP}
 
                 continue
             fi
