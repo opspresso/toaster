@@ -114,6 +114,8 @@ NGINX_CONF_DIR=
 TOMCAT_DIR="${APPS_DIR}/tomcat8"
 WEBAPP_DIR="${TOMCAT_DIR}/webapps"
 
+TEMP_FILE="${TEMP_DIR}/toast.tmp"
+
 ################################################################################
 
 toast() {
