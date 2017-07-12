@@ -1793,7 +1793,7 @@ nginx_lb() {
                     TEMPLATE="${SHELL_DIR}/package/nginx/nginx-http-ssl-domain.conf"
                     if [ "${CUSTOM_HTTPS}" == "" ]; then
                         sed "s/DOMAIN/$DOMAIN/g" ${TEMPLATE} > ${TEMP_TEMP}
-                        sed "s/PORT/$PORT/g" ${TEMP_TEMP} > ${TEMP_SSL}
+                        sed "s/PORT/$PORT/g" ${TEMP_TEMP} >> ${TEMP_SSL}
                     else
                         sed "s/DOMAIN/$DOMAIN/g" ${TEMPLATE} > ${TEMP_TEMP}
                         sed "s/PORT/$PORT/;4q;" ${TEMP_TEMP} >> ${TEMP_SSL}
