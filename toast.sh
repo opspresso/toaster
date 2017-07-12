@@ -1890,6 +1890,16 @@ nginx_lb2() {
                 continue
             fi
 
+            if [ "${ARR[0]}" == "SSL" ]; then
+                SSL="${ARR[1]}"
+
+                if [ "${SSL}" != "" ]; then
+                    init_certificate "${SSL}"
+                fi
+
+                continue
+            fi
+
             if [ "${ARR[0]}" == "FLEET" ]; then
                 TNO="${ARR[1]}"
                 HOST_ARR=
@@ -1904,16 +1914,6 @@ nginx_lb2() {
 
             if [ "${ARR[0]}" == "DOM" ]; then
                 DOM_ARR=(${LINE:4})
-                continue
-            fi
-
-            if [ "${ARR[0]}" == "SSL" ]; then
-                SSL="${ARR[1]}"
-
-                if [ "${SSL}" != "" ]; then
-                    init_certificate "${SSL}"
-                fi
-
                 continue
             fi
 
