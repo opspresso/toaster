@@ -1932,7 +1932,7 @@ nginx_lb2() {
                 PORT="${ARR[1]}"
 
                 for DOMAIN in "${DOM_ARR[@]}"; do
-                    echo "    upstream toast {" >> ${TEMP_HTTP}
+                    echo "    upstream ${DOMAIN} {" >> ${TEMP_HTTP}
 
                     for HOST in "${HOST_ARR[@]}"; do
                        echo "        server ${HOST}:${PORT} max_fails=3 fail_timeout=10s;" >> ${TEMP_HTTP}
