@@ -1771,6 +1771,15 @@ nginx_lb() {
 
                     echo "    }" >> ${TEMP_HTTP}
 
+                    # domain-in.com
+                    IN="${DOMAIN}"
+                    IN=$(echo "${IN}" | sed "s/yanolja\.com/yanolja-in\.com/")
+                    IN=$(echo "${IN}" | sed "s/yanoljanow\.com/yanoljanow-in\.com/")
+
+                    if [ "${DOMAIN}" != "${IN}" ]; then
+                        DOMAIN="${DOMAIN} ${IN}"
+                    fi
+
                     TEMPLATE="${SHELL_DIR}/package/nginx/nginx-http-server-domain.conf"
                     if [ "${CUSTOM_HTTP}" == "" ]; then
                         sed "s/DOMAIN/$DOMAIN/g" ${TEMPLATE} > ${TEMP_TEMP}
@@ -1930,7 +1939,7 @@ vhost_proxy() {
     sed "s/DOM/$DOM/g" ${TEMP_FILE2} > ${TEMP_FILE3}
     copy ${TEMP_FILE3} ${DEST_FILE}
 
-    # vhost-in.com
+    # domain-in.com
     IN="${DOM}"
     IN=$(echo "${IN}" | sed "s/yanolja\.com/yanolja-in\.com/")
     IN=$(echo "${IN}" | sed "s/yanoljanow\.com/yanoljanow-in\.com/")
@@ -1966,7 +1975,7 @@ vhost_replace() {
     sed "s/DOM/$DOM/g" ${TEMP_FILE1} > ${TEMP_FILE2}
     copy ${TEMP_FILE2} ${DEST_FILE}
 
-    # vhost-in.com
+    # domain-in.com
     IN="${DOM}"
     IN=$(echo "${IN}" | sed "s/yanolja\.com/yanolja-in\.com/")
     IN=$(echo "${IN}" | sed "s/yanoljanow\.com/yanoljanow-in\.com/")
