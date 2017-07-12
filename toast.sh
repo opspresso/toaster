@@ -1676,7 +1676,7 @@ nginx_lb() {
     TARGET="${NGINX_CONF_DIR}/nginx.conf"
 
     echo_bar
-    echo_ "nginx lb2..."
+    echo_ "nginx lb..."
 
     TARGET_DIR="${TEMP_DIR}/conf"
     mkdir -p ${TARGET_DIR}
@@ -1690,10 +1690,10 @@ nginx_lb() {
     if [ -f ${LB_CONF} ]; then
         echo_ "$(cat ${LB_CONF})"
 
-        TEMP_TEMP="${TARGET_DIR}/toast-lb2-temp.tmp"
-        TEMP_HTTP="${TARGET_DIR}/toast-lb2-http.tmp"
-        TEMP_SSL="${TARGET_DIR}/toast-lb2-ssl.tmp"
-        TEMP_TCP="${TARGET_DIR}/toast-lb2-tcp.tmp"
+        TEMP_TEMP="${TARGET_DIR}/toast-lb-temp.tmp"
+        TEMP_HTTP="${TARGET_DIR}/toast-lb-http.tmp"
+        TEMP_SSL="${TARGET_DIR}/toast-lb-ssl.tmp"
+        TEMP_TCP="${TARGET_DIR}/toast-lb-tcp.tmp"
 
         rm -rf "${TEMP_FILE}" "${TEMP_HTTP}" "${TEMP_SSL}" "${TEMP_TCP}"
 
