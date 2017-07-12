@@ -1715,31 +1715,8 @@ nginx_lb() {
                 continue
             fi
 
-            if [ "${ARR[0]}" == "FLEET" ]; then
-                TNO="${ARR[1]}"
-                HOST_ARR=
-                DOM_ARR=
-                CUSTOM=
-                continue
-            fi
-
-            if [ "${ARR[0]}" == "HOST" ]; then
-                HOST_ARR=(${LINE:5})
-                continue
-            fi
-
-            if [ "${ARR[0]}" == "DOM" ]; then
-                DOM_ARR=(${LINE:4})
-                continue
-            fi
-
             if [ "${ARR[0]}" == "CUSTOM" ]; then
                 CUSTOM="${ARR[1]}"
-                continue
-            fi
-
-            if [ "${ARR[0]}" == "HTTP" ]; then
-                PORT="${ARR[1]}"
 
                 if [ "${CUSTOM}" != "" ]; then
                     URL="${TOAST_URL}/fleet/custom/${FNO}/http"
@@ -1753,6 +1730,42 @@ nginx_lb() {
                 else
                     CUSTOM_HTTP=
                 fi
+
+                if [ "${CUSTOM}" != "" ]; then
+                    URL="${TOAST_URL}/fleet/custom/${FNO}/https"
+                    RES=$(curl -s --data "org=${ORG}&token=${TOKEN}&no=${SNO}" "${URL}")
+
+                    if [ "${RES}" != "" ]; then
+                        CUSTOM_HTTPS="${RES}"
+                    else
+                        CUSTOM_HTTPS=
+                    fi
+                else
+                    CUSTOM_HTTPS=
+                fi
+
+                continue
+            fi
+
+            if [ "${ARR[0]}" == "FLEET" ]; then
+                TNO="${ARR[1]}"
+                HOST_ARR=
+                DOM_ARR=
+                continue
+            fi
+
+            if [ "${ARR[0]}" == "HOST" ]; then
+                HOST_ARR=(${LINE:5})
+                continue
+            fi
+
+            if [ "${ARR[0]}" == "DOM" ]; then
+                DOM_ARR=(${LINE:4})
+                continue
+            fi
+
+            if [ "${ARR[0]}" == "HTTP" ]; then
+                PORT="${ARR[1]}"
 
                 for DOMAIN in "${DOM_ARR[@]}"; do
                     echo "    upstream ${DOMAIN} {" >> ${TEMP_HTTP}
@@ -1780,19 +1793,6 @@ nginx_lb() {
 
             if [ "${ARR[0]}" == "HTTPS" ]; then
                 PORT="${ARR[1]}"
-
-                if [ "${CUSTOM}" != "" ]; then
-                    URL="${TOAST_URL}/fleet/custom/${FNO}/https"
-                    RES=$(curl -s --data "org=${ORG}&token=${TOKEN}&no=${SNO}" "${URL}")
-
-                    if [ "${RES}" != "" ]; then
-                        CUSTOM_HTTPS="${RES}"
-                    else
-                        CUSTOM_HTTPS=
-                    fi
-                else
-                    CUSTOM_HTTPS=
-                fi
 
                 for DOMAIN in "${DOM_ARR[@]}"; do
                     TEMPLATE="${SHELL_DIR}/package/nginx/nginx-http-ssl-domain.conf"
