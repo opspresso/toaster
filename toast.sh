@@ -1798,6 +1798,7 @@ nginx_lb() {
                         echo "${CUSTOM_HTTP}" >> ${TEMP_HTTP}
                         sed "1,9d" ${TEMP_TEMP2} >> ${TEMP_HTTP}
                     fi
+                    echo "" >> ${TEMP_HTTP}
                 done
 
                 continue
@@ -1817,6 +1818,7 @@ nginx_lb() {
                         echo "${CUSTOM_HTTPS}" >> ${TEMP_SSL}
                         sed "1,8d" ${TEMP_TEMP1} >> ${TEMP_SSL}
                     fi
+                    echo "" >> ${TEMP_SSL}
                 done
 
                 continue
