@@ -1757,7 +1757,7 @@ nginx_lb() {
                 PORT="${ARR[1]}"
 
                 for DOMAIN in "${DOM_ARR[@]}"; do
-                    SERVER=$(echo "${DOMAIN}" | sed "s/\./-/")
+                    SERVER=$(echo "${DOMAIN}" | sed "s/\./-/g")
 
                     echo "    upstream ${SERVER} {" >> ${TEMP_HTTP}
                     for HOST in "${HOST_ARR[@]}"; do
@@ -1819,7 +1819,7 @@ nginx_lb() {
                 PORT="${ARR[1]}"
 
                 for DOMAIN in "${DOM_ARR[@]}"; do
-                    SERVER=$(echo "${DOMAIN}" | sed "s/\./-/")
+                    SERVER=$(echo "${DOMAIN}" | sed "s/\./-/g")
 
                     TEMPLATE="${SHELL_DIR}/package/nginx/nginx-http-ssl-domain.conf"
                     if [ "${CUSTOM_CONFIG}" == "" ]; then
