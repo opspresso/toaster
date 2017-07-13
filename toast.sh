@@ -74,6 +74,8 @@ SNO=
 REPO_BUCKET=
 REPO_PATH=
 
+JAR_OPTS=
+
 CONFIG="${HOME}/.toast"
 if [ -f "${CONFIG}" ]; then
     source "${CONFIG}"
@@ -2899,8 +2901,6 @@ usage() {
 }
 
 ################################################################################
-
-JAR_OPTS=""
 
 toast
 
