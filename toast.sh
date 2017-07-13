@@ -164,39 +164,6 @@ toast() {
     esac
 }
 
-usage() {
-    echo_toast
-    echo_ " Usage: toast {auto|update|config|init|version|deploy}"
-    echo_bar
-    echo_
-    echo_ " Usage: toast auto"
-    echo_
-    echo_ " Usage: toast update"
-    echo_
-    echo_ " Usage: toast config"
-    echo_
-    echo_ " Usage: toast init {package}"
-    echo_
-    echo_ " Usage: toast version"
-    echo_ " Usage: toast version next {branch}"
-    echo_ " Usage: toast version save {package}"
-    echo_
-    echo_ " Usage: toast vhost"
-    echo_ " Usage: toast vhost lb"
-    echo_
-    echo_ " Usage: toast deploy"
-    echo_ " Usage: toast deploy fleet"
-    echo_ " Usage: toast deploy target {no}"
-    echo_
-    echo_ " Usage: toast bucket {no}"
-    echo_
-    echo_ " Usage: toast health"
-    echo_
-    echo_ " Usage: toast ssh"
-    echo_
-    echo_bar
-}
-
 auto() {
     not_darwin
 
@@ -2895,6 +2862,39 @@ echo_toast() {
     echo_ "      \__, |\__,_|_| |_|\___/|_|/ |\__,_|   \__\___/ \__,_|___/\__|     "
     echo_ "      |___/                   |__/                                      "
     echo_ "                                               by nalbam (${VER})      "
+    echo_bar
+}
+
+usage() {
+    echo_toast
+    echo_ " Usage: toast {auto|update|config|init|version|deploy}"
+    echo_bar
+    echo_
+    echo_ " Usage: toast auto"
+    echo_
+    echo_ " Usage: toast update"
+    echo_
+    echo_ " Usage: toast config"
+    echo_
+    echo_ " Usage: toast init {package}"
+    echo_
+    echo_ " Usage: toast version"
+    echo_ " Usage: toast version next {branch}"
+    echo_ " Usage: toast version save {package}"
+    echo_
+    echo_ " Usage: toast vhost"
+    echo_ " Usage: toast vhost lb"
+    echo_
+    echo_ " Usage: toast deploy"
+    echo_ " Usage: toast deploy fleet"
+    echo_ " Usage: toast deploy target {no}"
+    echo_
+    echo_ " Usage: toast bucket {no}"
+    echo_
+    echo_ " Usage: toast health"
+    echo_
+    echo_ " Usage: toast ssh"
+    echo_
     echo_bar
 }
 
