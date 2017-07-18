@@ -1647,7 +1647,7 @@ nginx_lb() {
     TARGET="${NGINX_CONF_DIR}/nginx.conf"
 
     echo_bar
-    echo_ "nginx lb..."
+    echo_ "nginx lb... [${SNO}]"
 
     TARGET_DIR="${TEMP_DIR}/conf"
     mkdir -p ${TARGET_DIR}
@@ -1999,7 +1999,7 @@ vhost_fleet() {
     fi
 
     echo_bar
-    echo_ "apache fleet..."
+    echo_ "apache fleet... [${SNO}]"
 
     echo_ "--> ${HTTPD_CONF_DIR}"
 
@@ -2119,7 +2119,7 @@ deploy_project() {
 
 deploy_fleet() {
     echo_bar
-    echo_ "deploy fleet..."
+    echo_ "deploy fleet... [${SNO}]"
 
     TARGET_DIR="${TEMP_DIR}/deploy"
     mkdir -p ${TARGET_DIR}
@@ -2162,7 +2162,7 @@ deploy_fleet() {
 
 deploy_target() {
     echo_bar
-    echo_ "deploy target..."
+    echo_ "deploy target... [${SNO}][${PARAM2}]"
 
     TARGET_DIR="${TEMP_DIR}/deploy"
     mkdir -p ${TARGET_DIR}
@@ -2208,7 +2208,7 @@ deploy_bucket() {
     fi
 
     echo_bar
-    echo_ "deploy bucket..."
+    echo_ "deploy bucket... [${PARAM1}]"
 
     TARGET_DIR="${TEMP_DIR}/deploy"
     mkdir -p ${TARGET_DIR}
@@ -2268,6 +2268,7 @@ deploy_value() {
         else
             DEPLOY_PATH="s3://${DOMAIN}"
         fi
+        PACKAGING="war"
     else
         if [ "${PACKAGING}" == "war" ]; then
             DEPLOY_PATH="${WEBAPP_DIR}"
