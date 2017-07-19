@@ -1514,7 +1514,7 @@ build_eb() {
 
     aws elasticbeanstalk create-application-version \
      --application-name "${ARTIFACT_ID}" \
-     --version-label "${VERSION}-${TS}" \
+     --version-label "${VERSION}-${TS:4}" \
      --description "${GIT_ID} (${BRANCH})" \
      --source-bundle S3Bucket="${REPO_BUCKET}",S3Key="maven2/${GROUP_PATH}/${ARTIFACT_ID}/${VERSION}/${ARTIFACT_ID}-${VERSION}.zip" \
      --auto-create-application
