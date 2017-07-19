@@ -1385,6 +1385,7 @@ build_version() {
     fi
 
     BRANCH="${PARAM2}"
+    BUILD_NO="${PARAM3}"
 
     if [ "${BRANCH}" == "" ]; then
         BRANCH="master"
@@ -1411,7 +1412,11 @@ build_version() {
         return
     fi
 
-    VERSION="${ARR[1]}"
+    if [ "${BUILD_NO}" == "" ]; then
+        VERSION="${ARR[1]}"
+    else
+        VERSION="${BUILD_NO}"
+    fi
 
     replace_version
 }
