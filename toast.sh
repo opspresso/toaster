@@ -74,6 +74,8 @@ SNO=
 REPO_BUCKET=
 REPO_PATH=
 
+JAR_OPTS=
+
 CONFIG="${HOME}/.toast"
 if [ -f "${CONFIG}" ]; then
     source "${CONFIG}"
@@ -113,6 +115,8 @@ NGINX_CONF_DIR=
 
 TOMCAT_DIR="${APPS_DIR}/tomcat8"
 WEBAPP_DIR="${TOMCAT_DIR}/webapps"
+
+TEMP_FILE="${TEMP_DIR}/toast.tmp"
 
 ################################################################################
 
@@ -160,39 +164,6 @@ toast() {
         *)
             usage
     esac
-}
-
-usage() {
-    echo_toast
-    echo_ " Usage: toast {auto|update|config|init|version|deploy}"
-    echo_bar
-    echo_
-    echo_ " Usage: toast auto"
-    echo_
-    echo_ " Usage: toast update"
-    echo_
-    echo_ " Usage: toast config"
-    echo_
-    echo_ " Usage: toast init {package}"
-    echo_
-    echo_ " Usage: toast version"
-    echo_ " Usage: toast version next {branch}"
-    echo_ " Usage: toast version save {package}"
-    echo_
-    echo_ " Usage: toast vhost"
-    echo_ " Usage: toast vhost lb"
-    echo_
-    echo_ " Usage: toast deploy"
-    echo_ " Usage: toast deploy fleet"
-    echo_ " Usage: toast deploy target {no}"
-    echo_
-    echo_ " Usage: toast bucket {no}"
-    echo_
-    echo_ " Usage: toast health"
-    echo_
-    echo_ " Usage: toast ssh"
-    echo_
-    echo_bar
 }
 
 auto() {
@@ -1543,8 +1514,8 @@ build_eb() {
 
     aws elasticbeanstalk create-application-version \
      --application-name "${ARTIFACT_ID}" \
-     --version-label "${VERSION} (${DATE})" \
-     --description "${ARTIFACT_ID}-${VERSION}" \
+     --version-label "${ARTIFACT_ID}-${VERSION}" \
+     --description "${BRANCH} (${GIT_ID})" \
      --source-bundle S3Bucket="${REPO_BUCKET}",S3Key="maven2/${GROUP_PATH}/${ARTIFACT_ID}/${VERSION}/${ARTIFACT_ID}-${VERSION}.zip" \
      --auto-create-application
 }
@@ -1676,7 +1647,7 @@ nginx_lb() {
     TARGET="${NGINX_CONF_DIR}/nginx.conf"
 
     echo_bar
-    echo_ "nginx lb..."
+    echo_ "nginx lb... [${SNO}]"
 
     TARGET_DIR="${TEMP_DIR}/conf"
     mkdir -p ${TARGET_DIR}
@@ -1690,15 +1661,16 @@ nginx_lb() {
     if [ -f ${LB_CONF} ]; then
         echo_ "$(cat ${LB_CONF})"
 
-        TEMP_TEMP="${TARGET_DIR}/toast-lb-temp.tmp"
+        TEMP_TEMP1="${TARGET_DIR}/toast-lb-temp1.tmp"
+        TEMP_TEMP2="${TARGET_DIR}/toast-lb-temp2.tmp"
+
         TEMP_HTTP="${TARGET_DIR}/toast-lb-http.tmp"
         TEMP_SSL="${TARGET_DIR}/toast-lb-ssl.tmp"
         TEMP_TCP="${TARGET_DIR}/toast-lb-tcp.tmp"
 
-        rm -rf "${TEMP_FILE}" "${TEMP_HTTP}" "${TEMP_SSL}" "${TEMP_TCP}"
+        TEMP_CUSTOM="${TARGET_DIR}/toast-lb-custom.tmp"
 
-        CUSTOM_HTTP=
-        CUSTOM_HTTPS=
+        rm -rf "${TEMP_FILE}" "${TEMP_HTTP}" "${TEMP_SSL}" "${TEMP_TCP}" "${TEMP_CUSTOM}"
 
         while read LINE; do
             ARR=(${LINE})
@@ -1722,20 +1694,11 @@ nginx_lb() {
                 CUSTOM="${ARR[1]}"
 
                 if [ "${CUSTOM}" != "" ]; then
-                    URL="${TOAST_URL}/fleet/custom/${FNO}/http"
+                    URL="${TOAST_URL}/fleet/custom/${FNO}"
                     RES=$(curl -s --data "org=${ORG}&token=${TOKEN}&no=${SNO}" "${URL}")
 
                     if [ "${RES}" != "" ]; then
-                        CUSTOM_HTTP="${RES}"
-                    fi
-                fi
-
-                if [ "${CUSTOM}" != "" ]; then
-                    URL="${TOAST_URL}/fleet/custom/${FNO}/https"
-                    RES=$(curl -s --data "org=${ORG}&token=${TOKEN}&no=${SNO}" "${URL}")
-
-                    if [ "${RES}" != "" ]; then
-                        CUSTOM_HTTPS="${RES}"
+                        echo "${RES}" > ${TEMP_CUSTOM}
                     fi
                 fi
 
@@ -1763,24 +1726,59 @@ nginx_lb() {
                 PORT="${ARR[1]}"
 
                 for DOMAIN in "${DOM_ARR[@]}"; do
-                    echo "    upstream ${DOMAIN} {" >> ${TEMP_HTTP}
+                    SERVER=$(echo "${DOMAIN}" | sed "s/\./\_/g")
 
+                    echo "    upstream ${SERVER} {" >> ${TEMP_HTTP}
                     for HOST in "${HOST_ARR[@]}"; do
                        echo "        server ${HOST}:${PORT} max_fails=3 fail_timeout=10s;" >> ${TEMP_HTTP}
                     done
-
                     echo "    }" >> ${TEMP_HTTP}
 
-                    TEMPLATE="${SHELL_DIR}/package/nginx/nginx-http-server-domain.conf"
-                    if [ "${CUSTOM_HTTP}" == "" ]; then
-                        sed "s/DOMAIN/$DOMAIN/g" ${TEMPLATE} > ${TEMP_TEMP}
-                        sed "s/PORT/$PORT/g" ${TEMP_TEMP} >> ${TEMP_HTTP}
+                    if [ "${CUSTOM}" == "S" ]; then
+                        TEMPLATE="${SHELL_DIR}/package/nginx/nginx-http-server-redirect.conf"
+                        sed "s/SERVER/$SERVER/g" ${TEMPLATE} > ${TEMP_TEMP1}
+                        sed "s/DOMAIN/$DOMAIN/g" ${TEMP_TEMP1} > ${TEMP_TEMP2}
+                        sed "s/PORT/$PORT/g" ${TEMP_TEMP2} >> ${TEMP_HTTP}
                     else
-                        sed "s/DOMAIN/$DOMAIN/g" ${TEMPLATE} > ${TEMP_TEMP}
-                        sed "s/PORT/$PORT/;5q;" ${TEMP_TEMP} >> ${TEMP_HTTP}
-                        echo "${CUSTOM_HTTP}" >> ${TEMP_HTTP}
-                        sed "1,9d" ${TEMP_TEMP} >> ${TEMP_HTTP}
+                        TEMPLATE="${SHELL_DIR}/package/nginx/nginx-http-server-domain.conf"
+                        if [ -f "${TEMP_CUSTOM}" ]; then
+                            sed "s/SERVER/$SERVER/g" ${TEMPLATE} > ${TEMP_TEMP1}
+                            sed "s/DOMAIN/$DOMAIN/g" ${TEMP_TEMP1} > ${TEMP_TEMP2}
+                            sed "s/PORT/$PORT/;5q;" ${TEMP_TEMP2} >> ${TEMP_HTTP}
+                            sed "s/SERVER/$SERVER/g" ${TEMP_CUSTOM} >> ${TEMP_HTTP}
+                            echo "" >> ${TEMP_HTTP}
+                            sed "1,9d" ${TEMP_TEMP2} >> ${TEMP_HTTP}
+                        else
+                            sed "s/SERVER/$SERVER/g" ${TEMPLATE} > ${TEMP_TEMP1}
+                            sed "s/DOMAIN/$DOMAIN/g" ${TEMP_TEMP1} > ${TEMP_TEMP2}
+                            sed "s/PORT/$PORT/g" ${TEMP_TEMP2} >> ${TEMP_HTTP}
+                        fi
                     fi
+
+                    # domain-in.com
+                    IN="${DOMAIN}"
+                    IN=$(echo "${IN}" | sed "s/yanolja\.com/yanolja-in\.com/")
+                    IN=$(echo "${IN}" | sed "s/yanoljanow\.com/yanoljanow-in\.com/")
+
+                    if [ "${DOMAIN}" != "${IN}" ]; then
+                        DOMAIN="${IN}"
+
+                        TEMPLATE="${SHELL_DIR}/package/nginx/nginx-http-server-domain.conf"
+                        if [ -f "${TEMP_CUSTOM}" ]; then
+                            sed "s/SERVER/$SERVER/g" ${TEMPLATE} > ${TEMP_TEMP1}
+                            sed "s/DOMAIN/$DOMAIN/g" ${TEMP_TEMP1} > ${TEMP_TEMP2}
+                            sed "s/PORT/$PORT/;5q;" ${TEMP_TEMP2} >> ${TEMP_HTTP}
+                            sed "s/SERVER/$SERVER/g" ${TEMP_CUSTOM} >> ${TEMP_HTTP}
+                            echo "" >> ${TEMP_HTTP}
+                            sed "1,9d" ${TEMP_TEMP2} >> ${TEMP_HTTP}
+                        else
+                            sed "s/SERVER/$SERVER/g" ${TEMPLATE} > ${TEMP_TEMP1}
+                            sed "s/DOMAIN/$DOMAIN/g" ${TEMP_TEMP1} > ${TEMP_TEMP2}
+                            sed "s/PORT/$PORT/g" ${TEMP_TEMP2} >> ${TEMP_HTTP}
+                        fi
+                    fi
+
+                    echo "" >> ${TEMP_HTTP}
                 done
 
                 continue
@@ -1790,16 +1788,23 @@ nginx_lb() {
                 PORT="${ARR[1]}"
 
                 for DOMAIN in "${DOM_ARR[@]}"; do
+                    SERVER=$(echo "${DOMAIN}" | sed "s/\./\_/g")
+
                     TEMPLATE="${SHELL_DIR}/package/nginx/nginx-http-ssl-domain.conf"
-                    if [ "${CUSTOM_HTTPS}" == "" ]; then
-                        sed "s/DOMAIN/$DOMAIN/g" ${TEMPLATE} > ${TEMP_TEMP}
-                        sed "s/PORT/$PORT/g" ${TEMP_TEMP} >> ${TEMP_SSL}
+                    if [ -f "${TEMP_CUSTOM}" ]; then
+                        sed "s/SERVER/$SERVER/g" ${TEMPLATE} > ${TEMP_TEMP1}
+                        sed "s/DOMAIN/$DOMAIN/g" ${TEMP_TEMP1} > ${TEMP_TEMP2}
+                        sed "s/PORT/$PORT/;5q;" ${TEMP_TEMP2} >> ${TEMP_SSL}
+                        sed "s/SERVER/$SERVER/g" ${TEMP_CUSTOM} >> ${TEMP_SSL}
+                        echo "" >> ${TEMP_SSL}
+                        sed "1,9d" ${TEMP_TEMP2} >> ${TEMP_SSL}
                     else
-                        sed "s/DOMAIN/$DOMAIN/g" ${TEMPLATE} > ${TEMP_TEMP}
-                        sed "s/PORT/$PORT/;4q;" ${TEMP_TEMP} >> ${TEMP_SSL}
-                        echo "${CUSTOM_HTTPS}" >> ${TEMP_SSL}
-                        sed "1,8d" ${TEMP_TEMP} >> ${TEMP_SSL}
+                        sed "s/SERVER/$SERVER/g" ${TEMPLATE} > ${TEMP_TEMP1}
+                        sed "s/DOMAIN/$DOMAIN/g" ${TEMP_TEMP1} > ${TEMP_TEMP2}
+                        sed "s/PORT/$PORT/g" ${TEMP_TEMP2} >> ${TEMP_SSL}
                     fi
+
+                    echo "" >> ${TEMP_SSL}
                 done
 
                 continue
@@ -1818,6 +1823,8 @@ nginx_lb() {
 
                 TEMPLATE="${SHELL_DIR}/package/nginx/nginx-tcp-server.conf"
                 sed "s/PORT/$PORT/g" ${TEMPLATE} >> ${TEMP_TCP}
+
+                echo "" >> ${TEMP_TCP}
 
                 continue
             fi
@@ -1930,7 +1937,7 @@ vhost_proxy() {
     sed "s/DOM/$DOM/g" ${TEMP_FILE2} > ${TEMP_FILE3}
     copy ${TEMP_FILE3} ${DEST_FILE}
 
-    # vhost-in.com
+    # domain-in.com
     IN="${DOM}"
     IN=$(echo "${IN}" | sed "s/yanolja\.com/yanolja-in\.com/")
     IN=$(echo "${IN}" | sed "s/yanoljanow\.com/yanoljanow-in\.com/")
@@ -1966,7 +1973,7 @@ vhost_replace() {
     sed "s/DOM/$DOM/g" ${TEMP_FILE1} > ${TEMP_FILE2}
     copy ${TEMP_FILE2} ${DEST_FILE}
 
-    # vhost-in.com
+    # domain-in.com
     IN="${DOM}"
     IN=$(echo "${IN}" | sed "s/yanolja\.com/yanolja-in\.com/")
     IN=$(echo "${IN}" | sed "s/yanoljanow\.com/yanoljanow-in\.com/")
@@ -1992,7 +1999,7 @@ vhost_fleet() {
     fi
 
     echo_bar
-    echo_ "apache fleet..."
+    echo_ "apache fleet... [${SNO}]"
 
     echo_ "--> ${HTTPD_CONF_DIR}"
 
@@ -2112,7 +2119,7 @@ deploy_project() {
 
 deploy_fleet() {
     echo_bar
-    echo_ "deploy fleet..."
+    echo_ "deploy fleet... [${SNO}]"
 
     TARGET_DIR="${TEMP_DIR}/deploy"
     mkdir -p ${TARGET_DIR}
@@ -2155,7 +2162,7 @@ deploy_fleet() {
 
 deploy_target() {
     echo_bar
-    echo_ "deploy target..."
+    echo_ "deploy target... [${SNO}][${PARAM2}]"
 
     TARGET_DIR="${TEMP_DIR}/deploy"
     mkdir -p ${TARGET_DIR}
@@ -2201,7 +2208,7 @@ deploy_bucket() {
     fi
 
     echo_bar
-    echo_ "deploy bucket..."
+    echo_ "deploy bucket... [${PARAM1}]"
 
     TARGET_DIR="${TEMP_DIR}/deploy"
     mkdir -p ${TARGET_DIR}
@@ -2261,6 +2268,7 @@ deploy_value() {
         else
             DEPLOY_PATH="s3://${DOMAIN}"
         fi
+        PACKAGING="war"
     else
         if [ "${PACKAGING}" == "war" ]; then
             DEPLOY_PATH="${WEBAPP_DIR}"
@@ -2860,9 +2868,40 @@ echo_toast() {
     echo_bar
 }
 
-################################################################################
+usage() {
+    echo_toast
+    echo_ " Usage: toast {auto|update|config|init|version|deploy}"
+    echo_bar
+    echo_
+    echo_ " Usage: toast auto"
+    echo_
+    echo_ " Usage: toast update"
+    echo_
+    echo_ " Usage: toast config"
+    echo_
+    echo_ " Usage: toast init {package}"
+    echo_
+    echo_ " Usage: toast version"
+    echo_ " Usage: toast version next {branch}"
+    echo_ " Usage: toast version save {package}"
+    echo_
+    echo_ " Usage: toast vhost"
+    echo_ " Usage: toast vhost lb"
+    echo_
+    echo_ " Usage: toast deploy"
+    echo_ " Usage: toast deploy fleet"
+    echo_ " Usage: toast deploy target {no}"
+    echo_
+    echo_ " Usage: toast bucket {no}"
+    echo_
+    echo_ " Usage: toast health"
+    echo_
+    echo_ " Usage: toast ssh"
+    echo_
+    echo_bar
+}
 
-JAR_OPTS=""
+################################################################################
 
 toast
 
