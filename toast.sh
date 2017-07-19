@@ -1510,11 +1510,11 @@ build_eb() {
         build_docker
     fi
 
-    DATE=$(date "+%Y-%m-%d %H:%M")
+    TS=$(date "+%s")
 
     aws elasticbeanstalk create-application-version \
      --application-name "${ARTIFACT_ID}" \
-     --version-label "${VERSION} (${DATE})" \
+     --version-label "${ARTIFACT_ID}-${VERSION}-${TS}" \
      --description "${BRANCH} (${GIT_ID})" \
      --source-bundle S3Bucket="${REPO_BUCKET}",S3Key="maven2/${GROUP_PATH}/${ARTIFACT_ID}/${VERSION}/${ARTIFACT_ID}-${VERSION}.zip" \
      --auto-create-application
