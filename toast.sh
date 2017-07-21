@@ -1848,14 +1848,13 @@ nginx_lb() {
 
             TEMPLATE="${SHELL_DIR}/package/nginx/nginx-http-default.conf"
             cat ${TEMPLATE} >> ${TEMP_FILE}
+            echo "" >> ${TEMP_FILE}
 
             # http
-            echo "" >> ${TEMP_FILE}
             cat ${TEMP_HTTP} >> ${TEMP_FILE}
 
             # https
             if [ -f ${TEMP_SSL} ]; then
-                echo "" >> ${TEMP_FILE}
                 cat ${TEMP_SSL} >> ${TEMP_FILE}
             fi
 
@@ -1868,8 +1867,8 @@ nginx_lb() {
 
             TEMPLATE="${SHELL_DIR}/package/nginx/nginx-tcp-default.conf"
             cat ${TEMPLATE} >> ${TEMP_FILE}
-
             echo "" >> ${TEMP_FILE}
+
             cat ${TEMP_TCP} >> ${TEMP_FILE}
 
             echo "}" >> ${TEMP_FILE}
