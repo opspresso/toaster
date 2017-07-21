@@ -1385,6 +1385,7 @@ build_version() {
     fi
 
     BRANCH="${PARAM2}"
+    BUILD_NO="${PARAM3}"
 
     if [ "${BRANCH}" == "" ]; then
         BRANCH="master"
@@ -1411,7 +1412,11 @@ build_version() {
         return
     fi
 
-    VERSION="${ARR[1]}"
+    if [ "${BUILD_NO}" == "" ]; then
+        VERSION="${ARR[1]}"
+    else
+        VERSION="${BUILD_NO}"
+    fi
 
     replace_version
 }
@@ -1510,12 +1515,12 @@ build_eb() {
         build_docker
     fi
 
-    DATE=$(date "+%Y-%m-%d %H:%M")
+    TS=$(date "+%s")
 
     aws elasticbeanstalk create-application-version \
      --application-name "${ARTIFACT_ID}" \
-     --version-label "${ARTIFACT_ID}-${VERSION}" \
-     --description "${BRANCH} (${GIT_ID})" \
+     --version-label "${VERSION}-${TS}" \
+     --description "${GIT_ID} (${BRANCH})" \
      --source-bundle S3Bucket="${REPO_BUCKET}",S3Key="maven2/${GROUP_PATH}/${ARTIFACT_ID}/${VERSION}/${ARTIFACT_ID}-${VERSION}.zip" \
      --auto-create-application
 }
@@ -1843,14 +1848,13 @@ nginx_lb() {
 
             TEMPLATE="${SHELL_DIR}/package/nginx/nginx-http-default.conf"
             cat ${TEMPLATE} >> ${TEMP_FILE}
+            echo "" >> ${TEMP_FILE}
 
             # http
-            echo "" >> ${TEMP_FILE}
             cat ${TEMP_HTTP} >> ${TEMP_FILE}
 
             # https
             if [ -f ${TEMP_SSL} ]; then
-                echo "" >> ${TEMP_FILE}
                 cat ${TEMP_SSL} >> ${TEMP_FILE}
             fi
 
@@ -1863,8 +1867,8 @@ nginx_lb() {
 
             TEMPLATE="${SHELL_DIR}/package/nginx/nginx-tcp-default.conf"
             cat ${TEMPLATE} >> ${TEMP_FILE}
-
             echo "" >> ${TEMP_FILE}
+
             cat ${TEMP_TCP} >> ${TEMP_FILE}
 
             echo "}" >> ${TEMP_FILE}
