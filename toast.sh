@@ -1921,6 +1921,41 @@ vhost_local() {
     fi
 }
 
+vhost_replace() {
+    DOM="$1"
+
+    echo_ "--> ${DOM}"
+
+    TEMPLATE="${SHELL_DIR}/package/apache/${HTTPD_VERSION}/vhost.conf"
+    TEMP_FILE1="${TARGET_DIR}/toast-vhost1.tmp"
+    TEMP_FILE2="${TARGET_DIR}/toast-vhost2.tmp"
+
+    DIR="${DOM}"
+
+    # gen vhost
+    DEST_FILE="${HTTPD_CONF_DIR}/toast-${DOM}.conf"
+    sed "s/DIR/$DIR/g" ${TEMPLATE}   > ${TEMP_FILE1}
+    sed "s/DOM/$DOM/g" ${TEMP_FILE1} > ${TEMP_FILE2}
+    copy ${TEMP_FILE2} ${DEST_FILE}
+
+    # domain-in.com
+    IN="${DOM}"
+    IN=$(echo "${IN}" | sed "s/yanolja\.com/yanolja-in\.com/")
+    IN=$(echo "${IN}" | sed "s/yanoljanow\.com/yanoljanow-in\.com/")
+
+    if [ "${DOM}" == "${IN}" ]; then
+        return
+    fi
+
+    DOM="${IN}"
+
+    # gen vhost
+    DEST_FILE="${HTTPD_CONF_DIR}/toast-${DOM}.conf"
+    sed "s/DIR/$DIR/g" ${TEMPLATE}   > ${TEMP_FILE1}
+    sed "s/DOM/$DOM/g" ${TEMP_FILE1} > ${TEMP_FILE2}
+    copy ${TEMP_FILE2} ${DEST_FILE}
+}
+
 vhost_proxy() {
     DOM="$1"
     PORT="$2"
@@ -1960,12 +1995,13 @@ vhost_proxy() {
     copy ${TEMP_FILE3} ${DEST_FILE}
 }
 
-vhost_replace() {
+vhost_ssl() {
     DOM="$1"
+    PORT="$2"
 
-    echo_ "--> ${DOM}"
+    echo_ "--> ${DOM}:${PORT}"
 
-    TEMPLATE="${SHELL_DIR}/package/apache/${HTTPD_VERSION}/vhost.conf"
+    TEMPLATE="${SHELL_DIR}/package/apache/${HTTPD_VERSION}/vhost-ssl.conf"
     TEMP_FILE1="${TARGET_DIR}/toast-vhost1.tmp"
     TEMP_FILE2="${TARGET_DIR}/toast-vhost2.tmp"
 
@@ -1973,24 +2009,7 @@ vhost_replace() {
 
     # gen vhost
     DEST_FILE="${HTTPD_CONF_DIR}/toast-${DOM}.conf"
-    sed "s/DIR/$DIR/g" ${TEMPLATE}   > ${TEMP_FILE1}
-    sed "s/DOM/$DOM/g" ${TEMP_FILE1} > ${TEMP_FILE2}
-    copy ${TEMP_FILE2} ${DEST_FILE}
-
-    # domain-in.com
-    IN="${DOM}"
-    IN=$(echo "${IN}" | sed "s/yanolja\.com/yanolja-in\.com/")
-    IN=$(echo "${IN}" | sed "s/yanoljanow\.com/yanoljanow-in\.com/")
-
-    if [ "${DOM}" == "${IN}" ]; then
-        return
-    fi
-
-    DOM="${IN}"
-
-    # gen vhost
-    DEST_FILE="${HTTPD_CONF_DIR}/toast-${DOM}.conf"
-    sed "s/DIR/$DIR/g" ${TEMPLATE}   > ${TEMP_FILE1}
+    sed "s/DIR/$DIR/g" ${TEMPLATE} > ${TEMP_FILE1}
     sed "s/DOM/$DOM/g" ${TEMP_FILE1} > ${TEMP_FILE2}
     copy ${TEMP_FILE2} ${DEST_FILE}
 }
@@ -2035,6 +2054,10 @@ vhost_fleet() {
 
             if [ "${ARR[1]}" == "" ] || [ "${ARR[1]}" == "80" ]; then
                 vhost_replace "${ARR[0]}"
+
+                if [ "${ARR[2]}" == "Y" ]; then
+                    vhost_ssl "${ARR[0]}"
+                fi
             else
                 vhost_proxy "${ARR[0]}" "${ARR[1]}"
             fi
