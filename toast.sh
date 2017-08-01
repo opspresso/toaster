@@ -2008,7 +2008,7 @@ vhost_ssl() {
     DIR="${DOM}"
 
     # gen vhost
-    DEST_FILE="${HTTPD_CONF_DIR}/toast-${DOM}.conf"
+    DEST_FILE="${HTTPD_CONF_DIR}/toast-${DOM}-le-ssl.conf"
     sed "s/DIR/$DIR/g" ${TEMPLATE} > ${TEMP_FILE1}
     sed "s/DOM/$DOM/g" ${TEMP_FILE1} > ${TEMP_FILE2}
     copy ${TEMP_FILE2} ${DEST_FILE}
