@@ -1995,13 +1995,13 @@ vhost_proxy() {
     copy ${TEMP_FILE3} ${DEST_FILE}
 }
 
-vhost_ssl() {
+vhost_le() {
     DOM="$1"
     PORT="$2"
 
     echo_ "--> ${DOM}:${PORT}"
 
-    TEMPLATE="${SHELL_DIR}/package/apache/${HTTPD_VERSION}/vhost-ssl.conf"
+    TEMPLATE="${SHELL_DIR}/package/apache/${HTTPD_VERSION}/vhost-le-ssl.conf"
     TEMP_FILE1="${TARGET_DIR}/toast-vhost1.tmp"
     TEMP_FILE2="${TARGET_DIR}/toast-vhost2.tmp"
 
@@ -2056,7 +2056,7 @@ vhost_fleet() {
                 vhost_replace "${ARR[0]}"
 
                 if [ "${ARR[2]}" == "Y" ]; then
-                    vhost_ssl "${ARR[0]}"
+                    vhost_le "${ARR[0]}"
                 fi
             else
                 vhost_proxy "${ARR[0]}" "${ARR[1]}"
