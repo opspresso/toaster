@@ -888,13 +888,13 @@ init_aws() {
 }
 
 init_certbot() {
+    echo_ "init certbot..."
+
     BOT_URL="https://dl.eff.org/certbot-auto"
     BOT_DIR="${HOME}/certbot"
     BOT_BIN="${BOT_DIR}/certbot-auto"
 
     if [ ! -d ${BOT_DIR} ]; then
-        echo_ "init certbot..."
-
         mkdir "${BOT_DIR}"
     fi
 
