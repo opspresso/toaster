@@ -185,6 +185,7 @@ auto() {
 
     init_hosts
     init_profile
+    init_email
 
     init_aws
     init_slave
@@ -214,6 +215,10 @@ update() {
 
     self_info
     self_update
+
+    init_hosts
+    init_profile
+    init_email
 
     certbot_renew
 
@@ -710,6 +715,21 @@ init_profile() {
     fi
 }
 
+init_email() {
+    echo_ "init email..."
+
+    URL="${TOAST_URL}/config/key/email"
+    RES=$(curl -s --data "org=${ORG}&token=${TOKEN}&no=${SNO}" "${URL}")
+
+    if [ "${RES}" != "" ]; then
+        EMAIL="${RES}"
+    else
+        EMAIL="toast@${ORG}.com"
+    fi
+
+    echo "EMAIL=${EMAIL}" > "${SHELL_DIR}/.config_email"
+}
+
 init_master() {
     echo_ "init master..."
 
@@ -869,8 +889,6 @@ init_aws() {
 }
 
 init_certbot() {
-    echo_ "init certbot..."
-
     BOT_DIR="${HOME}/certbot"
 
     if [ -d ${BOT_DIR} ]; then
@@ -878,6 +896,8 @@ init_certbot() {
         git pull
         popd
     else
+        echo_ "init certbot..."
+
         pushd ${HOME}
         git clone https://github.com/certbot/certbot
         popd
