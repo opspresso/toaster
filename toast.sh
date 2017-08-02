@@ -850,14 +850,16 @@ init_aws() {
 init_certbot() {
     echo_ "init certbot..."
 
-    BOT_DIR="certbot"
+    BOT_DIR="${HOME}/certbot"
 
     if [ -d ${BOT_DIR} ]; then
         pushd ${BOT_DIR}
         git pull
         popd
     else
+        pushd ${HOME}
         git clone https://github.com/certbot/certbot
+        popd
     fi
 }
 
