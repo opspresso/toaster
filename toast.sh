@@ -890,16 +890,18 @@ init_aws() {
 init_certbot() {
     BOT_URL="https://dl.eff.org/certbot-auto"
     BOT_DIR="${HOME}/certbot"
+    BOT_BIN="${BOT_DIR}/certbot-auto"
 
     if [ ! -d ${BOT_DIR} ]; then
         echo_ "init certbot..."
 
-        mkdir ${BOT_DIR}
+        mkdir "${BOT_DIR}"
     fi
 
-    wget -q -P "${BOT_DIR}" "${BOT_URL}"
+    curl -s -o "${BOT_BIN}" "${BOT_URL}"
 
-    if [ -f ${BOT_DIR}/certbot-auto ]; then
+    if [ -f ${BOT_BIN} ]; then
+        chmod a+x ${BOT_BIN}
         touch "${SHELL_DIR}/.config_certbot"
     fi
 }
