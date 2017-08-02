@@ -1999,7 +1999,7 @@ vhost_le_ssl() {
     DOM="$1"
     PORT="$2"
 
-    echo_ "--> ${DOM}:${PORT}"
+    echo_ "--> ${DOM}:443"
 
     TEMPLATE="${SHELL_DIR}/package/apache/${HTTPD_VERSION}/vhost-le-ssl.conf"
     TEMP_FILE1="${TARGET_DIR}/toast-vhost1.tmp"
