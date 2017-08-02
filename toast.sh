@@ -149,6 +149,9 @@ toast() {
         k|bucket)
             bucket
             ;;
+        t|certbot)
+            certbot
+            ;;
         h|health)
             health
             ;;
@@ -211,6 +214,8 @@ update() {
 
     self_info
     self_update
+
+    certbot_renew
 
     #service_update
 }
@@ -362,6 +367,22 @@ bucket() {
     repo_path
 
     deploy_bucket
+}
+
+certbot() {
+    not_darwin
+
+    case ${PARAM1} in
+        a|apache)
+            certbot_apache
+            ;;
+        n|nginx)
+            certbot_nginx
+            ;;
+        r|renew)
+            certbot_renew
+            ;;
+    esac
 }
 
 log() {
@@ -861,6 +882,8 @@ init_certbot() {
         git clone https://github.com/certbot/certbot
         popd
     fi
+
+    touch "${SHELL_DIR}/.config_certbot"
 }
 
 init_certificate() {
@@ -2444,6 +2467,57 @@ placement() {
     if [ "${ARR[0]}" != "OK" ]; then
         warning "Server Error. [${URL}][${RES}]"
     fi
+}
+
+certbot_apache() {
+    if [ "$1" == "" ]; then
+        CERT_NAME="${PARAM2}"
+    else
+        CERT_NAME="$1"
+    fi
+
+    if [ "${CERT_NAME}" == "" ]; then
+        warning "Not set CERT_NAME."
+        return
+    fi
+
+    echo_ "init certbot (apache)... [${CERT_NAME}]"
+
+    ${SUDO} ${HOME}/certbot/certbot-auto renew --debug -d ${CERT_NAME}
+}
+
+certbot_nginx() {
+    if [ "$1" == "" ]; then
+        CERT_NAME="${PARAM2}"
+    else
+        CERT_NAME="$1"
+    fi
+
+    if [ "${CERT_NAME}" == "" ]; then
+        warning "Not set CERT_NAME."
+        return
+    fi
+
+    echo_ "init certbot (nginx)... [${CERT_NAME}]"
+
+    ${SUDO} ${HOME}/certbot/certbot-auto --nginx --debug -d ${CERT_NAME}
+}
+
+certbot_renew() {
+    if [ ! -f "${SHELL_DIR}/.config_certbot" ]; then
+        warning "Not set certbot."
+        return
+    fi
+
+    init_certbot
+
+    if [ OS_TYPE == "amzn1" ]; then
+        PARAM="--debug"
+    else
+        PARAM=""
+    fi
+
+    ${SUDO} ${HOME}/certbot/certbot-auto renew ${PARAM}
 }
 
 connect() {
