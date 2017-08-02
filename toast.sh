@@ -2490,6 +2490,11 @@ placement() {
 }
 
 certbot_apache() {
+    if [ ! -f "${SHELL_DIR}/.config_certbot" ]; then
+        warning "Not set certbot."
+        return
+    fi
+
     if [ "$1" == "" ]; then
         CERT_NAME="${PARAM2}"
     else
@@ -2503,10 +2508,23 @@ certbot_apache() {
 
     echo_ "init certbot (apache)... [${CERT_NAME}]"
 
-    ${SUDO} ${HOME}/certbot/certbot-auto --apache --agree-tos --debug -d ${CERT_NAME}
+    init_email
+
+    if [ OS_TYPE == "amzn1" ]; then
+        PARAM="--debug"
+    else
+        PARAM=""
+    fi
+
+    ${SUDO} ${HOME}/certbot/certbot-auto --apache --email ${EMAIL} --agree-tos ${PARAM} -d ${CERT_NAME}
 }
 
 certbot_nginx() {
+    if [ ! -f "${SHELL_DIR}/.config_certbot" ]; then
+        warning "Not set certbot."
+        return
+    fi
+
     if [ "$1" == "" ]; then
         CERT_NAME="${PARAM2}"
     else
@@ -2520,7 +2538,15 @@ certbot_nginx() {
 
     echo_ "init certbot (nginx)... [${CERT_NAME}]"
 
-    ${SUDO} ${HOME}/certbot/certbot-auto --nginx --agree-tos --debug -d ${CERT_NAME}
+    init_email
+
+    if [ OS_TYPE == "amzn1" ]; then
+        PARAM="--debug"
+    else
+        PARAM=""
+    fi
+
+    ${SUDO} ${HOME}/certbot/certbot-auto --nginx --email ${EMAIL} --agree-tos ${PARAM} -d ${CERT_NAME}
 }
 
 certbot_renew() {
