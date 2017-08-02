@@ -149,6 +149,9 @@ toast() {
         k|bucket)
             bucket
             ;;
+        t|certbot)
+            certbot
+            ;;
         h|health)
             health
             ;;
@@ -182,6 +185,7 @@ auto() {
 
     init_hosts
     init_profile
+    init_email
 
     init_aws
     init_slave
@@ -212,6 +216,12 @@ update() {
     self_info
     self_update
 
+    init_hosts
+    init_profile
+    init_email
+
+    certbot_renew
+
     #service_update
 }
 
@@ -233,6 +243,9 @@ init() {
             ;;
         aws)
             init_aws
+            ;;
+        certbot)
+            init_certbot
             ;;
         certificate)
             init_certificate
@@ -359,6 +372,22 @@ bucket() {
     repo_path
 
     deploy_bucket
+}
+
+certbot() {
+    not_darwin
+
+    case ${PARAM1} in
+        a|apache)
+            certbot_apache
+            ;;
+        n|nginx)
+            certbot_nginx
+            ;;
+        r|renew)
+            certbot_renew
+            ;;
+    esac
 }
 
 log() {
@@ -686,6 +715,21 @@ init_profile() {
     fi
 }
 
+init_email() {
+    echo_ "init email..."
+
+    URL="${TOAST_URL}/config/key/email"
+    RES=$(curl -s --data "org=${ORG}&token=${TOKEN}&no=${SNO}" "${URL}")
+
+    if [ "${RES}" != "" ]; then
+        EMAIL="${RES}"
+    else
+        EMAIL="toast@${ORG}.com"
+    fi
+
+    echo "EMAIL=${EMAIL}" > "${SHELL_DIR}/.config_email"
+}
+
 init_master() {
     echo_ "init master..."
 
@@ -842,6 +886,24 @@ init_aws() {
     echo_bar
     echo_ "$(/usr/bin/aws --version)"
     echo_bar
+}
+
+init_certbot() {
+    BOT_DIR="${HOME}/certbot"
+
+    if [ -d ${BOT_DIR} ]; then
+        pushd ${BOT_DIR}
+        git pull
+        popd
+    else
+        echo_ "init certbot..."
+
+        pushd ${HOME}
+        git clone https://github.com/certbot/certbot
+        popd
+    fi
+
+    touch "${SHELL_DIR}/.config_certbot"
 }
 
 init_certificate() {
@@ -2425,6 +2487,83 @@ placement() {
     if [ "${ARR[0]}" != "OK" ]; then
         warning "Server Error. [${URL}][${RES}]"
     fi
+}
+
+certbot_apache() {
+    if [ ! -f "${SHELL_DIR}/.config_certbot" ]; then
+        warning "Not set certbot."
+        return
+    fi
+
+    if [ "$1" == "" ]; then
+        CERT_NAME="${PARAM2}"
+    else
+        CERT_NAME="$1"
+    fi
+
+    if [ "${CERT_NAME}" == "" ]; then
+        warning "Not set CERT_NAME."
+        return
+    fi
+
+    echo_ "init certbot (apache)... [${CERT_NAME}]"
+
+    init_email
+
+    if [ OS_TYPE == "amzn1" ]; then
+        PARAM="--agree-tos --no-redirect --debug"
+    else
+        PARAM="--agree-tos --no-redirect"
+    fi
+
+    ${SUDO} ${HOME}/certbot/certbot-auto --apache --email ${EMAIL} ${PARAM} -d ${CERT_NAME}
+}
+
+certbot_nginx() {
+    if [ ! -f "${SHELL_DIR}/.config_certbot" ]; then
+        warning "Not set certbot."
+        return
+    fi
+
+    if [ "$1" == "" ]; then
+        CERT_NAME="${PARAM2}"
+    else
+        CERT_NAME="$1"
+    fi
+
+    if [ "${CERT_NAME}" == "" ]; then
+        warning "Not set CERT_NAME."
+        return
+    fi
+
+    echo_ "init certbot (nginx)... [${CERT_NAME}]"
+
+    init_email
+
+    if [ OS_TYPE == "amzn1" ]; then
+        PARAM="--agree-tos --no-redirect --debug"
+    else
+        PARAM="--agree-tos --no-redirect"
+    fi
+
+    ${SUDO} ${HOME}/certbot/certbot-auto --nginx --email ${EMAIL} ${PARAM} -d ${CERT_NAME}
+}
+
+certbot_renew() {
+    if [ ! -f "${SHELL_DIR}/.config_certbot" ]; then
+        #warning "Not set certbot."
+        return
+    fi
+
+    init_certbot
+
+    if [ OS_TYPE == "amzn1" ]; then
+        PARAM="-q --debug"
+    else
+        PARAM="-q"
+    fi
+
+    ${SUDO} ${HOME}/certbot/certbot-auto renew ${PARAM}
 }
 
 connect() {
