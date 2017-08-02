@@ -2511,12 +2511,12 @@ certbot_apache() {
     init_email
 
     if [ OS_TYPE == "amzn1" ]; then
-        PARAM="--debug"
+        PARAM="--agree-tos --no-redirect --debug"
     else
-        PARAM=""
+        PARAM="--agree-tos --no-redirect"
     fi
 
-    ${SUDO} ${HOME}/certbot/certbot-auto --apache --email ${EMAIL} --agree-tos ${PARAM} -d ${CERT_NAME}
+    ${SUDO} ${HOME}/certbot/certbot-auto --apache --email ${EMAIL} ${PARAM} -d ${CERT_NAME}
 }
 
 certbot_nginx() {
@@ -2541,12 +2541,12 @@ certbot_nginx() {
     init_email
 
     if [ OS_TYPE == "amzn1" ]; then
-        PARAM="--debug"
+        PARAM="--agree-tos --no-redirect --debug"
     else
-        PARAM=""
+        PARAM="--agree-tos --no-redirect"
     fi
 
-    ${SUDO} ${HOME}/certbot/certbot-auto --nginx --email ${EMAIL} --agree-tos ${PARAM} -d ${CERT_NAME}
+    ${SUDO} ${HOME}/certbot/certbot-auto --nginx --email ${EMAIL} ${PARAM} -d ${CERT_NAME}
 }
 
 certbot_renew() {
