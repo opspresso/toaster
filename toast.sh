@@ -2483,7 +2483,7 @@ certbot_apache() {
 
     echo_ "init certbot (apache)... [${CERT_NAME}]"
 
-    ${SUDO} ${HOME}/certbot/certbot-auto renew --debug -d ${CERT_NAME}
+    ${SUDO} ${HOME}/certbot/certbot-auto --apache --agree-tos --debug -d ${CERT_NAME}
 }
 
 certbot_nginx() {
@@ -2500,21 +2500,21 @@ certbot_nginx() {
 
     echo_ "init certbot (nginx)... [${CERT_NAME}]"
 
-    ${SUDO} ${HOME}/certbot/certbot-auto --nginx --debug -d ${CERT_NAME}
+    ${SUDO} ${HOME}/certbot/certbot-auto --nginx --agree-tos --debug -d ${CERT_NAME}
 }
 
 certbot_renew() {
     if [ ! -f "${SHELL_DIR}/.config_certbot" ]; then
-        warning "Not set certbot."
+        #warning "Not set certbot."
         return
     fi
 
     init_certbot
 
     if [ OS_TYPE == "amzn1" ]; then
-        PARAM="--debug"
+        PARAM="-q --debug"
     else
-        PARAM=""
+        PARAM="-q"
     fi
 
     ${SUDO} ${HOME}/certbot/certbot-auto renew ${PARAM}
