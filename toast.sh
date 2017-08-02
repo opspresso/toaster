@@ -2558,9 +2558,9 @@ certbot_renew() {
     init_certbot
 
     if [ OS_TYPE == "amzn1" ]; then
-        PARAM="--debug"
+        PARAM="-q --debug"
     else
-        PARAM=""
+        PARAM="-q"
     fi
 
     ${SUDO} ${HOME}/certbot/certbot-auto renew ${PARAM}
