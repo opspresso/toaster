@@ -1995,7 +1995,7 @@ vhost_proxy() {
     copy ${TEMP_FILE3} ${DEST_FILE}
 }
 
-vhost_le() {
+vhost_le_ssl() {
     DOM="$1"
     PORT="$2"
 
@@ -2056,7 +2056,7 @@ vhost_fleet() {
                 vhost_replace "${ARR[0]}"
 
                 if [ "${ARR[2]}" == "Y" ]; then
-                    vhost_le "${ARR[0]}"
+                    vhost_le_ssl "${ARR[0]}"
                 fi
             else
                 vhost_proxy "${ARR[0]}" "${ARR[1]}"
