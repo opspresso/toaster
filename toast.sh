@@ -216,10 +216,6 @@ update() {
     self_info
     self_update
 
-    init_hosts
-    init_profile
-    init_email
-
     certbot_renew
 
     #service_update
@@ -889,21 +885,20 @@ init_aws() {
 }
 
 init_certbot() {
+    BOT_URL="https://dl.eff.org/certbot-auto"
     BOT_DIR="${HOME}/certbot"
 
-    if [ -d ${BOT_DIR} ]; then
-        pushd ${BOT_DIR}
-        git pull
-        popd
-    else
+    if [ ! -d ${BOT_DIR} ]; then
         echo_ "init certbot..."
 
-        pushd ${HOME}
-        git clone https://github.com/certbot/certbot
-        popd
+        mkdir ${BOT_DIR}
     fi
 
-    touch "${SHELL_DIR}/.config_certbot"
+    wget -q -P "${BOT_DIR}" "${BOT_URL}"
+
+    if [ -f ${BOT_DIR}/certbot-auto ]; then
+        touch "${SHELL_DIR}/.config_certbot"
+    fi
 }
 
 init_certificate() {
@@ -2555,6 +2550,7 @@ certbot_renew() {
         return
     fi
 
+    init_email
     init_certbot
 
     if [ OS_TYPE == "amzn1" ]; then
