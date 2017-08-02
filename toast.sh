@@ -380,6 +380,9 @@ certbot() {
         n|nginx)
             certbot_nginx
             ;;
+        d|delete)
+            certbot_delete
+            ;;
         r|renew)
             certbot_renew
             ;;
@@ -2542,6 +2545,23 @@ certbot_nginx() {
     fi
 
     ${SUDO} ${HOME}/certbot/certbot-auto --nginx --email ${EMAIL} ${PARAM} -d ${CERT_NAME}
+}
+
+certbot_delete() {
+    if [ ! -f "${SHELL_DIR}/.config_certbot" ]; then
+        warning "Not set certbot."
+        return
+    fi
+
+    init_certbot
+
+    if [ OS_TYPE == "amzn1" ]; then
+        PARAM="-q --debug"
+    else
+        PARAM="-q"
+    fi
+
+    ${SUDO} ${HOME}/certbot/certbot-auto delete ${PARAM}
 }
 
 certbot_renew() {
