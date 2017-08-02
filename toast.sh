@@ -234,6 +234,9 @@ init() {
         aws)
             init_aws
             ;;
+        certbot)
+            init_certbot
+            ;;
         certificate)
             init_certificate
             ;;
@@ -842,6 +845,20 @@ init_aws() {
     echo_bar
     echo_ "$(/usr/bin/aws --version)"
     echo_bar
+}
+
+init_certbot() {
+    echo_ "init certbot..."
+
+    BOT_DIR="certbot"
+
+    if [ -d ${BOT_DIR} ]; then
+        pushd ${BOT_DIR}
+        git pull
+        popd
+    else
+        git clone https://github.com/certbot/certbot
+    fi
 }
 
 init_certificate() {
