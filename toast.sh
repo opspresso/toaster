@@ -2550,7 +2550,6 @@ certbot_renew() {
         return
     fi
 
-    init_email
     init_certbot
 
     if [ OS_TYPE == "amzn1" ]; then
