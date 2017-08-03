@@ -2152,18 +2152,8 @@ repo_path() {
         return
     fi
 
-    # repo_path
-    URL="${TOAST_URL}/config/key/repo_path"
-    RES=$(curl -s --data "org=${ORG}&token=${TOKEN}&no=${SNO}" "${URL}")
-
-    if [ "${RES}" != "" ]; then
-        REPO_BUCKET=""
-        REPO_PATH="${RES}"
-        return
-    fi
-
-    warning "Not set REPO_PATH."
-    exit 1
+    REPO_BUCKET="repo.${ORG}.com"
+    REPO_PATH="s3://${REPO_BUCKET}"
 }
 
 deploy_project() {
