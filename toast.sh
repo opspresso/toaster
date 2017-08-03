@@ -74,6 +74,8 @@ SNO=
 REPO_BUCKET=
 REPO_PATH=
 
+EMAIL=
+
 JAR_OPTS=
 
 CONFIG="${HOME}/.toast"
