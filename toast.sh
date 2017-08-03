@@ -311,6 +311,9 @@ build() {
         save)
             build_save
             ;;
+        package)
+            build_package
+            ;;
         docker)
             build_docker
             ;;
@@ -1407,7 +1410,7 @@ custom_php_ini() {
 }
 
 build_parse() {
-    POM_FILE="./pom.xml"
+    POM_FILE="pom.xml"
 
     if [ ! -f "${POM_FILE}" ]; then
         warning "Not exist file. [${POM_FILE}]"
@@ -1485,13 +1488,30 @@ build_version() {
     replace_version
 }
 
+build_package() {
+    if [ "${ARTIFACT_ID}" == "" ]; then
+        warning "Not set ARTIFACT_ID."
+        return
+    fi
+
+    if [ ! -d target ]; then
+        mkdir target
+    fi
+
+    pushd src/main/webapp
+
+    zip -q -r ../../../target/${ARTIFACT_ID}-${VERSION}.${PACKAGING} *
+
+    popd
+}
+
 build_save() {
     if [ "${ARTIFACT_ID}" == "" ]; then
         warning "Not set ARTIFACT_ID."
         return
     fi
 
-    POM_FILE="./pom.xml"
+    POM_FILE="pom.xml"
     if [ -f "${POM_FILE}" ]; then
         cp -rf "${POM_FILE}" "target/${ARTIFACT_ID}-${VERSION}.pom"
     fi
@@ -1546,12 +1566,14 @@ build_docker() {
         mkdir "target/docker"
     fi
 
+    # Dockerfile
     if [ -f "Dockerfile" ]; then
         cp -rf "Dockerfile" "target/docker/Dockerfile"
     else
         cp -rf "${SHELL_DIR}/package/docker/Dockerfile" "target/docker/Dockerfile"
     fi
 
+    # Dockerrun
     if [ -f "Dockerrun.aws.json" ]; then
         cp -rf "Dockerrun.aws.json" "target/docker/Dockerrun.aws.json"
     else
