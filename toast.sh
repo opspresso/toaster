@@ -2555,12 +2555,10 @@ certbot_delete() {
         return
     fi
 
-    init_certbot
-
     if [ OS_TYPE == "amzn1" ]; then
-        PARAM="-q --debug"
+        PARAM="--debug"
     else
-        PARAM="-q"
+        PARAM=""
     fi
 
     ${SUDO} ${HOME}/certbot/certbot-auto delete ${PARAM}
@@ -2571,8 +2569,6 @@ certbot_renew() {
         #warning "Not set certbot."
         return
     fi
-
-    init_certbot
 
     if [ OS_TYPE == "amzn1" ]; then
         PARAM="--debug"
