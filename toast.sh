@@ -1494,8 +1494,8 @@ build_package() {
         return
     fi
 
-    if [ ! -d target ]; then
-        mkdir target
+    if [ ! -d "target" ]; then
+        mkdir "target"
     fi
 
     pushd src/main/webapp
