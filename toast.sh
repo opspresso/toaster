@@ -2377,14 +2377,20 @@ download() {
     aws s3 cp "${SOURCE}" "${TEMP_DIR}" --quiet
 
     if [ ! -f "${FILEPATH}" ]; then
-        SOURCE="${REPO_PATH}/maven2/${GROUP_PATH}/${ARTIFACT_ID}/${FILENAME}"
+        SOURCE="${REPO_PATH}/maven2/${ARTIFACT_ID}/${VERSION}/${FILENAME}"
         echo_ "--> ${SOURCE}"
         aws s3 cp "${SOURCE}" "${TEMP_DIR}" --quiet
-    fi
 
-    if [ ! -f "${FILEPATH}" ]; then
-        warning "deploy file does not exist. [${FILEPATH}]"
-        return
+        if [ ! -f "${FILEPATH}" ]; then
+            SOURCE="${REPO_PATH}/maven2/${ARTIFACT_ID}/${FILENAME}"
+            echo_ "--> ${SOURCE}"
+            aws s3 cp "${SOURCE}" "${TEMP_DIR}" --quiet
+
+            if [ ! -f "${FILEPATH}" ]; then
+                warning "deploy file does not exist. [${FILEPATH}]"
+                return
+            fi
+        fi
     fi
 
     if [ "${TYPE}" == "jar" ]; then
