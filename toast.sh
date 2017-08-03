@@ -373,6 +373,9 @@ bucket() {
 certbot() {
     not_darwin
 
+    BOT_DIR="${HOME}/certbot"
+    BOT_BIN="${BOT_DIR}/certbot-auto"
+
     case ${PARAM1} in
         a|apache)
             certbot_apache
@@ -2516,7 +2519,7 @@ certbot_apache() {
         PARAM="--agree-tos --no-redirect"
     fi
 
-    ${SUDO} ${HOME}/certbot/certbot-auto --apache --email ${EMAIL} ${PARAM} -d ${CERT_NAME}
+    ${SUDO} ${BOT_BIN} --apache --email ${EMAIL} ${PARAM} -d ${CERT_NAME}
 }
 
 certbot_nginx() {
@@ -2546,7 +2549,7 @@ certbot_nginx() {
         PARAM="--agree-tos --no-redirect"
     fi
 
-    ${SUDO} ${HOME}/certbot/certbot-auto --nginx --email ${EMAIL} ${PARAM} -d ${CERT_NAME}
+    ${SUDO} ${BOT_BIN} --nginx --email ${EMAIL} ${PARAM} -d ${CERT_NAME}
 }
 
 certbot_delete() {
@@ -2561,7 +2564,7 @@ certbot_delete() {
         PARAM=""
     fi
 
-    ${SUDO} ${HOME}/certbot/certbot-auto delete ${PARAM}
+    ${SUDO} ${BOT_BIN} delete ${PARAM}
 }
 
 certbot_renew() {
@@ -2576,7 +2579,7 @@ certbot_renew() {
         PARAM=""
     fi
 
-    ${SUDO} ${HOME}/certbot/certbot-auto renew ${PARAM}
+    ${SUDO} ${BOT_BIN} renew ${PARAM}
 }
 
 connect() {
