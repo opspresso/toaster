@@ -3058,9 +3058,8 @@ usage() {
     echo_
     echo_ " Usage: toast init {package}"
     echo_
-    echo_ " Usage: toast version"
-    echo_ " Usage: toast version next {branch}"
-    echo_ " Usage: toast version save {package}"
+    echo_ " Usage: toast build version {branch}"
+    echo_ " Usage: toast build save {package}"
     echo_
     echo_ " Usage: toast vhost"
     echo_ " Usage: toast vhost lb"
