@@ -1590,7 +1590,7 @@ build_docker() {
 
     pushd target/docker
 
-    zip -q -r ../${ARTIFACT_ID}-${VERSION}-${GIT_ID}.zip *
+    zip -q -r ../${ARTIFACT_ID}-${VERSION}.zip *
 
     popd
 
@@ -1613,7 +1613,7 @@ build_eb() {
      --application-name "${ARTIFACT_ID}" \
      --version-label "${VERSION}-${TS}" \
      --description "${GIT_ID} (${BRANCH})" \
-     --source-bundle S3Bucket="${REPO_BUCKET}",S3Key="maven2/${GROUP_PATH}/${ARTIFACT_ID}/${VERSION}/${ARTIFACT_ID}-${VERSION}-${GIT_ID}.zip" \
+     --source-bundle S3Bucket="${REPO_BUCKET}",S3Key="maven2/${GROUP_PATH}/${ARTIFACT_ID}/${VERSION}/${ARTIFACT_ID}-${VERSION}.zip" \
      --auto-create-application
 }
 
