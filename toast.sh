@@ -1580,6 +1580,12 @@ build_docker() {
         cp -rf "${SHELL_DIR}/package/docker/Dockerrun.aws.json" "target/docker/Dockerrun.aws.json"
     fi
 
+    # deploy
+    if [ -d "deploy" ]; then
+        cp -rf "deploy" "target/docker/deploy"
+    fi
+
+    # ROOT.${packaging}
     cp -rf "target/${ARTIFACT_ID}-${VERSION}.${PACKAGING}" "target/docker/ROOT.${PACKAGING}"
 
     pushd target/docker
