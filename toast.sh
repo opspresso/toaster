@@ -490,6 +490,10 @@ self_update() {
 }
 
 prepare() {
+    if [ "${PHASE}" == "local" ]; then
+        return
+    fi
+
     service_install "gcc curl wget unzip vim git telnet httpie"
 
     # /data
