@@ -497,12 +497,20 @@ prepare() {
     service_install "gcc curl wget unzip vim git telnet httpie"
 
     # ssh config
-    mkdir -p ${HOME}/.ssh
-    copy "${SHELL_DIR}/package/ssh/config.conf" "${HOME}/.ssh/config" 600
+    if [ ! -d ${HOME}/.ssh ]; then
+        mkdir -p ${HOME}/.ssh
+    fi
+    if [ ! -f ${HOME}/.ssh/config ]; then
+        copy "${SHELL_DIR}/package/ssh/config.conf" "${HOME}/.ssh/config" 600
+    fi
 
     # aws config
-    mkdir -p ${HOME}/.aws
-    copy "${SHELL_DIR}/package/aws/config.conf" "${HOME}/.aws/config" 600
+    if [ ! -d ${HOME}/.aws ]; then
+        mkdir -p ${HOME}/.aws
+    fi
+    if [ ! -f ${HOME}/.aws/config ]; then
+        copy "${SHELL_DIR}/package/aws/config.conf" "${HOME}/.aws/config" 600
+    fi
 
     # /data
     make_dir "${DATA_DIR}"
