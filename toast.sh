@@ -498,15 +498,11 @@ prepare() {
 
     # ssh config
     make_dir ${HOME}/.ssh
-    if [ ! -f ${HOME}/.ssh/config ]; then
-        copy "${SHELL_DIR}/package/ssh/config.conf" "${HOME}/.ssh/config" 600
-    fi
+    copy "${SHELL_DIR}/package/ssh/config.conf" "${HOME}/.ssh/config" 600
 
     # aws config
     make_dir ${HOME}/.aws
-    if [ ! -f ${HOME}/.aws/config ]; then
-        copy "${SHELL_DIR}/package/aws/config.conf" "${HOME}/.aws/config" 600
-    fi
+    copy "${SHELL_DIR}/package/aws/config.conf" "${HOME}/.aws/config" 600
 
     # /data
     make_dir "${DATA_DIR}"
