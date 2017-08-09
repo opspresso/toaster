@@ -496,6 +496,14 @@ prepare() {
 
     service_install "gcc curl wget unzip vim git telnet httpie"
 
+    # ssh config
+    mkdir -p ${HOME}/.ssh
+    copy "${SHELL_DIR}/package/ssh/config.conf" "${HOME}/.ssh/config" 600
+
+    # aws config
+    mkdir -p ${HOME}/.aws
+    copy "${SHELL_DIR}/package/aws/config.conf" "${HOME}/.aws/config" 600
+
     # /data
     make_dir "${DATA_DIR}"
 
@@ -741,9 +749,6 @@ init_email() {
 init_master() {
     echo_ "init master..."
 
-    mkdir -p ${HOME}/.ssh
-    mkdir -p ${HOME}/.aws
-
     # .ssh/id_rsa
     URL="${TOAST_URL}/config/key/rsa_private_key"
     RES=$(curl -s --data "org=${ORG}&token=${TOKEN}&no=${SNO}" "${URL}")
@@ -787,9 +792,6 @@ init_master() {
 
 init_slave() {
     echo_ "init slave..."
-
-    mkdir -p ${HOME}/.ssh
-    mkdir -p ${HOME}/.aws
 
     # .ssh/authorized_keys
     TARGET="${HOME}/.ssh/authorized_keys"
@@ -851,9 +853,6 @@ init_slave() {
 
 init_aws() {
     echo_ "init aws..."
-
-    mkdir -p ${HOME}/.ssh
-    mkdir -p ${HOME}/.aws
 
     # .aws/config
     URL="${TOAST_URL}/config/key/aws_config"
@@ -3021,7 +3020,9 @@ copy() {
 
     ${SUDO} cp -rf $1 $2
 
-    mod $2 $3
+    if [ "$3" != "" ]; then
+        mod $2 $3
+    fi
 }
 
 new_file() {
@@ -3031,7 +3032,9 @@ new_file() {
 
     ${SUDO} echo -n "" > $1
 
-    mod $1 $2
+    if [ "$2" != "" ]; then
+        mod $1 $2
+    fi
 }
 
 make_dir() {
@@ -3043,14 +3046,16 @@ make_dir() {
         mkdir -p $1
 
         if [ "$2" != "" ]; then
-            chmod $2
+            chmod $2 $1
         fi
     fi
 
     if [ ! -d $1 ] && [ ! -f $1 ]; then
         ${SUDO} mkdir -p $1
 
-        mod $1 $2
+        if [ "$2" != "" ]; then
+            mod $1 $2
+        fi
     fi
 }
 
