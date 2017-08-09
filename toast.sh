@@ -496,14 +496,6 @@ prepare() {
 
     service_install "gcc curl wget unzip vim git telnet httpie"
 
-    # ssh config
-    make_dir ${HOME}/.ssh
-    copy "${SHELL_DIR}/package/ssh/config.conf" "${HOME}/.ssh/config" 600
-
-    # aws config
-    make_dir ${HOME}/.aws
-    copy "${SHELL_DIR}/package/aws/config.conf" "${HOME}/.aws/config" 600
-
     # /data
     make_dir "${DATA_DIR}"
 
@@ -535,6 +527,14 @@ config_auto() {
             PORT="${ARR[1]}"
         fi
     fi
+
+    # ssh config
+    make_dir ${HOME}/.ssh
+    copy "${SHELL_DIR}/package/ssh/config.conf" "${HOME}/.ssh/config" 600
+
+    # aws config
+    make_dir ${HOME}/.aws
+    copy "${SHELL_DIR}/package/aws/config.conf" "${HOME}/.aws/config" 600
 
     # .toast
     if [ ! -f "${CONFIG}" ]; then
