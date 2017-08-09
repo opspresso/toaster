@@ -1500,7 +1500,15 @@ build_package() {
 
     pushd src/main/webapp
 
-    zip -q -r ../../../target/${ARTIFACT_ID}-${VERSION}.${PACKAGING} *
+    COUNT1=($(ls -l | wc -l))
+    COUNT2=($(ls -al | wc -l))
+    COUNT0=$(expr ${COUNT2[0]} - ${COUNT1[0]})
+
+    if [ "${COUNT0}" != "2" ]; then
+        zip -q -r ../../../target/${ARTIFACT_ID}-${VERSION}.${PACKAGING} * .*
+    else
+        zip -q -r ../../../target/${ARTIFACT_ID}-${VERSION}.${PACKAGING} *
+    fi
 
     popd
 }
