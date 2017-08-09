@@ -1619,6 +1619,8 @@ build_eb() {
         if [ ! -d "target/docker" ]; then
             build_docker
         fi
+    else
+        build_save
     fi
 
     TS=$(date "+%s")
