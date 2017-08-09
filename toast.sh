@@ -523,7 +523,7 @@ prepare() {
     ${SUDO} ln -sf "/usr/share/zoneinfo/Asia/Seoul" "/etc/localtime"
 
     # i18n
-    ${SUDO} cp -rf "${SHELL_DIR}/package/linux/i18n.txt" "/etc/sysconfig/i18n"
+    ${SUDO} cp -rf "${SHELL_DIR}/package/linux/i18n.conf" "/etc/sysconfig/i18n"
 }
 
 config_auto() {
@@ -538,7 +538,7 @@ config_auto() {
 
     # .toast
     if [ ! -f "${CONFIG}" ]; then
-        cp -rf "${SHELL_DIR}/package/toast.txt" "${CONFIG}"
+        cp -rf "${SHELL_DIR}/package/toast.conf" "${CONFIG}"
         source "${CONFIG}"
     fi
 
