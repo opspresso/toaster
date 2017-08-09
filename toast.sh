@@ -1610,8 +1610,15 @@ build_eb() {
         return
     fi
 
-    if [ ! -d "target/docker" ]; then
-        build_docker
+    PACKAGE="${PARAM2}"
+    if [ "${PACKAGE}" == "" ]; then
+        PACKAGE="zip"
+    fi
+
+    if [ "${PACKAGE}" == "zip" ]; then
+        if [ ! -d "target/docker" ]; then
+            build_docker
+        fi
     fi
 
     TS=$(date "+%s")
@@ -1620,7 +1627,7 @@ build_eb() {
      --application-name "${ARTIFACT_ID}" \
      --version-label "${VERSION}-${TS}" \
      --description "${GIT_ID} (${BRANCH})" \
-     --source-bundle S3Bucket="${REPO_BUCKET}",S3Key="maven2/${GROUP_PATH}/${ARTIFACT_ID}/${VERSION}/${ARTIFACT_ID}-${VERSION}.zip" \
+     --source-bundle S3Bucket="${REPO_BUCKET}",S3Key="maven2/${GROUP_PATH}/${ARTIFACT_ID}/${VERSION}/${ARTIFACT_ID}-${VERSION}.${PACKAGE}" \
      --auto-create-application
 }
 
