@@ -1196,6 +1196,8 @@ init_node() {
 }
 
 init_java8() {
+    make_dir "${APPS_DIR}"
+
     if [ ! -f "${SHELL_DIR}/.config_java" ]; then
         echo_ "init java..."
 
@@ -1213,14 +1215,14 @@ init_java8() {
         echo "JAVA_HOME=${JAVA_HOME}" > "${SHELL_DIR}/.config_java"
     fi
 
-    make_dir "${APPS_DIR}"
-
     echo_bar
     echo_ "$(java -version)"
     echo_bar
 }
 
 init_maven3() {
+    make_dir "${APPS_DIR}"
+
     if [ ! -f "${SHELL_DIR}/.config_maven" ]; then
         echo_ "init maven..."
 
@@ -1237,6 +1239,8 @@ init_maven3() {
 }
 
 init_tomcat8() {
+    make_dir "${APPS_DIR}"
+
     if [ ! -f "${SHELL_DIR}/.config_tomcat" ]; then
         echo_ "init tomcat..."
 
@@ -1610,12 +1614,12 @@ build_eb() {
         return
     fi
 
-    PACKAGE="${PARAM2}"
-    if [ "${PACKAGE}" == "" ]; then
-        PACKAGE="zip"
+    EB_PACK="${PARAM2}"
+    if [ "${EB_PACK}" == "" ]; then
+        EB_PACK="zip"
     fi
 
-    if [ "${PACKAGE}" == "zip" ]; then
+    if [ "${EB_PACK}" == "zip" ]; then
         if [ ! -d "target/docker" ]; then
             build_docker
         fi
@@ -1629,7 +1633,7 @@ build_eb() {
      --application-name "${ARTIFACT_ID}" \
      --version-label "${VERSION}-${TS}" \
      --description "${GIT_ID} (${BRANCH})" \
-     --source-bundle S3Bucket="${REPO_BUCKET}",S3Key="maven2/${GROUP_PATH}/${ARTIFACT_ID}/${VERSION}/${ARTIFACT_ID}-${VERSION}.${PACKAGE}" \
+     --source-bundle S3Bucket="${REPO_BUCKET}",S3Key="maven2/${GROUP_PATH}/${ARTIFACT_ID}/${VERSION}/${ARTIFACT_ID}-${VERSION}.${EB_PACK}" \
      --auto-create-application
 }
 
@@ -3029,9 +3033,7 @@ copy() {
 
     ${SUDO} cp -rf $1 $2
 
-    if [ "$3" != "" ]; then
-        mod $2 $3
-    fi
+    mod $2 $3
 }
 
 new_file() {
@@ -3041,9 +3043,7 @@ new_file() {
 
     ${SUDO} echo -n "" > $1
 
-    if [ "$2" != "" ]; then
-        mod $1 $2
-    fi
+    mod $1 $2
 }
 
 make_dir() {
@@ -3062,9 +3062,7 @@ make_dir() {
     if [ ! -d $1 ] && [ ! -f $1 ]; then
         ${SUDO} mkdir -p $1
 
-        if [ "$2" != "" ]; then
-            mod $1 $2
-        fi
+        mod $1 $2
     fi
 }
 
