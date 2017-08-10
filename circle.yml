@@ -1,11 +1,6 @@
 machine:
-  java:
-    version: oraclejdk8
-
-dependencies:
-  post:
-    - ~/toaster/toast.sh config circle local nalbam $TOAST_TOKEN
-    - ~/toaster/toast.sh init slave
+  python:
+    version: 2.7.5
 
 compile:
   override:

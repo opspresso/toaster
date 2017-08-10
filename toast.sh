@@ -74,6 +74,8 @@ SNO=
 REPO_BUCKET=
 REPO_PATH=
 
+EMAIL=
+
 JAR_OPTS=
 
 CONFIG="${HOME}/.toast"
@@ -216,10 +218,6 @@ update() {
     self_info
     self_update
 
-    init_hosts
-    init_profile
-    init_email
-
     certbot_renew
 
     #service_update
@@ -313,6 +311,9 @@ build() {
         save)
             build_save
             ;;
+        package)
+            build_package
+            ;;
         docker)
             build_docker
             ;;
@@ -383,6 +384,9 @@ certbot() {
             ;;
         n|nginx)
             certbot_nginx
+            ;;
+        d|delete)
+            certbot_delete
             ;;
         r|renew)
             certbot_renew
@@ -486,6 +490,10 @@ self_update() {
 }
 
 prepare() {
+    if [ "${PHASE}" == "local" ]; then
+        return
+    fi
+
     service_install "gcc curl wget unzip vim git telnet httpie"
 
     # /data
@@ -507,7 +515,7 @@ prepare() {
     ${SUDO} ln -sf "/usr/share/zoneinfo/Asia/Seoul" "/etc/localtime"
 
     # i18n
-    ${SUDO} cp -rf "${SHELL_DIR}/package/linux/i18n.txt" "/etc/sysconfig/i18n"
+    ${SUDO} cp -rf "${SHELL_DIR}/package/linux/i18n.conf" "/etc/sysconfig/i18n"
 }
 
 config_auto() {
@@ -520,9 +528,17 @@ config_auto() {
         fi
     fi
 
+    # ssh config
+    make_dir ${HOME}/.ssh
+    copy "${SHELL_DIR}/package/ssh/config.conf" "${HOME}/.ssh/config" 600
+
+    # aws config
+    make_dir ${HOME}/.aws
+    copy "${SHELL_DIR}/package/aws/config.conf" "${HOME}/.aws/config" 600
+
     # .toast
     if [ ! -f "${CONFIG}" ]; then
-        cp -rf "${SHELL_DIR}/package/toast.txt" "${CONFIG}"
+        cp -rf "${SHELL_DIR}/package/toast.conf" "${CONFIG}"
         source "${CONFIG}"
     fi
 
@@ -733,9 +749,6 @@ init_email() {
 init_master() {
     echo_ "init master..."
 
-    mkdir -p ${HOME}/.ssh
-    mkdir -p ${HOME}/.aws
-
     # .ssh/id_rsa
     URL="${TOAST_URL}/config/key/rsa_private_key"
     RES=$(curl -s --data "org=${ORG}&token=${TOKEN}&no=${SNO}" "${URL}")
@@ -757,15 +770,13 @@ init_master() {
     fi
 
     # .aws/config
-    TARGET="${HOME}/.aws/config"
-    if [ ! -f ${TARGET} ]; then
-        URL="${TOAST_URL}/config/key/aws_config"
-        RES=$(curl -s --data "org=${ORG}&token=${TOKEN}&no=${SNO}" "${URL}")
+    URL="${TOAST_URL}/config/key/aws_config"
+    RES=$(curl -s --data "org=${ORG}&token=${TOKEN}&no=${SNO}" "${URL}")
 
-        if [ "${RES}" != "" ]; then
-            echo "${RES}" > ${TARGET}
-            chmod 600 ${TARGET}
-        fi
+    if [ "${RES}" != "" ]; then
+        TARGET="${HOME}/.aws/config"
+        echo "${RES}" > ${TARGET}
+        chmod 600 ${TARGET}
     fi
 
     # .aws/credentials
@@ -781,9 +792,6 @@ init_master() {
 
 init_slave() {
     echo_ "init slave..."
-
-    mkdir -p ${HOME}/.ssh
-    mkdir -p ${HOME}/.aws
 
     # .ssh/authorized_keys
     TARGET="${HOME}/.ssh/authorized_keys"
@@ -818,15 +826,13 @@ init_slave() {
     fi
 
     # .aws/config
-    TARGET="${HOME}/.aws/config"
-    if [ ! -f ${TARGET} ]; then
-        URL="${TOAST_URL}/config/key/aws_config"
-        RES=$(curl -s --data "org=${ORG}&token=${TOKEN}&no=${SNO}" "${URL}")
+    URL="${TOAST_URL}/config/key/aws_config"
+    RES=$(curl -s --data "org=${ORG}&token=${TOKEN}&no=${SNO}" "${URL}")
 
-        if [ "${RES}" != "" ]; then
-            echo "${RES}" > ${TARGET}
-            chmod 600 ${TARGET}
-        fi
+    if [ "${RES}" != "" ]; then
+        TARGET="${HOME}/.aws/config"
+        echo "${RES}" > ${TARGET}
+        chmod 600 ${TARGET}
     fi
 
     # .aws/credentials
@@ -847,9 +853,6 @@ init_slave() {
 
 init_aws() {
     echo_ "init aws..."
-
-    mkdir -p ${HOME}/.ssh
-    mkdir -p ${HOME}/.aws
 
     # .aws/config
     URL="${TOAST_URL}/config/key/aws_config"
@@ -889,21 +892,22 @@ init_aws() {
 }
 
 init_certbot() {
+    echo_ "init certbot..."
+
+    BOT_URL="https://dl.eff.org/certbot-auto"
     BOT_DIR="${HOME}/certbot"
+    BOT_BIN="${BOT_DIR}/certbot-auto"
 
-    if [ -d ${BOT_DIR} ]; then
-        pushd ${BOT_DIR}
-        git pull
-        popd
-    else
-        echo_ "init certbot..."
-
-        pushd ${HOME}
-        git clone https://github.com/certbot/certbot
-        popd
+    if [ ! -d ${BOT_DIR} ]; then
+        mkdir "${BOT_DIR}"
     fi
 
-    touch "${SHELL_DIR}/.config_certbot"
+    curl -s -o "${BOT_BIN}" "${BOT_URL}"
+
+    if [ -f ${BOT_BIN} ]; then
+        chmod a+x ${BOT_BIN}
+        touch "${SHELL_DIR}/.config_certbot"
+    fi
 }
 
 init_certificate() {
@@ -1192,6 +1196,8 @@ init_node() {
 }
 
 init_java8() {
+    make_dir "${APPS_DIR}"
+
     if [ ! -f "${SHELL_DIR}/.config_java" ]; then
         echo_ "init java..."
 
@@ -1209,14 +1215,14 @@ init_java8() {
         echo "JAVA_HOME=${JAVA_HOME}" > "${SHELL_DIR}/.config_java"
     fi
 
-    make_dir "${APPS_DIR}"
-
     echo_bar
     echo_ "$(java -version)"
     echo_bar
 }
 
 init_maven3() {
+    make_dir "${APPS_DIR}"
+
     if [ ! -f "${SHELL_DIR}/.config_maven" ]; then
         echo_ "init maven..."
 
@@ -1233,6 +1239,8 @@ init_maven3() {
 }
 
 init_tomcat8() {
+    make_dir "${APPS_DIR}"
+
     if [ ! -f "${SHELL_DIR}/.config_tomcat" ]; then
         echo_ "init tomcat..."
 
@@ -1405,7 +1413,7 @@ custom_php_ini() {
 }
 
 build_parse() {
-    POM_FILE="./pom.xml"
+    POM_FILE="pom.xml"
 
     if [ ! -f "${POM_FILE}" ]; then
         warning "Not exist file. [${POM_FILE}]"
@@ -1483,13 +1491,38 @@ build_version() {
     replace_version
 }
 
+build_package() {
+    if [ "${ARTIFACT_ID}" == "" ]; then
+        warning "Not set ARTIFACT_ID."
+        return
+    fi
+
+    if [ ! -d "target" ]; then
+        mkdir "target"
+    fi
+
+    pushd src/main/webapp
+
+    COUNT1=($(ls -l | wc -l))
+    COUNT2=($(ls -al | wc -l))
+    COUNT0=$(expr ${COUNT2[0]} - ${COUNT1[0]})
+
+    if [ "${COUNT0}" != "2" ]; then
+        zip -q -r ../../../target/${ARTIFACT_ID}-${VERSION}.${PACKAGING} * .*
+    else
+        zip -q -r ../../../target/${ARTIFACT_ID}-${VERSION}.${PACKAGING} *
+    fi
+
+    popd
+}
+
 build_save() {
     if [ "${ARTIFACT_ID}" == "" ]; then
         warning "Not set ARTIFACT_ID."
         return
     fi
 
-    POM_FILE="./pom.xml"
+    POM_FILE="pom.xml"
     if [ -f "${POM_FILE}" ]; then
         cp -rf "${POM_FILE}" "target/${ARTIFACT_ID}-${VERSION}.pom"
     fi
@@ -1544,18 +1577,26 @@ build_docker() {
         mkdir "target/docker"
     fi
 
+    # Dockerfile
     if [ -f "Dockerfile" ]; then
         cp -rf "Dockerfile" "target/docker/Dockerfile"
     else
         cp -rf "${SHELL_DIR}/package/docker/Dockerfile" "target/docker/Dockerfile"
     fi
 
+    # Dockerrun
     if [ -f "Dockerrun.aws.json" ]; then
         cp -rf "Dockerrun.aws.json" "target/docker/Dockerrun.aws.json"
     else
         cp -rf "${SHELL_DIR}/package/docker/Dockerrun.aws.json" "target/docker/Dockerrun.aws.json"
     fi
 
+    # deploy
+    if [ -d "deploy" ]; then
+        cp -rf "deploy" "target/docker/deploy"
+    fi
+
+    # ROOT.${packaging}
     cp -rf "target/${ARTIFACT_ID}-${VERSION}.${PACKAGING}" "target/docker/ROOT.${PACKAGING}"
 
     pushd target/docker
@@ -1573,8 +1614,17 @@ build_eb() {
         return
     fi
 
-    if [ ! -d "target/docker" ]; then
-        build_docker
+    EB_PACK="${PARAM2}"
+    if [ "${EB_PACK}" == "" ]; then
+        EB_PACK="zip"
+    fi
+
+    if [ "${EB_PACK}" == "zip" ]; then
+        if [ ! -d "target/docker" ]; then
+            build_docker
+        fi
+    else
+        build_save
     fi
 
     TS=$(date "+%s")
@@ -1583,7 +1633,7 @@ build_eb() {
      --application-name "${ARTIFACT_ID}" \
      --version-label "${VERSION}-${TS}" \
      --description "${GIT_ID} (${BRANCH})" \
-     --source-bundle S3Bucket="${REPO_BUCKET}",S3Key="maven2/${GROUP_PATH}/${ARTIFACT_ID}/${VERSION}/${ARTIFACT_ID}-${VERSION}.zip" \
+     --source-bundle S3Bucket="${REPO_BUCKET}",S3Key="maven2/${GROUP_PATH}/${ARTIFACT_ID}/${VERSION}/${ARTIFACT_ID}-${VERSION}.${EB_PACK}" \
      --auto-create-application
 }
 
@@ -2150,18 +2200,8 @@ repo_path() {
         return
     fi
 
-    # repo_path
-    URL="${TOAST_URL}/config/key/repo_path"
-    RES=$(curl -s --data "org=${ORG}&token=${TOKEN}&no=${SNO}" "${URL}")
-
-    if [ "${RES}" != "" ]; then
-        REPO_BUCKET=""
-        REPO_PATH="${RES}"
-        return
-    fi
-
-    warning "Not set REPO_PATH."
-    exit 1
+    REPO_BUCKET="repo.${ORG}.com"
+    REPO_PATH="s3://${REPO_BUCKET}"
 }
 
 deploy_project() {
@@ -2385,14 +2425,20 @@ download() {
     aws s3 cp "${SOURCE}" "${TEMP_DIR}" --quiet
 
     if [ ! -f "${FILEPATH}" ]; then
-        SOURCE="${REPO_PATH}/maven2/${GROUP_PATH}/${ARTIFACT_ID}/${FILENAME}"
+        SOURCE="${REPO_PATH}/maven2/${ARTIFACT_ID}/${VERSION}/${FILENAME}"
         echo_ "--> ${SOURCE}"
         aws s3 cp "${SOURCE}" "${TEMP_DIR}" --quiet
-    fi
 
-    if [ ! -f "${FILEPATH}" ]; then
-        warning "deploy file does not exist. [${FILEPATH}]"
-        return
+        if [ ! -f "${FILEPATH}" ]; then
+            SOURCE="${REPO_PATH}/maven2/${ARTIFACT_ID}/${FILENAME}"
+            echo_ "--> ${SOURCE}"
+            aws s3 cp "${SOURCE}" "${TEMP_DIR}" --quiet
+
+            if [ ! -f "${FILEPATH}" ]; then
+                warning "deploy file does not exist. [${FILEPATH}]"
+                return
+            fi
+        fi
     fi
 
     if [ "${TYPE}" == "jar" ]; then
@@ -2549,18 +2595,31 @@ certbot_nginx() {
     ${SUDO} ${HOME}/certbot/certbot-auto --nginx --email ${EMAIL} ${PARAM} -d ${CERT_NAME}
 }
 
+certbot_delete() {
+    if [ ! -f "${SHELL_DIR}/.config_certbot" ]; then
+        warning "Not set certbot."
+        return
+    fi
+
+    if [ OS_TYPE == "amzn1" ]; then
+        PARAM="--debug"
+    else
+        PARAM=""
+    fi
+
+    ${SUDO} ${HOME}/certbot/certbot-auto delete ${PARAM}
+}
+
 certbot_renew() {
     if [ ! -f "${SHELL_DIR}/.config_certbot" ]; then
         #warning "Not set certbot."
         return
     fi
 
-    init_certbot
-
     if [ OS_TYPE == "amzn1" ]; then
-        PARAM="-q --debug"
+        PARAM="--debug"
     else
-        PARAM="-q"
+        PARAM=""
     fi
 
     ${SUDO} ${HOME}/certbot/certbot-auto renew ${PARAM}
@@ -2996,7 +3055,7 @@ make_dir() {
         mkdir -p $1
 
         if [ "$2" != "" ]; then
-            chmod $2
+            chmod $2 $1
         fi
     fi
 
@@ -3036,7 +3095,7 @@ echo_toast() {
 
 usage() {
     echo_toast
-    echo_ " Usage: toast {auto|update|config|init|version|deploy}"
+    echo_ " Usage: toast {auto|update|config|init|build|deploy|bucket|health|ssh}"
     echo_bar
     echo_
     echo_ " Usage: toast auto"
@@ -3047,9 +3106,8 @@ usage() {
     echo_
     echo_ " Usage: toast init {package}"
     echo_
-    echo_ " Usage: toast version"
-    echo_ " Usage: toast version next {branch}"
-    echo_ " Usage: toast version save {package}"
+    echo_ " Usage: toast build version {branch}"
+    echo_ " Usage: toast build save {package}"
     echo_
     echo_ " Usage: toast vhost"
     echo_ " Usage: toast vhost lb"
