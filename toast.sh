@@ -683,6 +683,7 @@ config_cron() {
     echo "0 1 * * * ${SHELL_DIR}/toast.sh log > /dev/null 2>&1" >> ${TEMP_FILE}
     echo "0 5 * * * ${SHELL_DIR}/toast.sh update > /dev/null 2>&1" >> ${TEMP_FILE}
     echo "* * * * * ${SHELL_DIR}/toast.sh health > /dev/null 2>&1" >> ${TEMP_FILE}
+    echo "0 * * * * ${SHELL_DIR}/log_rotate.sh > /dev/null 2>&1" >> ${TEMP_FILE}
 
     crontab ${TEMP_FILE}
 
