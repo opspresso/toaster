@@ -1578,6 +1578,9 @@ build_docker() {
         mkdir "target/docker"
     fi
 
+    # ROOT.${packaging}
+    cp -rf "target/${ARTIFACT_ID}-${VERSION}.${PACKAGING}" "target/docker/ROOT.${PACKAGING}"
+
     # Dockerfile
     if [ -f "Dockerfile" ]; then
         cp -rf "Dockerfile" "target/docker/Dockerfile"
@@ -1592,17 +1595,23 @@ build_docker() {
         cp -rf "${SHELL_DIR}/package/docker/Dockerrun.aws.json" "target/docker/Dockerrun.aws.json"
     fi
 
+    FILES="ROOT.${PACKAGING} Dockerfile Dockerrun.aws.json "
+
     # deploy
     if [ -d "deploy" ]; then
         cp -rf "deploy" "target/docker/deploy"
+        FILES="${FILES} deploy"
     fi
 
-    # ROOT.${packaging}
-    cp -rf "target/${ARTIFACT_ID}-${VERSION}.${PACKAGING}" "target/docker/ROOT.${PACKAGING}"
+    # .ebextensions
+    if [ -d ".ebextensions" ]; then
+        cp -rf ".ebextensions" "target/docker/.ebextensions"
+        FILES="${FILES} .ebextensions"
+    fi
 
     pushd target/docker
 
-    zip -q -r ../${ARTIFACT_ID}-${VERSION}.zip *
+    zip -q -r ../${ARTIFACT_ID}-${VERSION}.zip ${FILES}
 
     popd
 
