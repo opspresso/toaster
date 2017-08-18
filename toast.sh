@@ -1553,6 +1553,10 @@ build_save() {
 
     build_note
 
+    if [ "${PHASE}" == "local" ]; then
+        return
+    fi
+
     GIT_URL="$(git config --get remote.origin.url)"
     GIT_ID="$(cat .git_id)"
     BRANCH="$(cat .git_branch)"
