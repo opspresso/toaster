@@ -176,10 +176,10 @@ auto() {
 
     echo_toast
 
-    prepare
-
     config_auto
     config_cron
+
+    prepare
 
     self_info
 
@@ -204,10 +204,10 @@ auto() {
 config() {
     echo_toast
 
-    prepare
-
     config_auto
     config_cron
+
+    prepare
 
     self_info
 }
