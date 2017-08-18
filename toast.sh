@@ -179,9 +179,9 @@ auto() {
     config_auto
     config_cron
 
-    prepare
-
     self_info
+
+    prepare
 
     repo_path
 
@@ -207,9 +207,9 @@ config() {
     config_auto
     config_cron
 
-    prepare
-
     self_info
+
+    prepare
 }
 
 update() {
