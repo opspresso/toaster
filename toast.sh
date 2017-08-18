@@ -176,12 +176,12 @@ auto() {
 
     echo_toast
 
-    prepare
-
     config_auto
     config_cron
 
     self_info
+
+    prepare
 
     repo_path
 
@@ -204,12 +204,12 @@ auto() {
 config() {
     echo_toast
 
-    prepare
-
     config_auto
     config_cron
 
     self_info
+
+    prepare
 }
 
 update() {
