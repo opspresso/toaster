@@ -1456,7 +1456,6 @@ build_version() {
     fi
 
     BRANCH="${PARAM2}"
-    BUILD_NO="${PARAM3}"
 
     if [ "${BRANCH}" == "" ]; then
         BRANCH="master"
@@ -1476,11 +1475,7 @@ build_version() {
         fi
 
         if [ "${BRANCH}" == "master" ]; then
-            if [ "${BUILD_NO}" == "" ]; then
-                VERSION="${ARR[1]}"
-            else
-                VERSION="${BUILD_NO}"
-            fi
+            VERSION="${ARR[1]}"
 
             replace_version
         fi
@@ -1553,13 +1548,14 @@ build_save() {
 
     build_note
 
+    GIT_ID="$(cat .git_id)"
+    BRANCH="$(cat .git_branch)"
+
     if [ "${PHASE}" == "local" ]; then
         return
     fi
 
     GIT_URL="$(git config --get remote.origin.url)"
-    GIT_ID="$(cat .git_id)"
-    BRANCH="$(cat .git_branch)"
 
     NOTE="$(cat target/.git_note)"
 
