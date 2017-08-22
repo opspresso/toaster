@@ -1456,7 +1456,6 @@ build_version() {
     fi
 
     BRANCH="${PARAM2}"
-    BUILD_NO="${PARAM3}"
 
     if [ "${BRANCH}" == "" ]; then
         BRANCH="master"
@@ -1465,31 +1464,27 @@ build_version() {
     echo "${BRANCH}" > .git_branch
     echo_ "branch... [${BRANCH}]"
 
-    URL="${TOAST_URL}/version/latest/${ARTIFACT_ID}"
-    RES=$(curl -s --data "org=${ORG}&token=${TOKEN}&groupId=${GROUP_ID}&artifactId=${ARTIFACT_ID}&packaging=${PACKAGE}&no=${SNO}&branch=${BRANCH}" "${URL}")
-    ARR=(${RES})
+    if [ "${PHASE}" != "local" ]; then
+        URL="${TOAST_URL}/version/latest/${ARTIFACT_ID}"
+        RES=$(curl -s --data "org=${ORG}&token=${TOKEN}&groupId=${GROUP_ID}&artifactId=${ARTIFACT_ID}&packaging=${PACKAGE}&no=${SNO}&branch=${BRANCH}" "${URL}")
+        ARR=(${RES})
 
-    if [ "${ARR[0]}" != "OK" ]; then
-        warning "Server Error. [${URL}][${RES}]"
-        return
+        if [ "${ARR[0]}" != "OK" ]; then
+            warning "Server Error. [${URL}][${RES}]"
+            return
+        fi
+
+        if [ "${BRANCH}" == "master" ]; then
+            VERSION="${ARR[1]}"
+
+            replace_version
+        fi
+
+        if [ "${ARR[2]}" != "" ]; then
+            echo "${ARR[2]}" > .git_id
+            echo_ "git id... [${ARR[2]}]"
+        fi
     fi
-
-    if [ "${ARR[2]}" != "" ]; then
-        echo "${ARR[2]}" > .git_id
-        echo_ "git id... [${ARR[2]}]"
-    fi
-
-    if [ "${BRANCH}" != "master" ]; then
-        return
-    fi
-
-    if [ "${BUILD_NO}" == "" ]; then
-        VERSION="${ARR[1]}"
-    else
-        VERSION="${BUILD_NO}"
-    fi
-
-    replace_version
 }
 
 build_package() {
@@ -1553,9 +1548,14 @@ build_save() {
 
     build_note
 
-    GIT_URL="$(git config --get remote.origin.url)"
     GIT_ID="$(cat .git_id)"
     BRANCH="$(cat .git_branch)"
+
+    if [ "${PHASE}" == "local" ]; then
+        return
+    fi
+
+    GIT_URL="$(git config --get remote.origin.url)"
 
     NOTE="$(cat target/.git_note)"
 
