@@ -1132,6 +1132,13 @@ init_nginx() {
 
         ${SHELL_DIR}/install/nginx.sh "${REPO_PATH}"
 
+        NGINX_HOME="/usr/local/nginx"
+
+        if [ ! -d ${NGINX_HOME} ]; then
+            warning "Can not found : NGINX_HOME=${NGINX_HOME}"
+            exit 1
+        fi
+
         touch "${SHELL_DIR}/.config_nginx"
 
         nginx_local
@@ -1183,6 +1190,11 @@ init_node() {
 
         NODE_HOME="/usr/local/node"
 
+        if [ ! -d ${NODE_HOME} ]; then
+            warning "Can not found : NODE_HOME=${NODE_HOME}"
+            exit 1
+        fi
+
         add_path "${NODE_HOME}/bin"
         mod_env "NODE_HOME" "${NODE_HOME}"
 
@@ -1209,6 +1221,11 @@ init_java8() {
 
         JAVA_HOME="/usr/local/java"
 
+        if [ ! -d ${JAVA_HOME} ]; then
+            warning "Can not found : JAVA_HOME=${JAVA_HOME}"
+            exit 1
+        fi
+
         add_path "${JAVA_HOME}/bin"
         mod_env "JAVA_HOME" "${JAVA_HOME}"
 
@@ -1231,6 +1248,11 @@ init_maven3() {
 
         MAVEN_HOME="${APPS_DIR}/maven3"
 
+        if [ ! -d ${MAVEN_HOME} ]; then
+            warning "Can not found : MAVEN_HOME=${MAVEN_HOME}"
+            exit 1
+        fi
+
         add_path "${MAVEN_HOME}/bin"
         mod_env "MAVEN_HOME" "${MAVEN_HOME}"
 
@@ -1248,6 +1270,11 @@ init_tomcat8() {
         ${SHELL_DIR}/install/tomcat.sh "${REPO_PATH}"
 
         CATALINA_HOME="${APPS_DIR}/tomcat8"
+
+        if [ ! -d ${CATALINA_HOME} ]; then
+            warning "Can not found : CATALINA_HOME=${CATALINA_HOME}"
+            exit 1
+        fi
 
         mod_env "CATALINA_HOME" "${CATALINA_HOME}"
 

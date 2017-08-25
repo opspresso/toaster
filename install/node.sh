@@ -86,6 +86,11 @@ NODE_HOME="/usr/local/${FILE}"
 ${SUDO} rm -rf ${NODE_HOME}
 ${SUDO} rm -rf /usr/local/node
 
+if [ ! -d ${FILE} ]; then
+    warning "Can not found : ${FILE}"
+    exit 1
+fi
+
 ${SUDO} mv ${FILE} /usr/local/
 
 ${SUDO} ln -s ${NODE_HOME} /usr/local/node
