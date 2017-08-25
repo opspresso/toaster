@@ -2227,14 +2227,16 @@ repo_path() {
         return
     fi
 
-    # repo_bucket
-    URL="${TOAST_URL}/config/key/repo_bucket"
-    RES=$(curl -s --data "org=${ORG}&token=${TOKEN}&no=${SNO}" "${URL}")
+    if [ "${PHASE}" != "local" ]; then
+        # repo_bucket
+        URL="${TOAST_URL}/config/key/repo_bucket"
+        RES=$(curl -s --data "org=${ORG}&token=${TOKEN}&no=${SNO}" "${URL}")
 
-    if [ "${RES}" != "" ]; then
-        REPO_BUCKET="${RES}"
-        REPO_PATH="s3://${REPO_BUCKET}"
-        return
+        if [ "${RES}" != "" ]; then
+            REPO_BUCKET="${RES}"
+            REPO_PATH="s3://${REPO_BUCKET}"
+            return
+        fi
     fi
 
     REPO_BUCKET="repo.${ORG}.com"
