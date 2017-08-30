@@ -64,7 +64,7 @@ FILE="apache-${NAME}-${VERSION}"
 
 EXT="tar.gz"
 
-TOMCAT_DIR="/data/apps/tomcat8"
+CATALINA_HOME="/data/apps/tomcat8"
 
 # s3://repo.toast.sh/tomcat/apache-tomcat-8.0.41.tar.gz
 
@@ -83,12 +83,17 @@ fi
 
 tar xzf ${FILE}.${EXT}
 
-mv apache-${NAME}-${VERSION} ${TOMCAT_DIR}
+if [ ! -d apache-${NAME}-${VERSION} ]; then
+    warning "Can not found : apache-${NAME}-${VERSION}"
+    exit 1
+fi
 
-chmod 755 ${TOMCAT_DIR}/bin/*.sh
+mv apache-${NAME}-${VERSION} ${CATALINA_HOME}
 
-rm -rf ${TOMCAT_DIR}/webapps/*
+chmod 755 ${CATALINA_HOME}/bin/*.sh
+
+rm -rf ${CATALINA_HOME}/webapps/*
 
 rm -rf ${FILE}.${EXT}
 
-echo_ "CATALINA_HOME=${TOMCAT_DIR}"
+echo_ "CATALINA_HOME=${CATALINA_HOME}"

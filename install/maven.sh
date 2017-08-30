@@ -66,7 +66,7 @@ FILE="apache-${NAME}-${VERSION}-bin"
 
 EXT="tar.gz"
 
-MAVEN_DIR="/data/apps/maven3"
+MAVEN_HOME="/data/apps/maven3"
 
 # s3://repo.toast.sh/maven/apache-maven-3.5.0-bin.tar.gz
 
@@ -85,8 +85,13 @@ fi
 
 tar xzf ${FILE}.${EXT}
 
-mv apache-${NAME}-${VERSION} ${MAVEN_DIR}
+if [ ! -d apache-${NAME}-${VERSION} ]; then
+    warning "Can not found : apache-${NAME}-${VERSION}"
+    exit 1
+fi
+
+mv apache-${NAME}-${VERSION} ${MAVEN_HOME}
 
 rm -rf ${FILE}.${EXT}
 
-echo_ "MAVEN_HOME=${MAVEN_DIR}"
+echo_ "MAVEN_HOME=${MAVEN_HOME}"

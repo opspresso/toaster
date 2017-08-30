@@ -83,6 +83,11 @@ ${SUDO} yum install -y pcre pcre-devel zlib zlib-devel openssl openssl-devel
 
 tar xzf ${FILE}.${EXT}
 
+if [ ! -d ${FILE} ]; then
+    warning "Can not found : ${FILE}"
+    exit 1
+fi
+
 pushd ${FILE}
 
 ./configure --prefix=/usr/local/nginx \

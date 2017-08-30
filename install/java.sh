@@ -89,6 +89,11 @@ VS2="${VS1/u/.0_}"
 JAVA_DIR="jdk1.${VS2}"
 JAVA_HOME="/usr/local/${JAVA_DIR}"
 
+if [ ! -d ${JAVA_DIR} ]; then
+    warning "Can not found : ${JAVA_DIR}"
+    exit 1
+fi
+
 ${SUDO} rm -rf ${JAVA_HOME}
 ${SUDO} mv ${JAVA_DIR} /usr/local/
 
