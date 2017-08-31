@@ -2874,6 +2874,8 @@ localtime() {
             ${SUDO} ln -sf "/usr/share/zoneinfo/Asia/Seoul" "/etc/localtime"
         fi
     fi
+
+    date
 }
 
 httpd_graceful() {
