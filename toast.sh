@@ -2869,7 +2869,7 @@ localtime() {
     if [ "${OS_TYPE}" == "Ubuntu" ]; then
         ${SUDO} timedatectl set-timezone Asia/Seoul
     else
-        if [ -f /etc/localtime ]; then
+        if [ -r /etc/localtime ]; then
             ${SUDO} rm -rf "/etc/localtime"
             ${SUDO} ln -sf "/usr/share/zoneinfo/Asia/Seoul" "/etc/localtime"
         fi
