@@ -491,17 +491,7 @@ self_update() {
 
 prepare() {
     # time
-    if [ -f /etc/localtime ]; then
-        ${SUDO} rm -rf "/etc/localtime"
-        ${SUDO} ln -sf "/usr/share/zoneinfo/Asia/Seoul" "/etc/localtime"
-    fi
-    if [ "${OS_TYPE}" == "Ubuntu" ]; then
-        ${SUDO} timedatectl set-timezone Asia/Seoul
-    fi
-
-    if [ "${PHASE}" == "local" ]; then
-        return
-    fi
+    localtime
 
     service_install "gcc curl wget unzip vim git telnet httpie"
 
@@ -2868,6 +2858,16 @@ service_ctl() {
         if [ "$3" == "off" ]; then
             ${SUDO} chkconfig $1 off
         fi
+    fi
+}
+
+localtime() {
+    if [ -f /etc/localtime ]; then
+        ${SUDO} rm -rf "/etc/localtime"
+        ${SUDO} ln -sf "/usr/share/zoneinfo/Asia/Seoul" "/etc/localtime"
+    fi
+    if [ "${OS_TYPE}" == "Ubuntu" ]; then
+        ${SUDO} timedatectl set-timezone Asia/Seoul
     fi
 }
 
