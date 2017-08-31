@@ -490,6 +490,15 @@ self_update() {
 }
 
 prepare() {
+    # time
+    if [ -f /etc/localtime ]; then
+        ${SUDO} rm -rf "/etc/localtime"
+        ${SUDO} ln -sf "/usr/share/zoneinfo/Asia/Seoul" "/etc/localtime"
+    fi
+    if [ "${OS_TYPE}" == "Ubuntu" ]; then
+        ${SUDO} timedatectl set-timezone Asia/Seoul
+    fi
+
     if [ "${PHASE}" == "local" ]; then
         return
     fi
@@ -509,10 +518,6 @@ prepare() {
     make_dir "${SITE_DIR}/files" 777
     make_dir "${SITE_DIR}/upload" 777
     make_dir "${SITE_DIR}/session" 777
-
-    # time
-    ${SUDO} rm -rf "/etc/localtime"
-    ${SUDO} ln -sf "/usr/share/zoneinfo/Asia/Seoul" "/etc/localtime"
 
     # i18n
     ${SUDO} cp -rf "${SHELL_DIR}/package/linux/i18n.conf" "/etc/sysconfig/i18n"
