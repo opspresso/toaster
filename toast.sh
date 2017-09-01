@@ -2866,6 +2866,8 @@ service_ctl() {
 }
 
 localtime() {
+    date
+
     if [ "${OS_TYPE}" == "Ubuntu" ]; then
         ${SUDO} timedatectl set-timezone Asia/Seoul
     else
