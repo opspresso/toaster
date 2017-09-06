@@ -2856,11 +2856,13 @@ service_ctl() {
     else
         ${SUDO} service $1 $2
 
-        if [ "$3" == "on" ]; then
-            ${SUDO} chkconfig $1 on
-        fi
-        if [ "$3" == "off" ]; then
-            ${SUDO} chkconfig $1 off
+        if [ "${OS_TYPE}" != "Ubuntu" ]; then
+            if [ "$3" == "on" ]; then
+                ${SUDO} chkconfig $1 on
+            fi
+            if [ "$3" == "off" ]; then
+                ${SUDO} chkconfig $1 off
+            fi
         fi
     fi
 }
@@ -2868,13 +2870,9 @@ service_ctl() {
 localtime() {
     date
 
-    if [ "${OS_TYPE}" == "Ubuntu" ]; then
-        ${SUDO} timedatectl set-timezone Asia/Seoul
-    else
-        if [ -r /etc/localtime ]; then
-            ${SUDO} rm -rf "/etc/localtime"
-            ${SUDO} ln -sf "/usr/share/zoneinfo/Asia/Seoul" "/etc/localtime"
-        fi
+    if [ -r /etc/localtime ]; then
+        ${SUDO} rm -rf "/etc/localtime"
+        ${SUDO} ln -sf "/usr/share/zoneinfo/Asia/Seoul" "/etc/localtime"
     fi
 
     date
