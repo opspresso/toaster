@@ -490,6 +490,9 @@ self_update() {
 }
 
 prepare() {
+    # time
+    localtime
+
     if [ "${PHASE}" == "local" ]; then
         return
     fi
@@ -509,10 +512,6 @@ prepare() {
     make_dir "${SITE_DIR}/files" 777
     make_dir "${SITE_DIR}/upload" 777
     make_dir "${SITE_DIR}/session" 777
-
-    # time
-    ${SUDO} rm -rf "/etc/localtime"
-    ${SUDO} ln -sf "/usr/share/zoneinfo/Asia/Seoul" "/etc/localtime"
 
     # i18n
     ${SUDO} cp -rf "${SHELL_DIR}/package/linux/i18n.conf" "/etc/sysconfig/i18n"
@@ -2857,13 +2856,26 @@ service_ctl() {
     else
         ${SUDO} service $1 $2
 
-        if [ "$3" == "on" ]; then
-            ${SUDO} chkconfig $1 on
-        fi
-        if [ "$3" == "off" ]; then
-            ${SUDO} chkconfig $1 off
+        if [ "${OS_TYPE}" != "Ubuntu" ]; then
+            if [ "$3" == "on" ]; then
+                ${SUDO} chkconfig $1 on
+            fi
+            if [ "$3" == "off" ]; then
+                ${SUDO} chkconfig $1 off
+            fi
         fi
     fi
+}
+
+localtime() {
+    date
+
+    if [ -r /etc/localtime ]; then
+        ${SUDO} rm -rf "/etc/localtime"
+        ${SUDO} ln -sf "/usr/share/zoneinfo/Asia/Seoul" "/etc/localtime"
+    fi
+
+    date
 }
 
 httpd_graceful() {
