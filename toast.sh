@@ -494,6 +494,10 @@ prepare() {
     localtime
 
     if [ "${PHASE}" == "local" ]; then
+        TARGET="${HOME}/.toast_profile"
+        add_source "${TARGET}"
+        cp -rf ${SITE_DIR}/package/default/profile ${TARGET}
+
         return
     fi
 
