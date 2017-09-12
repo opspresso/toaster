@@ -4,6 +4,8 @@ FROM java:8
 
 MAINTAINER toast@yanolja.com
 
+RUN mkdir /data
+
 ADD ROOT.jar /data/
 
 EXPOSE 8080
