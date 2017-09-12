@@ -4,10 +4,8 @@ FROM java:8
 
 MAINTAINER toast@yanolja.com
 
-RUN mkdir /data
-
-ADD ROOT.jar /data/
+ADD ROOT.jar /
 
 EXPOSE 8080
 
-CMD ["java", "-jar", "/data/ROOT.jar"]
+CMD ["java", "-jar", "/ROOT.jar"]
