@@ -496,7 +496,9 @@ prepare() {
     if [ "${PHASE}" == "local" ]; then
         TARGET="${HOME}/.toast_profile"
         add_source "${TARGET}"
+
         cp -rf ${SITE_DIR}/package/default/profile ${TARGET}
+        source ${TARGET}
 
         return
     fi
@@ -722,7 +724,6 @@ init_profile() {
     echo_ "init profile..."
 
     TARGET="${HOME}/.toast_profile"
-
     add_source "${TARGET}"
 
     # profile
