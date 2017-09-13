@@ -37,12 +37,6 @@ if [ "${OS_TYPE}" == "" ]; then
     exit 1
 fi
 
-# root
-if [ "${HOME}" == "/root" ]; then
-    warning "ROOT account is not supported."
-    #exit 1
-fi
-
 ################################################################################
 
 REPO="http://toast.sh"

@@ -284,9 +284,6 @@ init() {
         redis)
             init_redis
             ;;
-        rabbitmq)
-            init_rabbitmq
-            ;;
         docker)
             init_docker
             ;;
@@ -1326,26 +1323,6 @@ init_redis() {
     fi
 }
 
-init_rabbitmq() {
-    if [ ! -f "${SHELL_DIR}/.config_rabbitmq" ]; then
-        echo_ "init rabbitmq..."
-
-        ${SHELL_DIR}/install/rabbitmq.sh "${REPO_PATH}"
-
-        service_ctl rabbitmq-server start on
-
-        ${SUDO} rabbitmq-plugins enable rabbitmq_management
-        ${SUDO} rabbitmq-plugins enable rabbitmq_delayed_message_exchange
-
-        ${SUDO} rabbitmqctl add_user rabbitmq rabbitmq
-        ${SUDO} rabbitmqctl set_user_tags rabbitmq administrator
-
-        ${SUDO} rabbitmqctl add_user pushservice pushservice
-
-        touch "${SHELL_DIR}/.config_rabbitmq"
-    fi
-}
-
 init_docker() {
     if [ ! -f "${SHELL_DIR}/.config_docker" ]; then
         echo_ "init docker..."
@@ -1627,12 +1604,6 @@ build_docker() {
     fi
 
     FILES="ROOT.${PACKAGING} Dockerfile Dockerrun.aws.json "
-
-    # deploy
-    if [ -d "deploy" ]; then
-        cp -rf "deploy" "target/docker/deploy"
-        FILES="${FILES} deploy"
-    fi
 
     # .ebextensions
     if [ -d ".ebextensions" ]; then
