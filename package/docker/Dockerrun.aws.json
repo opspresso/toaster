@@ -8,7 +8,7 @@
   "Volumes": [
     {
       "HostDirectory": "/home/ec2-user",
-      "ContainerDirectory": "/data"
+      "ContainerDirectory": "/home-ec2-user"
     }
   ]
 }

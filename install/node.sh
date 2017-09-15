@@ -58,13 +58,13 @@ fi
 
 NAME="node"
 
-VERSION="6.10.3"
+VERSION="6.11.3"
 
 FILE="${NAME}-v${VERSION}-linux-x64"
 
 EXT="tar.xz"
 
-# s3://repo.toast.sh/node/node-v6.9.5-linux-x64.tar.xz
+# s3://repo.toast.sh/node/node-v6.11.3-linux-x64.tar.xz
 
 ################################################################################
 
