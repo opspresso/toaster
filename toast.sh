@@ -497,7 +497,7 @@ prepare() {
         TARGET="${HOME}/.toast_profile"
         add_source "${TARGET}"
 
-        cp -rf ${SITE_DIR}/package/default/profile ${TARGET}
+        cp -rf ${SHELL_DIR}/package/default/profile ${TARGET}
         source ${TARGET}
 
         return
