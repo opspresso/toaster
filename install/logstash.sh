@@ -66,7 +66,7 @@ VERSION="5.2.1"
 
 FILE="logstash-${VERSION}"
 
-EXT="tar.gz"
+EXT="tar"
 
 LOGSTASH_HOME="/data/apps/logstash"
 
@@ -83,7 +83,7 @@ fi
 
 ################################################################################
 
-tar xzf ${FILE}.${EXT}
+tar xf ${FILE}.${EXT}
 
 if [ ! -d ${FILE} ]; then
     warning "Can not found : ${FILE}"
