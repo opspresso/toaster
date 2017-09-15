@@ -490,9 +490,6 @@ self_update() {
 }
 
 prepare() {
-    # time
-    localtime
-
     if [ "${PHASE}" == "local" ]; then
         TARGET="${HOME}/.toast_profile"
         add_source "${TARGET}"
@@ -503,7 +500,13 @@ prepare() {
         return
     fi
 
-    service_install "gcc curl wget unzip vim git telnet httpie"
+    service_install "curl wget unzip git"
+
+    # i18n
+    language
+
+    # time
+    localtime
 
     # /data
     make_dir "${DATA_DIR}"
@@ -518,9 +521,6 @@ prepare() {
     make_dir "${SITE_DIR}/files" 777
     make_dir "${SITE_DIR}/upload" 777
     make_dir "${SITE_DIR}/session" 777
-
-    # i18n
-    ${SUDO} cp -rf "${SHELL_DIR}/package/linux/i18n.conf" "/etc/sysconfig/i18n"
 }
 
 config_auto() {
@@ -1306,6 +1306,8 @@ init_logstash() {
         fi
 
         mod_env "LOGSTASH_HOME" "${LOGSTASH_HOME}"
+
+        cp -rf "${SHELL_DIR}/package/elastic/logstash-apache.conf" "${LOGSTASH_HOME}/logstash.conf"
 
         echo "LOGSTASH_HOME=${LOGSTASH_HOME}"
         echo "LOGSTASH_HOME=${LOGSTASH_HOME}" > "${LOGSTASH_HOME}/.config_logstash"
@@ -2865,6 +2867,12 @@ service_ctl() {
                 ${SUDO} chkconfig $1 off
             fi
         fi
+    fi
+}
+
+language() {
+    if [ -r /etc/sysconfig/i18n ]; then
+        ${SUDO} cp -rf "${SHELL_DIR}/package/linux/i18n.conf" "/etc/sysconfig/i18n"
     fi
 }
 
