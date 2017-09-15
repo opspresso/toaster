@@ -54,9 +54,9 @@ if [ "${HOME}" != "/root" ]; then
     SUDO="sudo"
 fi
 
-SHELL_DIR=$(dirname $0)
-
 ################################################################################
+
+# s3://repo.toast.sh/java/server-jre-8u144-linux-x64.tar.gz
 
 NAME="java"
 
@@ -65,8 +65,6 @@ VERSION="8u144"
 FILE="server-jre-${VERSION}-linux-x64"
 
 EXT="tar.gz"
-
-# s3://repo.toast.sh/java/server-jre-8u144-linux-x64.tar.gz
 
 ################################################################################
 
