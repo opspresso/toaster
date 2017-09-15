@@ -83,7 +83,7 @@ fi
 
 ################################################################################
 
-tar xf ${FILE}.${EXT}
+tar xzf ${FILE}.${EXT}
 
 if [ ! -d ${FILE} ]; then
     warning "Can not found : ${FILE}"
