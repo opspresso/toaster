@@ -278,6 +278,9 @@ init() {
         tomcat|tomcat8)
             init_tomcat8
             ;;
+        logstash)
+            init_logstash
+            ;;
         mysql)
             init_mysql55
             ;;
@@ -1284,6 +1287,28 @@ init_tomcat8() {
 
         echo "CATALINA_HOME=${CATALINA_HOME}"
         echo "CATALINA_HOME=${CATALINA_HOME}" > "${SHELL_DIR}/.config_tomcat"
+    fi
+}
+
+init_logstash() {
+    make_dir "${APPS_DIR}"
+
+    if [ ! -f "${SHELL_DIR}/.config_logstash" ]; then
+        echo_ "init logstash..."
+
+        ${SHELL_DIR}/install/logstash.sh "${REPO_PATH}"
+
+        LOGSTASH_HOME="${APPS_DIR}/logstash"
+
+        if [ ! -d ${LOGSTASH_HOME} ]; then
+            warning "Can not found : LOGSTASH_HOME=${LOGSTASH_HOME}"
+            exit 1
+        fi
+
+        mod_env "LOGSTASH_HOME" "${LOGSTASH_HOME}"
+
+        echo "LOGSTASH_HOME=${LOGSTASH_HOME}"
+        echo "LOGSTASH_HOME=${LOGSTASH_HOME}" > "${LOGSTASH_HOME}/.config_logstash"
     fi
 }
 
