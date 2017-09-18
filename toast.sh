@@ -3076,6 +3076,9 @@ mod() {
     if [ "$1" == "" ]; then
         return
     fi
+    if [ ! -d $1 ] && [ ! -f $1 ]; then
+        return
+    fi
 
     if [ "${USER}" != "" ]; then
         ${SUDO} chown ${USER}.${USER} $1
