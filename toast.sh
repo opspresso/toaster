@@ -490,6 +490,15 @@ self_update() {
 }
 
 prepare() {
+    # /data
+    make_dir "${DATA_DIR}"
+
+    # /data/apps
+    make_dir "${APPS_DIR}"
+
+    # /data/logs
+    make_dir "${LOGS_DIR}" 777
+
     if [ "${PHASE}" == "local" ]; then
         TARGET="${HOME}/.toast_profile"
         add_source "${TARGET}"
@@ -507,12 +516,6 @@ prepare() {
 
     # time
     localtime
-
-    # /data
-    make_dir "${DATA_DIR}"
-
-    # /data/logs
-    make_dir "${LOGS_DIR}" 777
 
     # /data/site
     make_dir "${SITE_DIR}"
