@@ -54,19 +54,21 @@ if [ "${HOME}" != "/root" ]; then
     SUDO="sudo"
 fi
 
+SHELL_DIR=$(dirname $0)
+
 ################################################################################
 
-# s3://repo.toast.sh/maven/apache-maven-3.5.0-bin.tar.gz
+# s3://repo.toast.sh/elastic/logstash-5.2.1.tar.gz
 
-NAME="maven"
+NAME="elastic"
 
-VERSION="3.5.0"
+VERSION="5.2.1"
 
-FILE="apache-${NAME}-${VERSION}-bin"
+FILE="logstash-${VERSION}"
 
-EXT="tar.gz"
+EXT="tar"
 
-MAVEN_HOME="/data/apps/maven3"
+LOGSTASH_HOME="/data/apps/logstash"
 
 ################################################################################
 
@@ -81,15 +83,15 @@ fi
 
 ################################################################################
 
-tar xzf ${FILE}.${EXT}
+tar xf ${FILE}.${EXT}
 
-if [ ! -d apache-${NAME}-${VERSION} ]; then
-    warning "Can not found : apache-${NAME}-${VERSION}"
+if [ ! -d ${FILE} ]; then
+    warning "Can not found : ${FILE}"
     exit 1
 fi
 
-mv apache-${NAME}-${VERSION} ${MAVEN_HOME}
+mv ${FILE} ${LOGSTASH_HOME}
 
 rm -rf ${FILE}.${EXT}
 
-echo_ "MAVEN_HOME=${MAVEN_HOME}"
+echo_ "LOGSTASH_HOME=${LOGSTASH_HOME}"

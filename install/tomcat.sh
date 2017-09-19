@@ -56,6 +56,8 @@ fi
 
 ################################################################################
 
+# s3://repo.toast.sh/tomcat/apache-tomcat-8.0.41.tar.gz
+
 NAME="tomcat"
 
 VERSION="8.0.44"
@@ -65,8 +67,6 @@ FILE="apache-${NAME}-${VERSION}"
 EXT="tar.gz"
 
 CATALINA_HOME="/data/apps/tomcat8"
-
-# s3://repo.toast.sh/tomcat/apache-tomcat-8.0.41.tar.gz
 
 ################################################################################
 

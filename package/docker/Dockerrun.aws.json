@@ -7,8 +7,12 @@
   ],
   "Volumes": [
     {
-      "HostDirectory": "/home/ec2-user",
-      "ContainerDirectory": "/home-ec2-user"
+      "HostDirectory": "/data/apps",
+      "ContainerDirectory": "/data/apps"
+    },
+    {
+      "HostDirectory": "/data/logs",
+      "ContainerDirectory": "/data/logs"
     }
   ]
 }

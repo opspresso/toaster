@@ -4,8 +4,11 @@ FROM java:8
 
 MAINTAINER toast@yanolja.com
 
-ADD ROOT.jar /
+VOLUME ["/data/apps"]
+VOLUME ["/data/logs"]
 
 EXPOSE 8080
 
-CMD ["java", "-jar", "/ROOT.jar"]
+ADD ROOT.jar /data/apps/
+
+CMD ["java", "-jar", "/data/apps/ROOT.jar"]

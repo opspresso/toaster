@@ -242,6 +242,9 @@ init() {
         aws)
             init_aws
             ;;
+        eb)
+            init_eb
+            ;;
         certbot)
             init_certbot
             ;;
@@ -277,6 +280,9 @@ init() {
             ;;
         tomcat|tomcat8)
             init_tomcat8
+            ;;
+        logstash)
+            init_logstash
             ;;
         mysql)
             init_mysql55
@@ -487,23 +493,29 @@ self_update() {
 }
 
 prepare() {
-    # time
-    localtime
-
     if [ "${PHASE}" == "local" ]; then
         TARGET="${HOME}/.toast_profile"
         add_source "${TARGET}"
 
-        cp -rf ${SITE_DIR}/package/default/profile ${TARGET}
+        cp -rf ${SHELL_DIR}/package/default/profile ${TARGET}
         source ${TARGET}
 
         return
     fi
 
-    service_install "gcc curl wget unzip vim git telnet httpie"
+    service_install "curl wget unzip git"
+
+    # i18n
+    language
+
+    # time
+    localtime
 
     # /data
     make_dir "${DATA_DIR}"
+
+    # /data/apps
+    make_dir "${APPS_DIR}"
 
     # /data/logs
     make_dir "${LOGS_DIR}" 777
@@ -515,9 +527,6 @@ prepare() {
     make_dir "${SITE_DIR}/files" 777
     make_dir "${SITE_DIR}/upload" 777
     make_dir "${SITE_DIR}/session" 777
-
-    # i18n
-    ${SUDO} cp -rf "${SHELL_DIR}/package/linux/i18n.conf" "/etc/sysconfig/i18n"
 }
 
 config_auto() {
@@ -891,6 +900,21 @@ init_aws() {
     echo_bar
     echo_ "$(/usr/bin/aws --version)"
     echo_bar
+}
+
+init_eb() {
+    echo_ "init eb..."
+
+    # /data
+    make_dir "${DATA_DIR}"
+
+    # /data/apps
+    make_dir "${APPS_DIR}"
+
+    # /data/logs
+    make_dir "${LOGS_DIR}" 777
+
+    init_logstash
 }
 
 init_certbot() {
@@ -1284,6 +1308,30 @@ init_tomcat8() {
 
         echo "CATALINA_HOME=${CATALINA_HOME}"
         echo "CATALINA_HOME=${CATALINA_HOME}" > "${SHELL_DIR}/.config_tomcat"
+    fi
+}
+
+init_logstash() {
+    make_dir "${APPS_DIR}"
+
+    if [ ! -f "${SHELL_DIR}/.config_logstash" ]; then
+        echo_ "init logstash..."
+
+        ${SHELL_DIR}/install/logstash.sh "${REPO_PATH}"
+
+        LOGSTASH_HOME="${APPS_DIR}/logstash"
+
+        if [ ! -d ${LOGSTASH_HOME} ]; then
+            warning "Can not found : LOGSTASH_HOME=${LOGSTASH_HOME}"
+            exit 1
+        fi
+
+        mod_env "LOGSTASH_HOME" "${LOGSTASH_HOME}"
+
+        cp -rf "${SHELL_DIR}/package/elastic/logstash-apache.conf" "${LOGSTASH_HOME}/logstash.conf"
+
+        echo "LOGSTASH_HOME=${LOGSTASH_HOME}"
+        echo "LOGSTASH_HOME=${LOGSTASH_HOME}" > "${LOGSTASH_HOME}/.config_logstash"
     fi
 }
 
@@ -2843,6 +2891,12 @@ service_ctl() {
     fi
 }
 
+language() {
+    if [ -r /etc/sysconfig/i18n ]; then
+        ${SUDO} cp -rf "${SHELL_DIR}/package/linux/i18n.conf" "/etc/sysconfig/i18n"
+    fi
+}
+
 localtime() {
     date
 
@@ -3038,6 +3092,9 @@ mod_conf() {
 
 mod() {
     if [ "$1" == "" ]; then
+        return
+    fi
+    if [ ! -d $1 ] && [ ! -f $1 ]; then
         return
     fi
 
