@@ -142,6 +142,9 @@ toast() {
         b|build|version)
             build
             ;;
+        r|release)
+            release
+            ;;
         v|vhost)
             vhost
             ;;
@@ -160,11 +163,11 @@ toast() {
         s|ssh)
             connect
             ;;
-        r|reset)
-            reset
-            ;;
         l|log)
             log
+            ;;
+        reset)
+            reset
             ;;
         *)
             usage
@@ -311,11 +314,38 @@ build() {
         version|next)
             build_version
             ;;
+        package)
+            build_package
+            ;;
         save)
             build_save
             ;;
-        package)
-            build_package
+        github)
+            build_github
+            ;;
+        bucket)
+            build_bucket
+            ;;
+        docker)
+            build_docker
+            ;;
+        eb)
+            build_eb
+            ;;
+    esac
+}
+
+release() {
+    repo_path
+
+    build_parse
+
+    case ${PARAM1} in
+        s3)
+            build_save
+            ;;
+        github)
+            build_github
             ;;
         docker)
             build_docker
@@ -1548,6 +1578,10 @@ build_package() {
         warning "Not set ARTIFACT_ID."
         return
     fi
+    if [ ! -d src/main/webapp ]; then
+        warning "Not set SOURCE_DIR."
+        return
+    fi
 
     if [ ! -d "target" ]; then
         mkdir "target"
@@ -1579,18 +1613,7 @@ build_save() {
         cp -rf "${POM_FILE}" "target/${ARTIFACT_ID}-${VERSION}.pom"
     fi
 
-    if [ "${VERSION}" != "0.0.0" ]; then
-        echo_ "version tag... [${VERSION}]"
-
-        DATE=$(date "+%Y-%m-%d %H:%M")
-
-        git config --global user.email "toast@yanolja.com"
-        git config --global user.name "toast"
-
-        git tag -a "${VERSION}" -m "at ${DATE} by toast"
-        git push origin "${VERSION}"
-    fi
-
+    # upload
     if [ "${PARAM3}" != "none" ]; then
         echo_ "package upload..."
 
@@ -1602,19 +1625,34 @@ build_save() {
         echo_ "package uploaded."
     fi
 
-    build_note
-
-    GIT_ID="$(cat .git_id)"
     BRANCH="$(cat .git_branch)"
+
+    # tag
+    if [ "${BRANCH}" == "master" ]; then
+        echo_ "version tag... [${VERSION}]"
+
+        DATE=$(date "+%Y-%m-%d %H:%M")
+
+        git config --global user.name "toast"
+        git config --global user.email "toast@yanolja.com"
+
+        git tag -a "${VERSION}" -m "at ${DATE} by toast"
+        git push origin "${VERSION}"
+    fi
+
+    build_note
 
     if [ "${PHASE}" == "local" ]; then
         return
     fi
 
+    GIT_ID="$(cat .git_id)"
+
     GIT_URL="$(git config --get remote.origin.url)"
 
     NOTE="$(cat target/.git_note)"
 
+    # version save
     URL="${TOAST_URL}/version/build/${ARTIFACT_ID}/${VERSION}"
     RES=$(curl -s --data "org=${ORG}&token=${TOKEN}&groupId=${GROUP_ID}&artifactId=${ARTIFACT_ID}&packaging=${PACKAGE}&no=${SNO}&url=${GIT_URL}&git=${GIT_ID}&branch=${BRANCH}&note=${NOTE}" "${URL}")
     ARR=(${RES})
@@ -1622,6 +1660,35 @@ build_save() {
     if [ "${ARR[0]}" != "OK" ]; then
         warning "Server Error. [${URL}][${RES}]"
     fi
+}
+
+build_github() {
+    if [ "${ARTIFACT_ID}" == "" ]; then
+        warning "Not set ARTIFACT_ID."
+        return
+    fi
+
+}
+
+build_bucket() {
+    if [ "${PARAM3}" == "" ]; then
+        warning "Not set BUCKET."
+        return
+    fi
+    if [ ! -d src/main/webapp ]; then
+        warning "Not set SOURCE_DIR."
+        return
+    fi
+
+    DEPLOY_PATH="s3://${PARAM3}"
+
+    OPTION="--quiet --acl public-read"
+
+    pushd src/main/webapp
+
+    aws s3 sync ./ "${DEPLOY_PATH}" ${OPTION}
+
+    popd
 }
 
 build_docker() {
