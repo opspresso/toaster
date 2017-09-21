@@ -1671,7 +1671,7 @@ build_github() {
 }
 
 build_bucket() {
-    if [ "${PARAM3}" == "" ]; then
+    if [ "${PARAM2}" == "" ]; then
         warning "Not set BUCKET."
         return
     fi
@@ -1680,7 +1680,7 @@ build_bucket() {
         return
     fi
 
-    DEPLOY_PATH="s3://${PARAM3}"
+    DEPLOY_PATH="s3://${PARAM2}"
 
     OPTION="--quiet --acl public-read"
 
