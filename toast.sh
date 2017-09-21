@@ -1684,11 +1684,7 @@ build_bucket() {
 
     OPTION="--quiet --acl public-read"
 
-    pushd src/main/webapp
-
-    aws s3 sync ./ "${DEPLOY_PATH}" ${OPTION}
-
-    popd
+    aws s3 sync "src/main/webapp" "${DEPLOY_PATH}" ${OPTION}
 }
 
 build_docker() {
