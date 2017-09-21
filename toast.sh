@@ -142,9 +142,6 @@ toast() {
         b|build|version)
             build
             ;;
-        r|release)
-            release
-            ;;
         v|vhost)
             vhost
             ;;
@@ -325,27 +322,6 @@ build() {
             ;;
         bucket)
             build_bucket
-            ;;
-        docker)
-            build_docker
-            ;;
-        eb)
-            build_eb
-            ;;
-    esac
-}
-
-release() {
-    repo_path
-
-    build_parse
-
-    case ${PARAM1} in
-        s3)
-            build_save
-            ;;
-        github)
-            build_github
             ;;
         docker)
             build_docker
