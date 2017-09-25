@@ -1651,7 +1651,12 @@ build_bucket() {
         warning "Not set BUCKET."
         return
     fi
-    if [ ! -d src/main/webapp ]; then
+
+    SOURCE_DIR="target/${ARTIFACT_ID}-${VERSION}"
+
+    unzip -q "${SOURCE_DIR}.${PACKAGING}"
+
+    if [ ! -d ${SOURCE_DIR} ]; then
         warning "Not set SOURCE_DIR."
         return
     fi
@@ -1660,7 +1665,7 @@ build_bucket() {
 
     OPTION="--quiet --acl public-read"
 
-    aws s3 sync "src/main/webapp" "${DEPLOY_PATH}" ${OPTION}
+    aws s3 sync "${SOURCE_DIR}" "${DEPLOY_PATH}" ${OPTION}
 }
 
 build_docker() {
