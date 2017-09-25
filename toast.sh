@@ -1654,7 +1654,7 @@ build_bucket() {
 
     SOURCE_DIR="target/${ARTIFACT_ID}-${VERSION}"
 
-    unzip -q "${SOURCE_DIR}.${PACKAGING}"
+    unzip -q "${SOURCE_DIR}.${PACKAGING}" -d "${SOURCE_DIR}"
 
     if [ ! -d ${SOURCE_DIR} ]; then
         warning "Not set SOURCE_DIR."
