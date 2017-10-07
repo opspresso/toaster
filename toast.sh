@@ -317,6 +317,9 @@ build() {
         save)
             build_save
             ;;
+        lambda)
+            build_lambda
+            ;;
         github)
             build_github
             ;;
@@ -1638,6 +1641,24 @@ build_save() {
     fi
 }
 
+build_lambda() {
+    if [ "${ARTIFACT_ID}" == "" ]; then
+        warning "Not set ARTIFACT_ID."
+        return
+    fi
+
+    PACKAGE_PATH="target"
+
+    UPLOAD_PATH="${REPO_PATH}/maven2/${GROUP_PATH}/${ARTIFACT_ID}/"
+
+    echo_ "--> from: ${PACKAGE_PATH}"
+    echo_ "--> to  : ${UPLOAD_PATH}"
+
+    OPTION="--quiet --acl public-read"
+
+    aws s3 sync "${PACKAGE_PATH}" "${UPLOAD_PATH}" ${OPTION}
+}
+
 build_github() {
     if [ "${ARTIFACT_ID}" == "" ]; then
         warning "Not set ARTIFACT_ID."
@@ -1652,12 +1673,12 @@ build_bucket() {
         return
     fi
 
-    SOURCE_DIR="target/${ARTIFACT_ID}-${VERSION}"
+    PACKAGE_PATH="target/${ARTIFACT_ID}-${VERSION}"
 
-    unzip -q "${SOURCE_DIR}.${PACKAGING}" -d "${SOURCE_DIR}"
+    unzip -q "${PACKAGE_PATH}.${PACKAGING}" -d "${PACKAGE_PATH}"
 
-    if [ ! -d ${SOURCE_DIR} ]; then
-        warning "Not set SOURCE_DIR."
+    if [ ! -d ${PACKAGE_PATH} ]; then
+        warning "Not set PACKAGE_PATH."
         return
     fi
 
@@ -1665,7 +1686,7 @@ build_bucket() {
 
     OPTION="--quiet --acl public-read"
 
-    aws s3 sync "${SOURCE_DIR}" "${DEPLOY_PATH}" ${OPTION}
+    aws s3 sync "${PACKAGE_PATH}" "${DEPLOY_PATH}" ${OPTION}
 }
 
 build_docker() {
