@@ -1064,9 +1064,6 @@ init_auto() {
             redis)
                 init_redis
                 ;;
-            rabbitmq)
-                init_rabbitmq
-                ;;
         esac
     done
 }
