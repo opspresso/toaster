@@ -144,7 +144,7 @@ publish() {
     pom_parse
 
     case ${PARAM1} in
-        beanstalk)
+        eb|beanstalk)
             publish_beanstalk
             ;;
         *)
