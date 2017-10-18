@@ -340,12 +340,12 @@ publish_beanstalk() {
     STAMP=$(date "+%y%m%d-%H%M")
 
     BRANCH="$(cat .branch)"
-    GIT_ID="$(cat .git_id)"
+    GIT_ID="" # "$(cat .git_id)"
 
     aws elasticbeanstalk create-application-version \
      --application-name "${ARTIFACT_ID}" \
      --version-label "${VERSION}-${STAMP}" \
-     --description "${GIT_ID} (${BRANCH})" \
+     --description "${BRANCH} (${GIT_ID})" \
      --source-bundle S3Bucket="${BUCKET}",S3Key="maven2/${GROUP_PATH}/${ARTIFACT_ID}/${VERSION}/${ARTIFACT_ID}-${VERSION}.zip" \
      --auto-create-application
 }
