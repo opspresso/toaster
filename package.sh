@@ -17,6 +17,7 @@ cp -rf web/* target/
 
 # install.sh
 cp -rf install.sh target/install
+cp -rf install-v3.sh target/install-v3
 
 # toaster v2
 pushd v2
