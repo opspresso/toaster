@@ -64,6 +64,13 @@ ORG="yanolja"
 
 ################################################################################
 
+CONFIG="${HOME}/.toast"
+if [ -f "${CONFIG}" ]; then
+    source "${CONFIG}"
+fi
+
+################################################################################
+
 toast() {
     case ${CMD} in
         a|auto)
@@ -113,7 +120,7 @@ prepare() {
 }
 
 config() {
-    working
+    config_save
 }
 
 install() {
@@ -121,14 +128,18 @@ install() {
 }
 
 version() {
+    pom_parse
     version_branch
 }
 
 package() {
+    pom_parse
     package_docker
 }
 
 publish() {
+    pom_parse
+    repo_path
     publish_beanstalk
 }
 
@@ -140,6 +151,17 @@ deploy() {
 
 update_self() {
     curl -s toast.sh/install-v3 | bash
+}
+
+config_save() {
+    KEY="${PARAM1}"
+    VAL="${PARAM2}"
+
+    if [ "${KEY}" == "" ]; then
+        error "Not set KEY."
+    fi
+
+    echo "${KEY}=${VAL}" >> "${CONFIG}"
 }
 
 repo_path() {
@@ -190,6 +212,8 @@ pom_replace() {
         error "Not exist file. [${POM_FILE}]"
     fi
 
+    # TODO new version
+
     if [ "${VERSION}" == "" ]; then
         error "Not set VERSION."
     fi
@@ -208,7 +232,7 @@ pom_replace() {
 }
 
 version_branch() {
-    BRANCH="${PARAM2}"
+    BRANCH="${PARAM1}"
 
     if [ "${BRANCH}" == "" ]; then
         BRANCH="master"
@@ -218,10 +242,6 @@ version_branch() {
     echo_ "branch=${BRANCH}"
 
     if [ "${BRANCH}" == "master" ]; then
-        pom_parse
-
-        # TODO new version
-
         pom_replace
     fi
 }
@@ -240,7 +260,7 @@ upload_repo() {
     echo_ "--> from: ${PACKAGE_PATH}"
     echo_ "--> to  : ${UPLOAD_PATH}"
 
-    if [ "${PARAM3}" == "public" ]; then
+    if [ "${PARAM2}" == "public" ]; then
         OPTION="--quiet --acl public-read"
     else
         OPTION="--quiet"
@@ -250,10 +270,6 @@ upload_repo() {
 }
 
 package_docker() {
-    if [ "${ARTIFACT_ID}" == "" ]; then
-        pom_parse
-    fi
-
     if [ ! -d "target/docker" ]; then
         mkdir "target/docker"
     fi
@@ -291,17 +307,13 @@ package_docker() {
 }
 
 publish_bucket() {
-    if [ "${ARTIFACT_ID}" == "" ]; then
-        pom_parse
-    fi
-
     POM_FILE="pom.xml"
     if [ -f "${POM_FILE}" ]; then
         cp -rf "${POM_FILE}" "target/${ARTIFACT_ID}-${VERSION}.pom"
     fi
 
     # upload
-    if [ "${PARAM3}" != "none" ]; then
+    if [ "${PARAM2}" != "none" ]; then
         echo_ "package upload..."
 
         upload_repo "zip"
@@ -314,10 +326,6 @@ publish_bucket() {
 }
 
 publish_beanstalk() {
-    if [ "${ARTIFACT_ID}" == "" ]; then
-        pom_parse
-    fi
-
     if [ ! -d "target/docker" ]; then
         package_docker
     fi
