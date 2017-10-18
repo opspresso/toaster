@@ -120,14 +120,14 @@ echo_ "JAVA_HOME=${JAVA_HOME}"
 ################################################################################
 
 FILE="local_policy.jar.bin"
-download "${FILE}.${EXT}" "${NAME}"
+download "${FILE}" "${NAME}"
 
 if [ -f ${FILE} ]; then
     ${SUDO} mv ${FILE} ${JAVA_HOME}/jre/lib/security/local_policy.jar
 fi
 
 FILE="US_export_policy.jar.bin"
-download "${FILE}.${EXT}" "${NAME}"
+download "${FILE}" "${NAME}"
 
 if [ -f ${FILE} ]; then
     ${SUDO} mv ${FILE} ${JAVA_HOME}/jre/lib/security/US_export_policy.jar
