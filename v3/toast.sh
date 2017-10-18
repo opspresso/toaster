@@ -332,6 +332,7 @@ publish_beanstalk() {
     publish_bucket
 
     STAMP=$(date "+%y%m%d-%H%M")
+    echo "${STAMP}" > .stamp
 
     BRANCH="$(cat .branch)"
     GIT_ID="" # TODO "$(cat .git_id)"
@@ -349,17 +350,16 @@ publish_beanstalk() {
 }
 
 deploy_beanstalk() {
+    STAMP="$(cat .stamp)"
+
     BRANCH="$(cat .branch)"
 
     echo_ "deploy beanstalk..."
 
-    working
-
-#    aws elasticbeanstalk create-environment \
-#     --application-name "${ARTIFACT_ID}" \
-#     --environment-name "${ARTIFACT_ID}-${BRANCH}" \
-#     --version-label v1 \
-#     --solution-stack-name "64bit Amazon Linux 2017.03 v2.7.4 running Docker 17.03.1-ce"
+    aws elasticbeanstalk update-environment \
+     --application-name "${ARTIFACT_ID}" \
+     --environment-name "${ARTIFACT_ID}-${BRANCH}" \
+     --version-label "${VERSION}-${STAMP}"
 }
 
 ################################################################################
