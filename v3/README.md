@@ -1,11 +1,11 @@
 # toaster
 
-### install
+### Install
 ```
 curl -s toast.sh/install-v3 | bash
 ```
 
-### toast.sh
+### Usage
 ```
 ~/toaster/toast.sh c REGION ap-northeast-2
 ~/toaster/toast.sh c BUCKET repo.toast.sh

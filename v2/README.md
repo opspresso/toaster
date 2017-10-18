@@ -20,7 +20,7 @@ runuser -l {user} -c '~/toaster/toast.sh auto {fleet} {phase} {org} {token}'
 cat /var/log/cloud-init-output.log
 ```
 
-### toast.sh
+### Usage
 ```
 ~/toaster/toast.sh auto
 ~/toaster/toast.sh init java
@@ -29,7 +29,7 @@ cat /var/log/cloud-init-output.log
 ~/toaster/toast.sh bucket {target}
 ```
 
-### remote.sh
+### Remote
 ```
 ~/toaster/remote.sh {user} {host} {port} auto
 ~/toaster/remote.sh {user} {host} {port} init java
