@@ -164,7 +164,7 @@ config_save() {
     echo "${KEY}=${VAL}" >> "${CONFIG}"
 
     if [ "${KEY}" == "REGION" ]; then
-        cat ${HOME}/.aws/config
+        aws configure set default.region ${VAL}
     fi
 }
 
