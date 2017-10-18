@@ -41,7 +41,7 @@ else
 fi
 
 # download
-curl -s -o /tmp/toaster.tar.gz ${REPO}/toaster-v2.tar.gz
+curl -s -o /tmp/toaster.tar.gz ${REPO}/toaster-v3.tar.gz
 
 if [ ! -f /tmp/toaster.tar.gz ]; then
     warning "Can not download. [toast.sh]"
