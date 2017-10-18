@@ -1,5 +1,20 @@
 #!/bin/bash
 
+echo_() {
+    echo -e "$1"
+    echo "$1" >> /tmp/toast.log
+}
+
+success() {
+    echo -e "$(tput setaf 2)$1$(tput sgr0)"
+    echo "$1" >> /tmp/toast.log
+}
+
+warning() {
+    echo -e "$(tput setaf 1)$1$(tput sgr0)"
+    echo "$1" >> /tmp/toast.log
+}
+
 ################################################################################
 
 OS_NAME="$(uname)"
@@ -147,7 +162,7 @@ echo_toast() {
     echo_ "     | |_| | (_| | | | | (_) | || | (_| |  | || (_) | (_| \__ \ |_      "
     echo_ "      \__, |\__,_|_| |_|\___/|_|/ |\__,_|   \__\___/ \__,_|___/\__|     "
     echo_ "      |___/                   |__/                                      "
-    echo_ "                                               by nalbam (${VER})      "
+    echo_ "                                               by nalbam (${VER})       "
     echo_bar
 }
 

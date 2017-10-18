@@ -9,9 +9,6 @@ function yell() {
         cl|clone)
             git_clone
             ;;
-        rm|remove)
-            rm_app_dir
-            ;;
         b|branch)
             git_branch
             ;;
@@ -26,15 +23,18 @@ function yell() {
             git_commit
             git_push
             ;;
+        p|pp)
+            git_pull
+            git_push
+            ;;
         pl|pull)
             git_pull
             ;;
         ph|push)
             git_push
             ;;
-        p|pp)
-            git_pull
-            git_push
+        rm|remove)
+            rm_app_dir
             ;;
         *)
             usage
@@ -267,5 +267,3 @@ get_up_id
 get_cmd
 
 yell
-
-exit $?
