@@ -38,11 +38,6 @@ elif [ "${OS_NAME}" == "Darwin" ]; then
     OS_TYPE="${OS_NAME}"
 fi
 
-SHELL_DIR=$(dirname "$0")
-
-UUID="$(curl -s http://instance-data/latest/meta-data/instance-id)"
-USER="$(whoami)"
-
 ################################################################################
 
 CMD=$1
@@ -54,14 +49,11 @@ PARAM4=$5
 PARAM5=$6
 PARAM6=$7
 
-DATA_DIR="/data"
-APPS_DIR="${DATA_DIR}/apps"
-LOGS_DIR="${DATA_DIR}/logs"
-SITE_DIR="${DATA_DIR}/site"
+SHELL_DIR=$(dirname "$0")
+
 TEMP_DIR="/tmp"
 
-ORG="yanolja"
-BUCKET="repo.${ORG}.com"
+BUCKET="repo.toast.sh"
 
 ################################################################################
 
@@ -74,14 +66,8 @@ fi
 
 toast() {
     case ${CMD} in
-        a|auto)
-            auto
-            ;;
         u|update)
             update
-            ;;
-        r|prepare)
-            prepare
             ;;
         c|config)
             config
@@ -108,16 +94,8 @@ toast() {
 
 ################################################################################
 
-auto() {
-    working
-}
-
 update() {
-    update_self
-}
-
-prepare() {
-    working
+    curl -s toast.sh/install-v3 | bash
 }
 
 config() {
@@ -125,7 +103,11 @@ config() {
 }
 
 install() {
-    working
+    case ${PARAM1} in
+        java|java8)
+            install_java8
+            ;;
+    esac
 }
 
 version() {
@@ -158,10 +140,6 @@ deploy() {
 
 ################################################################################
 
-update_self() {
-    curl -s toast.sh/install-v3 | bash
-}
-
 config_save() {
     KEY="${PARAM1}"
     VAL="${PARAM2}"
@@ -175,6 +153,16 @@ config_save() {
     if [ "${KEY}" == "REGION" ]; then
         aws configure set default.region ${VAL}
     fi
+}
+
+install_java8() {
+    echo_ "install java..."
+
+    ${SHELL_DIR}/install/java8.sh "${BUCKET}"
+
+    echo_bar
+    echo_ "$(java -version)"
+    echo_bar
 }
 
 pom_parse() {
@@ -340,7 +328,7 @@ publish_beanstalk() {
     STAMP=$(date "+%y%m%d-%H%M")
 
     BRANCH="$(cat .branch)"
-    GIT_ID="" # "$(cat .git_id)"
+    GIT_ID="" # TODO "$(cat .git_id)"
 
     aws elasticbeanstalk create-application-version \
      --application-name "${ARTIFACT_ID}" \
@@ -389,7 +377,7 @@ working() {
 
 usage() {
     echo_toast
-    echo_ " Usage: toast {auto|prepare|update|config|install|build|publish|deploy|health}"
+    echo_ " Usage: toast {update|config|install|version|package|publish|deploy}"
     echo_bar
 }
 
