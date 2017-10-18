@@ -16,7 +16,8 @@ echo "${VERSION}" > target/toaster.txt
 cp -rf web/* target/
 
 # install.sh
-cp -rf install.sh target/install
+cp -rf install-v2.sh target/install
+cp -rf install-v2.sh target/install-v2
 cp -rf install-v3.sh target/install-v3
 
 # toaster v2

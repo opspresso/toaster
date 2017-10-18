@@ -38,11 +38,6 @@ elif [ "${OS_NAME}" == "Darwin" ]; then
     OS_TYPE="${OS_NAME}"
 fi
 
-SHELL_DIR=$(dirname "$0")
-
-UUID="$(curl -s http://instance-data/latest/meta-data/instance-id)"
-USER="$(whoami)"
-
 ################################################################################
 
 CMD=$1
@@ -54,14 +49,11 @@ PARAM4=$5
 PARAM5=$6
 PARAM6=$7
 
-DATA_DIR="/data"
-APPS_DIR="${DATA_DIR}/apps"
-LOGS_DIR="${DATA_DIR}/logs"
-SITE_DIR="${DATA_DIR}/site"
+SHELL_DIR=$(dirname "$0")
+
 TEMP_DIR="/tmp"
 
-ORG="yanolja"
-BUCKET="repo.${ORG}.com"
+BUCKET="repo.toast.sh"
 
 ################################################################################
 
@@ -74,14 +66,8 @@ fi
 
 toast() {
     case ${CMD} in
-        a|auto)
-            auto
-            ;;
         u|update)
             update
-            ;;
-        r|prepare)
-            prepare
             ;;
         c|config)
             config
@@ -108,16 +94,8 @@ toast() {
 
 ################################################################################
 
-auto() {
-    working
-}
-
 update() {
-    update_self
-}
-
-prepare() {
-    working
+    curl -s toast.sh/install-v3 | bash
 }
 
 config() {
@@ -125,22 +103,35 @@ config() {
 }
 
 install() {
-    working
+    case ${PARAM1} in
+        java|java8)
+            install_java8
+            ;;
+    esac
 }
 
 version() {
     pom_parse
+
     version_branch
 }
 
 package() {
     pom_parse
+
     package_docker
 }
 
 publish() {
     pom_parse
-    publish_beanstalk
+
+    case ${PARAM1} in
+        eb|beanstalk)
+            publish_beanstalk
+            ;;
+        *)
+            publish_bucket
+    esac
 }
 
 deploy() {
@@ -148,10 +139,6 @@ deploy() {
 }
 
 ################################################################################
-
-update_self() {
-    curl -s toast.sh/install-v3 | bash
-}
 
 config_save() {
     KEY="${PARAM1}"
@@ -166,6 +153,16 @@ config_save() {
     if [ "${KEY}" == "REGION" ]; then
         aws configure set default.region ${VAL}
     fi
+}
+
+install_java8() {
+    echo_ "install java..."
+
+    ${SHELL_DIR}/install/java8.sh "${BUCKET}"
+
+    echo_bar
+    echo_ "$(java -version)"
+    echo_bar
 }
 
 pom_parse() {
@@ -272,25 +269,26 @@ package_docker() {
     # ROOT.${packaging}
     cp -rf "target/${ARTIFACT_ID}-${VERSION}.${PACKAGING}" "target/docker/ROOT.${PACKAGING}"
 
+    FILES="ROOT.${PACKAGING}"
+
     # Dockerfile
     if [ -f "Dockerfile" ]; then
         cp -rf "Dockerfile" "target/docker/Dockerfile"
-    else
-        cp -rf "${SHELL_DIR}/package/docker/Dockerfile" "target/docker/Dockerfile"
+
+        FILES="${FILES} Dockerfile"
     fi
 
     # Dockerrun
     if [ -f "Dockerrun.aws.json" ]; then
         cp -rf "Dockerrun.aws.json" "target/docker/Dockerrun.aws.json"
-    else
-        cp -rf "${SHELL_DIR}/package/docker/Dockerrun.aws.json" "target/docker/Dockerrun.aws.json"
-    fi
 
-    FILES="ROOT.${PACKAGING} Dockerfile Dockerrun.aws.json "
+        FILES="${FILES} Dockerrun.aws.json"
+    fi
 
     # .ebextensions
     if [ -d ".ebextensions" ]; then
         cp -rf ".ebextensions" "target/docker/.ebextensions"
+
         FILES="${FILES} .ebextensions"
     fi
 
@@ -330,12 +328,12 @@ publish_beanstalk() {
     STAMP=$(date "+%y%m%d-%H%M")
 
     BRANCH="$(cat .branch)"
-    GIT_ID="$(cat .git_id)"
+    GIT_ID="" # TODO "$(cat .git_id)"
 
     aws elasticbeanstalk create-application-version \
      --application-name "${ARTIFACT_ID}" \
      --version-label "${VERSION}-${STAMP}" \
-     --description "${GIT_ID} (${BRANCH})" \
+     --description "${BRANCH} (${GIT_ID})" \
      --source-bundle S3Bucket="${BUCKET}",S3Key="maven2/${GROUP_PATH}/${ARTIFACT_ID}/${VERSION}/${ARTIFACT_ID}-${VERSION}.zip" \
      --auto-create-application
 }
@@ -379,7 +377,7 @@ working() {
 
 usage() {
     echo_toast
-    echo_ " Usage: toast {auto|prepare|update|config|install|build|publish|deploy|health}"
+    echo_ " Usage: toast {update|config|install|version|package|publish|deploy}"
     echo_bar
 }
 
