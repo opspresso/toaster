@@ -309,11 +309,11 @@ package_docker() {
 
 publish_bucket() {
     POM_FILE="pom.xml"
+
     if [ -f "${POM_FILE}" ]; then
         cp -rf "${POM_FILE}" "target/${ARTIFACT_ID}-${VERSION}.pom"
     fi
 
-    # upload
     if [ "${PARAM2}" != "none" ]; then
         echo_ "publish bucket..."
 
@@ -336,13 +336,15 @@ publish_beanstalk() {
     BRANCH="$(cat .branch)"
     GIT_ID="" # TODO "$(cat .git_id)"
 
+    S3_KEY="maven2/${GROUP_PATH}/${ARTIFACT_ID}/${VERSION}/${ARTIFACT_ID}-${VERSION}.zip"
+
     echo_ "publish beanstalk..."
 
     aws elasticbeanstalk create-application-version \
      --application-name "${ARTIFACT_ID}" \
      --version-label "${VERSION}-${STAMP}" \
      --description "${BRANCH} (${GIT_ID})" \
-     --source-bundle S3Bucket="${BUCKET}",S3Key="maven2/${GROUP_PATH}/${ARTIFACT_ID}/${VERSION}/${ARTIFACT_ID}-${VERSION}.zip" \
+     --source-bundle S3Bucket="${BUCKET}",S3Key="${S3_KEY}" \
      --auto-create-application
 }
 
@@ -352,6 +354,12 @@ deploy_beanstalk() {
     echo_ "deploy beanstalk..."
 
     working
+
+#    aws elasticbeanstalk create-environment \
+#     --application-name "${ARTIFACT_ID}" \
+#     --environment-name "${ARTIFACT_ID}-${BRANCH}" \
+#     --version-label v1 \
+#     --solution-stack-name "64bit Amazon Linux 2017.03 v2.7.4 running Docker 17.03.1-ce"
 }
 
 ################################################################################
