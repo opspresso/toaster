@@ -130,17 +130,26 @@ install() {
 
 version() {
     pom_parse
+
     version_branch
 }
 
 package() {
     pom_parse
+
     package_docker
 }
 
 publish() {
     pom_parse
-    publish_beanstalk
+
+    case ${PARAM1} in
+        beanstalk)
+            publish_beanstalk
+            ;;
+        *)
+            publish_bucket
+    esac
 }
 
 deploy() {
