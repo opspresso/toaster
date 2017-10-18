@@ -162,6 +162,10 @@ config_save() {
     fi
 
     echo "${KEY}=${VAL}" >> "${CONFIG}"
+
+    if [ "${KEY}" == "REGION" ]; then
+        cat ${HOME}/.aws/config
+    fi
 }
 
 pom_parse() {
@@ -229,7 +233,7 @@ version_branch() {
         BRANCH="master"
     fi
 
-    echo "${BRANCH}" > .git_branch
+    echo "${BRANCH}" > .branch
     echo_ "branch=${BRANCH}"
 
     if [ "${BRANCH}" == "master" ]; then
