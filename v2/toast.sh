@@ -1604,12 +1604,12 @@ build_save() {
     BRANCH="$(cat .git_branch)"
 
     # tag
-    if [ "${BRANCH}" == "master" ]; then
+    if [ "${BRANCH}" == "master" ] && [ "${VERSION}" != "0.0.0" ]; then
         echo_ "version tag... [${VERSION}]"
 
         DATE=$(date "+%Y-%m-%d %H:%M")
 
-        git config --global user.name "toast"
+        git config --global user.name  "toast"
         git config --global user.email "toast@yanolja.com"
 
         git tag -a "${VERSION}" -m "at ${DATE} by toast"
