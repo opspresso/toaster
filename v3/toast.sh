@@ -61,6 +61,7 @@ SITE_DIR="${DATA_DIR}/site"
 TEMP_DIR="/tmp"
 
 ORG="yanolja"
+BUCKET="repo.${ORG}.com"
 
 ################################################################################
 
@@ -139,7 +140,6 @@ package() {
 
 publish() {
     pom_parse
-    repo_path
     publish_beanstalk
 }
 
@@ -162,15 +162,6 @@ config_save() {
     fi
 
     echo "${KEY}=${VAL}" >> "${CONFIG}"
-}
-
-repo_path() {
-    if [ "${ORG}" == "" ]; then
-        error "Not set ORG."
-    fi
-
-    REPO_BUCKET="repo.${ORG}.com"
-    REPO_PATH="s3://${REPO_BUCKET}"
 }
 
 pom_parse() {
@@ -255,7 +246,7 @@ upload_repo() {
         return
     fi
 
-    UPLOAD_PATH="${REPO_PATH}/maven2/${GROUP_PATH}/${ARTIFACT_ID}/${VERSION}/"
+    UPLOAD_PATH="s3://${BUCKET}/maven2/${GROUP_PATH}/${ARTIFACT_ID}/${VERSION}/"
 
     echo_ "--> from: ${PACKAGE_PATH}"
     echo_ "--> to  : ${UPLOAD_PATH}"
@@ -341,7 +332,7 @@ publish_beanstalk() {
      --application-name "${ARTIFACT_ID}" \
      --version-label "${VERSION}-${STAMP}" \
      --description "${GIT_ID} (${BRANCH})" \
-     --source-bundle S3Bucket="${REPO_BUCKET}",S3Key="maven2/${GROUP_PATH}/${ARTIFACT_ID}/${VERSION}/${ARTIFACT_ID}-${VERSION}.zip" \
+     --source-bundle S3Bucket="${BUCKET}",S3Key="maven2/${GROUP_PATH}/${ARTIFACT_ID}/${VERSION}/${ARTIFACT_ID}-${VERSION}.zip" \
      --auto-create-application
 }
 
