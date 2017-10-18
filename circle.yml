@@ -1,8 +1,6 @@
 machine:
   timezone:
     Asia/Seoul
-  python:
-    version: 2.7.5
 
 compile:
   override:
