@@ -21,18 +21,10 @@ error() {
 OS_NAME="$(uname)"
 OS_FULL="$(uname -a)"
 if [ "${OS_NAME}" == "Linux" ]; then
-    if [ $(echo "${OS_FULL}" | grep -c "amzn1") -gt 0 ]; then
-        OS_TYPE="amzn1"
-    elif [ $(echo "${OS_FULL}" | grep -c "el6") -gt 0 ]; then
-        OS_TYPE="el6"
-    elif [ $(echo "${OS_FULL}" | grep -c "el7") -gt 0 ]; then
-        OS_TYPE="el7"
-    elif [ $(echo "${OS_FULL}" | grep -c "Ubuntu") -gt 0 ]; then
+    if [ $(echo "${OS_FULL}" | grep -c "Ubuntu") -gt 0 ]; then
         OS_TYPE="Ubuntu"
-    elif [ $(echo "${OS_FULL}" | grep -c "generic") -gt 0 ]; then
+    else
         OS_TYPE="generic"
-    elif [ $(echo "${OS_FULL}" | grep -c "coreos") -gt 0 ]; then
-        OS_TYPE="coreos"
     fi
 elif [ "${OS_NAME}" == "Darwin" ]; then
     OS_TYPE="${OS_NAME}"
