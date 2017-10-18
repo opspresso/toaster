@@ -39,6 +39,14 @@ fi
 
 ################################################################################
 
+VER=${1}
+
+if [ "${VER}" == "" ]; then
+    VER="v2"
+fi
+
+################################################################################
+
 REPO="http://toast.sh"
 
 ################################################################################
@@ -70,7 +78,7 @@ else
 fi
 
 # download
-curl -s -o /tmp/toaster.tar.gz ${REPO}/toaster.tar.gz
+curl -s -o /tmp/toaster.tar.gz ${REPO}/toaster-${VER}.tar.gz
 
 if [ ! -f /tmp/toaster.tar.gz ]; then
     warning "Can not download. [toast.sh]"
