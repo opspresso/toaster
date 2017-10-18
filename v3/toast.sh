@@ -272,25 +272,26 @@ package_docker() {
     # ROOT.${packaging}
     cp -rf "target/${ARTIFACT_ID}-${VERSION}.${PACKAGING}" "target/docker/ROOT.${PACKAGING}"
 
+    FILES="ROOT.${PACKAGING}"
+
     # Dockerfile
     if [ -f "Dockerfile" ]; then
         cp -rf "Dockerfile" "target/docker/Dockerfile"
-    else
-        cp -rf "${SHELL_DIR}/package/docker/Dockerfile" "target/docker/Dockerfile"
+
+        FILES="${FILES} Dockerfile"
     fi
 
     # Dockerrun
     if [ -f "Dockerrun.aws.json" ]; then
         cp -rf "Dockerrun.aws.json" "target/docker/Dockerrun.aws.json"
-    else
-        cp -rf "${SHELL_DIR}/package/docker/Dockerrun.aws.json" "target/docker/Dockerrun.aws.json"
-    fi
 
-    FILES="ROOT.${PACKAGING} Dockerfile Dockerrun.aws.json "
+        FILES="${FILES} Dockerrun.aws.json"
+    fi
 
     # .ebextensions
     if [ -d ".ebextensions" ]; then
         cp -rf ".ebextensions" "target/docker/.ebextensions"
+
         FILES="${FILES} .ebextensions"
     fi
 
