@@ -135,7 +135,13 @@ publish() {
 }
 
 deploy() {
-    working
+    pom_parse
+
+    case ${PARAM1} in
+        eb|beanstalk)
+            deploy_beanstalk
+            ;;
+    esac
 }
 
 ################################################################################
@@ -262,6 +268,8 @@ upload_repo() {
 }
 
 package_docker() {
+    echo_ "package docker..."
+
     if [ ! -d "target/docker" ]; then
         mkdir "target/docker"
     fi
@@ -307,14 +315,12 @@ publish_bucket() {
 
     # upload
     if [ "${PARAM2}" != "none" ]; then
-        echo_ "package upload..."
+        echo_ "publish bucket..."
 
         upload_repo "zip"
         upload_repo "war"
         upload_repo "jar"
         upload_repo "pom"
-
-        echo_ "package uploaded."
     fi
 }
 
@@ -330,12 +336,22 @@ publish_beanstalk() {
     BRANCH="$(cat .branch)"
     GIT_ID="" # TODO "$(cat .git_id)"
 
+    echo_ "publish beanstalk..."
+
     aws elasticbeanstalk create-application-version \
      --application-name "${ARTIFACT_ID}" \
      --version-label "${VERSION}-${STAMP}" \
      --description "${BRANCH} (${GIT_ID})" \
      --source-bundle S3Bucket="${BUCKET}",S3Key="maven2/${GROUP_PATH}/${ARTIFACT_ID}/${VERSION}/${ARTIFACT_ID}-${VERSION}.zip" \
      --auto-create-application
+}
+
+deploy_beanstalk() {
+    BRANCH="$(cat .branch)"
+
+    echo_ "deploy beanstalk..."
+
+    working
 }
 
 ################################################################################
