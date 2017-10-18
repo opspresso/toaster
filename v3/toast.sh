@@ -10,9 +10,10 @@ success() {
     echo "$1" >> /tmp/toast.log
 }
 
-warning() {
+error() {
     echo -e "$(tput setaf 1)$1$(tput sgr0)"
     echo "$1" >> /tmp/toast.log
+    exit 1
 }
 
 ################################################################################
@@ -59,6 +60,8 @@ LOGS_DIR="${DATA_DIR}/logs"
 SITE_DIR="${DATA_DIR}/site"
 TEMP_DIR="/tmp"
 
+ORG="yanolja"
+
 ################################################################################
 
 toast() {
@@ -78,8 +81,11 @@ toast() {
         i|install)
             install
             ;;
-        b|build)
-            build
+        v|version)
+            version
+            ;;
+        g|package)
+            package
             ;;
         p|publish)
             publish
@@ -87,48 +93,248 @@ toast() {
         d|deploy)
             deploy
             ;;
-        h|health)
-            health
-            ;;
         *)
             usage
     esac
 }
 
+################################################################################
+
 auto() {
-    echo_toast
+    working
 }
 
 update() {
-    echo_toast
+    update_self
 }
 
 prepare() {
-    echo_toast
+    working
 }
 
 config() {
-    echo_toast
+    working
 }
 
 install() {
-    echo_toast
+    working
 }
 
-build() {
-    echo_toast
+version() {
+    version_branch
+}
+
+package() {
+    package_docker
 }
 
 publish() {
-    echo_toast
+    publish_beanstalk
 }
 
 deploy() {
-    echo_toast
+    working
 }
 
-health() {
-    echo_toast
+################################################################################
+
+update_self() {
+    curl -s toast.sh/install-v3 | bash
+}
+
+repo_path() {
+    if [ "${ORG}" == "" ]; then
+        error "Not set ORG."
+    fi
+
+    REPO_BUCKET="repo.${ORG}.com"
+    REPO_PATH="s3://${REPO_BUCKET}"
+}
+
+pom_parse() {
+    POM_FILE="pom.xml"
+
+    if [ ! -f "${POM_FILE}" ]; then
+        error "Not exist file. [${POM_FILE}]"
+    fi
+
+    ARR_GROUP=($(cat ${POM_FILE} | grep -oP '(?<=groupId>)[^<]+'))
+    ARR_ARTIFACT=($(cat ${POM_FILE} | grep -oP '(?<=artifactId>)[^<]+'))
+    ARR_VERSION=($(cat ${POM_FILE} | grep -oP '(?<=version>)[^<]+'))
+    ARR_PACKAGING=($(cat ${POM_FILE} | grep -oP '(?<=packaging>)[^<]+'))
+
+    if [ "${ARR_GROUP[0]}" == "" ]; then
+        error "Not set groupId."
+    fi
+    if [ "${ARR_ARTIFACT[0]}" == "" ]; then
+        error "Not set artifactId."
+    fi
+
+    GROUP_ID="${ARR_GROUP[0]}"
+    ARTIFACT_ID="${ARR_ARTIFACT[0]}"
+    VERSION="${ARR_VERSION[0]}"
+    PACKAGING="${ARR_PACKAGING[0]}"
+
+    GROUP_PATH=$(echo "${GROUP_ID}" | sed "s/\./\//")
+
+    echo_ "groupId=${GROUP_ID}"
+    echo_ "artifactId=${ARTIFACT_ID}"
+    echo_ "version=${VERSION}"
+    echo_ "packaging=${PACKAGING}"
+}
+
+pom_replace() {
+    POM_FILE="pom.xml"
+
+    if [ ! -f "${POM_FILE}" ]; then
+        error "Not exist file. [${POM_FILE}]"
+    fi
+
+    if [ "${VERSION}" == "" ]; then
+        error "Not set VERSION."
+    fi
+
+    echo_ "version=${VERSION}"
+
+    VER1="<version>[0-9a-zA-Z\.\-]\+<\/version>"
+    VER2="<version>${VERSION}<\/version>"
+
+    TEMP_FILE="${TEMP_DIR}/toast-pom.tmp"
+
+    sed "s/$VER1/$VER2/;10q;" ${POM_FILE} > ${TEMP_FILE}
+    sed "1,10d" ${POM_FILE} >> ${TEMP_FILE}
+
+    cp -rf ${TEMP_FILE} ${POM_FILE}
+}
+
+version_branch() {
+    BRANCH="${PARAM2}"
+
+    if [ "${BRANCH}" == "" ]; then
+        BRANCH="master"
+    fi
+
+    echo "${BRANCH}" > .git_branch
+    echo_ "branch=${BRANCH}"
+
+    if [ "${BRANCH}" == "master" ]; then
+        pom_parse
+
+        # TODO new version
+
+        pom_replace
+    fi
+}
+
+upload_repo() {
+    EXT="$1"
+
+    PACKAGE_PATH="target/${ARTIFACT_ID}-${VERSION}.${EXT}"
+
+    if [ ! -f "${PACKAGE_PATH}" ]; then
+        return
+    fi
+
+    UPLOAD_PATH="${REPO_PATH}/maven2/${GROUP_PATH}/${ARTIFACT_ID}/${VERSION}/"
+
+    echo_ "--> from: ${PACKAGE_PATH}"
+    echo_ "--> to  : ${UPLOAD_PATH}"
+
+    if [ "${PARAM3}" == "public" ]; then
+        OPTION="--quiet --acl public-read"
+    else
+        OPTION="--quiet"
+    fi
+
+    aws s3 cp "${PACKAGE_PATH}" "${UPLOAD_PATH}" ${OPTION}
+}
+
+package_docker() {
+    if [ "${ARTIFACT_ID}" == "" ]; then
+        pom_parse
+    fi
+
+    if [ ! -d "target/docker" ]; then
+        mkdir "target/docker"
+    fi
+
+    # ROOT.${packaging}
+    cp -rf "target/${ARTIFACT_ID}-${VERSION}.${PACKAGING}" "target/docker/ROOT.${PACKAGING}"
+
+    # Dockerfile
+    if [ -f "Dockerfile" ]; then
+        cp -rf "Dockerfile" "target/docker/Dockerfile"
+    else
+        cp -rf "${SHELL_DIR}/package/docker/Dockerfile" "target/docker/Dockerfile"
+    fi
+
+    # Dockerrun
+    if [ -f "Dockerrun.aws.json" ]; then
+        cp -rf "Dockerrun.aws.json" "target/docker/Dockerrun.aws.json"
+    else
+        cp -rf "${SHELL_DIR}/package/docker/Dockerrun.aws.json" "target/docker/Dockerrun.aws.json"
+    fi
+
+    FILES="ROOT.${PACKAGING} Dockerfile Dockerrun.aws.json "
+
+    # .ebextensions
+    if [ -d ".ebextensions" ]; then
+        cp -rf ".ebextensions" "target/docker/.ebextensions"
+        FILES="${FILES} .ebextensions"
+    fi
+
+    pushd target/docker
+
+    zip -q -r ../${ARTIFACT_ID}-${VERSION}.zip ${FILES}
+
+    popd
+}
+
+publish_bucket() {
+    if [ "${ARTIFACT_ID}" == "" ]; then
+        pom_parse
+    fi
+
+    POM_FILE="pom.xml"
+    if [ -f "${POM_FILE}" ]; then
+        cp -rf "${POM_FILE}" "target/${ARTIFACT_ID}-${VERSION}.pom"
+    fi
+
+    # upload
+    if [ "${PARAM3}" != "none" ]; then
+        echo_ "package upload..."
+
+        upload_repo "zip"
+        upload_repo "war"
+        upload_repo "jar"
+        upload_repo "pom"
+
+        echo_ "package uploaded."
+    fi
+}
+
+publish_beanstalk() {
+    if [ "${ARTIFACT_ID}" == "" ]; then
+        pom_parse
+    fi
+
+    if [ ! -d "target/docker" ]; then
+        package_docker
+    fi
+
+    publish_bucket
+
+    STAMP=$(date "+%y%m%d-%H%M")
+
+    BRANCH="$(cat .branch)"
+    GIT_ID="$(cat .git_id)"
+
+    aws elasticbeanstalk create-application-version \
+     --application-name "${ARTIFACT_ID}" \
+     --version-label "${VERSION}-${STAMP}" \
+     --description "${GIT_ID} (${BRANCH})" \
+     --source-bundle S3Bucket="${REPO_BUCKET}",S3Key="maven2/${GROUP_PATH}/${ARTIFACT_ID}/${VERSION}/${ARTIFACT_ID}-${VERSION}.zip" \
+     --auto-create-application
 }
 
 ################################################################################
@@ -138,10 +344,6 @@ self_info() {
     echo_ "OS    : ${OS_NAME} ${OS_TYPE}"
     echo_ "HOME  : ${HOME}"
     echo_bar
-}
-
-self_update() {
-    curl -s toast.sh/install | bash
 }
 
 echo_bar() {
@@ -166,6 +368,12 @@ echo_toast() {
     echo_bar
 }
 
+working() {
+    echo_toast
+    echo_ " Not Implemented."
+    echo_bar
+}
+
 usage() {
     echo_toast
     echo_ " Usage: toast {auto|prepare|update|config|install|build|publish|deploy|health}"
@@ -175,6 +383,8 @@ usage() {
 ################################################################################
 
 toast
+
+################################################################################
 
 # done
 success "done."
