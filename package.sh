@@ -24,6 +24,6 @@ tar -czf ../target/toaster-v2.tar.gz extra install package *.sh
 popd
 
 # toaster v3
-#pushd v3
-#tar -czf ../target/toaster-v3.tar.gz *.sh
-#popd
+pushd v3
+tar -czf ../target/toaster-v3.tar.gz *.sh
+popd
