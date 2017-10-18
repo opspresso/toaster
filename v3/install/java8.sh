@@ -42,7 +42,7 @@ download() {
     _PATH="$2"
 
     if [ "${REPO}" != "" ]; then
-        URL="${REPO}/${_PATH}/${_FILE}"
+        URL="s3://${REPO}/${_PATH}/${_FILE}"
 
         echo_ "download... [${URL}]"
 
