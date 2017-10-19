@@ -1681,7 +1681,7 @@ build_bucket() {
 
     DEPLOY_PATH="s3://${PARAM2}"
 
-    OPTION="--quiet --acl public-read"
+    OPTION=" --acl public-read"
 
     aws s3 sync "${PACKAGE_PATH}" "${DEPLOY_PATH}" ${OPTION}
 }
