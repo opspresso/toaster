@@ -141,6 +141,9 @@ deploy() {
         eb|beanstalk)
             deploy_beanstalk
             ;;
+        bk|bucket)
+            deploy_bucket
+            ;;
     esac
 }
 
@@ -360,6 +363,28 @@ deploy_beanstalk() {
      --application-name "${ARTIFACT_ID}" \
      --environment-name "${ARTIFACT_ID}-${BRANCH}" \
      --version-label "${VERSION}-${STAMP}"
+}
+
+deploy_bucket() {
+    if [ "${PARAM2}" == "" ]; then
+        warning "Not set BUCKET."
+        return
+    fi
+
+    PACKAGE_PATH="target/${ARTIFACT_ID}-${VERSION}"
+
+    unzip -q "${PACKAGE_PATH}.${PACKAGING}" -d "${PACKAGE_PATH}"
+
+    if [ ! -d ${PACKAGE_PATH} ]; then
+        warning "Not set PACKAGE_PATH."
+        return
+    fi
+
+    DEPLOY_PATH="s3://${PARAM2}"
+
+    OPTION="--acl public-read"
+
+    aws s3 sync "${PACKAGE_PATH}" "${DEPLOY_PATH}" ${OPTION}
 }
 
 ################################################################################
