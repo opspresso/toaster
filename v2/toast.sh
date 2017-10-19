@@ -1681,7 +1681,7 @@ build_bucket() {
 
     DEPLOY_PATH="s3://${PARAM2}"
 
-    OPTION=" --acl public-read"
+    OPTION="--acl public-read"
 
     aws s3 sync "${PACKAGE_PATH}" "${DEPLOY_PATH}" ${OPTION}
 }
@@ -1823,9 +1823,9 @@ upload_repo() {
     echo_ "--> to  : ${UPLOAD_PATH}"
 
     if [ "${PARAM3}" == "public" ]; then
-        OPTION="--quiet --acl public-read" # --quiet
+        OPTION="--quiet --acl public-read"
     else
-        OPTION="--quiet" # --quiet
+        OPTION="--quiet"
     fi
 
     aws s3 cp "${PACKAGE_PATH}" "${UPLOAD_PATH}" ${OPTION}
