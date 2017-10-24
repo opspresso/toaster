@@ -700,10 +700,10 @@ config_cron() {
     TEMP_FILE="${TEMP_DIR}/toast-cron.tmp"
 
     echo "# toast cron" > ${TEMP_FILE}
-    echo "0 1 * * * ${SHELL_DIR}/toast.sh log    > /tmp/toast-cron-log.log " >> ${TEMP_FILE}
-    echo "0 5 * * * ${SHELL_DIR}/toast.sh update > /tmp/toast-cron-update.log " >> ${TEMP_FILE}
     echo "* * * * * ${SHELL_DIR}/toast.sh health > /tmp/toast-cron-health.log " >> ${TEMP_FILE}
-    echo "0 * * * * ${SHELL_DIR}/log_rotate.sh   > /tmp/toast-cron-rotate.log " >> ${TEMP_FILE}
+    echo "3 2 * * * ${SHELL_DIR}/toast.sh update > /tmp/toast-cron-update.log " >> ${TEMP_FILE}
+    echo "6 3 * * * ${SHELL_DIR}/toast.sh log    > /tmp/toast-cron-log.log "    >> ${TEMP_FILE}
+    echo "9 * * * * ${SHELL_DIR}/log_rotate.sh   > /tmp/toast-cron-rotate.log " >> ${TEMP_FILE}
 
     crontab ${TEMP_FILE}
 
