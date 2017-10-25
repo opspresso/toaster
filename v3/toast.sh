@@ -373,7 +373,7 @@ deploy_bucket() {
 
     PACKAGE_PATH="target/${ARTIFACT_ID}-${VERSION}"
 
-    unzip -q "${PACKAGE_PATH}.${PACKAGING}" -d "${PACKAGE_PATH}"
+    unzip -oq "${PACKAGE_PATH}.${PACKAGING}" -d "${PACKAGE_PATH}"
 
     if [ ! -d ${PACKAGE_PATH} ]; then
         warning "Not set PACKAGE_PATH."
