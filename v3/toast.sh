@@ -373,11 +373,13 @@ deploy_bucket() {
 
     PACKAGE_PATH="target/${ARTIFACT_ID}-${VERSION}"
 
-    unzip -oq "${PACKAGE_PATH}.${PACKAGING}" -d "${PACKAGE_PATH}"
-
     if [ ! -d ${PACKAGE_PATH} ]; then
-        warning "Not set PACKAGE_PATH."
-        return
+        unzip -q "${PACKAGE_PATH}.${PACKAGING}" -d "${PACKAGE_PATH}"
+
+        if [ ! -d ${PACKAGE_PATH} ]; then
+            warning "Not set PACKAGE_PATH."
+            return
+        fi
     fi
 
     DEPLOY_PATH="s3://${PARAM2}"
