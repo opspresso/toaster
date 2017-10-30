@@ -1,6 +1,5 @@
 machine:
-  timezone:
-    Asia/Seoul
+  timezone: Asia/Seoul
 
 compile:
   override:
