@@ -135,7 +135,16 @@ publish() {
 }
 
 deploy() {
-    working
+    pom_parse
+
+    case ${PARAM1} in
+        eb|beanstalk)
+            deploy_beanstalk
+            ;;
+        bk|bucket)
+            deploy_bucket
+            ;;
+    esac
 }
 
 ################################################################################
@@ -262,6 +271,8 @@ upload_repo() {
 }
 
 package_docker() {
+    echo_ "package docker..."
+
     if [ ! -d "target/docker" ]; then
         mkdir "target/docker"
     fi
@@ -301,20 +312,18 @@ package_docker() {
 
 publish_bucket() {
     POM_FILE="pom.xml"
+
     if [ -f "${POM_FILE}" ]; then
         cp -rf "${POM_FILE}" "target/${ARTIFACT_ID}-${VERSION}.pom"
     fi
 
-    # upload
     if [ "${PARAM2}" != "none" ]; then
-        echo_ "package upload..."
+        echo_ "publish bucket..."
 
         upload_repo "zip"
         upload_repo "war"
         upload_repo "jar"
         upload_repo "pom"
-
-        echo_ "package uploaded."
     fi
 }
 
@@ -326,16 +335,58 @@ publish_beanstalk() {
     publish_bucket
 
     STAMP=$(date "+%y%m%d-%H%M")
+    echo "${STAMP}" > .stamp
 
     BRANCH="$(cat .branch)"
     GIT_ID="" # TODO "$(cat .git_id)"
+
+    S3_KEY="maven2/${GROUP_PATH}/${ARTIFACT_ID}/${VERSION}/${ARTIFACT_ID}-${VERSION}.zip"
+
+    echo_ "publish beanstalk..."
 
     aws elasticbeanstalk create-application-version \
      --application-name "${ARTIFACT_ID}" \
      --version-label "${VERSION}-${STAMP}" \
      --description "${BRANCH} (${GIT_ID})" \
-     --source-bundle S3Bucket="${BUCKET}",S3Key="maven2/${GROUP_PATH}/${ARTIFACT_ID}/${VERSION}/${ARTIFACT_ID}-${VERSION}.zip" \
+     --source-bundle S3Bucket="${BUCKET}",S3Key="${S3_KEY}" \
      --auto-create-application
+}
+
+deploy_beanstalk() {
+    STAMP="$(cat .stamp)"
+
+    BRANCH="$(cat .branch)"
+
+    echo_ "deploy beanstalk..."
+
+    aws elasticbeanstalk update-environment \
+     --application-name "${ARTIFACT_ID}" \
+     --environment-name "${ARTIFACT_ID}-${BRANCH}" \
+     --version-label "${VERSION}-${STAMP}"
+}
+
+deploy_bucket() {
+    if [ "${PARAM2}" == "" ]; then
+        warning "Not set BUCKET."
+        return
+    fi
+
+    PACKAGE_PATH="target/${ARTIFACT_ID}-${VERSION}"
+
+    if [ ! -d ${PACKAGE_PATH} ]; then
+        unzip -q "${PACKAGE_PATH}.${PACKAGING}" -d "${PACKAGE_PATH}"
+
+        if [ ! -d ${PACKAGE_PATH} ]; then
+            warning "Not set PACKAGE_PATH."
+            return
+        fi
+    fi
+
+    DEPLOY_PATH="s3://${PARAM2}"
+
+    OPTION="--acl public-read"
+
+    aws s3 sync "${PACKAGE_PATH}" "${DEPLOY_PATH}" ${OPTION}
 }
 
 ################################################################################
