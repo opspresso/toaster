@@ -107,6 +107,9 @@ install() {
         java|java8)
             install_java8
             ;;
+        logstash)
+            install_logstash
+            ;;
     esac
 }
 
@@ -171,6 +174,14 @@ install_java8() {
 
     echo_bar
     echo_ "$(java -version)"
+    echo_bar
+}
+
+install_logstash() {
+    echo_ "install logstash..."
+
+    ${SHELL_DIR}/install/logstash.sh "${BUCKET}"
+
     echo_bar
 }
 

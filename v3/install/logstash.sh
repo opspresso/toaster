@@ -58,25 +58,17 @@ download() {
     fi
 }
 
-remove() {
-    if [ "${OS_TYPE}" == "Ubuntu" ]; then
-        sudo apt-get remove -y $1
-    else
-        sudo yum remove -y $1
-    fi
-}
-
 ################################################################################
 
-# s3://repo.toast.sh/java/server-jre-8u144-linux-x64.tar.gz
+# s3://repo.toast.sh/elastic/logstash-5.2.1.tar.gz
 
-NAME="java"
+NAME="elastic"
 
-VERSION="8u144"
+VERSION="5.2.1"
 
-FILE="server-jre-${VERSION}-linux-x64"
+FILE="logstash-${VERSION}"
 
-EXT="tar.gz"
+EXT="tar"
 
 ################################################################################
 
@@ -90,49 +82,23 @@ fi
 
 ################################################################################
 
-remove "java-1.7.0-openjdk java-1.7.0-openjdk-headless"
-remove "java-1.8.0-openjdk java-1.8.0-openjdk-headless java-1.8.0-openjdk-devel"
+tar xf ${FILE}.${EXT}
 
-################################################################################
+LOGSTASH_PATH="${FILE}"
+LOGSTASH_HOME="/usr/local/${LOGSTASH_PATH}"
 
-tar xzf ${FILE}.${EXT}
-
-VS1=$(echo ${FILE} | cut -d "-" -f 3)
-VS2="${VS1/u/.0_}"
-
-JAVA_PATH="jdk1.${VS2}"
-JAVA_HOME="/usr/local/${JAVA_PATH}"
-
-if [ ! -d ${JAVA_PATH} ]; then
-    error "Can not found : ${JAVA_PATH}"
+if [ ! -d ${LOGSTASH_PATH} ]; then
+    error "Can not found : ${LOGSTASH_PATH}"
 fi
 
-${SUDO} rm -rf ${JAVA_HOME}
-${SUDO} rm -rf /usr/local/java
+${SUDO} rm -rf ${LOGSTASH_HOME}
+${SUDO} rm -rf /usr/local/logstash
 
-${SUDO} mv ${JAVA_PATH} /usr/local/
-${SUDO} ln -s ${JAVA_HOME} /usr/local/java
+${SUDO} mv ${LOGSTASH_PATH} /usr/local/
+${SUDO} ln -s ${LOGSTASH_HOME} /usr/local/logstash
 
 rm -rf ${FILE}.${EXT}
 
-echo_ "JAVA_HOME=${JAVA_HOME}"
-
-################################################################################
-
-FILE="local_policy.jar.bin"
-download "${FILE}" "${NAME}"
-
-if [ -f ${FILE} ]; then
-    ${SUDO} mv ${FILE} ${JAVA_HOME}/jre/lib/security/local_policy.jar
-fi
-
-################################################################################
-
-FILE="US_export_policy.jar.bin"
-download "${FILE}" "${NAME}"
-
-if [ -f ${FILE} ]; then
-    ${SUDO} mv ${FILE} ${JAVA_HOME}/jre/lib/security/US_export_policy.jar
-fi
+echo_ "LOGSTASH_HOME=${LOGSTASH_HOME}"
 
 ################################################################################
