@@ -78,8 +78,8 @@ toast() {
         v|version)
             version
             ;;
-        g|package)
-            package
+        b|build)
+            build
             ;;
         p|publish)
             publish
@@ -119,10 +119,19 @@ version() {
     version_branch
 }
 
-package() {
+build() {
     pom_parse
 
-    package_docker
+    case ${PARAM1} in
+        docker)
+            build_docker
+            ;;
+        lambda)
+            build_lambda
+            ;;
+        *)
+            build_maven
+    esac
 }
 
 publish() {
@@ -224,7 +233,7 @@ pom_replace() {
         error "Not exist file. [${POM_FILE}]"
     fi
 
-    # TODO new version
+    # TODO get new version
 
     if [ "${VERSION}" == "" ]; then
         error "Not set VERSION."
@@ -281,8 +290,8 @@ upload_repo() {
     aws s3 cp "${PACKAGE_PATH}" "${UPLOAD_PATH}" ${OPTION}
 }
 
-package_docker() {
-    echo_ "package docker..."
+build_docker() {
+    echo_ "build for docker..."
 
     if [ ! -d "target/docker" ]; then
         mkdir "target/docker"
@@ -321,6 +330,39 @@ package_docker() {
     popd
 }
 
+build_lambda() {
+    echo_ "build for lambda... [${PARAM2}]"
+
+    if [ "${PARAM2}" == "" ]; then
+        error "Not set TARGET."
+    fi
+    if [ ! -d "src/main/${PARAM2}" ]; then
+        error "Not set TARGET."
+    fi
+
+    if [ -d target ]; then
+        rm -rf target
+    fi
+
+    mkdir target
+
+    pushd src/main/${PARAM2}
+
+    if [ "${PARAM2}" == "node" ]; then
+        npm install -s
+    fi
+
+    zip -q -r ../../../target/${ARTIFACT_ID}-${VERSION} *
+
+    popd
+}
+
+build_maven() {
+    echo_ "build for maven..."
+
+    mvn clean package -DskipTests
+}
+
 publish_bucket() {
     POM_FILE="pom.xml"
 
@@ -329,7 +371,7 @@ publish_bucket() {
     fi
 
     if [ "${PARAM2}" != "none" ]; then
-        echo_ "publish bucket..."
+        echo_ "publish to bucket... [${BUCKET}]"
 
         upload_repo "zip"
         upload_repo "war"
@@ -340,7 +382,7 @@ publish_bucket() {
 
 publish_beanstalk() {
     if [ ! -d "target/docker" ]; then
-        package_docker
+        build_docker
     fi
 
     publish_bucket
@@ -353,7 +395,7 @@ publish_beanstalk() {
 
     S3_KEY="maven2/${GROUP_PATH}/${ARTIFACT_ID}/${VERSION}/${ARTIFACT_ID}-${VERSION}.zip"
 
-    echo_ "publish beanstalk..."
+    echo_ "publish to beanstalk versions..."
 
     aws elasticbeanstalk create-application-version \
      --application-name "${ARTIFACT_ID}" \
@@ -368,7 +410,7 @@ deploy_beanstalk() {
 
     BRANCH="$(cat .branch)"
 
-    echo_ "deploy beanstalk..."
+    echo_ "deploy to beanstalk... [${ARTIFACT_ID}-${BRANCH}]"
 
     aws elasticbeanstalk update-environment \
      --application-name "${ARTIFACT_ID}" \
@@ -392,6 +434,8 @@ deploy_bucket() {
             return
         fi
     fi
+
+    echo_ "deploy to bucket... [${PARAM2}]"
 
     DEPLOY_PATH="s3://${PARAM2}"
 
@@ -439,7 +483,7 @@ working() {
 
 usage() {
     echo_toast
-    echo_ " Usage: toast {update|config|install|version|package|publish|deploy}"
+    echo_ " Usage: toast {update|config|install|version|build|publish|deploy}"
     echo_bar
 }
 
