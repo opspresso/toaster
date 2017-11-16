@@ -56,11 +56,11 @@ fi
 
 ################################################################################
 
-# s3://repo.toast.sh/tomcat/apache-tomcat-8.0.41.tar.gz
+# s3://repo.toast.sh/tomcat/apache-tomcat-8.0.47.tar.gz
 
 NAME="tomcat"
 
-VERSION="8.0.44"
+VERSION="8.0.47"
 
 FILE="apache-${NAME}-${VERSION}"
 

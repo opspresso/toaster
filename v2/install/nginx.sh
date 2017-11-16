@@ -56,11 +56,11 @@ fi
 
 ################################################################################
 
-# s3://repo.toast.sh/nginx/nginx-1.13.5.tar.gz
+# s3://repo.toast.sh/nginx/nginx-1.13.6.tar.gz
 
 NAME="nginx"
 
-VERSION="1.13.5"
+VERSION="1.13.6"
 
 FILE="${NAME}-${VERSION}"
 
