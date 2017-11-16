@@ -107,8 +107,17 @@ install() {
         java|java8)
             install_java8
             ;;
+        elasticsearch)
+            install_elasticsearch
+            ;;
+        kibana)
+            install_kibana
+            ;;
         logstash)
             install_logstash
+            ;;
+        filebeat)
+            install_filebeat
             ;;
     esac
 }
@@ -186,10 +195,34 @@ install_java8() {
     echo_bar
 }
 
+install_elasticsearch() {
+    echo_ "install elasticsearch..."
+
+    ${SHELL_DIR}/install/elasticsearch.sh
+
+    echo_bar
+}
+
+install_kibana() {
+    echo_ "install kibana..."
+
+    ${SHELL_DIR}/install/kibana.sh
+
+    echo_bar
+}
+
 install_logstash() {
     echo_ "install logstash..."
 
-    ${SHELL_DIR}/install/logstash.sh "${BUCKET}"
+    ${SHELL_DIR}/install/logstash.sh
+
+    echo_bar
+}
+
+install_filebeat() {
+    echo_ "install filebeat..."
+
+    ${SHELL_DIR}/install/filebeat.sh
 
     echo_bar
 }
