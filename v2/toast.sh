@@ -1326,7 +1326,7 @@ init_tomcat8() {
     fi
 }
 
-install_elasticsearch() {
+init_elasticsearch() {
     echo_ "install elasticsearch..."
 
     ${SHELL_DIR}/install/elasticsearch.sh
@@ -1334,7 +1334,7 @@ install_elasticsearch() {
     echo_bar
 }
 
-install_kibana() {
+init_kibana() {
     echo_ "install kibana..."
 
     ${SHELL_DIR}/install/kibana.sh
@@ -1342,7 +1342,7 @@ install_kibana() {
     echo_bar
 }
 
-install_logstash() {
+init_logstash() {
     echo_ "install logstash..."
 
     ${SHELL_DIR}/install/logstash.sh
@@ -1350,7 +1350,7 @@ install_logstash() {
     echo_bar
 }
 
-install_filebeat() {
+init_filebeat() {
     echo_ "install filebeat..."
 
     ${SHELL_DIR}/install/filebeat.sh
