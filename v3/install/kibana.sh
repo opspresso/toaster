@@ -37,13 +37,13 @@ fi
 
 ################################################################################
 
-# https://artifacts.elastic.co/downloads/logstash/logstash-6.0.0.rpm
+# https://artifacts.elastic.co/downloads/kibana/kibana-6.0.0-x86_64.rpm
 
-NAME="logstash"
+NAME="kibana"
 
 VERSION="6.0.0"
 
-FILE="${NAME}-${VERSION}"
+FILE="${NAME}-x86_64-${VERSION}"
 
 EXT="rpm"
 

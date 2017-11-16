@@ -37,13 +37,13 @@ fi
 
 ################################################################################
 
-# https://artifacts.elastic.co/downloads/logstash/logstash-6.0.0.rpm
+# https://artifacts.elastic.co/downloads/beats/filebeat/filebeat-6.0.0-x86_64.rpm
 
-NAME="logstash"
+NAME="filebeat"
 
 VERSION="6.0.0"
 
-FILE="${NAME}-${VERSION}"
+FILE="${NAME}-${VERSION}-x86_64"
 
 EXT="rpm"
 
@@ -53,7 +53,7 @@ if [ -f ${FILE}.${EXT} ]; then
     exit 0
 fi
 
-wget -N https://artifacts.elastic.co/downloads/${NAME}/${FILE}.${EXT}
+wget -N https://artifacts.elastic.co/downloads/beats/${NAME}/${FILE}.${EXT}
 
 if [ ! -f ${FILE}.${EXT} ]; then
     error "Can not download : ${FILE}.${EXT}"
