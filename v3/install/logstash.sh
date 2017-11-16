@@ -37,44 +37,23 @@ fi
 
 ################################################################################
 
-download() {
-    _FILE="$1"
-    _PATH="$2"
+# https://artifacts.elastic.co/downloads/logstash/logstash-6.0.0.rpm
 
-    if [ "${REPO}" != "" ]; then
-        URL="s3://${REPO}/${_PATH}/${_FILE}"
+NAME="logstash"
 
-        echo_ "download... [${URL}]"
+VERSION="6.0.0"
 
-        aws s3 cp ${URL} ./
-    fi
+FILE="${NAME}-${VERSION}"
 
-    if [ ! -f ${_FILE} ]; then
-        URL="http://repo.toast.sh/${_PATH}/${_FILE}"
-
-        echo_ "download... [${URL}]"
-
-        curl -O ${URL}
-    fi
-}
+EXT="rpm"
 
 ################################################################################
 
-# s3://repo.toast.sh/elastic/logstash-5.2.1.tar.gz
+if [ -f ${FILE}.${EXT} ]; then
+    exit 0
+fi
 
-NAME="elastic"
-
-VERSION="5.2.1"
-
-FILE="logstash-${VERSION}"
-
-EXT="tar"
-
-################################################################################
-
-REPO="$1"
-
-download "${FILE}.${EXT}" "${NAME}"
+wget -N https://artifacts.elastic.co/downloads/${NAME}/${FILE}.${EXT}
 
 if [ ! -f ${FILE}.${EXT} ]; then
     error "Can not download : ${FILE}.${EXT}"
@@ -82,23 +61,6 @@ fi
 
 ################################################################################
 
-tar xf ${FILE}.${EXT}
-
-LOGSTASH_PATH="${FILE}"
-LOGSTASH_HOME="/usr/local/${LOGSTASH_PATH}"
-
-if [ ! -d ${LOGSTASH_PATH} ]; then
-    error "Can not found : ${LOGSTASH_PATH}"
-fi
-
-${SUDO} rm -rf ${LOGSTASH_HOME}
-${SUDO} rm -rf /usr/local/logstash
-
-${SUDO} mv ${LOGSTASH_PATH} /usr/local/
-${SUDO} ln -s ${LOGSTASH_HOME} /usr/local/logstash
-
-rm -rf ${FILE}.${EXT}
-
-echo_ "LOGSTASH_HOME=${LOGSTASH_HOME}"
+${SUDO} rpm -Uvh ${FILE}.${EXT}
 
 ################################################################################
