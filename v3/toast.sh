@@ -448,9 +448,15 @@ deploy_beanstalk() {
 
     echo_ "deploy to beanstalk... [${ARTIFACT_ID}-${BRANCH}]"
 
+    if [ "${PARAM2}" == "" ]; then
+        ENV_NAME="${ARTIFACT_ID}-${BRANCH}"
+    else
+        ENV_NAME="${PARAM2}"
+    fi
+
     aws elasticbeanstalk update-environment \
         --application-name "${ARTIFACT_ID}" \
-        --environment-name "${ARTIFACT_ID}-${BRANCH}" \
+        --environment-name "${ENV_NAME}" \
         --version-label "${VERSION}-${STAMP}"
 }
 
