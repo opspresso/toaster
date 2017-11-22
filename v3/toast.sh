@@ -162,11 +162,11 @@ deploy() {
         eb|beanstalk)
             deploy_beanstalk
             ;;
-        ld|lambda)
-            deploy_lambda
-            ;;
         bk|bucket)
             deploy_bucket
+            ;;
+        lambda)
+            deploy_lambda
             ;;
     esac
 }
@@ -461,8 +461,14 @@ deploy_lambda() {
 
     PACKAGE_PATH="target/${ARTIFACT_ID}-${VERSION}.zip"
 
+    if [ "${PARAM2}" == "" ]; then
+        FUNCTION_NAME="${ARTIFACT_ID}-${BRANCH}"
+    else
+        FUNCTION_NAME="${PARAM2}"
+    fi
+
     aws lambda update-function-code \
-        --function-name "${ARTIFACT_ID}-${BRANCH}" \
+        --function-name "${FUNCTION_NAME}" \
         --zip-file "fileb://${PACKAGE_PATH}"
 }
 
