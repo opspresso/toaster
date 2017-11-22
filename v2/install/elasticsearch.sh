@@ -37,9 +37,9 @@ fi
 
 ################################################################################
 
-# https://artifacts.elastic.co/downloads/logstash/logstash-6.0.0.rpm
+# https://artifacts.elastic.co/downloads/elasticsearch/elasticsearch-6.0.0.rpm
 
-NAME="logstash"
+NAME="elasticsearch"
 
 VERSION="6.0.0"
 

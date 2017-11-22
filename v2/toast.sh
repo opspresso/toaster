@@ -281,8 +281,17 @@ init() {
         tomcat|tomcat8)
             init_tomcat8
             ;;
+        elasticsearch)
+            init_elasticsearch
+            ;;
+        kibana)
+            init_kibana
+            ;;
         logstash)
             init_logstash
+            ;;
+        filebeat)
+            init_filebeat
             ;;
         mysql)
             init_mysql55
@@ -1317,28 +1326,36 @@ init_tomcat8() {
     fi
 }
 
+init_elasticsearch() {
+    echo_ "init elasticsearch..."
+
+    ${SHELL_DIR}/install/elasticsearch.sh
+
+    echo_bar
+}
+
+init_kibana() {
+    echo_ "init kibana..."
+
+    ${SHELL_DIR}/install/kibana.sh
+
+    echo_bar
+}
+
 init_logstash() {
-    make_dir "${APPS_DIR}"
+    echo_ "init logstash..."
 
-    if [ ! -f "${SHELL_DIR}/.config_logstash" ]; then
-        echo_ "init logstash..."
+    ${SHELL_DIR}/install/logstash.sh
 
-        ${SHELL_DIR}/install/logstash.sh "${REPO_PATH}"
+    echo_bar
+}
 
-        LOGSTASH_HOME="${APPS_DIR}/logstash"
+init_filebeat() {
+    echo_ "init filebeat..."
 
-        if [ ! -d ${LOGSTASH_HOME} ]; then
-            warning "Can not found : LOGSTASH_HOME=${LOGSTASH_HOME}"
-            exit 1
-        fi
+    ${SHELL_DIR}/install/filebeat.sh
 
-        mod_env "LOGSTASH_HOME" "${LOGSTASH_HOME}"
-
-        cp -rf "${SHELL_DIR}/package/elastic/logstash-apache.conf" "${LOGSTASH_HOME}/logstash.conf"
-
-        echo "LOGSTASH_HOME=${LOGSTASH_HOME}"
-        echo "LOGSTASH_HOME=${LOGSTASH_HOME}" > "${LOGSTASH_HOME}/.config_logstash"
-    fi
+    echo_bar
 }
 
 init_mysql55() {

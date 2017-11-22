@@ -56,11 +56,11 @@ fi
 
 ################################################################################
 
-# s3://repo.toast.sh/maven/apache-maven-3.5.0-bin.tar.gz
+# s3://repo.toast.sh/maven/apache-maven-3.5.2-bin.tar.gz
 
 NAME="maven"
 
-VERSION="3.5.0"
+VERSION="3.5.2"
 
 FILE="apache-${NAME}-${VERSION}-bin"
 

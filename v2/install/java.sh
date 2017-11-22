@@ -56,11 +56,11 @@ fi
 
 ################################################################################
 
-# s3://repo.toast.sh/java/server-jre-8u144-linux-x64.tar.gz
+# s3://repo.toast.sh/java/server-jre-8u152-linux-x64.tar.gz
 
 NAME="java"
 
-VERSION="8u144"
+VERSION="8u152"
 
 FILE="server-jre-${VERSION}-linux-x64"
 
