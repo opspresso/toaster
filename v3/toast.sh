@@ -388,7 +388,7 @@ build_lambda() {
         npm install -s
     fi
 
-    zip -q -r ../../../target/${ARTIFACT_ID}-${VERSION} *
+    zip -q -r ../../../target/${ARTIFACT_ID}-${VERSION}.zip *
 
     popd
 }
