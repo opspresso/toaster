@@ -162,6 +162,9 @@ deploy() {
         eb|beanstalk)
             deploy_beanstalk
             ;;
+        ld|lambda)
+            deploy_lambda
+            ;;
         bk|bucket)
             deploy_bucket
             ;;
@@ -431,11 +434,11 @@ publish_beanstalk() {
     echo_ "publish to beanstalk versions..."
 
     aws elasticbeanstalk create-application-version \
-     --application-name "${ARTIFACT_ID}" \
-     --version-label "${VERSION}-${STAMP}" \
-     --description "${BRANCH} (${GIT_ID})" \
-     --source-bundle S3Bucket="${BUCKET}",S3Key="${S3_KEY}" \
-     --auto-create-application
+        --application-name "${ARTIFACT_ID}" \
+        --version-label "${VERSION}-${STAMP}" \
+        --description "${BRANCH} (${GIT_ID})" \
+        --source-bundle S3Bucket="${BUCKET}",S3Key="${S3_KEY}" \
+        --auto-create-application
 }
 
 deploy_beanstalk() {
@@ -446,9 +449,21 @@ deploy_beanstalk() {
     echo_ "deploy to beanstalk... [${ARTIFACT_ID}-${BRANCH}]"
 
     aws elasticbeanstalk update-environment \
-     --application-name "${ARTIFACT_ID}" \
-     --environment-name "${ARTIFACT_ID}-${BRANCH}" \
-     --version-label "${VERSION}-${STAMP}"
+        --application-name "${ARTIFACT_ID}" \
+        --environment-name "${ARTIFACT_ID}-${BRANCH}" \
+        --version-label "${VERSION}-${STAMP}"
+}
+
+deploy_lambda() {
+    BRANCH="$(cat .branch)"
+
+    echo_ "deploy to lambda... [${ARTIFACT_ID}-${BRANCH}]"
+
+    PACKAGE_PATH="target/${ARTIFACT_ID}-${VERSION}.zip"
+
+    aws lambda update-function-code \
+        --function-name "${ARTIFACT_ID}-${BRANCH}" \
+        --zip-file "fileb://${PACKAGE_PATH}"
 }
 
 deploy_bucket() {
@@ -468,9 +483,9 @@ deploy_bucket() {
         fi
     fi
 
-    echo_ "deploy to bucket... [${PARAM2}]"
-
     DEPLOY_PATH="s3://${PARAM2}"
+
+    echo_ "deploy to bucket... [${DEPLOY_PATH}]"
 
     OPTION="--acl public-read"
 
