@@ -138,8 +138,9 @@ build() {
         lambda)
             build_lambda
             ;;
-        *)
+        maven)
             build_maven
+            ;;
     esac
 }
 
@@ -150,8 +151,9 @@ publish() {
         eb|beanstalk)
             publish_beanstalk
             ;;
-        *)
+        bk|bucket)
             publish_bucket
+            ;;
     esac
 }
 
