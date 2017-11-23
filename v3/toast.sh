@@ -234,6 +234,8 @@ version_branch() {
     BRANCH="${PARAM1}"
     TAG="${PARAM2}"
 
+    echo_ "version... [${BRANCH}] [${TAG}]"
+
     if [ "${BRANCH}" == "" ]; then
         BRANCH="master"
     fi
