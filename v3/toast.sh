@@ -230,6 +230,22 @@ install_filebeat() {
     echo_bar
 }
 
+version_branch() {
+    BRANCH="${PARAM1}"
+    TAG="${PARAM2}"
+
+    if [ "${BRANCH}" == "" ]; then
+        BRANCH="master"
+    fi
+
+    echo "${BRANCH}" > .branch
+    echo_ "branch=${BRANCH}"
+
+    if [ "${BRANCH}" == "master" ]; then
+        pom_replace
+    fi
+}
+
 pom_parse() {
     POM_FILE="pom.xml"
 
@@ -269,7 +285,10 @@ pom_replace() {
         error "Not exist file. [${POM_FILE}]"
     fi
 
-    # TODO get new version
+    # get version from tag
+    if [ "${TAG}" != "" ]; then
+        VERSION="${TAG}"
+    fi
 
     if [ "${VERSION}" == "" ]; then
         error "Not set VERSION."
@@ -286,21 +305,6 @@ pom_replace() {
     sed "1,10d" ${POM_FILE} >> ${TEMP_FILE}
 
     cp -rf ${TEMP_FILE} ${POM_FILE}
-}
-
-version_branch() {
-    BRANCH="${PARAM1}"
-
-    if [ "${BRANCH}" == "" ]; then
-        BRANCH="master"
-    fi
-
-    echo "${BRANCH}" > .branch
-    echo_ "branch=${BRANCH}"
-
-    if [ "${BRANCH}" == "master" ]; then
-        pom_replace
-    fi
 }
 
 upload_repo() {
