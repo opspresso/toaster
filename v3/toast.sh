@@ -138,8 +138,9 @@ build() {
         lambda)
             build_lambda
             ;;
-        *)
+        maven)
             build_maven
+            ;;
     esac
 }
 
@@ -150,8 +151,9 @@ publish() {
         eb|beanstalk)
             publish_beanstalk
             ;;
-        *)
+        bk|bucket)
             publish_bucket
+            ;;
     esac
 }
 
@@ -162,11 +164,11 @@ deploy() {
         eb|beanstalk)
             deploy_beanstalk
             ;;
-        ld|lambda)
-            deploy_lambda
-            ;;
         bk|bucket)
             deploy_bucket
+            ;;
+        lambda)
+            deploy_lambda
             ;;
     esac
 }
@@ -230,6 +232,24 @@ install_filebeat() {
     echo_bar
 }
 
+version_branch() {
+    BRANCH="${PARAM1}"
+    TAG="${PARAM2}"
+
+    echo_ "version... [${BRANCH}] [${TAG}]"
+
+    if [ "${BRANCH}" == "" ]; then
+        BRANCH="master"
+    fi
+
+    echo "${BRANCH}" > .branch
+    echo_ "branch=${BRANCH}"
+
+    if [ "${BRANCH}" == "master" ]; then
+        pom_replace
+    fi
+}
+
 pom_parse() {
     POM_FILE="pom.xml"
 
@@ -269,7 +289,10 @@ pom_replace() {
         error "Not exist file. [${POM_FILE}]"
     fi
 
-    # TODO get new version
+    # get version from tag
+    if [ "${TAG}" != "" ]; then
+        VERSION="${TAG}"
+    fi
 
     if [ "${VERSION}" == "" ]; then
         error "Not set VERSION."
@@ -286,21 +309,6 @@ pom_replace() {
     sed "1,10d" ${POM_FILE} >> ${TEMP_FILE}
 
     cp -rf ${TEMP_FILE} ${POM_FILE}
-}
-
-version_branch() {
-    BRANCH="${PARAM1}"
-
-    if [ "${BRANCH}" == "" ]; then
-        BRANCH="master"
-    fi
-
-    echo "${BRANCH}" > .branch
-    echo_ "branch=${BRANCH}"
-
-    if [ "${BRANCH}" == "master" ]; then
-        pom_replace
-    fi
 }
 
 upload_repo() {
@@ -352,6 +360,13 @@ build_docker() {
         FILES="${FILES} Dockerrun.aws.json"
     fi
 
+    # Procfile
+    if [ -f "Procfile" ]; then
+        cp -rf "Procfile" "target/docker/Procfile"
+
+        FILES="${FILES} Procfile"
+    fi
+
     # .ebextensions
     if [ -d ".ebextensions" ]; then
         cp -rf ".ebextensions" "target/docker/.ebextensions"
@@ -388,7 +403,7 @@ build_lambda() {
         npm install -s
     fi
 
-    zip -q -r ../../../target/${ARTIFACT_ID}-${VERSION} *
+    zip -q -r ../../../target/${ARTIFACT_ID}-${VERSION}.zip *
 
     popd
 }
@@ -448,9 +463,15 @@ deploy_beanstalk() {
 
     echo_ "deploy to beanstalk... [${ARTIFACT_ID}-${BRANCH}]"
 
+    if [ "${PARAM2}" == "" ]; then
+        ENV_NAME="${ARTIFACT_ID}-${BRANCH}"
+    else
+        ENV_NAME="${PARAM2}"
+    fi
+
     aws elasticbeanstalk update-environment \
         --application-name "${ARTIFACT_ID}" \
-        --environment-name "${ARTIFACT_ID}-${BRANCH}" \
+        --environment-name "${ENV_NAME}" \
         --version-label "${VERSION}-${STAMP}"
 }
 
@@ -461,8 +482,14 @@ deploy_lambda() {
 
     PACKAGE_PATH="target/${ARTIFACT_ID}-${VERSION}.zip"
 
+    if [ "${PARAM2}" == "" ]; then
+        FUNCTION_NAME="${ARTIFACT_ID}-${BRANCH}"
+    else
+        FUNCTION_NAME="${PARAM2}"
+    fi
+
     aws lambda update-function-code \
-        --function-name "${ARTIFACT_ID}-${BRANCH}" \
+        --function-name "${FUNCTION_NAME}" \
         --zip-file "fileb://${PACKAGE_PATH}"
 }
 
