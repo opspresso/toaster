@@ -360,6 +360,13 @@ build_docker() {
         FILES="${FILES} Dockerrun.aws.json"
     fi
 
+    # Procfile
+    if [ -f "Procfile" ]; then
+        cp -rf "Procfile" "target/docker/Procfile"
+
+        FILES="${FILES} Procfile"
+    fi
+
     # .ebextensions
     if [ -d ".ebextensions" ]; then
         cp -rf ".ebextensions" "target/docker/.ebextensions"
