@@ -37,30 +37,68 @@ fi
 
 ################################################################################
 
-# https://artifacts.elastic.co/downloads/kibana/kibana-6.0.0-x86_64.rpm
+download() {
+    _FILE="$1"
+    _PATH="$2"
 
-NAME="kibana"
+    if [ "${REPO}" != "" ]; then
+        URL="s3://${REPO}/${_PATH}/${_FILE}"
 
-VERSION="6.0.0"
+        echo_ "download... [${URL}]"
 
-FILE="${NAME}-x86_64-${VERSION}"
+        aws s3 cp ${URL} ./
+    fi
 
-EXT="rpm"
+    if [ ! -f ${_FILE} ]; then
+        URL="http://repo.toast.sh/${_PATH}/${_FILE}"
+
+        echo_ "download... [${URL}]"
+
+        curl -O ${URL}
+    fi
+}
 
 ################################################################################
 
-if [ -f ${FILE}.${EXT} ]; then
+# s3://repo.toast.sh/elastic/kibana-6.0.0-x86_64.rpm
+
+REPO="$1"
+
+NAME="elastic"
+
+FILE="kibana-6.0.0-x86_64.rpm"
+
+################################################################################
+
+if [ -f ${FILE} ]; then
     exit 0
 fi
 
-wget -N https://artifacts.elastic.co/downloads/${NAME}/${FILE}.${EXT}
+download "${FILE}" "${NAME}"
 
-if [ ! -f ${FILE}.${EXT} ]; then
-    error "Can not download : ${FILE}.${EXT}"
+if [ ! -f ${FILE} ]; then
+    error "Can not download : ${FILE}"
 fi
 
 ################################################################################
 
-${SUDO} rpm -Uvh ${FILE}.${EXT}
+${SUDO} rpm -Uvh ${FILE}
+
+# /usr/share/kibana/bin/kibana-plugin install x-pack
+
+# /etc/kibana/kibana.yml
+
+IP=`ip addr | grep "inet " | grep brd | awk '{print $2}' | awk -F/ '{print $1}'`
+
+${SUDO} echo "server.port: 5601" >> kibana.yml
+${SUDO} echo "server.host: \"${IP}\"" >> kibana.yml
+${SUDO} echo "elasticsearch.url: \"http://localhost:9200\"" >> kibana.yml
+
+${SUDO} mv -f /etc/kibana/kibana.yml /etc/kibana/kibana-old.yml
+${SUDO} mv -f kibana.yml /etc/kibana/kibana.yml
+
+${SUDO} chkconfig --add kibana
+
+${SUDO} service kibana start
 
 ################################################################################

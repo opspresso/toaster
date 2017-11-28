@@ -1254,20 +1254,12 @@ init_java8() {
     if [ ! -f "${SHELL_DIR}/.config_java" ]; then
         echo_ "init java..."
 
-        service_remove "java-1.7.0-openjdk java-1.7.0-openjdk-headless"
-        service_remove "java-1.8.0-openjdk java-1.8.0-openjdk-headless java-1.8.0-openjdk-devel"
+        ${SHELL_DIR}/install/java8.sh
 
-        ${SHELL_DIR}/install/java.sh "${REPO_PATH}"
+        JAVA_HOME="/usr/java/default"
 
-        JAVA_HOME="/usr/local/java"
-
-        if [ ! -d ${JAVA_HOME} ]; then
-            warning "Can not found : JAVA_HOME=${JAVA_HOME}"
-            exit 1
-        fi
-
-        add_path "${JAVA_HOME}/bin"
-        mod_env "JAVA_HOME" "${JAVA_HOME}"
+        #add_path "${JAVA_HOME}/bin"
+        #mod_env "JAVA_HOME" "${JAVA_HOME}"
 
         echo "JAVA_HOME=${JAVA_HOME}"
         echo "JAVA_HOME=${JAVA_HOME}" > "${SHELL_DIR}/.config_java"

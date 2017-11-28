@@ -58,15 +58,23 @@ download() {
     fi
 }
 
+remove() {
+    if [ "${OS_TYPE}" == "Ubuntu" ]; then
+        sudo apt-get remove -y $1
+    else
+        sudo yum remove -y $1
+    fi
+}
+
 ################################################################################
 
-# s3://repo.toast.sh/elastic/filebeat-6.0.0-x86_64.rpm
+# s3://repo.toast.sh/java/jdk-8u152-linux-x64.rpm
 
 REPO="$1"
 
-NAME="elastic"
+NAME="java"
 
-FILE="filebeat-6.0.0-x86_64.rpm"
+FILE="jdk-8u152-linux-x64.rpm"
 
 ################################################################################
 
@@ -82,6 +90,29 @@ fi
 
 ################################################################################
 
+remove "java-1.7.0-openjdk java-1.7.0-openjdk-headless"
+remove "java-1.8.0-openjdk java-1.8.0-openjdk-headless java-1.8.0-openjdk-devel"
+
+################################################################################
+
 ${SUDO} rpm -Uvh ${FILE}
+
+################################################################################
+
+FILE="local_policy.jar.bin"
+download "${FILE}" "${NAME}"
+
+if [ -f ${FILE} ]; then
+    ${SUDO} mv ${FILE} /usr/java/default/jre/lib/security/local_policy.jar
+fi
+
+################################################################################
+
+FILE="US_export_policy.jar.bin"
+download "${FILE}" "${NAME}"
+
+if [ -f ${FILE} ]; then
+    ${SUDO} mv ${FILE} /usr/java/default/jre/lib/security/US_export_policy.jar
+fi
 
 ################################################################################

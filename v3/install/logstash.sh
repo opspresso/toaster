@@ -84,4 +84,8 @@ fi
 
 ${SUDO} rpm -Uvh ${FILE}
 
+# /etc/logstash/conf.d
+
+echo "nohup /usr/share/logstash/bin/logstash -f logstash.conf &"
+
 ################################################################################

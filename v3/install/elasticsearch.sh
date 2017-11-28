@@ -84,8 +84,8 @@ fi
 
 ${SUDO} rpm -Uvh ${FILE}
 
-${SUDO} service elasticsearch start
+${SUDO} chkconfig --add elasticsearch
 
-${SUDO} chkconfig elasticsearch on
+${SUDO} service elasticsearch start
 
 ################################################################################

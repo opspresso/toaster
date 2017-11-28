@@ -84,4 +84,21 @@ fi
 
 ${SUDO} rpm -Uvh ${FILE}
 
+# /usr/share/kibana/bin/kibana-plugin install x-pack
+
+# /etc/kibana/kibana.yml
+
+IP=`ip addr | grep "inet " | grep brd | awk '{print $2}' | awk -F/ '{print $1}'`
+
+${SUDO} echo "server.port: 5601" >> kibana.yml
+${SUDO} echo "server.host: \"${IP}\"" >> kibana.yml
+${SUDO} echo "elasticsearch.url: \"http://localhost:9200\"" >> kibana.yml
+
+${SUDO} mv -f /etc/kibana/kibana.yml /etc/kibana/kibana-old.yml
+${SUDO} mv -f kibana.yml /etc/kibana/kibana.yml
+
+${SUDO} chkconfig --add kibana
+
+${SUDO} service kibana start
+
 ################################################################################
