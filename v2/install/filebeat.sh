@@ -37,30 +37,51 @@ fi
 
 ################################################################################
 
-# https://artifacts.elastic.co/downloads/beats/filebeat/filebeat-6.0.0-x86_64.rpm
+download() {
+    _FILE="$1"
+    _PATH="$2"
 
-NAME="filebeat"
+    if [ "${REPO}" != "" ]; then
+        URL="s3://${REPO}/${_PATH}/${_FILE}"
 
-VERSION="6.0.0"
+        echo_ "download... [${URL}]"
 
-FILE="${NAME}-${VERSION}-x86_64"
+        aws s3 cp ${URL} ./
+    fi
 
-EXT="rpm"
+    if [ ! -f ${_FILE} ]; then
+        URL="http://repo.toast.sh/${_PATH}/${_FILE}"
+
+        echo_ "download... [${URL}]"
+
+        curl -O ${URL}
+    fi
+}
 
 ################################################################################
 
-if [ -f ${FILE}.${EXT} ]; then
+# s3://repo.toast.sh/elastic/filebeat-6.0.0-x86_64.rpm
+
+REPO="$1"
+
+NAME="elastic"
+
+FILE="filebeat-6.0.0-x86_64.rpm"
+
+################################################################################
+
+if [ -f ${FILE} ]; then
     exit 0
 fi
 
-wget -N https://artifacts.elastic.co/downloads/beats/${NAME}/${FILE}.${EXT}
+download "${FILE}" "${NAME}"
 
-if [ ! -f ${FILE}.${EXT} ]; then
-    error "Can not download : ${FILE}.${EXT}"
+if [ ! -f ${FILE} ]; then
+    error "Can not download : ${FILE}"
 fi
 
 ################################################################################
 
-${SUDO} rpm -Uvh ${FILE}.${EXT}
+${SUDO} rpm -Uvh ${FILE}
 
 ################################################################################
