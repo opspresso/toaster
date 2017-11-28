@@ -68,24 +68,24 @@ remove() {
 
 ################################################################################
 
-# s3://repo.toast.sh/java/server-jre-8u152-linux-x64.tar.gz
-
-NAME="java"
-
-VERSION="8u152"
-
-FILE="server-jre-${VERSION}-linux-x64"
-
-EXT="tar.gz"
-
-################################################################################
+# s3://repo.toast.sh/java/jdk-8u152-linux-x64.rpm
 
 REPO="$1"
 
-download "${FILE}.${EXT}" "${NAME}"
+NAME="java"
 
-if [ ! -f ${FILE}.${EXT} ]; then
-    error "Can not download : ${FILE}.${EXT}"
+FILE="jdk-8u152-linux-x64.rpm"
+
+################################################################################
+
+if [ -f ${FILE} ]; then
+    exit 0
+fi
+
+download "${FILE}" "${NAME}"
+
+if [ ! -f ${FILE} ]; then
+    error "Can not download : ${FILE}"
 fi
 
 ################################################################################
@@ -95,27 +95,7 @@ remove "java-1.8.0-openjdk java-1.8.0-openjdk-headless java-1.8.0-openjdk-devel"
 
 ################################################################################
 
-tar xzf ${FILE}.${EXT}
-
-VS1=$(echo ${FILE} | cut -d "-" -f 3)
-VS2="${VS1/u/.0_}"
-
-JAVA_PATH="jdk1.${VS2}"
-JAVA_HOME="/usr/local/${JAVA_PATH}"
-
-if [ ! -d ${JAVA_PATH} ]; then
-    error "Can not found : ${JAVA_PATH}"
-fi
-
-${SUDO} rm -rf ${JAVA_HOME}
-${SUDO} rm -rf /usr/local/java
-
-${SUDO} mv ${JAVA_PATH} /usr/local/
-${SUDO} ln -s ${JAVA_HOME} /usr/local/java
-
-rm -rf ${FILE}.${EXT}
-
-echo_ "JAVA_HOME=${JAVA_HOME}"
+${SUDO} rpm -Uvh ${FILE}
 
 ################################################################################
 
@@ -123,7 +103,7 @@ FILE="local_policy.jar.bin"
 download "${FILE}" "${NAME}"
 
 if [ -f ${FILE} ]; then
-    ${SUDO} mv ${FILE} ${JAVA_HOME}/jre/lib/security/local_policy.jar
+    ${SUDO} mv ${FILE} /usr/java/default/jre/lib/security/local_policy.jar
 fi
 
 ################################################################################
@@ -132,7 +112,7 @@ FILE="US_export_policy.jar.bin"
 download "${FILE}" "${NAME}"
 
 if [ -f ${FILE} ]; then
-    ${SUDO} mv ${FILE} ${JAVA_HOME}/jre/lib/security/US_export_policy.jar
+    ${SUDO} mv ${FILE} /usr/java/default/jre/lib/security/US_export_policy.jar
 fi
 
 ################################################################################
