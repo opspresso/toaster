@@ -6,12 +6,12 @@ echo_() {
 }
 
 success() {
-    echo -e "$(tput setaf 2)$1$(tput sgr0)"
+    echo -e "$1"
     echo "$1" >> /tmp/toast.log
 }
 
 error() {
-    echo -e "$(tput setaf 1)$1$(tput sgr0)"
+    echo -e "$1"
     echo "$1" >> /tmp/toast.log
     exit 1
 }
