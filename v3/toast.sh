@@ -233,42 +233,6 @@ install_filebeat() {
     echo_bar
 }
 
-version_branch() {
-    BRANCH="${PARAM1}"
-    TAG="${PARAM2}"
-
-    echo_ "version branch... [${BRANCH}] [${TAG}]"
-
-    if [ "${BRANCH}" == "" ]; then
-        BRANCH="master"
-    fi
-
-    echo "${BRANCH}" > .branch
-    echo_ "branch=${BRANCH}"
-
-    if [ "${BRANCH}" == "master" ]; then
-        pom_replace
-    fi
-}
-
-version_filebeat() {
-    echo_ "version filebeat..."
-
-    FILEBEAT=".ebextensions/01-filebeat.config"
-
-    if [ ! -f "${FILEBEAT}" ]; then
-        return
-    fi
-
-    TEMP_FILE="/tmp/01-filebeat.config"
-
-    sed "s/PRODUCT/ARTIFACT_ID/g" ${FILEBEAT} > ${TEMP_FILE}
-    cp -rf ${TEMP_FILE} ${FILEBEAT}
-
-    sed "s/VERSION/VERSION/g" ${FILEBEAT} > ${TEMP_FILE}
-    cp -rf ${TEMP_FILE} ${FILEBEAT}
-}
-
 pom_parse() {
     POM_FILE="pom.xml"
 
@@ -299,6 +263,42 @@ pom_parse() {
     echo_ "artifactId=${ARTIFACT_ID}"
     echo_ "version=${VERSION}"
     echo_ "packaging=${PACKAGING}"
+}
+
+version_branch() {
+    BRANCH="${PARAM1}"
+    TAG="${PARAM2}"
+
+    echo_ "version branch... [${BRANCH}] [${TAG}]"
+
+    if [ "${BRANCH}" == "" ]; then
+        BRANCH="master"
+    fi
+
+    echo "${BRANCH}" > .branch
+    echo_ "branch=${BRANCH}"
+
+    if [ "${BRANCH}" == "master" ]; then
+        pom_replace
+    fi
+}
+
+version_filebeat() {
+    echo_ "version filebeat..."
+
+    FILEBEAT=".ebextensions/01-filebeat.config"
+
+    if [ ! -f "${FILEBEAT}" ]; then
+        return
+    fi
+
+    TEMP_FILE="/tmp/01-filebeat.config"
+
+    sed "s/PRODUCT/$ARTIFACT_ID/g" ${FILEBEAT} > ${TEMP_FILE}
+    cp -rf ${TEMP_FILE} ${FILEBEAT}
+
+    sed "s/VERSION/$VERSION/g" ${FILEBEAT} > ${TEMP_FILE}
+    cp -rf ${TEMP_FILE} ${FILEBEAT}
 }
 
 pom_replace() {
