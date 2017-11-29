@@ -126,6 +126,7 @@ version() {
     pom_parse
 
     version_branch
+    version_filebeat
 }
 
 build() {
@@ -236,7 +237,7 @@ version_branch() {
     BRANCH="${PARAM1}"
     TAG="${PARAM2}"
 
-    echo_ "version... [${BRANCH}] [${TAG}]"
+    echo_ "version branch... [${BRANCH}] [${TAG}]"
 
     if [ "${BRANCH}" == "" ]; then
         BRANCH="master"
@@ -248,6 +249,24 @@ version_branch() {
     if [ "${BRANCH}" == "master" ]; then
         pom_replace
     fi
+}
+
+version_filebeat() {
+    echo_ "version filebeat..."
+
+    FILEBEAT=".ebextensions/01-filebeat.config"
+
+    if [ ! -f "${FILEBEAT}" ]; then
+        return
+    fi
+
+    TEMP_FILE="/tmp/01-filebeat.config"
+
+    sed "s/PRODUCT/ARTIFACT_ID/g" ${FILEBEAT} > ${TEMP_FILE}
+    cp -rf ${TEMP_FILE} ${FILEBEAT}
+
+    sed "s/VERSION/VERSION/g" ${FILEBEAT} > ${TEMP_FILE}
+    cp -rf ${TEMP_FILE} ${FILEBEAT}
 }
 
 pom_parse() {
