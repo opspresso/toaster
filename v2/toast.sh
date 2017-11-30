@@ -446,14 +446,16 @@ health() {
         TOAST=""
     fi
 
-    UPTIME="$(uptime)"
-    CPU="$(grep 'cpu ' /proc/stat | awk '{usage=($2+$4)*100/($2+$4+$5)} END {print usage}')"
+    CPU_USAGE="$(grep 'cpu ' /proc/stat | awk '{usage=($2+$4)*100/($2+$4+$5)} END {print usage}')"
 
-    #echo_ "server uptime    [${UPTIME}]"
-    #echo_ "server cpu usage [${CPU}]"
+    DISK_TOT="$(df -P | grep -v ^Filesystem | awk '{sum += $2} END { print sum; }')"
+    DISK_USE="$(df -P | grep -v ^Filesystem | awk '{sum += $3} END { print sum; }')"
+    DISK_PER="$(echo "100 * $DISK_USE / $DISK_TOT" | bc -l)"
+
+    UPTIME="$(uptime)"
 
     URL="${TOAST_URL}/server/health/${SNO}"
-    RES=$(curl -s --data "org=${ORG}&token=${TOKEN}&id=${UUID}&cpu=${CPU}&os=${OS_FULL}&uptime=${UPTIME}&toast=${TOAST}" "${URL}")
+    RES=$(curl -s --data "org=${ORG}&token=${TOKEN}&id=${UUID}&cpu=${CPU_USAGE}&hdd=${DISK_PER}&os=${OS_FULL}&uptime=${UPTIME}&toast=${TOAST}" "${URL}")
     ARR=(${RES})
 
     if [ "${ARR[0]}" == "OK" ]; then
