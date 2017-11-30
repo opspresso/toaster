@@ -446,7 +446,7 @@ health() {
         TOAST=""
     fi
 
-    CPU_USAGE="$(grep 'cpu ' /proc/stat | awk '{usage=($2+$4)*100/($2+$4+$5)} END {print usage}')"
+    CPU="$(grep 'cpu ' /proc/stat | awk '{usage=($2+$4)*100/($2+$4+$5)} END {print usage}')"
 
     DISK_TOT="$(df -P | grep -v ^Filesystem | awk '{sum += $2} END { print sum; }')"
     DISK_USE="$(df -P | grep -v ^Filesystem | awk '{sum += $3} END { print sum; }')"
@@ -455,7 +455,7 @@ health() {
     UPTIME="$(uptime)"
 
     URL="${TOAST_URL}/server/health/${SNO}"
-    RES=$(curl -s --data "org=${ORG}&token=${TOKEN}&id=${UUID}&cpu=${CPU_USAGE}&hdd=${DISK_PER}&os=${OS_FULL}&uptime=${UPTIME}&toast=${TOAST}" "${URL}")
+    RES=$(curl -s --data "org=${ORG}&token=${TOKEN}&id=${UUID}&cpu=${CPU}&hdd=${DISK_PER}&os=${OS_FULL}&uptime=${UPTIME}&toast=${TOAST}" "${URL}")
     ARR=(${RES})
 
     if [ "${ARR[0]}" == "OK" ]; then
