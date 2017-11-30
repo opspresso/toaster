@@ -1,11 +1,11 @@
 #!/bin/bash
 
 success() {
-    echo -e "$(tput setaf 2)$1$(tput sgr0)"
+    echo -e "$1"
 }
 
 warning() {
-    echo -e "$(tput setaf 1)$1$(tput sgr0)"
+    echo -e "$1"
 }
 
 ################################################################################
