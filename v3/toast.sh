@@ -305,20 +305,6 @@ version_filebeat() {
     cp -rf ${TEMP_FILE} ${FILEBEAT}
 }
 
-get_version() {
-    URL="/version"
-    RES=$(curl -s --data "groupId=${GROUP_ID}&artifactId=${ARTIFACT_ID}&version=${VERSION}" "${URL}")
-    ARR=(${RES})
-
-    if [ "${ARR[0]}" == "OK" ]; then
-        if [ "${ARR[1]}" != "" ]; then
-            return "${ARR[1]}"
-        fi
-    fi
-
-    return "0"
-}
-
 pom_replace() {
     POM_FILE="pom.xml"
 
