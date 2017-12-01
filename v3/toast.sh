@@ -267,9 +267,9 @@ pom_parse() {
 
 version_branch() {
     BRANCH="${PARAM1}"
-    TAG="${PARAM2}"
+    BUILD="${PARAM2}"
 
-    echo_ "version branch... [${BRANCH}] [${TAG}]"
+    echo_ "version branch... [${BRANCH}] [${BUILD}]"
 
     if [ "${BRANCH}" == "" ]; then
         BRANCH="master"
@@ -279,6 +279,10 @@ version_branch() {
     echo_ "branch=${BRANCH}"
 
     if [ "${BRANCH}" == "master" ]; then
+        if [ "${BUILD}" != "" ]; then
+            VERSION="${VERSION}.${BUILD}"
+        fi
+
         pom_replace
     fi
 }
@@ -301,16 +305,25 @@ version_filebeat() {
     cp -rf ${TEMP_FILE} ${FILEBEAT}
 }
 
+get_version() {
+    URL="/version"
+    RES=$(curl -s --data "groupId=${GROUP_ID}&artifactId=${ARTIFACT_ID}&version=${VERSION}" "${URL}")
+    ARR=(${RES})
+
+    if [ "${ARR[0]}" == "OK" ]; then
+        if [ "${ARR[1]}" != "" ]; then
+            return "${ARR[1]}"
+        fi
+    fi
+
+    return "0"
+}
+
 pom_replace() {
     POM_FILE="pom.xml"
 
     if [ ! -f "${POM_FILE}" ]; then
         error "Not exist file. [${POM_FILE}]"
-    fi
-
-    # get version from tag
-    if [ "${TAG}" != "" ]; then
-        VERSION="${TAG}"
     fi
 
     if [ "${VERSION}" == "" ]; then
