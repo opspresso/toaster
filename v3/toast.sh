@@ -105,7 +105,10 @@ config() {
 install() {
     case ${PARAM1} in
         java|java8)
-            install_java8
+            install_java 8
+            ;;
+        java9)
+            install_java 9
             ;;
         elasticsearch)
             install_elasticsearch
@@ -191,10 +194,16 @@ config_save() {
     fi
 }
 
-install_java8() {
-    echo_ "install java..."
+install_java() {
+    VERSION="$1"
 
-    ${SHELL_DIR}/install/java8.sh "${BUCKET}"
+    if [ "${VERSION}" == "" ]; then
+        VERSION="8"
+    fi
+
+    echo_ "install java${VERSION}..."
+
+    ${SHELL_DIR}/install/java${VERSION}.sh "${BUCKET}"
 
     echo_bar
     echo_ "$(java -version)"
