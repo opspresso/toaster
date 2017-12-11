@@ -273,13 +273,16 @@ init() {
             init_node
             ;;
         java|java8)
-            init_java8
+            init_java 8
+            ;;
+        java9)
+            init_java 9
             ;;
         maven|maven3)
-            init_maven3
+            init_maven 3
             ;;
         tomcat|tomcat8)
-            init_tomcat8
+            init_tomcat 8
             ;;
         elasticsearch)
             init_elasticsearch
@@ -294,7 +297,7 @@ init() {
             init_filebeat
             ;;
         mysql)
-            init_mysql55
+            init_mysql 55
             ;;
         redis)
             init_redis
@@ -1061,16 +1064,19 @@ init_auto() {
                 init_node
                 ;;
             java|java8)
-                init_java8
+                init_java 8
+                ;;
+            java9)
+                init_java 9
                 ;;
             tomcat|tomcat8)
-                init_tomcat8
+                init_tomcat 8
                 ;;
             mysql55)
-                init_mysql55
+                init_mysql 55
                 ;;
             mysql|mysql56)
-                init_mysql56
+                init_mysql 56
                 ;;
             redis)
                 init_redis
@@ -1202,6 +1208,10 @@ init_php() {
 
         VERSION="$1"
 
+        if [ "${VERSION}" == "" ]; then
+            VERSION="56"
+        fi
+
         echo_ "init php${VERSION}..."
 
         status=$(${SUDO} yum list | grep php${VERSION}w | wc -l | awk '{print $1}')
@@ -1250,13 +1260,19 @@ init_node() {
     echo_bar
 }
 
-init_java8() {
+init_java() {
     make_dir "${APPS_DIR}"
 
     if [ ! -f "${SHELL_DIR}/.config_java" ]; then
-        echo_ "init java..."
+        VERSION="$1"
 
-        ${SHELL_DIR}/install/java8.sh
+        if [ "${VERSION}" == "" ]; then
+            VERSION="8"
+        fi
+
+        echo_ "init java${VERSION}..."
+
+        ${SHELL_DIR}/install/java${VERSION}.sh
 
         JAVA_HOME="/usr/java/default"
 
@@ -1272,15 +1288,21 @@ init_java8() {
     echo_bar
 }
 
-init_maven3() {
+init_maven() {
     make_dir "${APPS_DIR}"
 
     if [ ! -f "${SHELL_DIR}/.config_maven" ]; then
-        echo_ "init maven..."
+        VERSION="$1"
 
-        ${SHELL_DIR}/install/maven.sh "${REPO_PATH}"
+        if [ "${VERSION}" == "" ]; then
+            VERSION="3"
+        fi
 
-        MAVEN_HOME="${APPS_DIR}/maven3"
+        echo_ "init maven${VERSION}..."
+
+        ${SHELL_DIR}/install/maven${VERSION}.sh "${REPO_PATH}"
+
+        MAVEN_HOME="${APPS_DIR}/maven${VERSION}"
 
         if [ ! -d ${MAVEN_HOME} ]; then
             warning "Can not found : MAVEN_HOME=${MAVEN_HOME}"
@@ -1295,15 +1317,21 @@ init_maven3() {
     fi
 }
 
-init_tomcat8() {
+init_tomcat() {
     make_dir "${APPS_DIR}"
 
     if [ ! -f "${SHELL_DIR}/.config_tomcat" ]; then
-        echo_ "init tomcat..."
+        VERSION="$1"
 
-        ${SHELL_DIR}/install/tomcat.sh "${REPO_PATH}"
+        if [ "${VERSION}" == "" ]; then
+            VERSION="8"
+        fi
 
-        CATALINA_HOME="${APPS_DIR}/tomcat8"
+        echo_ "init tomcat${VERSION}..."
+
+        ${SHELL_DIR}/install/tomcat${VERSION}.sh "${REPO_PATH}"
+
+        CATALINA_HOME="${APPS_DIR}/tomcat${VERSION}"
 
         if [ ! -d ${CATALINA_HOME} ]; then
             warning "Can not found : CATALINA_HOME=${CATALINA_HOME}"
@@ -1352,23 +1380,17 @@ init_filebeat() {
     echo_bar
 }
 
-init_mysql55() {
+init_mysql() {
     if [ ! -f "${SHELL_DIR}/.config_mysql" ]; then
-        echo_ "init mysql55..."
+        VERSION="$1"
 
-        service_install mysql55-server
+        if [ "${VERSION}" == "" ]; then
+            VERSION="56"
+        fi
 
-        service_ctl mysqld start on
+        echo_ "init mysql${VERSION}..."
 
-        touch "${SHELL_DIR}/.config_mysql"
-    fi
-}
-
-init_mysql56() {
-    if [ ! -f "${SHELL_DIR}/.config_mysql" ]; then
-        echo_ "init mysql56..."
-
-        service_install mysql56-server
+        service_install mysql${VERSION}-server
 
         service_ctl mysqld start on
 

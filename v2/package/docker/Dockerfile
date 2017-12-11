@@ -2,13 +2,15 @@
 
 FROM java:8
 
-MAINTAINER toast@yanolja.com
+MAINTAINER jyyu@yanolja.com
 
-VOLUME ["/data/apps"]
-VOLUME ["/data/logs"]
+ENV TZ=Asia/Seoul
+RUN ln -snf /usr/share/zoneinfo/$TZ /etc/localtime && echo $TZ > /etc/timezone
 
 EXPOSE 8080
 
-ADD ROOT.jar /data/apps/
+WORKDIR data
 
-CMD ["java", "-jar", "/data/apps/ROOT.jar"]
+ADD ROOT.jar /
+
+CMD ["java", "-jar", "/ROOT.jar"]

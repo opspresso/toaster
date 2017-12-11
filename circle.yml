@@ -13,4 +13,4 @@ deployment:
   production:
     branch: master
     commands:
-      - ./publish.sh
+      - ./publish.sh $CIRCLE_PROJECT_USERNAME

@@ -105,7 +105,10 @@ config() {
 install() {
     case ${PARAM1} in
         java|java8)
-            install_java8
+            install_java 8
+            ;;
+        java9)
+            install_java 9
             ;;
         elasticsearch)
             install_elasticsearch
@@ -191,10 +194,16 @@ config_save() {
     fi
 }
 
-install_java8() {
-    echo_ "install java..."
+install_java() {
+    VERSION="$1"
 
-    ${SHELL_DIR}/install/java8.sh "${BUCKET}"
+    if [ "${VERSION}" == "" ]; then
+        VERSION="8"
+    fi
+
+    echo_ "install java${VERSION}..."
+
+    ${SHELL_DIR}/install/java${VERSION}.sh "${BUCKET}"
 
     echo_bar
     echo_ "$(java -version)"
@@ -267,9 +276,9 @@ pom_parse() {
 
 version_branch() {
     BRANCH="${PARAM1}"
-    TAG="${PARAM2}"
+    BUILD="${PARAM2}"
 
-    echo_ "version branch... [${BRANCH}] [${TAG}]"
+    echo_ "version branch... [${BRANCH}] [${BUILD}]"
 
     if [ "${BRANCH}" == "" ]; then
         BRANCH="master"
@@ -279,6 +288,10 @@ version_branch() {
     echo_ "branch=${BRANCH}"
 
     if [ "${BRANCH}" == "master" ]; then
+        if [ "${BUILD}" != "" ]; then
+            VERSION="${VERSION}.${BUILD}"
+        fi
+
         pom_replace
     fi
 }
@@ -306,11 +319,6 @@ pom_replace() {
 
     if [ ! -f "${POM_FILE}" ]; then
         error "Not exist file. [${POM_FILE}]"
-    fi
-
-    # get version from tag
-    if [ "${TAG}" != "" ]; then
-        VERSION="${TAG}"
     fi
 
     if [ "${VERSION}" == "" ]; then
