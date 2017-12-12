@@ -1687,6 +1687,10 @@ build_lambda() {
 }
 
 build_bucket() {
+    if [ "${ARTIFACT_ID}" == "" ]; then
+        warning "Not set ARTIFACT_ID."
+        return
+    fi
     if [ "${PARAM2}" == "" ]; then
         warning "Not set BUCKET."
         return
