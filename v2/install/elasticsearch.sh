@@ -50,7 +50,7 @@ download() {
     fi
 
     if [ ! -f ${_FILE} ]; then
-        URL="http://repo.toast.sh/${_PATH}/${_FILE}"
+        URL="https://artifacts.elastic.co/downloads/elasticsearch/${_FILE}"
 
         echo_ "download... [${URL}]"
 
@@ -60,13 +60,13 @@ download() {
 
 ################################################################################
 
-# s3://repo.toast.sh/elastic/elasticsearch-6.0.0.rpm
+# s3://repo.toast.sh/elastic/elasticsearch-6.0.1.rpm
 
 REPO="$1"
 
 NAME="elastic"
 
-FILE="elasticsearch-6.0.0.rpm"
+FILE="elasticsearch-6.0.1.rpm"
 
 ################################################################################
 
