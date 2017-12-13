@@ -332,9 +332,6 @@ build() {
         lambda)
             build_lambda
             ;;
-        github)
-            build_github
-            ;;
         bucket)
             build_bucket
             ;;
@@ -1684,20 +1681,16 @@ build_lambda() {
     echo_ "--> from: ${PACKAGE_PATH}"
     echo_ "--> to  : ${UPLOAD_PATH}"
 
-    OPTION="--quiet --acl public-read"
+    OPTION="--quiet"
 
     aws s3 sync "${PACKAGE_PATH}" "${UPLOAD_PATH}" ${OPTION}
 }
 
-build_github() {
+build_bucket() {
     if [ "${ARTIFACT_ID}" == "" ]; then
         warning "Not set ARTIFACT_ID."
         return
     fi
-
-}
-
-build_bucket() {
     if [ "${PARAM2}" == "" ]; then
         warning "Not set BUCKET."
         return
@@ -1714,7 +1707,7 @@ build_bucket() {
 
     DEPLOY_PATH="s3://${PARAM2}"
 
-    OPTION="--acl public-read"
+    OPTION="--quiet"
 
     aws s3 sync "${PACKAGE_PATH}" "${DEPLOY_PATH}" ${OPTION}
 }
