@@ -289,11 +289,13 @@ version_branch() {
 
     if [ "${BRANCH}" == "master" ]; then
         if [ "${BUILD}" != "" ]; then
-            VERSION="${VERSION}.${BUILD}"
+            VERSION="${VERSION}-${BUILD}"
         fi
-
-        pom_replace
+    else
+        VERSION="${VERSION}-SNAPSHOT"
     fi
+
+    pom_replace
 }
 
 version_filebeat() {
@@ -544,6 +546,12 @@ deploy_bucket() {
     OPTION="--acl public-read"
 
     aws s3 sync "${PACKAGE_PATH}" "${DEPLOY_PATH}" ${OPTION}
+}
+
+package_check() {
+    command -v aws > /dev/null || (echo "aws cli must be installed" && exit 1)
+    command -v curl > /dev/null || (echo "curl must be installed" && exit 1)
+    command -v wget > /dev/null || (echo "wget must be installed" && exit 1)
 }
 
 ################################################################################
