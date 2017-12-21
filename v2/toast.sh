@@ -448,8 +448,8 @@ health() {
 
     CPU="$(grep 'cpu ' /proc/stat | awk '{usage=($2+$4)*100/($2+$4+$5)} END {print usage}')"
 
-    DISK_TOT="$(df -P | grep -v ^Filesystem | awk '{sum += $2} END { print sum; }')"
-    DISK_USE="$(df -P | grep -v ^Filesystem | awk '{sum += $3} END { print sum; }')"
+    DISK_TOT="$(df -P | grep -v ^Filesystem | grep -v ^tmpfs | awk '{sum += $2} END { print sum; }')"
+    DISK_USE="$(df -P | grep -v ^Filesystem | grep -v ^tmpfs | awk '{sum += $3} END { print sum; }')"
     DISK_PER="$(echo "100 * $DISK_USE / $DISK_TOT" | bc -l)"
 
     UPTIME="$(uptime)"
