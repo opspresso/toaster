@@ -1997,7 +1997,7 @@ nginx_lb() {
                     for HOST in "${HOST_ARR[@]}"; do
                        echo "        server ${HOST}:${PORT} max_fails=3 fail_timeout=10s;" >> ${TEMP_HTTP}
                     done
-                    echo "        keepalive 200;" >> ${TEMP_HTTP}
+#                    echo "        keepalive 200;" >> ${TEMP_HTTP}
                     echo "    }" >> ${TEMP_HTTP}
 
                     if [ "${CUSTOM}" == "S" ]; then
