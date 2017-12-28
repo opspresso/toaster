@@ -22,9 +22,11 @@ fi
 curl -s -o /tmp/toaster.new ${REPO}/toaster.txt
 
 if [ ! -f /tmp/toaster.new ]; then
-    warning "Can not download. [version]"
+    warning "Can not download. [${REPO}]"
     exit 1
 fi
+
+echo "-v2" >> /tmp/toaster.new
 
 if [ -f /tmp/toaster.old ]; then
     NEW="$(cat /tmp/toaster.new)"
@@ -44,7 +46,7 @@ fi
 curl -s -o /tmp/toaster.tar.gz ${REPO}/toaster-v2.tar.gz
 
 if [ ! -f /tmp/toaster.tar.gz ]; then
-    warning "Can not download. [toast.sh]"
+    warning "Can not download. [${REPO}]"
     exit 1
 fi
 
