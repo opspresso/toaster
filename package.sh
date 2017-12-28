@@ -11,6 +11,8 @@ VERSION="$(git rev-parse --short HEAD)"
 # toaster.txt
 echo "version=${VERSION}"
 echo "${VERSION}" > target/toaster.txt
+echo "v2-${VERSION}" > target/toaster-v2.txt
+echo "v3-${VERSION}" > target/toaster-v3.txt
 
 # web
 cp -rf web/* target/
