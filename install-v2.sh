@@ -10,7 +10,7 @@ warning() {
 
 ################################################################################
 
-REPO="http://toast.yanolja.com.s3-website.ap-northeast-2.amazonaws.com"
+REPO="http://toaster.yanolja.com.s3-website.ap-northeast-2.amazonaws.com"
 
 ################################################################################
 
