@@ -19,14 +19,12 @@ if [ ! -d ~/toaster ]; then
 fi
 
 # version
-curl -s -o /tmp/toaster.new ${REPO}/toaster.txt
+curl -s -o /tmp/toaster.new ${REPO}/toaster-v2.txt
 
 if [ ! -f /tmp/toaster.new ]; then
     warning "Can not download. [${REPO}]"
     exit 1
 fi
-
-echo "-v2" >> /tmp/toaster.new
 
 if [ -f /tmp/toaster.old ]; then
     NEW="$(cat /tmp/toaster.new)"
