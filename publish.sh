@@ -3,7 +3,7 @@
 CIRCLE_PROJECT_USERNAME="$1"
 
 if [ "${CIRCLE_PROJECT_USERNAME}" == "yanolja" ]; then
-    BUCKET="toast.yanolja.com"
+    BUCKET="toaster.yanolja.com"
 else
     BUCKET="toast.sh"
 fi
