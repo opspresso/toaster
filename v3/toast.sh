@@ -94,6 +94,10 @@ toast() {
 
 ################################################################################
 
+nothing() {
+    LOGZIO_TOKEN=
+}
+
 update() {
     curl -s toast.sh/install-v3 | bash
 }
@@ -314,6 +318,11 @@ version_filebeat() {
 
     sed "s/VERSION/$VERSION/g" ${FILEBEAT} > ${TEMP_FILE}
     cp -rf ${TEMP_FILE} ${FILEBEAT}
+
+    if [ "${LOGZIO_TOKEN}" != "" ]; then
+        sed "s/LOGZIO_TOKEN/$LOGZIO_TOKEN/g" ${FILEBEAT} > ${TEMP_FILE}
+        cp -rf ${TEMP_FILE} ${FILEBEAT}
+    fi
 }
 
 pom_replace() {
