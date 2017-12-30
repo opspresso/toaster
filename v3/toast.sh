@@ -299,13 +299,13 @@ version_branch() {
 }
 
 version_filebeat() {
-    echo_ "version filebeat..."
-
     FILEBEAT=".ebextensions/01-filebeat.config"
 
     if [ ! -f "${FILEBEAT}" ]; then
         return
     fi
+
+    echo_ "version filebeat... [${ARTIFACT_ID}] [${VERSION}]"
 
     TEMP_FILE="/tmp/01-filebeat.config"
 
