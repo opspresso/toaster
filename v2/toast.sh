@@ -359,6 +359,9 @@ vhost() {
         lb)
             nginx_lb
             ;;
+        dom)
+            vhost_replace "${PARAM2}"
+            ;;
         *)
             vhost_fleet
     esac
