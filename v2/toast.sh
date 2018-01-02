@@ -3024,7 +3024,7 @@ toast_url() {
 
     if [ "${ARR[1]}" == "404" ]; then
         HEALTH="404"
-        warning "Not set TOAST_WEB."
+        warning "Not available TOAST_WEB."
         return
     fi
 
