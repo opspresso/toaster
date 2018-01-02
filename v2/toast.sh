@@ -360,7 +360,7 @@ vhost() {
             nginx_lb
             ;;
         dom)
-            vhost_replace "${PARAM2}"
+            vhost_dom
             ;;
         *)
             vhost_fleet
@@ -2276,6 +2276,41 @@ vhost_le_ssl() {
     sed "s/DIR/$DIR/g" ${TEMPLATE} > ${TEMP_FILE1}
     sed "s/DOM/$DOM/g" ${TEMP_FILE1} > ${TEMP_FILE2}
     copy ${TEMP_FILE2} ${DEST_FILE}
+}
+
+vhost_dom() {
+    httpd_dir
+
+    if [ "${HTTPD_CONF_DIR}" == "" ]; then
+        return
+    fi
+
+    DOMAIN="${PARAM2}"
+
+    if [ "${DOMAIN}" == "" ]; then
+        warning "--> empty.domain.com"
+        return
+    fi
+
+    echo_bar
+    echo_ "apache domain... [${DOMAIN}]"
+
+    echo_ "--> ${HTTPD_CONF_DIR}"
+
+    vhost_local
+
+    TARGET_DIR="${TEMP_DIR}/conf"
+    mkdir -p ${TARGET_DIR}
+
+    echo_ "placement apache..."
+
+    make_dir "${SITE_DIR}/${DOMAIN}"
+
+    vhost_replace "${DOMAIN}"
+
+    httpd_graceful
+
+    echo_bar
 }
 
 vhost_fleet() {
