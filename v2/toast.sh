@@ -71,6 +71,8 @@ USER=
 TOKEN=
 SNO=
 
+HEALTH=
+
 REPO_BUCKET=
 REPO_PATH=
 
@@ -124,6 +126,8 @@ TEMP_FILE="${TEMP_DIR}/toast.tmp"
 ################################################################################
 
 toast() {
+    toast_url
+
     case ${CMD} in
         a|auto)
             auto
@@ -534,35 +538,35 @@ config_auto() {
 }
 
 config_save() {
-    toast_url
-
     echo_bar
 
     if [ "${PHASE}" != "local" ]; then
-        echo_ "config save... [${UUID}][${SNO}]"
+        if [ "${HEALTH}" == "200" ]; then
+            echo_ "config save... [${UUID}][${SNO}]"
 
-        URL="${TOAST_URL}/server/config"
-        RES=$(curl -s --data "org=${ORG}&token=${TOKEN}&phase=${PHASE}&fleet=${FLEET}&id=${UUID}&name=${NAME}&host=${HOST}&port=${PORT}&user=${USER}&no=${SNO}" "${URL}")
-        ARR=(${RES})
+            URL="${TOAST_URL}/server/config"
+            RES=$(curl -s --data "org=${ORG}&token=${TOKEN}&phase=${PHASE}&fleet=${FLEET}&id=${UUID}&name=${NAME}&host=${HOST}&port=${PORT}&user=${USER}&no=${SNO}" "${URL}")
+            ARR=(${RES})
 
-        if [ "${ARR[0]}" != "OK" ]; then
-            warning "Server Error. [${URL}][${RES}]"
-        else
-            if [ "${ARR[1]}" != "" ]; then
-                SNO="${ARR[1]}"
-            fi
-            if [ "${ARR[2]}" != "" ]; then
-                HOST="${ARR[2]}"
-            fi
-            if [ "${ARR[3]}" != "" ]; then
-                PHASE="${ARR[3]}"
-            fi
-            if [ "${ARR[4]}" != "" ]; then
-                FLEET="${ARR[4]}"
-            fi
-            if [ "${ARR[5]}" != "" ]; then
-                if [ "${ARR[5]}" != "${NAME}" ]; then
-                    config_name "${ARR[5]}"
+            if [ "${ARR[0]}" != "OK" ]; then
+                warning "Server Error. [${URL}][${RES}]"
+            else
+                if [ "${ARR[1]}" != "" ]; then
+                    SNO="${ARR[1]}"
+                fi
+                if [ "${ARR[2]}" != "" ]; then
+                    HOST="${ARR[2]}"
+                fi
+                if [ "${ARR[3]}" != "" ]; then
+                    PHASE="${ARR[3]}"
+                fi
+                if [ "${ARR[4]}" != "" ]; then
+                    FLEET="${ARR[4]}"
+                fi
+                if [ "${ARR[5]}" != "" ]; then
+                    if [ "${ARR[5]}" != "${NAME}" ]; then
+                        config_name "${ARR[5]}"
+                    fi
                 fi
             fi
         fi
@@ -658,7 +662,9 @@ config_cron() {
 }
 
 init_hosts() {
-    toast_url
+    if [ "${HEALTH}" != "200" ]; then
+        return
+    fi
 
     echo_ "init hosts..."
 
@@ -683,7 +689,9 @@ init_hosts() {
 }
 
 init_profile() {
-    toast_url
+    if [ "${HEALTH}" != "200" ]; then
+        return
+    fi
 
     echo_ "init profile..."
 
@@ -701,7 +709,9 @@ init_profile() {
 }
 
 init_email() {
-    toast_url
+    if [ "${HEALTH}" != "200" ]; then
+        return
+    fi
 
     echo_ "init email..."
 
@@ -718,7 +728,9 @@ init_email() {
 }
 
 init_master() {
-    toast_url
+    if [ "${HEALTH}" != "200" ]; then
+        return
+    fi
 
     echo_ "init master..."
 
@@ -764,7 +776,9 @@ init_master() {
 }
 
 init_slave() {
-    toast_url
+    if [ "${HEALTH}" != "200" ]; then
+        return
+    fi
 
     echo_ "init slave..."
 
@@ -891,7 +905,9 @@ init_certbot() {
 }
 
 init_certificate() {
-    toast_url
+    if [ "${HEALTH}" != "200" ]; then
+        return
+    fi
 
     if [ "$1" == "" ]; then
         CERT_NAME="${PARAM2}"
@@ -972,7 +988,9 @@ init_startup() {
 }
 
 init_auto() {
-    toast_url
+    if [ "${HEALTH}" != "200" ]; then
+        return
+    fi
 
     URL="${TOAST_URL}/server/apps/${SNO}"
     RES=$(curl -s --data "org=${ORG}&token=${TOKEN}&no=${SNO}" "${URL}")
@@ -1021,7 +1039,9 @@ init_auto() {
 }
 
 init_script() {
-    toast_url
+    if [ "${HEALTH}" != "200" ]; then
+        return
+    fi
 
     TARGET="${HOME}/.toast_script"
 
@@ -1496,7 +1516,9 @@ build_version() {
     echo "${BRANCH}" > .git_branch
     echo_ "branch... [${BRANCH}]"
 
-    toast_url
+    if [ "${HEALTH}" != "200" ]; then
+        return
+    fi
 
     URL="${TOAST_URL}/version/latest/${ARTIFACT_ID}"
     RES=$(curl -s --data "org=${ORG}&token=${TOKEN}&groupId=${GROUP_ID}&artifactId=${ARTIFACT_ID}&packaging=${PACKAGE}&no=${SNO}&branch=${BRANCH}" "${URL}")
@@ -1598,7 +1620,9 @@ build_save() {
 
     NOTE="$(cat target/.git_note)"
 
-    toast_url
+    if [ "${HEALTH}" != "200" ]; then
+        return
+    fi
 
     # version save
     URL="${TOAST_URL}/version/build/${ARTIFACT_ID}/${VERSION}"
@@ -1844,7 +1868,9 @@ httpd_dir() {
 }
 
 nginx_lb() {
-    toast_url
+    if [ "${HEALTH}" != "200" ]; then
+        return
+    fi
 
     nginx_dir
 
@@ -2255,7 +2281,9 @@ vhost_dom() {
 }
 
 vhost_fleet() {
-    toast_url
+    if [ "${HEALTH}" != "200" ]; then
+        return
+    fi
 
     httpd_dir
 
@@ -2369,7 +2397,9 @@ deploy_project() {
 }
 
 deploy_fleet() {
-    toast_url
+    if [ "${HEALTH}" != "200" ]; then
+        return
+    fi
 
     echo_bar
     echo_ "deploy fleet... [${SNO}]"
@@ -2414,7 +2444,9 @@ deploy_fleet() {
 }
 
 deploy_target() {
-    toast_url
+    if [ "${HEALTH}" != "200" ]; then
+        return
+    fi
 
     echo_bar
     echo_ "deploy target... [${SNO}][${PARAM2}]"
@@ -2462,7 +2494,9 @@ deploy_target() {
 }
 
 deploy_bucket() {
-    toast_url
+    if [ "${HEALTH}" != "200" ]; then
+        return
+    fi
 
     echo_bar
     echo_ "deploy bucket... [${PARAM1}]"
@@ -2763,7 +2797,9 @@ certbot_renew() {
 }
 
 connect() {
-    toast_url
+    if [ "${HEALTH}" != "200" ]; then
+        return
+    fi
 
     PHASE="${PARAM1}"
     FLEET="${PARAM2}"
@@ -2908,11 +2944,13 @@ connect() {
 }
 
 health() {
-    toast_url
+    if [ "${HEALTH}" != "200" ]; then
+        exit 0
+    fi
 
     if [ "${SNO}" == "" ]; then
         warning "Not set SNO."
-        return
+        exit 0
     fi
 
     if [ -f /tmp/toaster.old ]; then
@@ -2946,7 +2984,9 @@ health() {
 }
 
 reset() {
-    toast_url
+    if [ "${HEALTH}" != "200" ]; then
+        return
+    fi
 
     if [ "${SNO}" == "" ]; then
         warning "Not set SNO."
@@ -2968,9 +3008,14 @@ reset() {
 }
 
 toast_url() {
+    if [ "${HEALTH}" != "" ]; then
+        return
+    fi
+
     if [ "${TOAST_URL}" == "" ]; then
+        HEALTH="500"
         warning "Not set TOAST_URL."
-        exit 1
+        return
     fi
 
     URL="${TOAST_URL}/health"
@@ -2978,9 +3023,12 @@ toast_url() {
     ARR=(${RES})
 
     if [ "${ARR[1]}" == "404" ]; then
+        HEALTH="404"
         warning "Not set TOAST_WEB."
-        exit 1
+        return
     fi
+
+    HEALTH="200"
 }
 
 log_tomcat() {
