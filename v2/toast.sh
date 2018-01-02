@@ -100,6 +100,7 @@ PARAM3=$4
 PARAM4=$5
 PARAM5=$6
 PARAM6=$7
+PARAM7=$8
 
 HAS_WAR="FALSE"
 HAS_JAR="FALSE"
@@ -714,7 +715,6 @@ config_cron() {
     echo "* * * * * ${SHELL_DIR}/toast.sh health > /tmp/toast-cron-health.log " >> ${TEMP_FILE}
     echo "3 2 * * * ${SHELL_DIR}/toast.sh update > /tmp/toast-cron-update.log " >> ${TEMP_FILE}
     echo "6 3 * * * ${SHELL_DIR}/toast.sh log    > /tmp/toast-cron-log.log "    >> ${TEMP_FILE}
-    echo "9 * * * * ${SHELL_DIR}/log_rotate.sh   > /tmp/toast-cron-rotate.log " >> ${TEMP_FILE}
 
     crontab ${TEMP_FILE}
 
@@ -2356,13 +2356,14 @@ repo_path() {
 }
 
 deploy_project() {
-    echo_ "deploy project... [deprecated]"
+    echo_ "deploy project..."
 
     GROUP_ID="${PARAM2}"
     ARTIFACT_ID="${PARAM3}"
     VERSION="${PARAM4}"
     TYPE="${PARAM5}"
     DOMAIN="${PARAM6}"
+    REPO="${PARAM7}"
 
     GROUP_PATH=$(echo "${GROUP_ID}" | sed "s/\./\//")
 
@@ -2380,6 +2381,11 @@ deploy_project() {
     FILEPATH="${TEMP_DIR}/${FILENAME}"
 
     UNZIP_DIR="${TEMP_DIR}/${ARTIFACT_ID}"
+
+    if [ "${REPO}" != "" ]; then
+        REPO_BUCKET="${REPO}"
+        REPO_PATH="s3://${REPO_BUCKET}"
+    fi
 
     echo_bar
     echo_ "download..."
