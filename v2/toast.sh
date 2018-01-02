@@ -2627,6 +2627,11 @@ download() {
 }
 
 placement() {
+    if [ ! -f "${FILEPATH}" ]; then
+        warning "deploy file does not exist. [${FILEPATH}]"
+        return
+    fi
+
     if [ "${DEPLOY_PATH}" == "" ]; then
         warning "--> empty DEPLOY_PATH [${DEPLOY_PATH}]"
         return
