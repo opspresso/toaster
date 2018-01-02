@@ -2974,7 +2974,7 @@ toast_url() {
     fi
 
     URL="${TOAST_URL}/health"
-    RES=$(curl -Is "${URL} | grep HTTP")
+    RES=$(curl -Is "${URL}" | grep HTTP)
     ARR=(${RES})
 
     if [ "${ARR[1]}" == "404" ]; then
