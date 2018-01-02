@@ -432,72 +432,6 @@ log() {
     esac
 }
 
-health() {
-    if [ "${TOAST_URL}" == "" ]; then
-        warning "Not set TOAST_URL."
-        exit 1
-    fi
-    if [ "${SNO}" == "" ]; then
-        warning "Not set SNO."
-        return
-    fi
-
-    #echo_ "server health..."
-
-    if [ -f /tmp/toaster.old ]; then
-        TOAST="$(cat /tmp/toaster.old)"
-    else
-        TOAST=""
-    fi
-
-    CPU="$(grep 'cpu ' /proc/stat | awk '{usage=($2+$4)*100/($2+$4+$5)} END {print usage}')"
-
-    DISK_TOT="$(df -P | grep -v ^Filesystem | grep -v ^tmpfs | awk '{sum += $2} END { print sum; }')"
-    DISK_USE="$(df -P | grep -v ^Filesystem | grep -v ^tmpfs | awk '{sum += $3} END { print sum; }')"
-    DISK_PER="$(echo "100 * $DISK_USE / $DISK_TOT" | bc -l)"
-
-    UPTIME="$(uptime)"
-
-    URL="${TOAST_URL}/server/health/${SNO}"
-    RES=$(curl -s --data "org=${ORG}&token=${TOKEN}&id=${UUID}&cpu=${CPU}&hdd=${DISK_PER}&os=${OS_FULL}&uptime=${UPTIME}&toast=${TOAST}" "${URL}")
-    ARR=(${RES})
-
-    if [ "${ARR[0]}" == "OK" ]; then
-        if [ "${ARR[2]}" != "" ]; then
-            if [ "${ARR[2]}" != "${NAME}" ]; then
-                config_name "${ARR[2]}"
-                config_local
-            fi
-        fi
-    fi
-
-    exit 0
-}
-
-reset() {
-    if [ "${TOAST_URL}" == "" ]; then
-        warning "Not set TOAST_URL."
-        exit 1
-    fi
-    if [ "${SNO}" == "" ]; then
-        warning "Not set SNO."
-        return
-    fi
-
-    URL="${TOAST_URL}/server/info/${SNO}"
-    RES=$(curl -s --data "org=${ORG}&token=${TOKEN}&id=${UUID}" "${URL}")
-    ARR=(${RES})
-
-    if [ "${ARR[0]}" == "OK" ]; then
-        if [ "${ARR[2]}" != "" ]; then
-            if [ "${ARR[2]}" != "${NAME}" ]; then
-                config_name "${ARR[2]}"
-                config_local
-            fi
-        fi
-    fi
-}
-
 ################################################################################
 
 self_info() {
@@ -600,10 +534,7 @@ config_auto() {
 }
 
 config_save() {
-    if [ "${TOAST_URL}" == "" ]; then
-        warning "Not set TOAST_URL."
-        exit 1
-    fi
+    toast_url
 
     echo_bar
 
@@ -727,6 +658,8 @@ config_cron() {
 }
 
 init_hosts() {
+    toast_url
+
     echo_ "init hosts..."
 
     TARGET="/etc/hosts"
@@ -750,6 +683,8 @@ init_hosts() {
 }
 
 init_profile() {
+    toast_url
+
     echo_ "init profile..."
 
     TARGET="${HOME}/.toast_profile"
@@ -766,6 +701,8 @@ init_profile() {
 }
 
 init_email() {
+    toast_url
+
     echo_ "init email..."
 
     URL="${TOAST_URL}/config/key/email"
@@ -781,6 +718,8 @@ init_email() {
 }
 
 init_master() {
+    toast_url
+
     echo_ "init master..."
 
     # .ssh/id_rsa
@@ -825,6 +764,8 @@ init_master() {
 }
 
 init_slave() {
+    toast_url
+
     echo_ "init slave..."
 
     # .ssh/authorized_keys
@@ -888,16 +829,6 @@ init_slave() {
 init_aws() {
     echo_ "init aws..."
 
-    # .aws/config
-    URL="${TOAST_URL}/config/key/aws_config"
-    RES=$(curl -s --data "org=${ORG}&token=${TOKEN}&no=${SNO}" "${URL}")
-
-    if [ "${RES}" != "" ]; then
-        TARGET="${HOME}/.aws/config"
-        echo "${RES}" > ${TARGET}
-        chmod 600 ${TARGET}
-    fi
-
     # aws cli
     if [ ! -f "${SHELL_DIR}/.config_aws" ]; then
         echo_ "init aws cli..."
@@ -960,6 +891,8 @@ init_certbot() {
 }
 
 init_certificate() {
+    toast_url
+
     if [ "$1" == "" ]; then
         CERT_NAME="${PARAM2}"
     else
@@ -1039,6 +972,8 @@ init_startup() {
 }
 
 init_auto() {
+    toast_url
+
     URL="${TOAST_URL}/server/apps/${SNO}"
     RES=$(curl -s --data "org=${ORG}&token=${TOKEN}&no=${SNO}" "${URL}")
     ARR=(${RES})
@@ -1086,6 +1021,8 @@ init_auto() {
 }
 
 init_script() {
+    toast_url
+
     TARGET="${HOME}/.toast_script"
 
     # script
@@ -1559,26 +1496,26 @@ build_version() {
     echo "${BRANCH}" > .git_branch
     echo_ "branch... [${BRANCH}]"
 
-    if [ "${PHASE}" != "local" ]; then
-        URL="${TOAST_URL}/version/latest/${ARTIFACT_ID}"
-        RES=$(curl -s --data "org=${ORG}&token=${TOKEN}&groupId=${GROUP_ID}&artifactId=${ARTIFACT_ID}&packaging=${PACKAGE}&no=${SNO}&branch=${BRANCH}" "${URL}")
-        ARR=(${RES})
+    toast_url
 
-        if [ "${ARR[0]}" != "OK" ]; then
-            warning "Server Error. [${URL}][${RES}]"
-            return
-        fi
+    URL="${TOAST_URL}/version/latest/${ARTIFACT_ID}"
+    RES=$(curl -s --data "org=${ORG}&token=${TOKEN}&groupId=${GROUP_ID}&artifactId=${ARTIFACT_ID}&packaging=${PACKAGE}&no=${SNO}&branch=${BRANCH}" "${URL}")
+    ARR=(${RES})
 
-        if [ "${BRANCH}" == "master" ]; then
-            VERSION="${ARR[1]}"
+    if [ "${ARR[0]}" != "OK" ]; then
+        warning "Server Error. [${URL}][${RES}]"
+        return
+    fi
 
-            replace_version
-        fi
+    if [ "${BRANCH}" == "master" ]; then
+        VERSION="${ARR[1]}"
 
-        if [ "${ARR[2]}" != "" ]; then
-            echo "${ARR[2]}" > .git_id
-            echo_ "git id... [${ARR[2]}]"
-        fi
+        replace_version
+    fi
+
+    if [ "${ARR[2]}" != "" ]; then
+        echo "${ARR[2]}" > .git_id
+        echo_ "git id... [${ARR[2]}]"
     fi
 }
 
@@ -1660,6 +1597,8 @@ build_save() {
     GIT_URL="$(git config --get remote.origin.url)"
 
     NOTE="$(cat target/.git_note)"
+
+    toast_url
 
     # version save
     URL="${TOAST_URL}/version/build/${ARTIFACT_ID}/${VERSION}"
@@ -1905,6 +1844,8 @@ httpd_dir() {
 }
 
 nginx_lb() {
+    toast_url
+
     nginx_dir
 
     if [ "${NGINX_CONF_DIR}" == "" ]; then
@@ -2314,6 +2255,8 @@ vhost_dom() {
 }
 
 vhost_fleet() {
+    toast_url
+
     httpd_dir
 
     if [ "${HTTPD_CONF_DIR}" == "" ]; then
@@ -2369,24 +2312,8 @@ vhost_fleet() {
 }
 
 repo_path() {
-    if [ "${TOAST_URL}" == "" ]; then
-        warning "Not set TOAST_URL."
-        exit 1
-    fi
     if [ "${REPO_PATH}" != "" ]; then
         return
-    fi
-
-    if [ "${PHASE}" != "local" ]; then
-        # repo_bucket
-        URL="${TOAST_URL}/config/key/repo_bucket"
-        RES=$(curl -s --data "org=${ORG}&token=${TOKEN}&no=${SNO}" "${URL}")
-
-        if [ "${RES}" != "" ]; then
-            REPO_BUCKET="${RES}"
-            REPO_PATH="s3://${REPO_BUCKET}"
-            return
-        fi
     fi
 
     REPO_BUCKET="repo.${ORG}.com"
@@ -2442,6 +2369,8 @@ deploy_project() {
 }
 
 deploy_fleet() {
+    toast_url
+
     echo_bar
     echo_ "deploy fleet... [${SNO}]"
 
@@ -2485,8 +2414,14 @@ deploy_fleet() {
 }
 
 deploy_target() {
+    toast_url
+
     echo_bar
     echo_ "deploy target... [${SNO}][${PARAM2}]"
+
+    if [ "${PARAM2}" == "" ]; then
+        return
+    fi
 
     TARGET_DIR="${TEMP_DIR}/deploy"
     mkdir -p ${TARGET_DIR}
@@ -2527,12 +2462,14 @@ deploy_target() {
 }
 
 deploy_bucket() {
-    if [ "${PARAM1}" == "" ]; then
-        return
-    fi
+    toast_url
 
     echo_bar
     echo_ "deploy bucket... [${PARAM1}]"
+
+    if [ "${PARAM1}" == "" ]; then
+        return
+    fi
 
     TARGET_DIR="${TEMP_DIR}/deploy"
     mkdir -p ${TARGET_DIR}
@@ -2826,6 +2763,8 @@ certbot_renew() {
 }
 
 connect() {
+    toast_url
+
     PHASE="${PARAM1}"
     FLEET="${PARAM2}"
 
@@ -2966,6 +2905,82 @@ connect() {
 
     # ssh
     ssh ${CONN_PARAM}
+}
+
+health() {
+    toast_url
+
+    if [ "${SNO}" == "" ]; then
+        warning "Not set SNO."
+        return
+    fi
+
+    if [ -f /tmp/toaster.old ]; then
+        TOAST="$(cat /tmp/toaster.old)"
+    else
+        TOAST=""
+    fi
+
+    CPU="$(grep 'cpu ' /proc/stat | awk '{usage=($2+$4)*100/($2+$4+$5)} END {print usage}')"
+
+    DISK_TOT="$(df -P | grep -v ^Filesystem | grep -v ^tmpfs | awk '{sum += $2} END { print sum; }')"
+    DISK_USE="$(df -P | grep -v ^Filesystem | grep -v ^tmpfs | awk '{sum += $3} END { print sum; }')"
+    DISK_PER="$(echo "100 * $DISK_USE / $DISK_TOT" | bc -l)"
+
+    UPTIME="$(uptime)"
+
+    URL="${TOAST_URL}/server/health/${SNO}"
+    RES=$(curl -s --data "org=${ORG}&token=${TOKEN}&id=${UUID}&cpu=${CPU}&hdd=${DISK_PER}&os=${OS_FULL}&uptime=${UPTIME}&toast=${TOAST}" "${URL}")
+    ARR=(${RES})
+
+    if [ "${ARR[0]}" == "OK" ]; then
+        if [ "${ARR[2]}" != "" ]; then
+            if [ "${ARR[2]}" != "${NAME}" ]; then
+                config_name "${ARR[2]}"
+                config_local
+            fi
+        fi
+    fi
+
+    exit 0
+}
+
+reset() {
+    toast_url
+
+    if [ "${SNO}" == "" ]; then
+        warning "Not set SNO."
+        return
+    fi
+
+    URL="${TOAST_URL}/server/info/${SNO}"
+    RES=$(curl -s --data "org=${ORG}&token=${TOKEN}&id=${UUID}" "${URL}")
+    ARR=(${RES})
+
+    if [ "${ARR[0]}" == "OK" ]; then
+        if [ "${ARR[2]}" != "" ]; then
+            if [ "${ARR[2]}" != "${NAME}" ]; then
+                config_name "${ARR[2]}"
+                config_local
+            fi
+        fi
+    fi
+}
+
+toast_url() {
+    if [ "${TOAST_URL}" == "" ]; then
+        warning "Not set TOAST_URL."
+        exit 1
+    fi
+
+    URL="${TOAST_URL}/health"
+    RES=$(curl -Is "${URL} | grep HTTP")
+    ARR=(${RES})
+
+    if [ "${ARR[1]}" == "404" ]; then
+        warning "Not set TOAST_WEB."
+        exit 1
+    fi
 }
 
 log_tomcat() {
