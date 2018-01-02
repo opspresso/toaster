@@ -10,7 +10,18 @@ warning() {
 
 ################################################################################
 
-REPO="http://toast.sh"
+ORG=
+
+CONFIG="${HOME}/.toast"
+if [ -f "${CONFIG}" ]; then
+    source "${CONFIG}"
+fi
+
+if [ "${ORG}" == "yanolja" ]; then
+    REPO="http://toaster.yanolja.com.s3-website.ap-northeast-2.amazonaws.com"
+else
+    REPO="http://toast.sh"
+fi
 
 ################################################################################
 
