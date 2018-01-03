@@ -38,6 +38,10 @@ elif [ "${OS_NAME}" == "Darwin" ]; then
     OS_TYPE="${OS_NAME}"
 fi
 
+if [ "${OS_TYPE}" == "" ]; then
+    error "Not supported OS. [${OS_FULL}]"
+fi
+
 ################################################################################
 
 CMD=$1
@@ -65,6 +69,8 @@ fi
 ################################################################################
 
 toast() {
+    #prepare
+
     case ${CMD} in
         u|update)
             update
@@ -96,6 +102,14 @@ toast() {
 
 nothing() {
     LOGZIO_TOKEN=
+}
+
+prepare() {
+    command -v git   > /dev/null || service_install git
+    command -v curl  > /dev/null || service_install curl
+    command -v wget  > /dev/null || service_install wget
+    command -v unzip > /dev/null || service_install unzip
+    command -v jq    > /dev/null || service_install jq
 }
 
 update() {
@@ -561,6 +575,30 @@ package_check() {
     command -v aws > /dev/null || (echo "aws cli must be installed" && exit 1)
     command -v curl > /dev/null || (echo "curl must be installed" && exit 1)
     command -v wget > /dev/null || (echo "wget must be installed" && exit 1)
+}
+
+service_update() {
+    if [ "${OS_TYPE}" == "Ubuntu" ]; then
+        sudo apt-get update
+    else
+        sudo yum update -y
+    fi
+}
+
+service_install() {
+    if [ "${OS_TYPE}" == "Ubuntu" ]; then
+        sudo apt-get install -y $1
+    else
+        sudo yum install -y $1
+    fi
+}
+
+service_remove() {
+    if [ "${OS_TYPE}" == "Ubuntu" ]; then
+        sudo apt-get remove -y $1
+    else
+        sudo yum remove -y $1
+    fi
 }
 
 ################################################################################
