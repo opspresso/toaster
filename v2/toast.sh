@@ -465,7 +465,10 @@ prepare() {
         return
     fi
 
-    service_install "curl wget unzip git"
+    command -v git > /dev/null || service_install git
+    command -v curl > /dev/null || service_install curl
+    command -v wget > /dev/null || service_install wget
+    command -v unzip > /dev/null || service_install unzip
 
     # i18n
     language
