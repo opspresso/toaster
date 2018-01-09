@@ -8,6 +8,7 @@ echo_() {
 success() {
     echo -e "$1"
     echo "$1" >> /tmp/toast.log
+    exit 0
 }
 
 error() {
