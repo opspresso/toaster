@@ -2,10 +2,12 @@
 
 success() {
     echo -e "$1"
+    exit 0
 }
 
-warning() {
+error() {
     echo -e "$1"
+    exit 1
 }
 
 ################################################################################
@@ -33,8 +35,7 @@ fi
 curl -s -o /tmp/toaster.new ${REPO}/toaster-v2.txt
 
 if [ ! -f /tmp/toaster.new ]; then
-    warning "Can not download. [${REPO}]"
-    exit 1
+    error "Can not download. [${REPO}]"
 fi
 
 if [ -f /tmp/toaster.old ]; then
@@ -43,7 +44,6 @@ if [ -f /tmp/toaster.old ]; then
 
     if [ "${NEW}" == "${OLD}" ]; then
         success "Already have latest version. [${OLD}]"
-        exit 0
     fi
 
     MSG="Latest version updated. [${OLD} -> ${NEW}]"
@@ -55,8 +55,7 @@ fi
 curl -s -o /tmp/toaster.tar.gz ${REPO}/toaster-v2.tar.gz
 
 if [ ! -f /tmp/toaster.tar.gz ]; then
-    warning "Can not download. [${REPO}]"
-    exit 1
+    error "Can not download. [${REPO}]"
 fi
 
 # install

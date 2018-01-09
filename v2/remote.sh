@@ -4,6 +4,7 @@
 
 function usage() {
     echo "Usage: $0 {user} {host} {port:22}"
+    exit 1
 }
 
 ############################################################
@@ -22,7 +23,6 @@ PARAM2=${6}
 
 if [ "${HOST}" == "" ]; then
     usage
-    exit 1
 fi
 
 if [ "${PORT}" == "" ]; then

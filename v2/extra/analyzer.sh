@@ -2,8 +2,9 @@
 
 # composer global require phpmd/phpmd
 
-warning() {
+error() {
     echo -e "$(tput setaf 1)$1$(tput sgr0)"
+    exit 1
 }
 
 PHP="/usr/bin/php"
@@ -28,8 +29,7 @@ else
 fi
 
 if [ "${WORK}" == "" ]; then
-    warning "Not exist work directory. [${WORK}]"
-    exit 1
+    error "Not exist work directory. [${WORK}]"
 fi
 
 CONFIG="cleancode,codesize,controversial,design,naming,unusedcode"

@@ -2,8 +2,9 @@
 
 # composer global require zircote/swagger-php
 
-warning() {
+error() {
     echo -e "$(tput setaf 1)$1$(tput sgr0)"
+    exit 1
 }
 
 PHP="/usr/bin/php"
@@ -28,15 +29,13 @@ else
 fi
 
 if [ "${WORK}" == "" ]; then
-    warning "Not exist work directory. [${WORK}]"
-    exit 1
+    error "Not exist work directory. [${WORK}]"
 fi
 
 TARGET="${WORK}/src/main/webapp/application"
 
 if [ ! -d ${TARGET} ]; then
-    warning "Not exist target directory. [${TARGET}]"
-    exit 1
+    error "Not exist target directory. [${TARGET}]"
 fi
 
 DEST="${WORK}/src/main/webapp/apidoc"
