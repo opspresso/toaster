@@ -208,6 +208,8 @@ config_save() {
 
     echo "${KEY}=${VAL}" >> "${CONFIG}"
 
+    echo_ "${KEY}=${VAL}"
+
     if [ "${KEY}" == "REGION" ]; then
         aws configure set default.region ${VAL}
     fi
