@@ -161,9 +161,6 @@ build() {
         lambda)
             build_lambda
             ;;
-        webapp)
-            build_webapp
-            ;;
         maven)
             build_maven
             ;;
@@ -460,22 +457,6 @@ build_lambda() {
     fi
 
     zip -q -r ../../../target/${ARTIFACT_ID}-${VERSION}.zip *
-
-    popd
-}
-
-build_webapp() {
-    echo_ "build for webapp..."
-
-    if [ -d target ]; then
-        rm -rf target
-    fi
-
-    mkdir target
-
-    pushd src/main/webapp
-
-    zip -q -r ../../../target/webapp.zip *
 
     popd
 }
