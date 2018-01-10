@@ -569,7 +569,7 @@ deploy_bucket() {
 
     OPTION="--acl public-read"
 
-    aws s3 sync "${PACKAGE_PATH}" "${DEPLOY_PATH}" ${OPTION}
+    aws s3 cp "${PACKAGE_PATH}" "${DEPLOY_PATH}" ${OPTION}
 }
 
 package_check() {
