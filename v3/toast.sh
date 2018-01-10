@@ -548,8 +548,7 @@ deploy_lambda() {
 
 deploy_bucket() {
     if [ "${PARAM2}" == "" ]; then
-        warning "Not set BUCKET."
-        return
+        error "Not set BUCKET."
     fi
 
     PACKAGE_PATH="target/${ARTIFACT_ID}-${VERSION}"
@@ -558,8 +557,7 @@ deploy_bucket() {
         unzip -q "${PACKAGE_PATH}.${PACKAGING}" -d "${PACKAGE_PATH}"
 
         if [ ! -d ${PACKAGE_PATH} ]; then
-            warning "Not set PACKAGE_PATH."
-            return
+            error "Not set PACKAGE_PATH."
         fi
     fi
 
