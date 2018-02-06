@@ -388,6 +388,9 @@ deploy() {
         t|target)
             deploy_target
             ;;
+        toast)
+            deploy_toast
+            ;;
         *)
             deploy_fleet
             vhost_fleet
@@ -2350,6 +2353,62 @@ repo_path() {
 
     REPO_BUCKET="repo.${ORG}.com"
     REPO_PATH="s3://${REPO_BUCKET}"
+}
+
+deploy_toast() {
+    echo_ "deploy toast..."
+
+    GROUP_ID="com.nalbam"
+    ARTIFACT_ID="nalbam-toast"
+    VERSION="${PARAM2}"
+    TYPE="web"
+    DOMAIN="${PARAM3}"
+    REPO="repo.nalbam.com"
+
+    GROUP_PATH="com/nalbam"
+
+    PACKAGING="war"
+    DEPLOY_PATH="${SITE_DIR}/${DOMAIN}"
+
+    FILENAME="${ARTIFACT_ID}-${VERSION}.${PACKAGING}"
+    FILEPATH="${TEMP_DIR}/${FILENAME}"
+
+    UNZIP_DIR="${TEMP_DIR}/${ARTIFACT_ID}"
+
+    echo_bar
+    echo_ "download..."
+
+    SOURCE="http://${REPO_PATH}/maven2/${GROUP_PATH}/${ARTIFACT_ID}/${VERSION}/${FILENAME}"
+    echo_ "--> ${SOURCE}"
+
+    wget -q -N -P "${TEMP_DIR}" "${SOURCE}"
+
+    if [ -d "${UNZIP_DIR}" ] || [ -f "${UNZIP_DIR}" ]; then
+        rm -rf "${UNZIP_DIR}"
+    fi
+
+    if [ -d "${UNZIP_DIR}" ] || [ -f "${UNZIP_DIR}" ]; then
+        warning "deploy file can not unzip. [${UNZIP_DIR}]"
+    else
+        unzip -q "${FILEPATH}" -d "${UNZIP_DIR}"
+
+        if [ ! -d "${UNZIP_DIR}" ]; then
+            warning "deploy file can not unzip. [${UNZIP_DIR}]"
+        fi
+
+        if [ -d "${UNZIP_DIR}/application/logs" ]; then
+            chmod 777 "${UNZIP_DIR}/application/logs"
+        fi
+        if [ -d "${UNZIP_DIR}/application/cache" ]; then
+            chmod 777 "${UNZIP_DIR}/application/cache"
+        fi
+    fi
+
+    echo_ "placement..."
+
+    placement
+
+    echo_bar
 }
 
 deploy_project() {
