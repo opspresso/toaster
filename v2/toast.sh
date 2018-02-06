@@ -2363,7 +2363,7 @@ deploy_toast() {
     VERSION="${PARAM2}"
     TYPE="web"
     DOMAIN="${PARAM3}"
-    REPO="repo.nalbam.com"
+    REPO="repo.toast.sh"
 
     GROUP_PATH="com/nalbam"
 
