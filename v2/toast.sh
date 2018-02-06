@@ -2378,7 +2378,7 @@ deploy_toast() {
     echo_bar
     echo_ "download..."
 
-    SOURCE="http://${REPO_PATH}/maven2/${GROUP_PATH}/${ARTIFACT_ID}/${VERSION}/${FILENAME}"
+    SOURCE="http://${REPO}/maven2/${GROUP_PATH}/${ARTIFACT_ID}/${VERSION}/${FILENAME}"
     echo_ "--> ${SOURCE}"
 
     wget -q -N -P "${TEMP_DIR}" "${SOURCE}"
