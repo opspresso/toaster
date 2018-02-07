@@ -793,7 +793,7 @@ init_slave() {
     TARGET="${HOME}/.ssh/authorized_keys"
     touch ${TARGET}
 
-    if [ $(cat ${TARGET} | grep -c "toast@yanolja.in") -eq 0 ]; then
+    if [ $(cat ${TARGET} | grep -c "admin@toast.sh") -eq 0 ]; then
         URL="${TOAST_URL}/config/key/rsa_public_key"
         RES=$(curl -s --data "org=${ORG}&token=${TOKEN}&no=${SNO}" "${URL}")
 
@@ -1609,7 +1609,7 @@ build_save() {
         DATE=$(date "+%Y-%m-%d %H:%M")
 
         git config --global user.name  "toast"
-        git config --global user.email "toast@yanolja.com"
+        git config --global user.email "admin@toast.sh"
 
         git tag -a "${VERSION}" -m "at ${DATE} by toast"
         git push origin "${VERSION}"

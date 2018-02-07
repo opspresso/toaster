@@ -2,7 +2,7 @@
 
 FROM java:8
 
-MAINTAINER jyyu@yanolja.com
+MAINTAINER me@nalbam.com
 
 ENV TZ=Asia/Seoul
 RUN ln -snf /usr/share/zoneinfo/$TZ /etc/localtime && echo $TZ > /etc/timezone
