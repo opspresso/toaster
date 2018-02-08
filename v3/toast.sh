@@ -571,9 +571,9 @@ publish_docker() {
 
     sudo docker tag ${ARTIFACT_ID}:latest ${REPOSITORY}/${ARTIFACT_ID}:latest
 
-    sudo docker images
-
     echo_ "docker push... [${ARTIFACT_ID}]"
+
+    docker images
 
     docker push ${REPOSITORY}/${ARTIFACT_ID}:latest
 
