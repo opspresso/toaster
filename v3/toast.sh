@@ -215,6 +215,22 @@ config_save() {
     fi
 }
 
+install_aws_cli() {
+    echo_ "install aws cli..."
+
+    wget -q -N https://s3.amazonaws.com/aws-cli/awscli-bundle.zip
+
+    if [ -f "${HOME}/awscli-bundle.zip" ]; then
+        unzip -q awscli-bundle.zip
+
+        sudo ./awscli-bundle/install -i /usr/local/aws -b /usr/bin/aws
+    fi
+
+    echo_bar
+    echo_ "$(/usr/bin/aws --version)"
+    echo_bar
+}
+
 install_java() {
     VERSION="$1"
 
