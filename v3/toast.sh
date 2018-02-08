@@ -565,7 +565,7 @@ publish_docker() {
 
     #docker pull ${REPOSITORY}/${ARTIFACT_ID}:latest
 
-    sudo docker build -t ${ARTIFACT_ID} .
+    sudo docker build --rm=false -t ${ARTIFACT_ID} .
 
     sudo docker images
 
