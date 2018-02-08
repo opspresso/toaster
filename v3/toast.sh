@@ -565,13 +565,13 @@ publish_docker() {
 
     #docker pull ${REPOSITORY}/${ARTIFACT_ID}:latest
 
-    docker build -t ${ARTIFACT_ID} .
+    sudo docker build -t ${ARTIFACT_ID} .
 
-    docker images
+    sudo docker images
 
-    docker tag ${ARTIFACT_ID}:latest ${REPOSITORY}/${ARTIFACT_ID}:latest
+    sudo docker tag ${ARTIFACT_ID}:latest ${REPOSITORY}/${ARTIFACT_ID}:latest
 
-    docker push ${REPOSITORY}/${ARTIFACT_ID}:latest
+    sudo docker push ${REPOSITORY}/${ARTIFACT_ID}:latest
 
     popd
 }

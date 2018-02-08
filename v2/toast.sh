@@ -2654,19 +2654,14 @@ download() {
     aws s3 cp "${SOURCE}" "${TEMP_DIR}" --quiet
 
     if [ ! -f "${FILEPATH}" ]; then
-        SOURCE="${REPO_PATH}/maven2/${ARTIFACT_ID}/${VERSION}/${FILENAME}"
-        echo_ "--> ${SOURCE}"
-        aws s3 cp "${SOURCE}" "${TEMP_DIR}" --quiet
-
-        if [ ! -f "${FILEPATH}" ]; then
-            SOURCE="${REPO_PATH}/maven2/${ARTIFACT_ID}/${FILENAME}"
+        if [ "${ARTIFACT_ID}" == "nalbam-toast" ]; then
+            SOURCE="http://repo.toast.sh/maven2/${GROUP_PATH}/${ARTIFACT_ID}/${VERSION}/${FILENAME}"
             echo_ "--> ${SOURCE}"
-            aws s3 cp "${SOURCE}" "${TEMP_DIR}" --quiet
-
-            if [ ! -f "${FILEPATH}" ]; then
-                warning "deploy file does not exist. [${FILEPATH}]"
-                return
-            fi
+            wget -q -N -P "${TEMP_DIR}" "${SOURCE}"
+        fi
+        if [ ! -f "${FILEPATH}" ]; then
+            warning "deploy file does not exist. [${FILEPATH}]"
+            return
         fi
     fi
 
