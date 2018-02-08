@@ -575,9 +575,9 @@ publish_docker() {
 
     sudo docker images
 
-    #sudo docker push ${REPOSITORY}/${ARTIFACT_ID}:latest
+    sudo docker push ${REPOSITORY}/${ARTIFACT_ID}:latest
 
-    sudo docker push ${REPOSITORY}/${ARTIFACT_ID}
+    #sudo docker push ${REPOSITORY}/${ARTIFACT_ID}
 
     popd
 }
