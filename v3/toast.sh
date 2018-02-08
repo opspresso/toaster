@@ -546,16 +546,19 @@ publish_docker() {
         build_docker
     fi
 
+    if [ "${USERID}" != "" ]; then
+        REPOSITORY="${USERID}.dkr.ecr.${REGION}.amazonaws.com"
+    fi
+
+    if [ "${REPOSITORY}" == "" ]; then
+        error "Not set REPOSITORY."
+    fi
+
     echo_ "publish to docker..."
 
     if [ "${PARAM2}" == "ECR" ]; then
-        aws --version
         aws ecr get-login --no-include-email --region ${REGION}
         #aws ecr create-repository --repository-name ${ARTIFACT_ID}
-    fi
-
-    if [ "${USERID}" != "" ]; then
-        REPOSITORY="${USERID}.dkr.ecr.${REGION}.amazonaws.com"
     fi
 
     pushd target/docker
