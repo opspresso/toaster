@@ -104,6 +104,7 @@ toast() {
 nothing() {
     REGION=
     BUCKET=
+    USERID=
     REPOSITORY=
     LOGZIO_TOKEN=
 }
@@ -551,6 +552,10 @@ publish_docker() {
         aws --version
         aws ecr get-login --no-include-email --region ${REGION}
         #aws ecr create-repository --repository-name ${ARTIFACT_ID}
+    fi
+
+    if [ "${USERID}" != "" ]; then
+        REPOSITORY="${USERID}.dkr.ecr.${REGION}.amazonaws.com"
     fi
 
     pushd target/docker
