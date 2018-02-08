@@ -554,7 +554,7 @@ publish_docker() {
         error "Not set REPOSITORY."
     fi
 
-    echo_ "publish to docker..."
+    echo_ "publish to docker... [${REPOSITORY}]"
 
     if [ "${PARAM2}" == "ECR" ]; then
         aws ecr get-login --no-include-email --region ${REGION}
@@ -565,11 +565,15 @@ publish_docker() {
 
     #docker pull ${REPOSITORY}/${ARTIFACT_ID}:latest
 
+    echo_ "docker build... [${ARTIFACT_ID}]"
+
     sudo docker build --rm=false -t ${ARTIFACT_ID} .
 
     #sudo docker tag ${ARTIFACT_ID}:latest ${REPOSITORY}/${ARTIFACT_ID}:latest
 
     #sudo docker images
+
+    echo_ "docker push... [${ARTIFACT_ID}]"
 
     docker push ${REPOSITORY}/${ARTIFACT_ID}:latest
 
