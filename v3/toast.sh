@@ -558,7 +558,7 @@ publish_docker() {
 
     if [ "${PARAM2}" == "ECR" ]; then
         aws ecr get-login --no-include-email --region ${REGION}
-        #aws ecr create-repository --repository-name ${ARTIFACT_ID}
+        aws ecr create-repository --repository-name ${ARTIFACT_ID}
     fi
 
     pushd target/docker
@@ -569,11 +569,13 @@ publish_docker() {
 
     sudo docker build --rm=false -t ${ARTIFACT_ID} .
 
-    sudo docker tag ${ARTIFACT_ID}:latest ${REPOSITORY}/${ARTIFACT_ID}:${VERSION}
+    #sudo docker tag ${ARTIFACT_ID}:latest ${REPOSITORY}/${ARTIFACT_ID}:${VERSION}
 
     echo_ "docker push... [${ARTIFACT_ID}]"
 
-    sudo docker push ${REPOSITORY}/${ARTIFACT_ID}:${VERSION}
+    #sudo docker push ${REPOSITORY}/${ARTIFACT_ID}:${VERSION}
+
+    sudo docker push ${REPOSITORY}/${ARTIFACT_ID}
 
     popd
 }
