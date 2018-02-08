@@ -1403,7 +1403,7 @@ init_jenkins() {
 
     # jenkins
     URL="http://mirrors.jenkins.io/war/latest/jenkins.war"
-    wget -N -P "${WEBAPP_DIR}" "${URL}"
+    wget -q -N -P "${WEBAPP_DIR}" "${URL}"
 
     cp -rf "${CATALINA_HOME}/conf/web.org.xml" "${CATALINA_HOME}/conf/web.xml"
 

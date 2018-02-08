@@ -227,7 +227,7 @@ config_save() {
 install_aws() {
     echo_ "install aws cli..."
 
-    wget -q -N https://s3.amazonaws.com/aws-cli/awscli-bundle.zip -P "${TEMP_DIR}"
+    wget -q -N -P "${TEMP_DIR}" https://s3.amazonaws.com/aws-cli/awscli-bundle.zip
 
     if [ -f "${TEMP_DIR}/awscli-bundle.zip" ]; then
         pushd ${TEMP_DIR}
