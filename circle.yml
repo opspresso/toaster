@@ -14,3 +14,7 @@ deployment:
     branch: master
     commands:
       - ./publish.sh
+
+general:
+  artifacts:
+    - target
