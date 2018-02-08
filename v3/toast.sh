@@ -227,12 +227,16 @@ config_save() {
 install_aws() {
     echo_ "install aws cli..."
 
-    wget -q -N https://s3.amazonaws.com/aws-cli/awscli-bundle.zip
+    wget -q -N https://s3.amazonaws.com/aws-cli/awscli-bundle.zip -P "${TEMP_DIR}"
 
-    if [ -f "${HOME}/awscli-bundle.zip" ]; then
+    if [ -f "${TEMP_DIR}/awscli-bundle.zip" ]; then
+        pushd ${TEMP_DIR}
+
         unzip -q awscli-bundle.zip
 
         sudo ./awscli-bundle/install -i /usr/local/aws -b /usr/bin/aws
+
+        popd
     fi
 
     echo_bar
