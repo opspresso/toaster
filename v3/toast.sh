@@ -573,9 +573,7 @@ publish_docker() {
 
     echo_ "docker push... [${ARTIFACT_ID}]"
 
-    docker images
-
-    docker push ${REPOSITORY}/${ARTIFACT_ID}:${VERSION}
+    sudo docker push ${REPOSITORY}/${ARTIFACT_ID}:${VERSION}
 
     popd
 }
