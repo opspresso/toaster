@@ -545,11 +545,15 @@ publish_docker() {
         aws ecr get-login --no-include-email --region ${RESIGN}
     fi
 
+    pushd target/docker
+
     docker build -t ${ARTIFACT_ID}/repo .
 
     docker tag ${ARTIFACT_ID}/repo:latest ${REPOSITORY}/${ARTIFACT_ID}/repo:latest
 
     docker push ${REPOSITORY}/${ARTIFACT_ID}/repo:latest
+
+    popd
 }
 
 deploy_bucket() {
