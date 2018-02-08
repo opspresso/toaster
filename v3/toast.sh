@@ -541,7 +541,10 @@ publish_docker() {
         build_docker
     fi
 
+    echo_ "publish to docker..."
+
     if [ "${PARAM2}" == "ECR" ]; then
+        aws --version
         aws ecr get-login --no-include-email --region ${RESIGN}
     fi
 
