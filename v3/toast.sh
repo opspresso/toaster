@@ -102,7 +102,7 @@ toast() {
 ################################################################################
 
 nothing() {
-    RESIGN=
+    REGION=
     BUCKET=
     REPOSITORY=
     LOGZIO_TOKEN=
@@ -548,7 +548,8 @@ publish_docker() {
     echo_ "publish to docker..."
 
     if [ "${PARAM2}" == "ECR" ]; then
-        aws ecr get-login --no-include-email
+        aws --version
+        aws ecr get-login --no-include-email --region ${REGION}
         #aws ecr create-repository --repository-name ${ARTIFACT_ID}
     fi
 
