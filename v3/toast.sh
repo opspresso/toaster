@@ -567,15 +567,11 @@ publish_docker() {
 
     sudo docker build --rm=false -t ${ARTIFACT_ID} .
 
-    #sudo docker images
-
     #sudo docker tag ${ARTIFACT_ID}:latest ${REPOSITORY}/${ARTIFACT_ID}:latest
 
-    #sudo docker push ${REPOSITORY}/${ARTIFACT_ID}:latest
+    #sudo docker images
 
-    if [ "${PARAM2}" == "ECR" ]; then
-        aws ecr put-image --repository-name ${ARTIFACT_ID} --image-tag ${VERSION}
-    fi
+    docker push ${REPOSITORY}/${ARTIFACT_ID}:latest
 
     popd
 }
