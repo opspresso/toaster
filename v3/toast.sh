@@ -563,7 +563,11 @@ publish_docker() {
 
     pushd target/docker
 
+    #docker pull ${REPOSITORY}/${ARTIFACT_ID}:latest
+
     docker build -t ${ARTIFACT_ID} .
+
+    docker images
 
     docker tag ${ARTIFACT_ID}:latest ${REPOSITORY}/${ARTIFACT_ID}:latest
 
