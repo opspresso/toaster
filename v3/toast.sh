@@ -102,6 +102,9 @@ toast() {
 ################################################################################
 
 nothing() {
+    RESIGN=
+    BUCKET=
+    REPOSITORY=
     LOGZIO_TOKEN=
 }
 
@@ -179,6 +182,9 @@ publish() {
             ;;
         eb|beanstalk)
             publish_beanstalk
+            ;;
+        docker)
+            publish_docker
             ;;
     esac
 }
@@ -528,6 +534,22 @@ publish_beanstalk() {
         --description "${BRANCH} (${GIT_ID})" \
         --source-bundle S3Bucket="${BUCKET}",S3Key="${S3_KEY}" \
         --auto-create-application
+}
+
+publish_docker() {
+    if [ ! -d "target/docker" ]; then
+        build_docker
+    fi
+
+    if [ "${PARAM2}" == "ECR" ]; then
+        aws ecr get-login --no-include-email --region ${RESIGN}
+    fi
+
+    docker build -t ${ARTIFACT_ID}/repo .
+
+    docker tag ${ARTIFACT_ID}/repo:latest ${REPOSITORY}/${ARTIFACT_ID}/repo:latest
+
+    docker push ${REPOSITORY}/${ARTIFACT_ID}/repo:latest
 }
 
 deploy_bucket() {
