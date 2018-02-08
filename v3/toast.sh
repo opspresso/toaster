@@ -547,11 +547,11 @@ publish_docker() {
 
     pushd target/docker
 
-    docker build -t ${ARTIFACT_ID}/repo .
+    docker build -t ${ARTIFACT_ID} .
 
-    docker tag ${ARTIFACT_ID}/repo:latest ${REPOSITORY}/${ARTIFACT_ID}/repo:latest
+    docker tag ${ARTIFACT_ID}:latest ${REPOSITORY}/${ARTIFACT_ID}:latest
 
-    docker push ${REPOSITORY}/${ARTIFACT_ID}/repo:latest
+    docker push ${REPOSITORY}/${ARTIFACT_ID}:latest
 
     popd
 }
