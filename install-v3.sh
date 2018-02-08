@@ -36,20 +36,20 @@ curl -s -o /tmp/toaster.new ${REPO}/toaster-v3.txt
 
 if [ ! -f /tmp/toaster.new ]; then
     error "Can not download. [${REPO}]"
-    exit 1
 fi
 
+NEW="$(cat /tmp/toaster.new)"
+
 if [ -f /tmp/toaster.old ]; then
-    NEW="$(cat /tmp/toaster.new)"
     OLD="$(cat /tmp/toaster.old)"
 
     if [ "${NEW}" == "${OLD}" ]; then
-        success "Already have latest version. [${OLD}]"
+        success "Already have latest version. [${NEW}]"
     fi
 
     MSG="Latest version updated. [${OLD} -> ${NEW}]"
 else
-    MSG="Toast.sh installed."
+    MSG="Toast.sh installed. [${NEW}]"
 fi
 
 # download
