@@ -171,11 +171,11 @@ publish() {
     pom_parse
 
     case ${PARAM1} in
-        eb|beanstalk)
-            publish_beanstalk
-            ;;
         bk|bucket)
             publish_bucket
+            ;;
+        eb|beanstalk)
+            publish_beanstalk
             ;;
     esac
 }
@@ -184,11 +184,11 @@ deploy() {
     pom_parse
 
     case ${PARAM1} in
-        eb|beanstalk)
-            deploy_beanstalk
-            ;;
         bk|bucket)
             deploy_bucket
+            ;;
+        eb|beanstalk)
+            deploy_beanstalk
             ;;
         lambda)
             deploy_lambda
@@ -234,7 +234,7 @@ install_java() {
 install_elasticsearch() {
     echo_ "install elasticsearch..."
 
-    ${SHELL_DIR}/install/elasticsearch.sh
+    ${SHELL_DIR}/install/elasticsearch.sh "${BUCKET}"
 
     echo_bar
 }
@@ -242,7 +242,7 @@ install_elasticsearch() {
 install_kibana() {
     echo_ "install kibana..."
 
-    ${SHELL_DIR}/install/kibana.sh
+    ${SHELL_DIR}/install/kibana.sh "${BUCKET}"
 
     echo_bar
 }
@@ -250,7 +250,7 @@ install_kibana() {
 install_logstash() {
     echo_ "install logstash..."
 
-    ${SHELL_DIR}/install/logstash.sh
+    ${SHELL_DIR}/install/logstash.sh "${BUCKET}"
 
     echo_bar
 }
@@ -258,7 +258,7 @@ install_logstash() {
 install_filebeat() {
     echo_ "install filebeat..."
 
-    ${SHELL_DIR}/install/filebeat.sh
+    ${SHELL_DIR}/install/filebeat.sh "${BUCKET}"
 
     echo_bar
 }
@@ -511,6 +511,30 @@ publish_beanstalk() {
         --auto-create-application
 }
 
+deploy_bucket() {
+    if [ "${PARAM2}" == "" ]; then
+        error "Not set BUCKET."
+    fi
+
+    PACKAGE_PATH="target/${ARTIFACT_ID}-${VERSION}"
+
+    if [ ! -d ${PACKAGE_PATH} ]; then
+        unzip -q "${PACKAGE_PATH}.${PACKAGING}" -d "${PACKAGE_PATH}"
+
+        if [ ! -d ${PACKAGE_PATH} ]; then
+            error "Not set PACKAGE_PATH."
+        fi
+    fi
+
+    DEPLOY_PATH="s3://${PARAM2}"
+
+    echo_ "deploy to bucket... [${DEPLOY_PATH}]"
+
+    OPTION="--acl public-read"
+
+    aws s3 sync "${PACKAGE_PATH}" "${DEPLOY_PATH}" ${OPTION}
+}
+
 deploy_beanstalk() {
     STAMP="$(cat .stamp)"
 
@@ -546,30 +570,6 @@ deploy_lambda() {
     aws lambda update-function-code \
         --function-name "${FUNCTION_NAME}" \
         --zip-file "fileb://${PACKAGE_PATH}"
-}
-
-deploy_bucket() {
-    if [ "${PARAM2}" == "" ]; then
-        error "Not set BUCKET."
-    fi
-
-    PACKAGE_PATH="target/${ARTIFACT_ID}-${VERSION}"
-
-    if [ ! -d ${PACKAGE_PATH} ]; then
-        unzip -q "${PACKAGE_PATH}.${PACKAGING}" -d "${PACKAGE_PATH}"
-
-        if [ ! -d ${PACKAGE_PATH} ]; then
-            error "Not set PACKAGE_PATH."
-        fi
-    fi
-
-    DEPLOY_PATH="s3://${PARAM2}"
-
-    echo_ "deploy to bucket... [${DEPLOY_PATH}]"
-
-    OPTION="--acl public-read"
-
-    aws s3 sync "${PACKAGE_PATH}" "${DEPLOY_PATH}" ${OPTION}
 }
 
 package_check() {
