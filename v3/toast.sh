@@ -546,6 +546,7 @@ publish_docker() {
     if [ "${PARAM2}" == "ECR" ]; then
         aws --version
         aws ecr get-login --no-include-email --region ${RESIGN}
+        #aws ecr create-repository --repository-name ${ARTIFACT_ID}
     fi
 
     pushd target/docker
