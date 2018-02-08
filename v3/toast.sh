@@ -123,7 +123,10 @@ config() {
 
 install() {
     case ${PARAM1} in
-        java|java8)
+        aws)
+            install_aws
+            ;;
+        java8)
             install_java 8
             ;;
         java9)
@@ -215,7 +218,7 @@ config_save() {
     fi
 }
 
-install_aws_cli() {
+install_aws() {
     echo_ "install aws cli..."
 
     wget -q -N https://s3.amazonaws.com/aws-cli/awscli-bundle.zip
