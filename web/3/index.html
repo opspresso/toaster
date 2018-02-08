@@ -39,12 +39,14 @@ curl -s toast.sh/install-v3 | bash</pre>
                 </div>
                 <div class="x_content">
                     <pre>
-~/toaster/toast.sh c REGION ap-northeast-2
-~/toaster/toast.sh c BUCKET repo.toast.sh
-~/toaster/toast.sh i java8
-~/toaster/toast.sh v master
-~/toaster/toast.sh p eb
-~/toaster/toast.sh d eb</pre>
+~/toaster/toast.sh config REGION ap-northeast-2
+~/toaster/toast.sh config BUCKET repo.toast.sh
+~/toaster/toast.sh install {package}
+~/toaster/toast.sh version {branch}
+~/toaster/toast.sh publish bucket
+~/toaster/toast.sh publish beanstalk
+~/toaster/toast.sh deploy bucket {bucket}
+~/toaster/toast.sh deploy beanstalk {env}</pre>
                 </div>
             </div>
         </div>
