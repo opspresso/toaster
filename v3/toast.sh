@@ -573,6 +573,8 @@ publish_docker() {
 
     echo_ "docker push... [${ARTIFACT_ID}]"
 
+    sudo docker images
+
     #sudo docker push ${REPOSITORY}/${ARTIFACT_ID}:latest
 
     sudo docker push ${REPOSITORY}/${ARTIFACT_ID}
