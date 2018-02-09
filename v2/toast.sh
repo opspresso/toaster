@@ -808,18 +808,18 @@ init_slave() {
     rm -rf ${TARGET}
 
     # .ssh/authorized_keys
-    TARGET="${HOME}/.ssh/authorized_keys"
-    touch ${TARGET}
-
-    if [ $(cat ${TARGET} | grep -c "admin@toast.sh") -eq 0 ]; then
-        URL="${TOAST_URL}/config/key/rsa_public_key"
-        RES=$(curl -s --data "org=${ORG}&token=${TOKEN}&no=${SNO}" "${URL}")
-
-        if [ "${RES}" != "" ]; then
-            echo "${RES}" >> ${TARGET}
-            chmod 700 ${TARGET}
-        fi
-    fi
+#    TARGET="${HOME}/.ssh/authorized_keys"
+#    touch ${TARGET}
+#
+#    if [ $(cat ${TARGET} | grep -c "admin@toast.sh") -eq 0 ]; then
+#        URL="${TOAST_URL}/config/key/rsa_public_key"
+#        RES=$(curl -s --data "org=${ORG}&token=${TOKEN}&no=${SNO}" "${URL}")
+#
+#        if [ "${RES}" != "" ]; then
+#            echo "${RES}" >> ${TARGET}
+#            chmod 700 ${TARGET}
+#        fi
+#    fi
 
     # .aws/config
     URL="${TOAST_URL}/config/key/aws_config"
