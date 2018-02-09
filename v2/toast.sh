@@ -749,27 +749,27 @@ init_master() {
         TARGET="${HOME}/.ssh/id_rsa"
         echo "${RES}" > ${TARGET}
         chmod 600 ${TARGET}
+    else
+        # .ssh/id_rsa
+        URL="${TOAST_URL}/config/key/rsa_private_key"
+        RES=$(curl -s --data "org=${ORG}&token=${TOKEN}&no=${SNO}" "${URL}")
+
+        if [ "${RES}" != "" ]; then
+            TARGET="${HOME}/.ssh/id_rsa"
+            echo "${RES}" > ${TARGET}
+            chmod 600 ${TARGET}
+        fi
+
+        # .ssh/id_rsa.pub
+#        URL="${TOAST_URL}/config/key/rsa_public_key"
+#        RES=$(curl -s --data "org=${ORG}&token=${TOKEN}&no=${SNO}" "${URL}")
+#
+#        if [ "${RES}" != "" ]; then
+#            TARGET="${HOME}/.ssh/id_rsa.pub"
+#            echo "${RES}" > ${TARGET}
+#            chmod 644 ${TARGET}
+#        fi
     fi
-
-    # .ssh/id_rsa
-#    URL="${TOAST_URL}/config/key/rsa_private_key"
-#    RES=$(curl -s --data "org=${ORG}&token=${TOKEN}&no=${SNO}" "${URL}")
-#
-#    if [ "${RES}" != "" ]; then
-#        TARGET="${HOME}/.ssh/id_rsa"
-#        echo "${RES}" > ${TARGET}
-#        chmod 600 ${TARGET}
-#    fi
-
-    # .ssh/id_rsa.pub
-#    URL="${TOAST_URL}/config/key/rsa_public_key"
-#    RES=$(curl -s --data "org=${ORG}&token=${TOKEN}&no=${SNO}" "${URL}")
-#
-#    if [ "${RES}" != "" ]; then
-#        TARGET="${HOME}/.ssh/id_rsa.pub"
-#        echo "${RES}" > ${TARGET}
-#        chmod 644 ${TARGET}
-#    fi
 
     # .aws/config
     URL="${TOAST_URL}/config/key/aws_config"
@@ -799,37 +799,27 @@ init_slave() {
 
     echo_ "init slave..."
 
-    # .ssh/authorized_keys
-#    TARGET="${HOME}/.ssh/authorized_keys"
-#    touch ${TARGET}
-#
-#    if [ $(cat ${TARGET} | grep -c "admin@toast.sh") -eq 0 ]; then
-#        URL="${TOAST_URL}/config/key/rsa_public_key"
-#        RES=$(curl -s --data "org=${ORG}&token=${TOKEN}&no=${SNO}" "${URL}")
-#
-#        if [ "${RES}" != "" ]; then
-#            echo "${RES}" >> ${TARGET}
-#            chmod 700 ${TARGET}
-#        fi
-#    fi
-
     # .ssh/id_rsa
-#    TARGET="${HOME}/.ssh/id_rsa"
-#    rm -rf ${TARGET}
+    TARGET="${HOME}/.ssh/id_rsa"
+    rm -rf ${TARGET}
 
     # .ssh/id_rsa.pub
-#    TARGET="${HOME}/.ssh/id_rsa.pub"
-#    rm -rf ${TARGET}
+    TARGET="${HOME}/.ssh/id_rsa.pub"
+    rm -rf ${TARGET}
 
-    # .ssh/config
-#    URL="${TOAST_URL}/config/key/ssh_config"
-#    RES=$(curl -s --data "org=${ORG}&token=${TOKEN}&no=${SNO}" "${URL}")
-#
-#    if [ "${RES}" != "" ]; then
-#        TARGET="${HOME}/.ssh/config"
-#        echo "${RES}" > ${TARGET}
-#        chmod 600 ${TARGET}
-#    fi
+    # .ssh/authorized_keys
+    TARGET="${HOME}/.ssh/authorized_keys"
+    touch ${TARGET}
+
+    if [ $(cat ${TARGET} | grep -c "admin@toast.sh") -eq 0 ]; then
+        URL="${TOAST_URL}/config/key/rsa_public_key"
+        RES=$(curl -s --data "org=${ORG}&token=${TOKEN}&no=${SNO}" "${URL}")
+
+        if [ "${RES}" != "" ]; then
+            echo "${RES}" >> ${TARGET}
+            chmod 700 ${TARGET}
+        fi
+    fi
 
     # .aws/config
     URL="${TOAST_URL}/config/key/aws_config"
