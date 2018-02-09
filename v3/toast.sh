@@ -558,7 +558,7 @@ publish_docker() {
 
     if [ "${PARAM2}" == "ECR" ]; then
         ECR_LOGIN=$(aws ecr get-login --no-include-email --region ${REGION})
-        eval ${ECR_LOGIN}
+        ${ECR_LOGIN}
     fi
 
     pushd target/docker
