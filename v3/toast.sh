@@ -568,8 +568,8 @@ publish_docker() {
     echo_ "docker login..."
 
     if [ "${PARAM2}" == "ECR" ]; then
-        ECR_LOGIN=$(aws ecr get-login --region ${REGION} --no-include-email)
-        #${ECR_LOGIN}
+        ECR_LOGIN=$(aws ecr get-login --region ${REGION})
+        eval ${ECR_LOGIN}
     fi
 
     echo_ "docker push... [${ARTIFACT_ID}]"
