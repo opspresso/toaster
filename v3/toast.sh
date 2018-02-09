@@ -563,8 +563,6 @@ publish_docker() {
 
     pushd target/docker
 
-    #docker pull ${REPOSITORY}/${ARTIFACT_ID}:latest
-
     echo_ "docker build... [${ARTIFACT_ID}]"
 
     docker build --rm=false -t ${REPOSITORY}/${ARTIFACT_ID}:${VERSION} .
