@@ -220,6 +220,7 @@ config_save() {
 
     if [ "${KEY}" == "REGION" ]; then
         aws configure set default.region ${VAL}
+        aws configure set default.output json
     fi
 }
 
