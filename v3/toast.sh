@@ -556,10 +556,7 @@ publish_docker() {
 
     echo_ "publish to docker... [${REPOSITORY}]"
 
-    if [ "${PARAM2}" == "ECR" ]; then
-        ECR_LOGIN=$(aws ecr get-login --no-include-email --region ${REGION})
-        ${ECR_LOGIN}
-    fi
+    docker version
 
     pushd target/docker
 
@@ -568,6 +565,13 @@ publish_docker() {
     docker build --rm=false -t ${REPOSITORY}/${ARTIFACT_ID}:${VERSION} .
 
     docker images
+
+    echo_ "docker login..."
+
+    if [ "${PARAM2}" == "ECR" ]; then
+        ECR_LOGIN=$(aws ecr get-login --region ${REGION} --no-include-email)
+        ${ECR_LOGIN}
+    fi
 
     echo_ "docker push... [${ARTIFACT_ID}]"
 
