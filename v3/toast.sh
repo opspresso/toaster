@@ -557,7 +557,7 @@ publish_docker() {
     echo_ "publish to docker... [${REPOSITORY}]"
 
     if [ "${PARAM2}" == "ECR" ]; then
-        eval $(aws ecr get-login --no-include-email --region ${REGION})
+        aws ecr get-login --no-include-email --region ${REGION}
         #aws ecr create-repository --repository-name ${ARTIFACT_ID}
     fi
 
