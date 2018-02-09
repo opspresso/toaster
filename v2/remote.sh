@@ -31,4 +31,4 @@ fi
 
 COMMAND="~/toaster/toast.sh ${CMD} ${PARAM1} ${PARAM2}"
 
-ssh -t ${USER}@${HOST} -p ${PORT} "${COMMAND}"
+ssh -t ${USER}@${HOST} -p ${PORT} -o "StrictHostKeyChecking=no" "${COMMAND}"
