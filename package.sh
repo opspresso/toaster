@@ -8,6 +8,8 @@ mkdir target
 
 VERSION="$(git rev-parse --short HEAD)"
 
+echo "VERSION=${VERSION}"
+
 # toaster.txt
 echo "version=${VERSION}"
 echo "${VERSION}" > target/toaster.txt
