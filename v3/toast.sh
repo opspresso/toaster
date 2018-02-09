@@ -6,14 +6,12 @@ echo_() {
 }
 
 success() {
-    echo -e "$1"
-    echo "$1" >> /tmp/toast.log
+    echo_ "$1"
     exit 0
 }
 
 error() {
-    echo -e "$1"
-    echo "$1" >> /tmp/toast.log
+    echo_ "$1"
     exit 1
 }
 
