@@ -567,17 +567,13 @@ publish_docker() {
 
     echo_ "docker build... [${ARTIFACT_ID}]"
 
-    docker build --rm=false -t ${ARTIFACT_ID} .
-
-    docker tag ${ARTIFACT_ID}:latest ${REPOSITORY}/${ARTIFACT_ID}:latest
-
-    echo_ "docker push... [${ARTIFACT_ID}]"
+    docker build --rm=false -t ${REPOSITORY}/${ARTIFACT_ID}:${VERSION} .
 
     docker images
 
-    docker push ${REPOSITORY}/${ARTIFACT_ID}:latest
+    echo_ "docker push... [${ARTIFACT_ID}]"
 
-    #sudo docker push ${REPOSITORY}/${ARTIFACT_ID}
+    docker push ${REPOSITORY}/${ARTIFACT_ID}:${VERSION}
 
     popd
 }
