@@ -9,7 +9,8 @@ phases:
   post_build:
     commands:
       - echo syncing with S3...
-      - ./publish.sh
+      - ./publish.sh toast.sh
+      - ./publish.sh repo.toast.sh
       - echo S3 sync completed.
 
 artifacts:

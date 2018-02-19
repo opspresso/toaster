@@ -13,7 +13,8 @@ deployment:
   production:
     branch: master
     commands:
-      - ./publish.sh
+      - ./publish.sh toast.sh
+      - ./publish.sh repo.toast.sh
 
 general:
   artifacts:

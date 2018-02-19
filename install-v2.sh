@@ -22,7 +22,7 @@ fi
 if [ "${ORG}" == "yanolja" ]; then
     REPO="http://toaster.yanolja.com.s3-website.ap-northeast-2.amazonaws.com"
 else
-    REPO="http://toast.sh"
+    REPO="http://repo.toast.sh"
 fi
 
 ################################################################################
