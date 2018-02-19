@@ -559,9 +559,9 @@ publish_docker() {
 
     pushd target/docker
 
-    echo_ "docker build... [${ARTIFACT_ID}]"
+    echo_ "docker build... [${ARTIFACT_ID}:latest]"
 
-    docker build --rm=false -t ${REPOSITORY}/${ARTIFACT_ID}:${VERSION} .
+    docker build --rm=false -t ${REPOSITORY}/${ARTIFACT_ID}:latest .
 
     docker images
 
@@ -572,16 +572,14 @@ publish_docker() {
         eval ${ECR_LOGIN}
     fi
 
-    echo_ "docker push... [${ARTIFACT_ID}:${VERSION}]"
+    echo_ "docker push... [${ARTIFACT_ID}:latest]"
 
-    docker push ${REPOSITORY}/${ARTIFACT_ID}:${VERSION}
+    docker push ${REPOSITORY}/${ARTIFACT_ID}:latest
 
-    docker tag ${REPOSITORY}/${ARTIFACT_ID}:${VERSION} ${REPOSITORY}/${ARTIFACT_ID}:latest
-
-    echo_ "docker tag... [${ARTIFACT_ID}:latest]"
+    echo_ "docker tag... [${ARTIFACT_ID}:${VERSION}]"
  
-    ECR_TAG=$(aws ecr batch-get-image --repository-name ${ARTIFACT_ID} --image-ids imageTag=${VERSION} --query images[].imageManifest --output text)
-    aws ecr put-image --repository-name ${ARTIFACT_ID} --image-tag latest --image-manifest "${ECR_TAG}"
+    ECR_TAG=$(aws ecr batch-get-image --repository-name ${ARTIFACT_ID} --image-ids imageTag=latest --query images[].imageManifest --output text)
+    aws ecr put-image --repository-name ${ARTIFACT_ID} --image-tag ${VERSION} --image-manifest "${ECR_TAG}"
 
     popd
 }
