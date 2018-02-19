@@ -568,8 +568,8 @@ publish_docker() {
     echo_ "docker login..."
 
     if [ "${PARAM2}" == "ECR" ]; then
-        LOGIN=$(aws ecr get-login --region ${REGION})
-        eval ${LOGIN}
+        ECR_LOGIN=$(aws ecr get-login --region ${REGION})
+        eval ${ECR_LOGIN}
     fi
 
     echo_ "docker push... [${ARTIFACT_ID}:${VERSION}]"
@@ -580,8 +580,8 @@ publish_docker() {
 
     echo_ "docker tag... [${ARTIFACT_ID}:latest]"
  
-    MANIFEST=$(aws ecr batch-get-image --repository-name ${ARTIFACT_ID} --image-ids imageTag=${VERSION} --query images[].imageManifest --output text)
-    aws ecr put-image --repository-name ${ARTIFACT_ID} --image-tag latest --image-manifest "$MANIFEST"
+    ECR_TAG=$(aws ecr batch-get-image --repository-name ${ARTIFACT_ID} --image-ids imageTag=${VERSION} --query images[].imageManifest --output text)
+    aws ecr put-image --repository-name ${ARTIFACT_ID} --image-tag latest --image-manifest "${ECR_TAG}"
 
     popd
 }
