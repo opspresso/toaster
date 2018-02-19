@@ -580,8 +580,8 @@ publish_docker() {
 
     echo_ "docker tag... [${ARTIFACT_ID}:latest]"
  
-    MANIFEST=$(aws ecr batch-get-image --repository-name ${ARTIFACT_ID} --image-ids imageTag=latest --query images[].imageManifest --output text)
-    aws ecr put-image --repository-name ${ARTIFACT_ID} --image-tag ${VERSION} --image-manifest "$MANIFEST"
+    MANIFEST=$(aws ecr batch-get-image --repository-name ${ARTIFACT_ID} --image-ids imageTag=${VERSION} --query images[].imageManifest --output text)
+    aws ecr put-image --repository-name ${ARTIFACT_ID} --image-tag latest --image-manifest "$MANIFEST"
 
     popd
 }
