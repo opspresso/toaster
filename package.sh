@@ -11,7 +11,6 @@ VERSION="$(git rev-parse --short HEAD)"
 echo "VERSION=${VERSION}"
 
 # toaster.txt
-echo "version=${VERSION}"
 echo "${VERSION}" > target/toaster.txt
 echo "v2-${VERSION}" > target/toaster-v2.txt
 echo "v3-${VERSION}" > target/toaster-v3.txt
