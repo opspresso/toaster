@@ -576,6 +576,8 @@ publish_docker() {
 
     docker push ${REPOSITORY}/${ARTIFACT_ID}:${VERSION}
 
+    docker tag ${REPOSITORY}/${ARTIFACT_ID}:${VERSION} ${REPOSITORY}/${ARTIFACT_ID}:latest
+
     popd
 }
 
