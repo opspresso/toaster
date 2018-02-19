@@ -678,21 +678,17 @@ init_hosts() {
     TARGET="/etc/hosts"
     TEMP_FILE="${TEMP_DIR}/toast-hosts.tmp"
 
-    # backup
-    if [ -f "${TARGET}_toast" ]; then
-        copy "${TARGET}_toast" ${TARGET}
-    else
-        copy ${TARGET} "${TARGET}_toast"
-    fi
-
     # hosts
     URL="${TOAST_URL}/server/hosts/${SNO}"
     RES=$(curl -s --data "org=${ORG}&token=${TOKEN}&no=${SNO}" "${URL}")
 
-    if [ "${RES}" != "" ]; then
-        echo "${RES}" > ${TEMP_FILE}
-        copy ${TEMP_FILE} ${TARGET}
+    if [ "${RES}" == "" ]; then
+        warning "empty hosts. [${URL}]"
+        return
     fi
+
+    echo "${RES}" > ${TEMP_FILE}
+    copy ${TEMP_FILE} ${TARGET}
 }
 
 init_profile() {
@@ -709,10 +705,13 @@ init_profile() {
     URL="${TOAST_URL}/server/profile/${SNO}"
     RES=$(curl -s --data "org=${ORG}&token=${TOKEN}&no=${SNO}" "${URL}")
 
-    if [ "${RES}" != "" ]; then
-        echo "${RES}" > ${TARGET}
-        source ${TARGET}
+    if [ "${RES}" == "" ]; then
+        warning "empty profile. [${URL}]"
+        return
     fi
+
+    echo "${RES}" > ${TARGET}
+    source ${TARGET}
 }
 
 init_email() {
@@ -2360,9 +2359,9 @@ deploy_toast() {
 
     GROUP_ID="com.nalbam"
     ARTIFACT_ID="nalbam-toast"
-    VERSION="${PARAM2}"
+    VERSION="0.0.0"
     TYPE="web"
-    DOMAIN="${PARAM3}"
+    DOMAIN="${PARAM2}.toast.sh"
     REPO="repo.toast.sh"
 
     GROUP_PATH="com/nalbam"
