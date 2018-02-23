@@ -71,25 +71,25 @@ toast() {
     #prepare
 
     case ${CMD} in
-        u|update)
+        update)
             update
             ;;
-        c|config)
+        config)
             config
             ;;
-        i|install)
+        install)
             install
             ;;
-        v|version)
+        version)
             version
             ;;
-        b|build)
+        build)
             build
             ;;
-        p|publish)
-            publish
+        releases)
+            releases
             ;;
-        d|deploy)
+        deploy)
             deploy
             ;;
         *)
@@ -160,30 +160,33 @@ build() {
     pom_parse
 
     case ${PARAM1} in
-        docker)
-            build_docker
-            ;;
-        lambda)
-            build_lambda
+        beanstalk)
+            build_beanstalk
             ;;
         maven)
             build_maven
             ;;
+        webapp)
+            build_webapp
+            ;;
+        node)
+            build_node
+            ;;
     esac
 }
 
-publish() {
+releases() {
     pom_parse
 
     case ${PARAM1} in
-        bk|bucket)
-            publish_bucket
+        bucket)
+            releases_bucket
             ;;
-        eb|beanstalk)
-            publish_beanstalk
+        beanstalk)
+            releases_beanstalk
             ;;
         docker)
-            publish_docker
+            releases_docker
             ;;
     esac
 }
@@ -192,10 +195,10 @@ deploy() {
     pom_parse
 
     case ${PARAM1} in
-        bk|bucket)
-            deploy_bucket
+        webapp)
+            deploy_webapp
             ;;
-        eb|beanstalk)
+        beanstalk)
             deploy_beanstalk
             ;;
         lambda)
@@ -345,11 +348,11 @@ version_branch() {
         VERSION="${VERSION}-SNAPSHOT"
     fi
 
-    pom_replace
+    version_replace
 }
 
 version_filebeat() {
-    FILEBEAT=".ebextensions/01-filebeat.config"
+    FILEBEAT=".ebextensions/filebeat.config"
 
     if [ ! -f "${FILEBEAT}" ]; then
         return
@@ -371,7 +374,7 @@ version_filebeat() {
     fi
 }
 
-pom_replace() {
+version_replace() {
     POM_FILE="pom.xml"
 
     if [ ! -f "${POM_FILE}" ]; then
@@ -395,7 +398,7 @@ pom_replace() {
     cp -rf ${TEMP_FILE} ${POM_FILE}
 }
 
-upload_repo() {
+upload_bucket() {
     EXT="$1"
 
     PACKAGE_PATH="target/${ARTIFACT_ID}-${VERSION}.${EXT}"
@@ -418,8 +421,8 @@ upload_repo() {
     aws s3 cp "${PACKAGE_PATH}" "${UPLOAD_PATH}" ${OPTION}
 }
 
-build_docker() {
-    echo_ "build for docker..."
+build_beanstalk() {
+    echo_ "build for beanstalk..."
 
     if [ ! -d "target/docker" ]; then
         mkdir "target/docker"
@@ -465,15 +468,14 @@ build_docker() {
     popd
 }
 
-build_lambda() {
-    echo_ "build for lambda... [${PARAM2}]"
+build_maven() {
+    echo_ "build for maven..."
 
-    if [ "${PARAM2}" == "" ]; then
-        error "Not set TARGET."
-    fi
-    if [ ! -d "src/main/${PARAM2}" ]; then
-        error "Not set TARGET."
-    fi
+    mvn clean package -DskipTests
+}
+
+build_webapp() {
+    echo_ "build for webapp..."
 
     if [ -d target ]; then
         rm -rf target
@@ -481,24 +483,32 @@ build_lambda() {
 
     mkdir target
 
-    pushd src/main/${PARAM2}
+    pushd src/main/webapp
 
-    if [ "${PARAM2}" == "node" ]; then
-        npm install -s
+    zip -q -r ../../../target/${ARTIFACT_ID}-${VERSION}.${PACKAGING} *
+
+    popd
+}
+
+build_node() {
+    echo_ "build for node..."
+
+    if [ -d target ]; then
+        rm -rf target
     fi
+
+    mkdir target
+
+    pushd src/main/node
+
+    npm install -s
 
     zip -q -r ../../../target/${ARTIFACT_ID}-${VERSION}.zip *
 
     popd
 }
 
-build_maven() {
-    echo_ "build for maven..."
-
-    mvn clean package -DskipTests
-}
-
-publish_bucket() {
+releases_bucket() {
     POM_FILE="pom.xml"
 
     if [ -f "${POM_FILE}" ]; then
@@ -506,21 +516,21 @@ publish_bucket() {
     fi
 
     if [ "${PARAM2}" != "none" ]; then
-        echo_ "publish to bucket... [${BUCKET}]"
+        echo_ "releases to bucket... [${BUCKET}]"
 
-        upload_repo "zip"
-        upload_repo "war"
-        upload_repo "jar"
-        upload_repo "pom"
+        upload_bucket "zip"
+        upload_bucket "war"
+        upload_bucket "jar"
+        upload_bucket "pom"
     fi
 }
 
-publish_beanstalk() {
+releases_beanstalk() {
     if [ ! -d "target/docker" ]; then
-        build_docker
+        build_beanstalk
     fi
 
-    publish_bucket
+    releases_bucket
 
     STAMP=$(date "+%y%m%d-%H%M")
     echo "${STAMP}" > .stamp
@@ -530,7 +540,7 @@ publish_beanstalk() {
 
     S3_KEY="maven2/${GROUP_PATH}/${ARTIFACT_ID}/${VERSION}/${ARTIFACT_ID}-${VERSION}.zip"
 
-    echo_ "publish to beanstalk versions..."
+    echo_ "releases to beanstalk versions..."
 
     aws elasticbeanstalk create-application-version \
         --application-name "${ARTIFACT_ID}" \
@@ -540,7 +550,7 @@ publish_beanstalk() {
         --auto-create-application
 }
 
-publish_docker() {
+releases_docker() {
     if [ ! -d "target/docker" ]; then
         build_docker
     fi
@@ -589,24 +599,12 @@ publish_docker() {
     popd
 }
 
-deploy_bucket() {
-    if [ "${PARAM2}" == "" ]; then
-        error "Not set BUCKET."
-    fi
-
-    PACKAGE_PATH="target/${ARTIFACT_ID}-${VERSION}"
-
-    if [ ! -d ${PACKAGE_PATH} ]; then
-        unzip -q "${PACKAGE_PATH}.${PACKAGING}" -d "${PACKAGE_PATH}"
-
-        if [ ! -d ${PACKAGE_PATH} ]; then
-            error "Not set PACKAGE_PATH."
-        fi
-    fi
+deploy_webapp() {
+    PACKAGE_PATH="src/main/webapp"
 
     DEPLOY_PATH="s3://${PARAM2}"
 
-    echo_ "deploy to bucket... [${DEPLOY_PATH}]"
+    echo_ "deploy webapp... [${DEPLOY_PATH}]"
 
     OPTION="--acl public-read"
 
@@ -651,7 +649,7 @@ deploy_lambda() {
 }
 
 package_check() {
-    command -v aws > /dev/null || (echo "aws cli must be installed" && exit 1)
+    command -v aws  > /dev/null || (echo "aws cli must be installed" && exit 1)
     command -v curl > /dev/null || (echo "curl must be installed" && exit 1)
     command -v wget > /dev/null || (echo "wget must be installed" && exit 1)
 }
@@ -701,13 +699,13 @@ echo_toast() {
     fi
 
     echo_bar
-    echo_ "                              _  _          _                  _        "
-    echo_ "      _   _  __ _ _ __   ___ | |(_) __ _   | |_ ___   __ _ ___| |_      "
-    echo_ "     | | | |/ _\` | '_ \ / _ \| || |/ _\` |  | __/ _ \ / _\` / __| __|  "
-    echo_ "     | |_| | (_| | | | | (_) | || | (_| |  | || (_) | (_| \__ \ |_      "
-    echo_ "      \__, |\__,_|_| |_|\___/|_|/ |\__,_|   \__\___/ \__,_|___/\__|     "
-    echo_ "      |___/                   |__/                                      "
-    echo_ "                                            by nalbam (${VER})       "
+    echo_ "      _                  _        "
+    echo_ "     | |_ ___   __ _ ___| |_      "
+    echo_ "     | __/ _ \ / _\` / __| __|    "
+    echo_ "     | || (_) | (_| \__ \ |_      "
+    echo_ "      \__\___/ \__,_|___/\__|     "
+    echo_ "                                  "
+    echo_ "        by nalbam (${VER})    "
     echo_bar
 }
 
