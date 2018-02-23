@@ -2357,7 +2357,7 @@ repo_path() {
 deploy_toast() {
     echo_ "deploy toast..."
 
-    GROUP_ID="com.nalbam"
+    GROUP_ID="toast"
     ARTIFACT_ID="toast-web"
     VERSION="0.0.0"
     TYPE="web"
