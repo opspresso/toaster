@@ -4,7 +4,7 @@
 # sudo mv composer.phar /usr/local/bin/composer
 
 error() {
-    echo -e "$(tput setaf 1)$1$(tput sgr0)"
+    echo -e "$1"
     exit 1
 }
 
