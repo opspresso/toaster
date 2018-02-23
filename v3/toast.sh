@@ -181,6 +181,9 @@ build() {
         webapp)
             build_webapp
             ;;
+        php)
+            build_php
+            ;;
         node)
             build_node
             ;;
@@ -484,6 +487,15 @@ build_maven() {
     echo_ "build for maven..."
 
     mvn clean package -DskipTests
+}
+
+build_php() {
+    echo_ "build for php..."
+
+    curl -sS https://getcomposer.org/installer | php
+    sudo mv composer.phar /usr/local/bin/composer
+
+    build_webapp
 }
 
 build_webapp() {
