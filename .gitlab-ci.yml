@@ -7,4 +7,5 @@ deploy:
   script:
     - pip install awscli
     - ./package.sh
-    - ./publish.sh demo.nalbam.com
+    - ./publish.sh toast.sh
+    - ./publish.sh repo.toast.sh
