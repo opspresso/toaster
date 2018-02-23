@@ -66,6 +66,11 @@ SHELL_DIR=$(dirname "$0")
 
 TEMP_DIR="/tmp"
 
+SUDO=""
+if [ "${HOME}" != "/root" ]; then
+    SUDO="sudo"
+fi
+
 ################################################################################
 
 BUCKET="repo.toast.sh"
@@ -252,7 +257,7 @@ install_aws() {
 
         unzip -q awscli-bundle.zip
 
-        sudo ./awscli-bundle/install -i /usr/local/aws -b /usr/bin/aws
+        ${SUDO} ./awscli-bundle/install -i /usr/local/aws -b /usr/bin/aws
 
         popd
     fi
@@ -493,7 +498,7 @@ build_php() {
     echo_ "build for php..."
 
     curl -sS https://getcomposer.org/installer | php
-    sudo mv composer.phar /usr/local/bin/composer
+    ${SUDO} mv composer.phar /usr/local/bin/composer
 
     pushd src/main/webapp
 
@@ -686,25 +691,25 @@ package_check() {
 
 service_update() {
     if [ "${OS_TYPE}" == "Ubuntu" ]; then
-        sudo apt-get update
+        ${SUDO} apt-get update
     else
-        sudo yum update -y
+        ${SUDO} yum update -y
     fi
 }
 
 service_install() {
     if [ "${OS_TYPE}" == "Ubuntu" ]; then
-        sudo apt-get install -y $1
+        ${SUDO} apt-get install -y $1
     else
-        sudo yum install -y $1
+        ${SUDO} yum install -y $1
     fi
 }
 
 service_remove() {
     if [ "${OS_TYPE}" == "Ubuntu" ]; then
-        sudo apt-get remove -y $1
+        ${SUDO} apt-get remove -y $1
     else
-        sudo yum remove -y $1
+        ${SUDO} yum remove -y $1
     fi
 }
 
