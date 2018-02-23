@@ -22,6 +22,7 @@ nothing() {
     REPOSITORY=
     LOGZIO_TOKEN=
     AWS_DEFAULT_REGION=
+    AWS_DEFAULT_BUCKET=
 }
 
 ################################################################################
@@ -65,10 +66,19 @@ SHELL_DIR=$(dirname "$0")
 
 TEMP_DIR="/tmp"
 
+################################################################################
+
 BUCKET="repo.toast.sh"
-if [ "${AWS_DEFAULT_REGION}" != "" ]; then
-    BUCKET="${AWS_DEFAULT_REGION}"
+if [ "${AWS_DEFAULT_BUCKET}" != "" ]; then
+    BUCKET="${AWS_DEFAULT_BUCKET}"
 fi
+
+REGION="ap-northeast-2"
+if [ "${AWS_DEFAULT_REGION}" != "" ]; then
+    REGION="${AWS_DEFAULT_REGION}"
+fi
+
+################################################################################
 
 CONFIG="${HOME}/.toast"
 if [ -f "${CONFIG}" ]; then
