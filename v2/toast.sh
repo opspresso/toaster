@@ -2358,7 +2358,7 @@ deploy_toast() {
     echo_ "deploy toast..."
 
     GROUP_ID="com.nalbam"
-    ARTIFACT_ID="nalbam-toast"
+    ARTIFACT_ID="toast-web"
     VERSION="0.0.0"
     TYPE="web"
     DOMAIN="${PARAM2}.toast.sh"
@@ -2653,7 +2653,7 @@ download() {
     aws s3 cp "${SOURCE}" "${TEMP_DIR}" --quiet
 
     if [ ! -f "${FILEPATH}" ]; then
-        if [ "${ARTIFACT_ID}" == "nalbam-toast" ]; then
+        if [ "${ARTIFACT_ID}" == "toast-web" ]; then
             SOURCE="http://repo.toast.sh/maven2/${GROUP_PATH}/${ARTIFACT_ID}/${VERSION}/${FILENAME}"
             echo_ "--> ${SOURCE}"
             wget -q -N -P "${TEMP_DIR}" "${SOURCE}"
