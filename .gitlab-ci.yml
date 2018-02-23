@@ -2,14 +2,9 @@
 
 image: python:latest
 
-build:
-  stage: build
-  script:
-    - chmod 755 package.sh
-    - ./package.sh
-
 deploy:
   stage: deploy
   script:
     - pip install awscli
-    - aws s3 sync target/ s3://demo.nalbam.com/ --acl public-read
+    - ./package.sh
+    - ./publish.sh demo.nalbam.com
