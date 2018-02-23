@@ -3,7 +3,7 @@
 # composer global require phpmd/phpmd
 
 error() {
-    echo -e "$(tput setaf 1)$1$(tput sgr0)"
+    echo -e "$1"
     exit 1
 }
 
