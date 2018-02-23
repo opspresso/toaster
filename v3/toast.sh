@@ -495,6 +495,12 @@ build_php() {
     curl -sS https://getcomposer.org/installer | php
     sudo mv composer.phar /usr/local/bin/composer
 
+    pushd src/main/webapp
+
+    php composer install
+
+    popd
+
     build_webapp
 }
 
