@@ -15,6 +15,15 @@ error() {
     exit 1
 }
 
+nothing() {
+    REGION=
+    BUCKET=
+    USERID=
+    REPOSITORY=
+    LOGZIO_TOKEN=
+    AWS_DEFAULT_REGION=
+}
+
 ################################################################################
 
 OS_NAME="$(uname)"
@@ -57,8 +66,9 @@ SHELL_DIR=$(dirname "$0")
 TEMP_DIR="/tmp"
 
 BUCKET="repo.toast.sh"
-
-################################################################################
+if [ "${AWS_DEFAULT_REGION}" != "" ]; then
+    BUCKET="${AWS_DEFAULT_REGION}"
+fi
 
 CONFIG="${HOME}/.toast"
 if [ -f "${CONFIG}" ]; then
@@ -98,14 +108,6 @@ toast() {
 }
 
 ################################################################################
-
-nothing() {
-    REGION=
-    BUCKET=
-    USERID=
-    REPOSITORY=
-    LOGZIO_TOKEN=
-}
 
 prepare() {
     command -v git   > /dev/null || service_install git
@@ -717,7 +719,7 @@ working() {
 
 usage() {
     echo_toast
-    echo_ " Usage: toast {update|config|install|version|build|publish|deploy}"
+    echo_ " Usage: toast {update|config|install|version|build|releases|deploy}"
     echo_bar
 }
 
