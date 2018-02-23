@@ -3,15 +3,11 @@ version: 0.2
 phases:
   build:
     commands:
-      - echo building toaster...
       - ./package.sh
-      - echo toaster build completed.
   post_build:
     commands:
-      - echo syncing with S3...
       - ./publish.sh toast.sh
       - ./publish.sh repo.toast.sh
-      - echo S3 sync completed.
 
 artifacts:
   files:
