@@ -6,4 +6,4 @@ if [ "${REPO}" == "" ]; then
     REPO="toast.sh"
 fi
 
-aws s3 sync target/ s3://${REPO}/ --acl public-read
+aws s3 sync target/ s3://${REPO}/ --quiet --acl public-read

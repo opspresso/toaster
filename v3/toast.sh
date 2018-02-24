@@ -653,7 +653,7 @@ deploy_webapp() {
 
     echo_ "deploy webapp... [${DEPLOY_PATH}]"
 
-    OPTION="--acl public-read"
+    OPTION="--quiet --acl public-read"
 
     aws s3 sync "${PACKAGE_PATH}" "${DEPLOY_PATH}" ${OPTION}
 }
