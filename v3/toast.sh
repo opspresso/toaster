@@ -567,7 +567,6 @@ releases_bucket() {
         upload_bucket "war"
         upload_bucket "jar"
         upload_bucket "zip"
-        upload_bucket "tar.gz"
     fi
 }
 
