@@ -502,11 +502,10 @@ build_php() {
     echo_ "build for php..."
 
     curl -sS https://getcomposer.org/installer | php
-    ${SUDO} mv composer.phar /usr/local/bin/composer
 
     pushd src/main/webapp
 
-    php composer install
+    php ../../../composer install
 
     tar -cvf ../../../target/${ARTIFACT_ID}-${VERSION}.tar *
 
