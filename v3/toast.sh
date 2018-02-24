@@ -522,7 +522,7 @@ build_webapp() {
 
     pushd src/main/webapp
 
-    zip -q -r ../../../target/${ARTIFACT_ID}-${VERSION}.${PACKAGING} *
+    tar -cvf ../../../target/${ARTIFACT_ID}-${VERSION}.tar *
 
     popd
 }
@@ -540,7 +540,7 @@ build_node() {
 
     npm install -s
 
-    zip -q -r ../../../target/${ARTIFACT_ID}-${VERSION}.zip *
+    tar -cvf ../../../target/${ARTIFACT_ID}-${VERSION}.tar *
 
     popd
 }
@@ -556,6 +556,7 @@ releases_bucket() {
         echo_ "releases to bucket... [${BUCKET}]"
 
         upload_bucket "zip"
+        upload_bucket "tar"
         upload_bucket "war"
         upload_bucket "jar"
         upload_bucket "pom"
