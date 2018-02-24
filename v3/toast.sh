@@ -501,6 +501,22 @@ build_maven() {
     mvn clean package -DskipTests
 }
 
+build_webapp() {
+    echo_ "build for webapp..."
+
+    if [ -d target ]; then
+        rm -rf target
+    fi
+
+    mkdir target
+
+    pushd src/main/webapp
+
+    zip -q -r ../../../target/${ARTIFACT_ID}-${VERSION}.${PACKAGING} *
+
+    popd
+}
+
 build_php() {
     echo_ "build for php..."
 
@@ -512,27 +528,13 @@ build_php() {
 
     pushd src/main/webapp
 
-    curl -s https://getcomposer.org/installer | php
+    if [ -f composer.json ]; then
+        curl -s https://getcomposer.org/installer | php
 
-    php composer.phar install
+        php composer.phar install
 
-    rm -rf composer.phar
-
-    zip -q -r ../../../target/${ARTIFACT_ID}-${VERSION}.${PACKAGING} *
-
-    popd
-}
-
-build_webapp() {
-    echo_ "build for webapp..."
-
-    if [ -d target ]; then
-        rm -rf target
+        rm -rf composer.phar
     fi
-
-    mkdir target
-
-    pushd src/main/webapp
 
     zip -q -r ../../../target/${ARTIFACT_ID}-${VERSION}.${PACKAGING} *
 
@@ -550,7 +552,9 @@ build_node() {
 
     pushd src/main/node
 
-    npm install -s
+    if [ -f package.json ]; then
+        npm install -s
+    fi
 
     zip -q -r ../../../target/${ARTIFACT_ID}-${VERSION}.zip *
 
