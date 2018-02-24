@@ -501,6 +501,12 @@ build_maven() {
 build_php() {
     echo_ "build for php..."
 
+    if [ -d target ]; then
+        rm -rf target
+    fi
+
+    mkdir target
+
     curl -sS https://getcomposer.org/installer | php
 
     pushd src/main/webapp
