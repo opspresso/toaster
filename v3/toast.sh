@@ -511,7 +511,7 @@ build_php() {
 
     pushd src/main/webapp
 
-    php ../../../composer install
+    php ../../../composer.phar install
 
     tar -cvf ../../../target/${ARTIFACT_ID}-${VERSION}.tar *
 
