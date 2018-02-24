@@ -48,8 +48,6 @@ elif [ "${OS_NAME}" == "Darwin" ]; then
     OS_TYPE="${OS_NAME}"
 fi
 
-echo_ "OS_TYPE=${OS_TYPE}"
-
 if [ "${OS_TYPE}" == "" ]; then
     error "Not supported OS. [${OS_FULL}]"
 fi
@@ -96,7 +94,7 @@ fi
 ################################################################################
 
 toast() {
-    #prepare
+    prepare
 
     case ${CMD} in
         update)
@@ -709,8 +707,8 @@ service_update() {
 }
 
 service_install() {
-    if [ "${OS_TYPE}" == "Ubuntu" ]; then
-        ${SUDO} apt-get install -y $1
+    if [ "${OS_TYPE}" == "Ubuntu" ] || [ "${OS_TYPE}" == "coreos" ]; then
+        ${SUDO} apt-get install $1
     else
         ${SUDO} yum install -y $1
     fi
@@ -718,7 +716,7 @@ service_install() {
 
 service_remove() {
     if [ "${OS_TYPE}" == "Ubuntu" ]; then
-        ${SUDO} apt-get remove -y $1
+        ${SUDO} apt-get remove $1
     else
         ${SUDO} yum remove -y $1
     fi
