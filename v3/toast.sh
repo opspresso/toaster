@@ -513,7 +513,7 @@ build_php() {
 
     php ../../../composer.phar install
 
-    tar -cvf ../../../target/${ARTIFACT_ID}-${VERSION}.tar *
+    tar -czf ../../../target/${ARTIFACT_ID}-${VERSION}.tar.gz *
 
     popd
 }
@@ -529,7 +529,7 @@ build_webapp() {
 
     pushd src/main/webapp
 
-    tar -cvf ../../../target/${ARTIFACT_ID}-${VERSION}.tar *
+    tar -czf ../../../target/${ARTIFACT_ID}-${VERSION}.tar.gz *
 
     popd
 }
@@ -547,7 +547,7 @@ build_node() {
 
     npm install -s
 
-    tar -cvf ../../../target/${ARTIFACT_ID}-${VERSION}.tar *
+    tar -czf ../../../target/${ARTIFACT_ID}-${VERSION}.tar.gz *
 
     popd
 }
@@ -562,11 +562,11 @@ releases_bucket() {
     if [ "${PARAM2}" != "none" ]; then
         echo_ "releases to bucket... [${BUCKET}]"
 
-        upload_bucket "zip"
-        upload_bucket "tar"
+        upload_bucket "pom"
         upload_bucket "war"
         upload_bucket "jar"
-        upload_bucket "pom"
+        upload_bucket "zip"
+        upload_bucket "tar.gz"
     fi
 }
 
