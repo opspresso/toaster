@@ -243,11 +243,6 @@ config_save() {
     echo "${KEY}=${VAL}" >> "${CONFIG}"
 
     echo_ "${KEY}=${VAL}"
-
-    if [ command -v aws ] && [ "${KEY}" == "REGION" ]; then
-        aws configure set default.region ${VAL}
-        aws configure set default.output json
-    fi
 }
 
 install_aws() {
@@ -651,9 +646,13 @@ releases_docker() {
 }
 
 deploy_webapp() {
+    if [ "${PARAM2}" != "" ]; then
+        BUCKET="${PARAM2}"
+    fi
+
     PACKAGE_PATH="src/main/webapp"
 
-    DEPLOY_PATH="s3://${PARAM2}"
+    DEPLOY_PATH="s3://${BUCKET}"
 
     echo_ "deploy webapp... [${DEPLOY_PATH}]"
 
