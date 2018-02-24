@@ -514,7 +514,7 @@ build_php() {
 
     rm -rf composer.phar
 
-    zip -q -r ../../../target/${ARTIFACT_ID}-${VERSION}.zip *
+    zip -q -r ../../../target/${ARTIFACT_ID}-${VERSION}.${PACKAGING} *
 
     popd
 }
@@ -530,7 +530,7 @@ build_webapp() {
 
     pushd src/main/webapp
 
-    zip -q -r ../../../target/${ARTIFACT_ID}-${VERSION}.zip *
+    zip -q -r ../../../target/${ARTIFACT_ID}-${VERSION}.${PACKAGING} *
 
     popd
 }
