@@ -568,14 +568,12 @@ releases_bucket() {
         cp -rf "${POM_FILE}" "target/${ARTIFACT_ID}-${VERSION}.pom"
     fi
 
-    if [ "${PARAM2}" != "none" ]; then
-        echo_ "releases to bucket... [${BUCKET}]"
+    echo_ "releases to bucket... [${BUCKET}]"
 
-        upload_bucket "pom"
-        upload_bucket "war"
-        upload_bucket "jar"
-        upload_bucket "zip"
-    fi
+    upload_bucket "pom"
+    upload_bucket "war"
+    upload_bucket "jar"
+    upload_bucket "zip"
 }
 
 releases_beanstalk() {
