@@ -508,6 +508,8 @@ build_php() {
 
     php composer install
 
+    tar -cvf ../../../target/${ARTIFACT_ID}-${VERSION}.tar *
+
     popd
 }
 
