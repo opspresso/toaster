@@ -699,7 +699,7 @@ package_check() {
 }
 
 service_update() {
-    if [ "${OS_TYPE}" == "Ubuntu" ]; then
+    if [ "${OS_TYPE}" == "Ubuntu" ] || [ "${OS_TYPE}" == "coreos" ]; then
         ${SUDO} apt-get update
     else
         ${SUDO} yum update -y
@@ -715,7 +715,7 @@ service_install() {
 }
 
 service_remove() {
-    if [ "${OS_TYPE}" == "Ubuntu" ]; then
+    if [ "${OS_TYPE}" == "Ubuntu" ] || [ "${OS_TYPE}" == "coreos" ]; then
         ${SUDO} apt-get remove $1
     else
         ${SUDO} yum remove -y $1
