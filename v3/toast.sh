@@ -514,7 +514,7 @@ build_php() {
 
     rm -rf composer.phar
 
-    tar -czf ../../../target/${ARTIFACT_ID}-${VERSION}.tar.gz *
+    zip -q -r ../../../target/${ARTIFACT_ID}-${VERSION}.zip *
 
     popd
 }
@@ -530,7 +530,7 @@ build_webapp() {
 
     pushd src/main/webapp
 
-    tar -czf ../../../target/${ARTIFACT_ID}-${VERSION}.tar.gz *
+    zip -q -r ../../../target/${ARTIFACT_ID}-${VERSION}.zip *
 
     popd
 }
@@ -548,7 +548,7 @@ build_node() {
 
     npm install -s
 
-    tar -czf ../../../target/${ARTIFACT_ID}-${VERSION}.tar.gz *
+    zip -q -r ../../../target/${ARTIFACT_ID}-${VERSION}.zip *
 
     popd
 }
