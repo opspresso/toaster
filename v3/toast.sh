@@ -248,20 +248,16 @@ config_save() {
 install_aws() {
     echo_ "install aws cli..."
 
-    if [ command -v pip ]; then
-        pip install awscli
-    else
-        curl -s -o ${TEMP_DIR}/awscli-bundle.zip https://s3.amazonaws.com/aws-cli/awscli-bundle.zip
+    curl -s -o ${TEMP_DIR}/awscli-bundle.zip https://s3.amazonaws.com/aws-cli/awscli-bundle.zip
 
-        if [ -f "${TEMP_DIR}/awscli-bundle.zip" ]; then
-            pushd ${TEMP_DIR}
+    if [ -f "${TEMP_DIR}/awscli-bundle.zip" ]; then
+        pushd ${TEMP_DIR}
 
-            unzip -q awscli-bundle.zip
+        unzip -q awscli-bundle.zip
 
-            ${SUDO} ./awscli-bundle/install -i /usr/local/aws -b /usr/bin/aws
+        ${SUDO} ./awscli-bundle/install -i /usr/local/aws -b /usr/bin/aws
 
-            popd
-        fi
+        popd
     fi
 
     echo_bar
