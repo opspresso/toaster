@@ -30,8 +30,6 @@ nothing() {
 OS_NAME="$(uname)"
 OS_FULL="$(uname -a)"
 
-echo_ "OS_NAME=${OS_NAME}"
-
 if [ "${OS_NAME}" == "Linux" ]; then
     if [ $(echo "${OS_FULL}" | grep -c "amzn1") -gt 0 ]; then
         OS_TYPE="amzn1"
@@ -49,6 +47,8 @@ if [ "${OS_NAME}" == "Linux" ]; then
 elif [ "${OS_NAME}" == "Darwin" ]; then
     OS_TYPE="${OS_NAME}"
 fi
+
+echo_ "OS_TYPE=${OS_TYPE}"
 
 if [ "${OS_TYPE}" == "" ]; then
     error "Not supported OS. [${OS_FULL}]"
@@ -133,7 +133,6 @@ prepare() {
     command -v wget  > /dev/null || service_install wget
     command -v unzip > /dev/null || service_install unzip
     command -v zip   > /dev/null || service_install zip
-    command -v jq    > /dev/null || service_install jq
 }
 
 update() {
