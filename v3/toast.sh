@@ -128,13 +128,11 @@ toast() {
 
 prepare() {
     service_update
-    service_install "git curl wget zip unzip"
+    service_install "git zip unzip"
 
 #    command -v git   > /dev/null || service_install git
-#    command -v curl  > /dev/null || service_install curl
-#    command -v wget  > /dev/null || service_install wget
-#    command -v unzip > /dev/null || service_install unzip
 #    command -v zip   > /dev/null || service_install zip
+#    command -v unzip > /dev/null || service_install unzip
 }
 
 update() {
