@@ -507,11 +507,13 @@ build_php() {
 
     mkdir target
 
-    curl -sS https://getcomposer.org/installer | php
-
     pushd src/main/webapp
 
-    php ../../../composer.phar install
+    curl -sS https://getcomposer.org/installer | php
+
+    php composer.phar install
+
+    rm -rf composer.phar
 
     tar -czf ../../../target/${ARTIFACT_ID}-${VERSION}.tar.gz *
 
