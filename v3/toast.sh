@@ -94,9 +94,10 @@ fi
 ################################################################################
 
 toast() {
-    #prepare
-
     case ${CMD} in
+        prepare)
+            prepare
+            ;;
         update)
             update
             ;;
