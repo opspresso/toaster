@@ -126,11 +126,14 @@ toast() {
 ################################################################################
 
 prepare() {
-    command -v git   > /dev/null || service_install git
-    command -v curl  > /dev/null || service_install curl
-    command -v wget  > /dev/null || service_install wget
-    command -v unzip > /dev/null || service_install unzip
-    command -v zip   > /dev/null || service_install zip
+    service_update
+    service_install "git curl wget zip unzip"
+
+#    command -v git   > /dev/null || service_install git
+#    command -v curl  > /dev/null || service_install curl
+#    command -v wget  > /dev/null || service_install wget
+#    command -v unzip > /dev/null || service_install unzip
+#    command -v zip   > /dev/null || service_install zip
 }
 
 update() {
@@ -690,12 +693,6 @@ deploy_lambda() {
     aws lambda update-function-code \
         --function-name "${FUNCTION_NAME}" \
         --zip-file "fileb://${PACKAGE_PATH}"
-}
-
-package_check() {
-    command -v aws  > /dev/null || (echo "aws cli must be installed" && exit 1)
-    command -v curl > /dev/null || (echo "curl must be installed" && exit 1)
-    command -v wget > /dev/null || (echo "wget must be installed" && exit 1)
 }
 
 service_update() {
