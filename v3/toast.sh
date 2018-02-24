@@ -244,7 +244,7 @@ config_save() {
 
     echo_ "${KEY}=${VAL}"
 
-    if [ "${KEY}" == "REGION" ]; then
+    if [ command -v aws ] && [ "${KEY}" == "REGION" ]; then
         aws configure set default.region ${VAL}
         aws configure set default.output json
     fi
@@ -253,20 +253,24 @@ config_save() {
 install_aws() {
     echo_ "install aws cli..."
 
-    wget -q -N -P "${TEMP_DIR}" https://s3.amazonaws.com/aws-cli/awscli-bundle.zip
+    if [ command -v pip ]; then
+        pip install awscli
+    else
+        curl -s -o ${TEMP_DIR}/awscli-bundle.zip https://s3.amazonaws.com/aws-cli/awscli-bundle.zip
 
-    if [ -f "${TEMP_DIR}/awscli-bundle.zip" ]; then
-        pushd ${TEMP_DIR}
+        if [ -f "${TEMP_DIR}/awscli-bundle.zip" ]; then
+            pushd ${TEMP_DIR}
 
-        unzip -q awscli-bundle.zip
+            unzip -q awscli-bundle.zip
 
-        ${SUDO} ./awscli-bundle/install -i /usr/local/aws -b /usr/bin/aws
+            ${SUDO} ./awscli-bundle/install -i /usr/local/aws -b /usr/bin/aws
 
-        popd
+            popd
+        fi
     fi
 
     echo_bar
-    echo_ "$(/usr/bin/aws --version)"
+    echo_ "$(aws --version)"
     echo_bar
 }
 
@@ -508,7 +512,7 @@ build_php() {
 
     pushd src/main/webapp
 
-    curl -sS https://getcomposer.org/installer | php
+    curl -s https://getcomposer.org/installer | php
 
     php composer.phar install
 
