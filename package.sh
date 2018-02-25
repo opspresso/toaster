@@ -32,3 +32,5 @@ popd
 pushd v3
 tar -czf ../target/toaster-v3.tar.gz extra install *.sh
 popd
+
+ls -alh target

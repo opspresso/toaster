@@ -7,3 +7,5 @@ if [ "${REPO}" == "" ]; then
 fi
 
 aws s3 sync target/ s3://${REPO}/ --quiet --acl public-read
+
+echo "sync to ${REPO}"
