@@ -417,7 +417,7 @@ build_docker() {
     FILES=
 
     # ROOT.${packaging}
-    if [ -f "Dockerfile" ]; then
+    if [ -f "target/${ARTIFACT_ID}-${VERSION}.${PACKAGING}" ]; then
         cp -rf "target/${ARTIFACT_ID}-${VERSION}.${PACKAGING}" "target/ROOT.${PACKAGING}"
 
         FILES="${FILES} ROOT.${PACKAGING}"
@@ -435,13 +435,6 @@ build_docker() {
         cp -rf "Dockerrun.aws.json" "target/Dockerrun.aws.json"
 
         FILES="${FILES} Dockerrun.aws.json"
-    fi
-
-    # Procfile
-    if [ -f "Procfile" ]; then
-        cp -rf "Procfile" "target/Procfile"
-
-        FILES="${FILES} Procfile"
     fi
 
     # .ebextensions
