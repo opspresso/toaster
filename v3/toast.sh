@@ -83,6 +83,10 @@ if [ "${HOME}" != "/root" ]; then
     SUDO="sudo"
 fi
 
+if [ ! -f target/.stamp ]; then
+    echo $(date "+%y%m%d-%H%M") > target/.stamp
+fi
+
 ################################################################################
 
 BUCKET="repo.toast.sh"
@@ -552,7 +556,7 @@ releases_beanstalk() {
 
     releases_bucket
 
-    STAMP=$(date "+%y%m%d-%H%M")
+    STAMP="$(cat target/.stamp)"
 
     S3_KEY="maven2/${GROUP_PATH}/${ARTIFACT_ID}/${VERSION}/${ARTIFACT_ID}-${VERSION}.zip"
 
@@ -630,9 +634,7 @@ deploy_bucket() {
 }
 
 deploy_beanstalk() {
-    STAMP="$(cat .stamp)"
-
-    BRANCH="$(cat .branch)"
+    STAMP="$(cat target/.stamp)"
 
     echo_ "deploy to beanstalk... [${ARTIFACT_ID}-${BRANCH}]"
 
