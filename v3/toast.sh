@@ -183,8 +183,8 @@ build() {
     build_version
 
     case ${PARAM1} in
-        beanstalk)
-            build_beanstalk
+        docker)
+            build_docker
             ;;
         webapp)
             build_webapp
@@ -598,6 +598,8 @@ releases_docker() {
         ECR_LOGIN=$(aws ecr get-login --region ${REGION})
         eval ${ECR_LOGIN}
     else
+        echo_ ">> docker login..."
+
         docker login REGISTRY
     fi
 
