@@ -180,7 +180,7 @@ install() {
 build() {
     parse_version
 
-    build_version
+    #build_version
 
     case ${PARAM1} in
         docker)
