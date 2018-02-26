@@ -183,9 +183,6 @@ build() {
         beanstalk)
             build_beanstalk
             ;;
-        maven)
-            build_maven
-            ;;
         webapp)
             build_webapp
             ;;
@@ -484,12 +481,6 @@ build_beanstalk() {
     zip -q -r ../${ARTIFACT_ID}-${VERSION}.zip ${FILES}
 
     popd
-}
-
-build_maven() {
-    echo_ "build for maven..."
-
-    mvn clean package -DskipTests
 }
 
 build_webapp() {
