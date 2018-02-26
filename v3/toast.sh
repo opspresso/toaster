@@ -345,22 +345,20 @@ parse_version() {
     echo_ "packaging=${PACKAGING}"
 
     # branch
-#    if [ "${CIRCLE_BRANCH}" != "" ]; then
-#        BRANCH="${CIRCLE_BRANCH}"
-#    elif [ "${CI_COMMIT_REF_SLUG}" != "" ]; then
-#        BRANCH="${CI_COMMIT_REF_SLUG}"
-#    else
-#        BRANCH="master"
-#    fi
+    if [ "${CIRCLE_BRANCH}" != "" ]; then
+        BRANCH="${CIRCLE_BRANCH}"
+    elif [ "${CI_COMMIT_REF_SLUG}" != "" ]; then
+        BRANCH="${CI_COMMIT_REF_SLUG}"
+    else
+        BRANCH="master"
+    fi
 
     # build no
-#    if [ "${CIRCLE_BUILD_NUM}" != "" ]; then
-#        BUILD="${CIRCLE_BUILD_NUM}"
-#    elif [ "${CI_JOB_ID}" != "" ]; then
-#        BUILD="${CI_JOB_ID}"
-#    else
-#        BUILD=""
-#    fi
+    if [ "${CIRCLE_BUILD_NUM}" != "" ]; then
+        BUILD="${CIRCLE_BUILD_NUM}"
+    else
+        BUILD=""
+    fi
 }
 
 build_version() {
