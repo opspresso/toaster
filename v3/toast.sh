@@ -556,11 +556,11 @@ releases_beanstalk() {
 
     releases_bucket
 
+    echo_ "releases to beanstalk versions..."
+
     STAMP="$(cat target/.stamp)"
 
     S3_KEY="maven2/${GROUP_PATH}/${ARTIFACT_ID}/${VERSION}/${ARTIFACT_ID}-${VERSION}.zip"
-
-    echo_ "releases to beanstalk versions..."
 
     aws elasticbeanstalk create-application-version \
         --application-name "${ARTIFACT_ID}" \
@@ -634,8 +634,6 @@ deploy_bucket() {
 }
 
 deploy_beanstalk() {
-    STAMP="$(cat target/.stamp)"
-
     echo_ "deploy to beanstalk... [${ARTIFACT_ID}-${BRANCH}]"
 
     if [ "${PARAM2}" == "" ]; then
@@ -644,6 +642,8 @@ deploy_beanstalk() {
         ENV_NAME="${PARAM2}"
     fi
 
+    STAMP="$(cat target/.stamp)"
+
     aws elasticbeanstalk update-environment \
         --application-name "${ARTIFACT_ID}" \
         --environment-name "${ENV_NAME}" \
@@ -651,8 +651,6 @@ deploy_beanstalk() {
 }
 
 deploy_lambda() {
-    BRANCH="$(cat .branch)"
-
     echo_ "deploy to lambda... [${ARTIFACT_ID}-${BRANCH}]"
 
     PACKAGE_PATH="target/${ARTIFACT_ID}-${VERSION}.zip"
