@@ -410,6 +410,10 @@ build_filebeat() {
 build_docker() {
     echo_ "build for docker..."
 
+    if [ ! -d target ]; then
+        mkdir target
+    fi
+
     FILES=
 
     # ROOT.${packaging}
