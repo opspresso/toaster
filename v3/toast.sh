@@ -582,11 +582,11 @@ releases_docker() {
         error "Not set REGISTRY."
     fi
 
-    echo_ ">> docker... [${REGISTRY}]"
+    echo_ ">> docker registry... [${REGISTRY}]"
 
     IMAGE="${ARTIFACT_ID}:${VERSION}"
 
-    pushd target/docker
+    pushd target
 
     docker version
 
