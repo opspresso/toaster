@@ -35,7 +35,6 @@ fi
 NEW="$(cat /tmp/toaster.new)"
 
 if [ -f /tmp/toaster.old ]; then
-    NEW="$(cat /tmp/toaster.new)"
     OLD="$(cat /tmp/toaster.old)"
 
     if [ "${NEW}" == "${OLD}" ]; then
