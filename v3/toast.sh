@@ -16,8 +16,6 @@ error() {
 }
 
 nothing() {
-    USERID=
-
     # build
     BRANCH=
     BUILD=
@@ -409,49 +407,49 @@ build_filebeat() {
     cp -rf ${TEMP_FILE} ${FILEBEAT}
 }
 
-build_beanstalk() {
-    echo_ "build for beanstalk..."
+build_docker() {
+    echo_ "build for docker..."
 
-    if [ ! -d "target/docker" ]; then
-        mkdir "target/docker"
-    fi
+    FILES=
 
     # ROOT.${packaging}
-    cp -rf "target/${ARTIFACT_ID}-${VERSION}.${PACKAGING}" "target/docker/ROOT.${PACKAGING}"
+    if [ -f "Dockerfile" ]; then
+        cp -rf "target/${ARTIFACT_ID}-${VERSION}.${PACKAGING}" "target/ROOT.${PACKAGING}"
 
-    FILES="ROOT.${PACKAGING}"
+        FILES="${FILES} ROOT.${PACKAGING}"
+    fi
 
     # Dockerfile
     if [ -f "Dockerfile" ]; then
-        cp -rf "Dockerfile" "target/docker/Dockerfile"
+        cp -rf "Dockerfile" "target/Dockerfile"
 
         FILES="${FILES} Dockerfile"
     fi
 
     # Dockerrun
     if [ -f "Dockerrun.aws.json" ]; then
-        cp -rf "Dockerrun.aws.json" "target/docker/Dockerrun.aws.json"
+        cp -rf "Dockerrun.aws.json" "target/Dockerrun.aws.json"
 
         FILES="${FILES} Dockerrun.aws.json"
     fi
 
     # Procfile
     if [ -f "Procfile" ]; then
-        cp -rf "Procfile" "target/docker/Procfile"
+        cp -rf "Procfile" "target/Procfile"
 
         FILES="${FILES} Procfile"
     fi
 
     # .ebextensions
     if [ -d ".ebextensions" ]; then
-        cp -rf ".ebextensions" "target/docker/.ebextensions"
+        cp -rf ".ebextensions" "target/.ebextensions"
 
         FILES="${FILES} .ebextensions"
     fi
 
-    pushd target/docker
+    pushd target
 
-    zip -q -r ../${ARTIFACT_ID}-${VERSION}.zip ${FILES}
+    zip -q -r ${ARTIFACT_ID}-${VERSION}.zip ${FILES}
 
     popd
 }
@@ -555,9 +553,7 @@ releases_bucket() {
 }
 
 releases_beanstalk() {
-    if [ ! -d "target/docker" ]; then
-        build_beanstalk
-    fi
+    build_docker
 
     releases_bucket
 
@@ -576,29 +572,23 @@ releases_beanstalk() {
 }
 
 releases_docker() {
-    if [ ! -d "target/docker" ]; then
-        build_docker
-    fi
-
-    if [ "${USERID}" != "" ]; then
-        REGISTRY="${USERID}.dkr.ecr.${REGION}.amazonaws.com"
-    fi
+    build_docker
 
     if [ "${REGISTRY}" == "" ]; then
         error "Not set REGISTRY."
     fi
 
-    NAME="${ARTIFACT_ID}:${VERSION}"
-
     echo_ ">> docker... [${REGISTRY}]"
 
-    docker version
+    IMAGE="${ARTIFACT_ID}:${VERSION}"
 
     pushd target/docker
 
-    echo_ ">> docker build... [${NAME}]"
+    docker version
 
-    docker build --rm=false -t ${REGISTRY}/${NAME} .
+    echo_ ">> docker build... [${IMAGE}]"
+
+    docker build --rm=false -t ${REGISTRY}/${IMAGE} .
 
     docker images
 
@@ -607,15 +597,17 @@ releases_docker() {
 
         ECR_LOGIN=$(aws ecr get-login --region ${REGION})
         eval ${ECR_LOGIN}
+    else
+        docker login REGISTRY
     fi
 
-    echo_ ">> docker push... [${NAME}]"
+    echo_ ">> docker push... [${IMAGE}]"
 
-    docker push ${REGISTRY}/${NAME}
+    docker push ${REGISTRY}/${IMAGE}
 
     echo_ ">> docker tag... [${ARTIFACT_ID}:latest]"
 
-    docker tag ${REGISTRY}/${NAME} ${REGISTRY}/${ARTIFACT_ID}:latest
+    docker tag ${REGISTRY}/${IMAGE} ${REGISTRY}/${ARTIFACT_ID}:latest
     docker push ${REGISTRY}/${ARTIFACT_ID}:latest
 
     #ECR_TAG=$(aws ecr batch-get-image --repository-name ${ARTIFACT_ID} --image-ids imageTag=${VERSION} --query images[].imageManifest --output text)
@@ -633,7 +625,7 @@ deploy_bucket() {
 
     DEPLOY_PATH="s3://${BUCKET}"
 
-    echo_ "deploy webapp... [${DEPLOY_PATH}]"
+    echo_ "deploy bucket... [${DEPLOY_PATH}]"
 
     OPTION="--quiet --acl public-read"
 
