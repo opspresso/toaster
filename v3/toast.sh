@@ -35,6 +35,7 @@ nothing() {
 
     # gitlab ci
     CI_COMMIT_REF_SLUG=
+    CI_JOB_ID=
 }
 
 ################################################################################
@@ -345,6 +346,7 @@ parse_version() {
     echo_ "version=${VERSION}"
     echo_ "packaging=${PACKAGING}"
 
+    # branch
     if [ "${CIRCLE_BRANCH}" != "" ]; then
         BRANCH="${CIRCLE_BRANCH}"
     elif [ "${CI_COMMIT_REF_SLUG}" != "" ]; then
@@ -353,8 +355,11 @@ parse_version() {
         BRANCH="master"
     fi
 
+    # build no
     if [ "${CIRCLE_BUILD_NUM}" != "" ]; then
         BUILD="${CIRCLE_BUILD_NUM}"
+    elif [ "${CI_JOB_ID}" != "" ]; then
+        BUILD="${CI_JOB_ID}"
     else
         BUILD=""
     fi
