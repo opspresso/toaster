@@ -16,13 +16,25 @@ error() {
 }
 
 nothing() {
-    REGION=
-    BUCKET=
     USERID=
-    REPOSITORY=
-    LOGZIO_TOKEN=
+
+    # build
+    BRANCH=
+    BUILD=
+
+    # docker
+    REGISTRY=
+
+    # aws
     AWS_DEFAULT_REGION=
     AWS_DEFAULT_BUCKET=
+
+    # circle ci
+    CIRCLE_BRANCH=
+    CIRCLE_BUILD_NUM=
+
+    # gitlab ci
+    CI_COMMIT_REF_SLUG=
 }
 
 ################################################################################
@@ -107,9 +119,6 @@ toast() {
         install)
             install
             ;;
-        version)
-            version
-            ;;
         build)
             build
             ;;
@@ -169,15 +178,10 @@ install() {
     esac
 }
 
-version() {
-    pom_parse
-
-    version_branch
-    version_filebeat
-}
-
 build() {
-    pom_parse
+    parse_version
+
+    build_version
 
     case ${PARAM1} in
         beanstalk)
@@ -196,7 +200,7 @@ build() {
 }
 
 releases() {
-    pom_parse
+    parse_version
 
     case ${PARAM1} in
         bucket)
@@ -212,11 +216,11 @@ releases() {
 }
 
 deploy() {
-    pom_parse
+    parse_version
 
     case ${PARAM1} in
         webapp)
-            deploy_webapp
+            deploy_bucket
             ;;
         beanstalk)
             deploy_beanstalk
@@ -310,7 +314,7 @@ install_filebeat() {
     echo_bar
 }
 
-pom_parse() {
+parse_version() {
     POM_FILE="pom.xml"
 
     if [ ! -f "${POM_FILE}" ]; then
@@ -340,60 +344,27 @@ pom_parse() {
     echo_ "artifactId=${ARTIFACT_ID}"
     echo_ "version=${VERSION}"
     echo_ "packaging=${PACKAGING}"
-}
 
-version_branch() {
-    BRANCH="${PARAM1}"
-    BUILD="${PARAM2}"
-
-    echo_ "version branch... [${BRANCH}] [${BUILD}]"
-
-    if [ "${BRANCH}" == "" ]; then
+    if [ "${CIRCLE_BRANCH}" != "" ]; then
+        BRANCH="${CIRCLE_BRANCH}"
+    elif [ "${CI_COMMIT_REF_SLUG}" != "" ]; then
+        BRANCH="${CI_COMMIT_REF_SLUG}"
+    else
         BRANCH="master"
     fi
 
-    echo "${BRANCH}" > .branch
-    echo_ "branch=${BRANCH}"
-
-    if [ "${BRANCH}" == "master" ]; then
-        if [ "${BUILD}" != "" ]; then
-            VERSION="${VERSION}-${BUILD}"
-        fi
+    if [ "${CIRCLE_BUILD_NUM}" != "" ]; then
+        BUILD="${CIRCLE_BUILD_NUM}"
     else
-        VERSION="${VERSION}-SNAPSHOT"
-    fi
-
-    version_replace
-}
-
-version_filebeat() {
-    FILEBEAT=".ebextensions/filebeat.config"
-
-    if [ ! -f "${FILEBEAT}" ]; then
-        return
-    fi
-
-    echo_ "version filebeat... [${ARTIFACT_ID}] [${VERSION}]"
-
-    TEMP_FILE="/tmp/01-filebeat.config"
-
-    sed "s/PRODUCT/$ARTIFACT_ID/g" ${FILEBEAT} > ${TEMP_FILE}
-    cp -rf ${TEMP_FILE} ${FILEBEAT}
-
-    sed "s/VERSION/$VERSION/g" ${FILEBEAT} > ${TEMP_FILE}
-    cp -rf ${TEMP_FILE} ${FILEBEAT}
-
-    if [ "${LOGZIO_TOKEN}" != "" ]; then
-        sed "s/LOGZIO_TOKEN/$LOGZIO_TOKEN/g" ${FILEBEAT} > ${TEMP_FILE}
-        cp -rf ${TEMP_FILE} ${FILEBEAT}
+        BUILD=""
     fi
 }
 
-version_replace() {
-    POM_FILE="pom.xml"
+build_version() {
+    echo_ "version branch... [${BRANCH}] [${BUILD}]"
 
-    if [ ! -f "${POM_FILE}" ]; then
-        error "Not exist file. [${POM_FILE}]"
+    if [ "${BRANCH}" == "master" ] && [ "${BUILD}" != "" ]; then
+        VERSION="${VERSION}-${BUILD}"
     fi
 
     if [ "${VERSION}" == "" ]; then
@@ -413,27 +384,24 @@ version_replace() {
     cp -rf ${TEMP_FILE} ${POM_FILE}
 }
 
-upload_bucket() {
-    EXT="$1"
+build_filebeat() {
+    FILE="01-filebeat.config"
 
-    PACKAGE_PATH="target/${ARTIFACT_ID}-${VERSION}.${EXT}"
+    FILEBEAT=".ebextensions/${FILE}"
 
-    if [ ! -f "${PACKAGE_PATH}" ]; then
+    if [ ! -f "${FILEBEAT}" ]; then
         return
     fi
 
-    UPLOAD_PATH="s3://${BUCKET}/maven2/${GROUP_PATH}/${ARTIFACT_ID}/${VERSION}/"
+    echo_ "version filebeat... [${ARTIFACT_ID}] [${VERSION}]"
 
-    echo_ "--> from: ${PACKAGE_PATH}"
-    echo_ "--> to  : ${UPLOAD_PATH}"
+    TEMP_FILE="/tmp/${FILE}"
 
-    if [ "${PARAM2}" == "public" ]; then
-        OPTION="--quiet --acl public-read"
-    else
-        OPTION="--quiet"
-    fi
+    sed "s/PRODUCT/$ARTIFACT_ID/g" ${FILEBEAT} > ${TEMP_FILE}
+    cp -rf ${TEMP_FILE} ${FILEBEAT}
 
-    aws s3 cp "${PACKAGE_PATH}" "${UPLOAD_PATH}" ${OPTION}
+    sed "s/VERSION/$VERSION/g" ${FILEBEAT} > ${TEMP_FILE}
+    cp -rf ${TEMP_FILE} ${FILEBEAT}
 }
 
 build_beanstalk() {
@@ -543,6 +511,29 @@ build_node() {
     popd
 }
 
+upload_bucket() {
+    EXT="$1"
+
+    PACKAGE_PATH="target/${ARTIFACT_ID}-${VERSION}.${EXT}"
+
+    if [ ! -f "${PACKAGE_PATH}" ]; then
+        return
+    fi
+
+    UPLOAD_PATH="s3://${BUCKET}/maven2/${GROUP_PATH}/${ARTIFACT_ID}/${VERSION}/"
+
+    echo_ "--> from: ${PACKAGE_PATH}"
+    echo_ "--> to  : ${UPLOAD_PATH}"
+
+    if [ "${PARAM2}" == "public" ]; then
+        OPTION="--quiet --acl public-read"
+    else
+        OPTION="--quiet"
+    fi
+
+    aws s3 cp "${PACKAGE_PATH}" "${UPLOAD_PATH}" ${OPTION}
+}
+
 releases_bucket() {
     POM_FILE="pom.xml"
 
@@ -566,10 +557,6 @@ releases_beanstalk() {
     releases_bucket
 
     STAMP=$(date "+%y%m%d-%H%M")
-    echo "${STAMP}" > .stamp
-
-    BRANCH="$(cat .branch)"
-    GIT_ID="" # TODO "$(cat .git_id)"
 
     S3_KEY="maven2/${GROUP_PATH}/${ARTIFACT_ID}/${VERSION}/${ARTIFACT_ID}-${VERSION}.zip"
 
@@ -578,7 +565,7 @@ releases_beanstalk() {
     aws elasticbeanstalk create-application-version \
         --application-name "${ARTIFACT_ID}" \
         --version-label "${VERSION}-${STAMP}" \
-        --description "${BRANCH} (${GIT_ID})" \
+        --description "${BRANCH}" \
         --source-bundle S3Bucket="${BUCKET}",S3Key="${S3_KEY}" \
         --auto-create-application
 }
@@ -589,16 +576,16 @@ releases_docker() {
     fi
 
     if [ "${USERID}" != "" ]; then
-        REPOSITORY="${USERID}.dkr.ecr.${REGION}.amazonaws.com"
+        REGISTRY="${USERID}.dkr.ecr.${REGION}.amazonaws.com"
     fi
 
-    if [ "${REPOSITORY}" == "" ]; then
-        error "Not set REPOSITORY."
+    if [ "${REGISTRY}" == "" ]; then
+        error "Not set REGISTRY."
     fi
 
     NAME="${ARTIFACT_ID}:${VERSION}"
 
-    echo_ ">> docker... [${REPOSITORY}]"
+    echo_ ">> docker... [${REGISTRY}]"
 
     docker version
 
@@ -606,7 +593,7 @@ releases_docker() {
 
     echo_ ">> docker build... [${NAME}]"
 
-    docker build --rm=false -t ${REPOSITORY}/${NAME} .
+    docker build --rm=false -t ${REGISTRY}/${NAME} .
 
     docker images
 
@@ -619,12 +606,12 @@ releases_docker() {
 
     echo_ ">> docker push... [${NAME}]"
 
-    docker push ${REPOSITORY}/${NAME}
+    docker push ${REGISTRY}/${NAME}
 
     echo_ ">> docker tag... [${ARTIFACT_ID}:latest]"
 
-    docker tag ${REPOSITORY}/${NAME} ${REPOSITORY}/${ARTIFACT_ID}:latest
-    docker push ${REPOSITORY}/${ARTIFACT_ID}:latest
+    docker tag ${REGISTRY}/${NAME} ${REGISTRY}/${ARTIFACT_ID}:latest
+    docker push ${REGISTRY}/${ARTIFACT_ID}:latest
 
     #ECR_TAG=$(aws ecr batch-get-image --repository-name ${ARTIFACT_ID} --image-ids imageTag=${VERSION} --query images[].imageManifest --output text)
     #aws ecr put-image --repository-name ${ARTIFACT_ID} --image-tag latest --image-manifest "${ECR_TAG}"
@@ -632,7 +619,7 @@ releases_docker() {
     popd
 }
 
-deploy_webapp() {
+deploy_bucket() {
     if [ "${PARAM2}" != "" ]; then
         BUCKET="${PARAM2}"
     fi
