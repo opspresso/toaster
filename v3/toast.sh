@@ -710,6 +710,7 @@ echo_toast() {
         VER="v3"
     fi
 
+    #figlet toast
     echo_bar
     echo_ "      _                  _        "
     echo_ "     | |_ ___   __ _ ___| |_      "
