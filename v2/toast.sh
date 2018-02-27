@@ -3438,9 +3438,7 @@ echo_toast() {
     echo_ "     | |_ ___   __ _ ___| |_      "
     echo_ "     | __/ _ \ / _\` / __| __|    "
     echo_ "     | || (_) | (_| \__ \ |_      "
-    echo_ "      \__\___/ \__,_|___/\__|     "
-    echo_ "                                  "
-    echo_ "       by nalbam (${VER})    "
+    echo_ "      \__\___/ \__,_|___/\__|  by nalbam (${VER})    "
     echo_bar
 }
 
