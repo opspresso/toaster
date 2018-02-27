@@ -194,9 +194,6 @@ build() {
         webapp)
             build_webapp
             ;;
-        php)
-            build_php
-            ;;
         node)
             build_node
             ;;
@@ -470,18 +467,6 @@ build_docker() {
 
 build_webapp() {
     echo_ "build for webapp..."
-
-    mkdir -p target
-
-    pushd src/main/webapp
-
-    zip -q -r ../../../target/${ARTIFACT_ID}-${VERSION}.${PACKAGING} *
-
-    popd
-}
-
-build_php() {
-    echo_ "build for php..."
 
     mkdir -p target
 
