@@ -2350,7 +2350,15 @@ repo_path() {
         return
     fi
 
-    REPO_BUCKET="repo.${ORG}.com"
+    URL="${TOAST_URL}/config/key/repo_bucket"
+    RES=$(curl -s --data "org=${ORG}&token=${TOKEN}&no=${SNO}" "${URL}")
+
+    if [ "${RES}" != "" ]; then
+        REPO_BUCKET="${RES}"
+    else
+        REPO_BUCKET="repo.${ORG}.com"
+    fi
+
     REPO_PATH="s3://${REPO_BUCKET}"
 }
 
