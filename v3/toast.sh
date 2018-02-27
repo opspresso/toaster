@@ -216,6 +216,9 @@ releases() {
         docker)
             releases_docker
             ;;
+        toast)
+            releases_toast
+            ;;
     esac
 }
 
@@ -561,6 +564,32 @@ releases_bucket() {
     upload_bucket "war"
     upload_bucket "jar"
     upload_bucket "zip"
+}
+
+releases_toast() {
+    if [ "${TOAST}" == "" ] || [ "${TOKEN}" == "" ]; then
+        error "Not set TOAST or TOKEN."
+    fi
+
+    echo_ "releases to toast... [${TOAST}]"
+
+    # version save
+    URL="${TOAST}/version/build/${ARTIFACT_ID}/${VERSION}"
+    RES=$(curl -s --data "token=${TOKEN}&groupId=${GROUP_ID}&artifactId=${ARTIFACT_ID}&packaging=${PACKAGING}&branch=${BRANCH}" "${URL}")
+    ARR=(${RES})
+
+    if [ "${ARR[0]}" != "OK" ]; then
+        echo_ "Server Error. [${URL}][${RES}]"
+    fi
+
+    # get version
+#    URL="${TOAST}/version/latest/${ARTIFACT_ID}"
+#    RES=$(curl -s --data "token=${TOKEN}&groupId=${GROUP_ID}&artifactId=${ARTIFACT_ID}&packaging=${PACKAGING}&branch=${BRANCH}" "${URL}")
+#    ARR=(${RES})
+#
+#    if [ "${ARR[0]}" != "OK" ]; then
+#        echo_ "Server Error. [${URL}][${RES}]"
+#    fi
 }
 
 releases_beanstalk() {
