@@ -636,7 +636,7 @@ deploy_bucket() {
 
     DEPLOY_PATH="s3://${BUCKET}"
 
-    echo_ "deploy bucket... [${DEPLOY_PATH}]"
+    echo_ "deploy to bucket... [${DEPLOY_PATH}]"
 
     OPTION="--quiet --acl public-read"
 
@@ -646,13 +646,13 @@ deploy_bucket() {
 deploy_beanstalk() {
     releases_beanstalk
 
-    echo_ "deploy to beanstalk... [${ARTIFACT_ID}-${BRANCH}]"
-
     if [ "${PARAM2}" == "" ]; then
         ENV_NAME="${ARTIFACT_ID}-${BRANCH}"
     else
         ENV_NAME="${PARAM2}"
     fi
+
+    echo_ "deploy to beanstalk... [${ENV_NAME}]"
 
     aws elasticbeanstalk update-environment \
         --application-name "${ARTIFACT_ID}" \
