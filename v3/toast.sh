@@ -321,12 +321,11 @@ install_filebeat() {
 parse_version() {
     POM_FILE="pom.xml"
 
+    if [ -f target/${POM_FILE} ]; then
+        cp rf target/${POM_FILE} ${POM_FILE}
+    fi
     if [ ! -f ${POM_FILE} ]; then
-        if [ -f target/${POM_FILE} ]; then
-            cp rf target/${POM_FILE} ${POM_FILE}
-        else
-            error "Not exist file. [${POM_FILE}]"
-        fi
+        error "Not exist file. [${POM_FILE}]"
     fi
 
     ARR_GROUP=($(cat ${POM_FILE} | grep -oP '(?<=groupId>)[^<]+'))
