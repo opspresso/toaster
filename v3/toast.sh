@@ -360,6 +360,8 @@ parse_version() {
     # build no
     if [ "${CIRCLE_BUILD_NUM}" != "" ]; then
         BUILD="${CIRCLE_BUILD_NUM}"
+    elif [ -d .git ]; then
+        BUILD="$(git rev-parse --short HEAD)"
     else
         BUILD=""
     fi
