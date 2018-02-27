@@ -644,6 +644,8 @@ deploy_bucket() {
 }
 
 deploy_beanstalk() {
+    releases_beanstalk
+
     echo_ "deploy to beanstalk... [${ARTIFACT_ID}-${BRANCH}]"
 
     if [ "${PARAM2}" == "" ]; then
