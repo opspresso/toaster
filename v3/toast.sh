@@ -321,8 +321,12 @@ install_filebeat() {
 parse_version() {
     POM_FILE="pom.xml"
 
-    if [ ! -f "${POM_FILE}" ]; then
-        error "Not exist file. [${POM_FILE}]"
+    if [ ! -f ${POM_FILE} ]; then
+        if [ -f target/${POM_FILE} ]; then
+            cp rf target/${POM_FILE} ${POM_FILE}
+        else
+            error "Not exist file. [${POM_FILE}]"
+        fi
     fi
 
     ARR_GROUP=($(cat ${POM_FILE} | grep -oP '(?<=groupId>)[^<]+'))
@@ -366,7 +370,7 @@ parse_version() {
     elif [ "${CI_COMMIT_SHA}" != "" ]; then
         BUILD="${CI_COMMIT_SHA:0:6}"
     else
-        BUILD="$(date "+%y%m%d-%H%M")"
+        #BUILD="$(date "+%y%m%d-%H%M")"
         BUILD=""
     fi
 }
@@ -393,6 +397,8 @@ build_version() {
     sed "1,10d" ${POM_FILE} >> ${TEMP_FILE}
 
     cp -rf ${TEMP_FILE} ${POM_FILE}
+    cp -rf ${TEMP_FILE} target/${POM_FILE}
+    cp -rf ${TEMP_FILE} target/${ARTIFACT_ID}-${VERSION}.pom
 }
 
 build_filebeat() {
@@ -543,10 +549,8 @@ upload_bucket() {
 }
 
 releases_bucket() {
-    POM_FILE="pom.xml"
-
-    if [ -f "${POM_FILE}" ]; then
-        cp -rf "${POM_FILE}" "target/${ARTIFACT_ID}-${VERSION}.pom"
+    if [ -f pom.xml ] && [ ! -f target/${ARTIFACT_ID}-${VERSION}.pom ]; then
+        cp -rf pom.xml target/${ARTIFACT_ID}-${VERSION}.pom
     fi
 
     echo_ "releases to bucket... [${BUCKET}]"
