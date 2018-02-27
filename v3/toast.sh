@@ -542,11 +542,17 @@ releases_toast() {
         error "Not set TOAST or TOKEN."
     fi
 
+    if [ "${PARAM2}" == "" ]; then
+        PACKAGE="${PACKAGING}"
+    else
+        PACKAGE="${PARAM2}"
+    fi
+
     echo_ "releases to toast... [${TOAST}]"
 
     # version save
     URL="${TOAST}/version/build/${ARTIFACT_ID}/${VERSION}"
-    RES=$(curl -s --data "token=${TOKEN}&groupId=${GROUP_ID}&artifactId=${ARTIFACT_ID}&packaging=${PACKAGING}&branch=${BRANCH}" "${URL}")
+    RES=$(curl -s --data "token=${TOKEN}&groupId=${GROUP_ID}&artifactId=${ARTIFACT_ID}&packaging=${PACKAGE}&branch=${BRANCH}" "${URL}")
     ARR=(${RES})
 
     if [ "${ARR[0]}" != "OK" ]; then
