@@ -468,11 +468,14 @@ prepare() {
         return
     fi
 
-    command -v git   > /dev/null || service_install git
-    command -v curl  > /dev/null || service_install curl
-    command -v wget  > /dev/null || service_install wget
-    command -v unzip > /dev/null || service_install unzip
-    command -v jq    > /dev/null || service_install jq
+    service_install "gcc git wget zip unzip"
+
+#    command -v git   > /dev/null || service_install gcc
+#    command -v git   > /dev/null || service_install git
+#    command -v curl  > /dev/null || service_install curl
+#    command -v wget  > /dev/null || service_install wget
+#    command -v unzip > /dev/null || service_install unzip
+#    command -v jq    > /dev/null || service_install jq
 
     # i18n
     language
