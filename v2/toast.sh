@@ -3424,6 +3424,7 @@ echo_toast() {
         VER="$(cat /tmp/toaster.old)"
     fi
 
+    #figlet toast
     echo_bar
     echo_ "      _                  _        "
     echo_ "     | |_ ___   __ _ ___| |_      "
@@ -3431,7 +3432,7 @@ echo_toast() {
     echo_ "     | || (_) | (_| \__ \ |_      "
     echo_ "      \__\___/ \__,_|___/\__|     "
     echo_ "                                  "
-    echo_ "        by nalbam (${VER})    "
+    echo_ "       by nalbam (${VER})    "
     echo_bar
 }
 
