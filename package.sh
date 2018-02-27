@@ -1,10 +1,6 @@
 #!/bin/bash
 
-if [ -d target ]; then
-    rm -rf target
-fi
-
-mkdir target
+mkdir -p target
 
 VERSION="$(git rev-parse --short HEAD)"
 

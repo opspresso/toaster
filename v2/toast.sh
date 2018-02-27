@@ -901,9 +901,7 @@ init_certbot() {
     BOT_DIR="${HOME}/certbot"
     BOT_BIN="${BOT_DIR}/certbot-auto"
 
-    if [ ! -d ${BOT_DIR} ]; then
-        mkdir "${BOT_DIR}"
-    fi
+    mkdir -p "${BOT_DIR}"
 
     curl -s -o "${BOT_BIN}" "${BOT_URL}"
 
@@ -1560,9 +1558,7 @@ build_package() {
         return
     fi
 
-    if [ ! -d "target" ]; then
-        mkdir "target"
-    fi
+    mkdir -p target
 
     pushd src/main/webapp
 
@@ -1693,9 +1689,7 @@ build_docker() {
         return
     fi
 
-    if [ ! -d "target/docker" ]; then
-        mkdir "target/docker"
-    fi
+    mkdir -p target/docker
 
     # ROOT.${packaging}
     cp -rf "target/${ARTIFACT_ID}-${VERSION}.${PACKAGING}" "target/docker/ROOT.${PACKAGING}"

@@ -21,9 +21,7 @@ REPO="http://repo.toast.sh"
 
 ################################################################################
 
-if [ ! -d ~/toaster ]; then
-    mkdir ~/toaster
-fi
+mkdir -p ~/toaster
 
 # version
 curl -s -o /tmp/toaster.new ${REPO}/toaster-v3.txt
