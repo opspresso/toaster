@@ -396,6 +396,9 @@ build_version() {
     sed "1,10d" ${POM_FILE} >> ${TEMP_FILE}
 
     cp -rf ${TEMP_FILE} ${POM_FILE}
+
+    mkdir target
+
     cp -rf ${TEMP_FILE} target/${POM_FILE}
     cp -rf ${TEMP_FILE} target/${ARTIFACT_ID}-${VERSION}.pom
 }
