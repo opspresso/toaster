@@ -2372,7 +2372,7 @@ deploy_toast() {
     DOMAIN="${PARAM2}.toast.sh"
     REPO="repo.toast.sh"
 
-    GROUP_PATH="com/nalbam"
+    GROUP_PATH="${GROUP_ID}"
 
     PACKAGING="war"
     DEPLOY_PATH="${SITE_DIR}/${DOMAIN}"
