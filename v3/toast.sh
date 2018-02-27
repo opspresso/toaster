@@ -33,7 +33,7 @@ nothing() {
 
     # gitlab ci
     CI_COMMIT_REF_SLUG=
-    CI_JOB_ID=
+    CI_COMMIT_SHA=
 }
 
 ################################################################################
@@ -362,13 +362,15 @@ parse_version() {
         BUILD="${CIRCLE_BUILD_NUM}"
     elif [ -d .git ]; then
         BUILD="$(git rev-parse --short HEAD)"
+    elif [ "${CI_COMMIT_SHA}" != "" ]; then
+        BUILD="${CI_COMMIT_SHA:0:6}"
     else
         BUILD=""
     fi
 }
 
 build_version() {
-    echo_ "version branch... [${BRANCH}] [${BUILD}]"
+    echo_ "build version... [${BRANCH}] [${BUILD}]"
 
     if [ "${BRANCH}" == "master" ] && [ "${BUILD}" != "" ]; then
         VERSION="${VERSION}-${BUILD}"
@@ -400,7 +402,7 @@ build_filebeat() {
         return
     fi
 
-    echo_ "version filebeat... [${ARTIFACT_ID}] [${VERSION}]"
+    echo_ "build filebeat... [${ARTIFACT_ID}] [${VERSION}]"
 
     TEMP_FILE="/tmp/${FILE}"
 
