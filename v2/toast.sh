@@ -1994,29 +1994,6 @@ nginx_lb() {
                         fi
                     fi
 
-                    # domain-in.com
-                    IN="${DOMAIN}"
-                    IN=$(echo "${IN}" | sed "s/yanolja\.com/yanolja-in\.com/")
-                    IN=$(echo "${IN}" | sed "s/yanoljanow\.com/yanoljanow-in\.com/")
-
-                    if [ "${DOMAIN}" != "${IN}" ]; then
-                        DOMAIN="${IN}"
-
-                        TEMPLATE="${SHELL_DIR}/package/nginx/nginx-http-server-domain.conf"
-                        if [ -f "${TEMP_CUSTOM}" ]; then
-                            sed "s/SERVER/$SERVER/g" ${TEMPLATE} > ${TEMP_TEMP1}
-                            sed "s/DOMAIN/$DOMAIN/g" ${TEMP_TEMP1} > ${TEMP_TEMP2}
-                            sed "s/PORT/$PORT/;5q;" ${TEMP_TEMP2} >> ${TEMP_HTTP}
-                            sed "s/SERVER/$SERVER/g" ${TEMP_CUSTOM} >> ${TEMP_HTTP}
-                            echo "" >> ${TEMP_HTTP}
-                            sed "1,9d" ${TEMP_TEMP2} >> ${TEMP_HTTP}
-                        else
-                            sed "s/SERVER/$SERVER/g" ${TEMPLATE} > ${TEMP_TEMP1}
-                            sed "s/DOMAIN/$DOMAIN/g" ${TEMP_TEMP1} > ${TEMP_TEMP2}
-                            sed "s/PORT/$PORT/g" ${TEMP_TEMP2} >> ${TEMP_HTTP}
-                        fi
-                    fi
-
                     echo "" >> ${TEMP_HTTP}
                 done
 
@@ -2171,23 +2148,6 @@ vhost_replace() {
     sed "s/DIR/$DIR/g" ${TEMPLATE}   > ${TEMP_FILE1}
     sed "s/DOM/$DOM/g" ${TEMP_FILE1} > ${TEMP_FILE2}
     copy ${TEMP_FILE2} ${DEST_FILE}
-
-    # domain-in.com
-    IN="${DOM}"
-    IN=$(echo "${IN}" | sed "s/yanolja\.com/yanolja-in\.com/")
-    IN=$(echo "${IN}" | sed "s/yanoljanow\.com/yanoljanow-in\.com/")
-
-    if [ "${DOM}" == "${IN}" ]; then
-        return
-    fi
-
-    DOM="${IN}"
-
-    # gen vhost
-    DEST_FILE="${HTTPD_CONF_DIR}/toast-${DOM}.conf"
-    sed "s/DIR/$DIR/g" ${TEMPLATE}   > ${TEMP_FILE1}
-    sed "s/DOM/$DOM/g" ${TEMP_FILE1} > ${TEMP_FILE2}
-    copy ${TEMP_FILE2} ${DEST_FILE}
 }
 
 vhost_proxy() {
@@ -2202,24 +2162,6 @@ vhost_proxy() {
     TEMP_FILE3="${TARGET_DIR}/toast-vhost3.tmp"
 
     DIR="${DOM}"
-
-    # gen vhost
-    DEST_FILE="${HTTPD_CONF_DIR}/toast-${DOM}.conf"
-    sed "s/PORT/$PORT/g" ${TEMPLATE} > ${TEMP_FILE1}
-    sed "s/DIR/$DIR/g" ${TEMP_FILE1} > ${TEMP_FILE2}
-    sed "s/DOM/$DOM/g" ${TEMP_FILE2} > ${TEMP_FILE3}
-    copy ${TEMP_FILE3} ${DEST_FILE}
-
-    # domain-in.com
-    IN="${DOM}"
-    IN=$(echo "${IN}" | sed "s/yanolja\.com/yanolja-in\.com/")
-    IN=$(echo "${IN}" | sed "s/yanoljanow\.com/yanoljanow-in\.com/")
-
-    if [ "${DOM}" == "${IN}" ]; then
-        return
-    fi
-
-    DOM="${IN}"
 
     # gen vhost
     DEST_FILE="${HTTPD_CONF_DIR}/toast-${DOM}.conf"
