@@ -322,7 +322,7 @@ parse_version() {
     POM_FILE="pom.xml"
 
     if [ -f target/${POM_FILE} ]; then
-        cp rf target/${POM_FILE} ${POM_FILE}
+        cp -rf target/${POM_FILE} ${POM_FILE}
     fi
     if [ ! -f ${POM_FILE} ]; then
         error "Not exist file. [${POM_FILE}]"
