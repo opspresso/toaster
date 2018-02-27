@@ -79,7 +79,7 @@ fi
 
 ################################################################################
 
-${SUDO} yum install -y pcre pcre-devel zlib zlib-devel openssl openssl-devel
+${SUDO} yum install -y gcc pcre pcre-devel zlib zlib-devel openssl openssl-devel
 
 tar xzf ${FILE}.${EXT}
 
