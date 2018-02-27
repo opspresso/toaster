@@ -16,6 +16,10 @@ error() {
 }
 
 nothing() {
+    # toast-v2
+    TOAST=
+    TOKEN=
+
     # build
     BRANCH=
     BUILD=
@@ -81,10 +85,6 @@ TEMP_DIR="/tmp"
 SUDO=""
 if [ "${HOME}" != "/root" ]; then
     SUDO="sudo"
-fi
-
-if [ ! -f target/.stamp ]; then
-    echo $(date "+%y%m%d-%H%M") > target/.stamp
 fi
 
 ################################################################################
@@ -184,9 +184,10 @@ install() {
 build() {
     parse_version
 
-    #build_version
-
     case ${PARAM1} in
+        version)
+            build_version
+            ;;
         docker)
             build_docker
             ;;
@@ -365,6 +366,7 @@ parse_version() {
     elif [ "${CI_COMMIT_SHA}" != "" ]; then
         BUILD="${CI_COMMIT_SHA:0:6}"
     else
+        BUILD="$(date "+%y%m%d-%H%M")"
         BUILD=""
     fi
 }
@@ -562,13 +564,11 @@ releases_beanstalk() {
 
     echo_ "releases to beanstalk versions..."
 
-    STAMP="$(cat target/.stamp)"
-
     S3_KEY="maven2/${GROUP_PATH}/${ARTIFACT_ID}/${VERSION}/${ARTIFACT_ID}-${VERSION}.zip"
 
     aws elasticbeanstalk create-application-version \
         --application-name "${ARTIFACT_ID}" \
-        --version-label "${VERSION}-${STAMP}" \
+        --version-label "${VERSION}" \
         --description "${BRANCH}" \
         --source-bundle S3Bucket="${BUCKET}",S3Key="${S3_KEY}" \
         --auto-create-application
@@ -646,12 +646,10 @@ deploy_beanstalk() {
         ENV_NAME="${PARAM2}"
     fi
 
-    STAMP="$(cat target/.stamp)"
-
     aws elasticbeanstalk update-environment \
         --application-name "${ARTIFACT_ID}" \
         --environment-name "${ENV_NAME}" \
-        --version-label "${VERSION}-${STAMP}"
+        --version-label "${VERSION}"
 }
 
 deploy_lambda() {
