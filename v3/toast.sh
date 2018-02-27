@@ -400,7 +400,7 @@ build_version() {
 
     cp -rf ${TEMP_FILE} ${POM_FILE}
 
-    mkdir target
+    mkdir -p target
 
     cp -rf ${TEMP_FILE} target/${POM_FILE}
     cp -rf ${TEMP_FILE} target/${ARTIFACT_ID}-${VERSION}.pom
@@ -429,9 +429,7 @@ build_filebeat() {
 build_docker() {
     echo_ "build for docker..."
 
-    if [ ! -d target ]; then
-        mkdir target
-    fi
+    mkdir -p target
 
     FILES=
 
@@ -473,11 +471,7 @@ build_docker() {
 build_webapp() {
     echo_ "build for webapp..."
 
-    if [ -d target ]; then
-        rm -rf target
-    fi
-
-    mkdir target
+    mkdir -p target
 
     pushd src/main/webapp
 
@@ -489,11 +483,7 @@ build_webapp() {
 build_php() {
     echo_ "build for php..."
 
-    if [ -d target ]; then
-        rm -rf target
-    fi
-
-    mkdir target
+    mkdir -p target
 
     pushd src/main/webapp
 
@@ -513,11 +503,7 @@ build_php() {
 build_node() {
     echo_ "build for node..."
 
-    if [ -d target ]; then
-        rm -rf target
-    fi
-
-    mkdir target
+    mkdir -p target
 
     pushd src/main/node
 

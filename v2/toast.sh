@@ -2134,7 +2134,7 @@ nginx_local() {
     if [ -d "${SITE_DIR}/localhost" ]; then
         TEMP_FILE="${TEMP_DIR}/toast-health.tmp"
         echo "OK ${NAME}" > ${TEMP_FILE}
-        copy ${TEMP_FILE} "/usr/local/nginx/html/index.html"
+        copy ${TEMP_FILE} "/usr/local/nginx/html/index.php"
         copy ${TEMP_FILE} "/usr/local/nginx/html/health.html"
     fi
 }
@@ -2156,7 +2156,7 @@ vhost_local() {
     if [ -d "${SITE_DIR}/localhost" ]; then
         TEMP_FILE="${TEMP_DIR}/toast-health.tmp"
         echo "OK ${NAME}" > ${TEMP_FILE}
-        copy ${TEMP_FILE} "${SITE_DIR}/localhost/index.html"
+        copy ${TEMP_FILE} "${SITE_DIR}/localhost/index.php"
         copy ${TEMP_FILE} "${SITE_DIR}/localhost/health.html"
     fi
 }
