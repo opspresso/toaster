@@ -588,7 +588,13 @@ releases_beanstalk() {
     else
         VERSION="${PARAM2}"
 
-        aws elasticbeanstalk create-application-version \
+#        aws elasticbeanstalk create-application-version \
+#            --application-name "${ARTIFACT_ID}" \
+#            --version-label "${VERSION}" \
+#            --description "${BRANCH}" \
+#            --source-bundle S3Bucket="${BUCKET}",S3Key="${S3_KEY}"
+
+         aws elasticbeanstalk update-application-version \
             --application-name "${ARTIFACT_ID}" \
             --version-label "${VERSION}" \
             --description "${BRANCH}" \
@@ -597,8 +603,6 @@ releases_beanstalk() {
 }
 
 releases_docker() {
-    build_docker
-
     if [ "${REGISTRY}" == "" ]; then
         error "Not set REGISTRY."
     fi
@@ -660,15 +664,17 @@ deploy_bucket() {
 }
 
 deploy_beanstalk() {
-    releases_beanstalk
-
     if [ "${PARAM2}" == "" ]; then
         ENV_NAME="${ARTIFACT_ID}-${BRANCH}"
     else
         ENV_NAME="${PARAM2}"
     fi
 
-    echo_ "deploy to beanstalk... [${ENV_NAME}]"
+    if [ "${PARAM3}" != "" ]; then
+        VERSION="${PARAM3}"
+    fi
+
+    echo_ "deploy to beanstalk... [${ENV_NAME}] [${VERSION}]"
 
     aws elasticbeanstalk update-environment \
         --application-name "${ARTIFACT_ID}" \
@@ -677,8 +683,6 @@ deploy_beanstalk() {
 }
 
 deploy_lambda() {
-    echo_ "deploy to lambda... [${ARTIFACT_ID}-${BRANCH}]"
-
     PACKAGE_PATH="target/${ARTIFACT_ID}-${VERSION}.zip"
 
     if [ "${PARAM2}" == "" ]; then
@@ -686,6 +690,8 @@ deploy_lambda() {
     else
         FUNCTION_NAME="${PARAM2}"
     fi
+
+    echo_ "deploy to lambda... [${FUNCTION_NAME}] [${VERSION}]"
 
     aws lambda update-function-code \
         --function-name "${FUNCTION_NAME}" \
