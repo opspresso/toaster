@@ -586,8 +586,6 @@ releases_beanstalk() {
             --source-bundle S3Bucket="${BUCKET}",S3Key="${S3_KEY}" \
             --auto-create-application
     else
-        VERSION="${PARAM2}"
-
         aws elasticbeanstalk delete-application-version \
             --application-name "${ARTIFACT_ID}" \
             --version-label "${PARAM2}" \
