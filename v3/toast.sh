@@ -593,14 +593,7 @@ releases_beanstalk() {
         aws elasticbeanstalk create-application-version \
             --application-name "${ARTIFACT_ID}" \
             --version-label "${PARAM2}" \
-            --description "${VERSION} (${BRANCH})" \
             --source-bundle S3Bucket="${BUCKET}",S3Key="${S3_KEY}"
-
-#         aws elasticbeanstalk update-application-version \
-#            --application-name "${ARTIFACT_ID}" \
-#            --version-label "${PARAM2}" \
-#            --description "${VERSION} (${BRANCH})" \
-#            --source-bundle S3Bucket="${BUCKET}",S3Key="${S3_KEY}"
     fi
 }
 
