@@ -188,8 +188,8 @@ build() {
         version)
             build_version
             ;;
-        docker)
-            build_docker
+        beanstalk)
+            build_beanstalk
             ;;
         webapp)
             build_webapp
@@ -423,8 +423,44 @@ build_filebeat() {
     cp -rf ${TEMP_FILE} ${FILEBEAT}
 }
 
-build_docker() {
-    echo_ "build for docker..."
+build_webapp() {
+    echo_ "build for webapp..."
+
+    mkdir -p target
+
+    pushd src/main/webapp
+
+    if [ -f composer.json ]; then
+        curl -s https://getcomposer.org/installer | php
+
+        php composer.phar install
+
+        rm -rf composer.phar
+    fi
+
+    zip -q -r ../../../target/${ARTIFACT_ID}-${VERSION}.${PACKAGING} *
+
+    popd
+}
+
+build_node() {
+    echo_ "build for node..."
+
+    mkdir -p target
+
+    pushd src/main/node
+
+    if [ -f package.json ]; then
+        npm install -s
+    fi
+
+    zip -q -r ../../../target/${ARTIFACT_ID}-${VERSION}.zip *
+
+    popd
+}
+
+build_beanstalk() {
+    echo_ "build for beanstalk..."
 
     mkdir -p target
 
@@ -461,42 +497,6 @@ build_docker() {
     pushd target
 
     zip -q -r ${ARTIFACT_ID}-${VERSION}.zip ${FILES}
-
-    popd
-}
-
-build_webapp() {
-    echo_ "build for webapp..."
-
-    mkdir -p target
-
-    pushd src/main/webapp
-
-    if [ -f composer.json ]; then
-        curl -s https://getcomposer.org/installer | php
-
-        php composer.phar install
-
-        rm -rf composer.phar
-    fi
-
-    zip -q -r ../../../target/${ARTIFACT_ID}-${VERSION}.${PACKAGING} *
-
-    popd
-}
-
-build_node() {
-    echo_ "build for node..."
-
-    mkdir -p target
-
-    pushd src/main/node
-
-    if [ -f package.json ]; then
-        npm install -s
-    fi
-
-    zip -q -r ../../../target/${ARTIFACT_ID}-${VERSION}.zip *
 
     popd
 }
@@ -570,7 +570,7 @@ releases_toast() {
 }
 
 releases_beanstalk() {
-    build_docker
+    build_beanstalk
 
     releases_bucket
 
@@ -588,17 +588,21 @@ releases_beanstalk() {
     else
         VERSION="${PARAM2}"
 
-#        aws elasticbeanstalk create-application-version \
-#            --application-name "${ARTIFACT_ID}" \
-#            --version-label "${VERSION}" \
-#            --description "${BRANCH}" \
-#            --source-bundle S3Bucket="${BUCKET}",S3Key="${S3_KEY}"
-
-         aws elasticbeanstalk update-application-version \
+        aws elasticbeanstalk delete-application-version \
             --application-name "${ARTIFACT_ID}" \
-            --version-label "${VERSION}" \
-            --description "${BRANCH}" \
+            --version-label "${PARAM2}" \
+
+        aws elasticbeanstalk create-application-version \
+            --application-name "${ARTIFACT_ID}" \
+            --version-label "${PARAM2}" \
+            --description "${VERSION} (${BRANCH})" \
             --source-bundle S3Bucket="${BUCKET}",S3Key="${S3_KEY}"
+
+#         aws elasticbeanstalk update-application-version \
+#            --application-name "${ARTIFACT_ID}" \
+#            --version-label "${PARAM2}" \
+#            --description "${VERSION} (${BRANCH})" \
+#            --source-bundle S3Bucket="${BUCKET}",S3Key="${S3_KEY}"
     fi
 }
 
@@ -612,6 +616,9 @@ releases_docker() {
     IMAGE="${ARTIFACT_ID}:${VERSION}"
 
     pushd target
+
+    cp -rf "${ARTIFACT_ID}-${VERSION}.${PACKAGING}" "ROOT.${PACKAGING}"
+    cp -rf "../Dockerfile" "Dockerfile"
 
     docker version
 
