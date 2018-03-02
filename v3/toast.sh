@@ -578,12 +578,22 @@ releases_beanstalk() {
 
     S3_KEY="maven2/${GROUP_PATH}/${ARTIFACT_ID}/${VERSION}/${ARTIFACT_ID}-${VERSION}.zip"
 
-    aws elasticbeanstalk create-application-version \
-        --application-name "${ARTIFACT_ID}" \
-        --version-label "${VERSION}" \
-        --description "${BRANCH}" \
-        --source-bundle S3Bucket="${BUCKET}",S3Key="${S3_KEY}" \
-        --auto-create-application
+    if [ "${PARAM2}" == "" ]; then
+        aws elasticbeanstalk create-application-version \
+            --application-name "${ARTIFACT_ID}" \
+            --version-label "${VERSION}" \
+            --description "${BRANCH}" \
+            --source-bundle S3Bucket="${BUCKET}",S3Key="${S3_KEY}" \
+            --auto-create-application
+    else
+        VERSION="${PARAM2}"
+
+        aws elasticbeanstalk create-application-version \
+            --application-name "${ARTIFACT_ID}" \
+            --version-label "${VERSION}" \
+            --description "${BRANCH}" \
+            --source-bundle S3Bucket="${BUCKET}",S3Key="${S3_KEY}"
+    fi
 }
 
 releases_docker() {
