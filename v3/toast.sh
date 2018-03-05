@@ -681,8 +681,6 @@ deploy_beanstalk() {
 }
 
 deploy_lambda() {
-    PACKAGE_PATH="target/${ARTIFACT_ID}-${VERSION}.zip"
-
     if [ "${PARAM2}" == "" ]; then
         FUNCTION_NAME="${ARTIFACT_ID}-${BRANCH}"
     else
@@ -691,9 +689,14 @@ deploy_lambda() {
 
     echo_ "deploy to lambda... [${FUNCTION_NAME}] [${VERSION}]"
 
+    #PACKAGE_PATH="target/${ARTIFACT_ID}-${VERSION}.zip"
+    S3_KEY="maven2/${GROUP_PATH}/${ARTIFACT_ID}/${VERSION}/${ARTIFACT_ID}-${VERSION}.zip"
+
     aws lambda update-function-code \
         --function-name "${FUNCTION_NAME}" \
-        --zip-file "fileb://${PACKAGE_PATH}"
+        --s3-bucket "${BUCKET}" \
+        --s3-key "${S3_KEY}"
+        #--zip-file "fileb://${PACKAGE_PATH}"
 }
 
 service_update() {
