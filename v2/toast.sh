@@ -1190,6 +1190,12 @@ init_php() {
 
         httpd_restart
 
+        # composer
+        if ! command -v composer > /dev/null; then
+            curl -sS https://getcomposer.org/installer | php
+            sudo mv composer.phar /usr/local/bin/composer
+        fi
+
         echo "PHP_VERSION=${VERSION}" > "${SHELL_DIR}/.config_php"
     fi
 
