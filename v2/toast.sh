@@ -1193,7 +1193,7 @@ init_php() {
         # composer
         if ! command -v composer > /dev/null; then
             curl -sS https://getcomposer.org/installer | php
-            sudo mv composer.phar /usr/local/bin/composer
+            ${SUDO} mv composer.phar /usr/local/bin/composer
         fi
 
         echo "PHP_VERSION=${VERSION}" > "${SHELL_DIR}/.config_php"
@@ -1416,7 +1416,7 @@ init_jenkins() {
     # composer
     if ! command -v composer > /dev/null; then
         curl -sS https://getcomposer.org/installer | php
-        sudo mv composer.phar /usr/local/bin/composer
+        ${SUDO} mv composer.phar /usr/local/bin/composer
     fi
     # swagger
     if command -v composer > /dev/null; then
