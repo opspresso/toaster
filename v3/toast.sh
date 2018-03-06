@@ -578,23 +578,11 @@ releases_beanstalk() {
 
     S3_KEY="maven2/${GROUP_PATH}/${ARTIFACT_ID}/${VERSION}/${ARTIFACT_ID}-${VERSION}.zip"
 
-    if [ "${PARAM2}" == "" ]; then
-        aws elasticbeanstalk create-application-version \
-            --application-name "${ARTIFACT_ID}" \
-            --version-label "${VERSION}" \
-            --description "${BRANCH}" \
-            --source-bundle S3Bucket="${BUCKET}",S3Key="${S3_KEY}" \
-            --auto-create-application
-    else
-        aws elasticbeanstalk delete-application-version \
-            --application-name "${ARTIFACT_ID}" \
-            --version-label "${PARAM2}" \
-
-        aws elasticbeanstalk create-application-version \
-            --application-name "${ARTIFACT_ID}" \
-            --version-label "${PARAM2}" \
-            --source-bundle S3Bucket="${BUCKET}",S3Key="${S3_KEY}"
-    fi
+    aws elasticbeanstalk create-application-version \
+        --application-name "${ARTIFACT_ID}" \
+        --version-label "${VERSION}" \
+        --description "${BRANCH}" \
+        --source-bundle S3Bucket="${BUCKET}",S3Key="${S3_KEY}"
 }
 
 releases_docker() {
@@ -668,9 +656,18 @@ deploy_beanstalk() {
         ENV_NAME="${PARAM2}"
     fi
 
-    if [ "${PARAM3}" != "" ]; then
-        VERSION="${PARAM3}"
-    fi
+    echo_ "releases to beanstalk versions... [${ENV_NAME}] [${VERSION}]"
+
+    S3_KEY="maven2/${GROUP_PATH}/${ARTIFACT_ID}/${VERSION}/${ARTIFACT_ID}-${VERSION}.zip"
+
+    aws elasticbeanstalk delete-application-version \
+        --application-name "${ARTIFACT_ID}" \
+        --version-label "${ENV_NAME}" \
+
+    aws elasticbeanstalk create-application-version \
+        --application-name "${ARTIFACT_ID}" \
+        --version-label "${ENV_NAME}" \
+        --source-bundle S3Bucket="${BUCKET}",S3Key="${S3_KEY}"
 
     echo_ "deploy to beanstalk... [${ENV_NAME}] [${VERSION}]"
 
