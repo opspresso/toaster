@@ -2361,14 +2361,6 @@ deploy_toast() {
     placement
 
     echo_bar
-
-    pushd ${DEPLOY_PATH}
-
-    php /usr/local/bin/composer install
-
-    popd
-
-    echo_bar
 }
 
 deploy_project() {
@@ -2687,6 +2679,14 @@ placement() {
                 warning "deploy dir can not copy. [${DEPLOY_PATH}]"
             else
                 mv -f "${UNZIP_DIR}" "${DEPLOY_PATH}"
+            fi
+
+            if [ -f ${DEPLOY_PATH}/composer.json ] && [ ! -f ${DEPLOY_PATH}/composer.lock ]; then
+                pushd ${DEPLOY_PATH}
+
+                php /usr/local/bin/composer install
+
+                popd
             fi
         elif [ "${TYPE}" == "war" ]; then
             DEST_WAR="${DEPLOY_PATH}/${ARTIFACT_ID}.${PACKAGING}"
