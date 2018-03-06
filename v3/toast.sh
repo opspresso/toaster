@@ -674,7 +674,7 @@ deploy_beanstalk() {
     aws elasticbeanstalk update-environment \
         --application-name "${ARTIFACT_ID}" \
         --environment-name "${ENV_NAME}" \
-        --version-label "${VERSION}"
+        --version-label "${ENV_NAME}"
 }
 
 deploy_lambda() {
