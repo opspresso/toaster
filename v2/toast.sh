@@ -2355,6 +2355,14 @@ deploy_toast() {
     placement
 
     echo_bar
+
+    pushd ${DEPLOY_PATH}
+
+    php /usr/local/bin/composer install
+
+    popd
+
+    echo_bar
 }
 
 deploy_project() {

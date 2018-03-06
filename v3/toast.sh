@@ -440,8 +440,6 @@ build_webapp() {
 
     zip -q -r ../../../target/${ARTIFACT_ID}-${VERSION}.${PACKAGING} *
 
-    tar -zcf ../../../target/${ARTIFACT_ID}-${VERSION}.tar.gz *
-
     popd
 }
 
