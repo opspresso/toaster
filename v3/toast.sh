@@ -440,6 +440,8 @@ build_webapp() {
 
     zip -q -r ../../../target/${ARTIFACT_ID}-${VERSION}.${PACKAGING} *
 
+    tar -zcf ../../../target/${ARTIFACT_ID}-${VERSION}.tar.gz *
+
     popd
 }
 
@@ -535,6 +537,7 @@ releases_bucket() {
     upload_bucket "war"
     upload_bucket "jar"
     upload_bucket "zip"
+    upload_bucket "tar.gz"
 }
 
 releases_toast() {
