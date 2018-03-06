@@ -438,7 +438,7 @@ build_webapp() {
         rm -rf composer.phar
     fi
 
-    zip -q -r ../../../target/${ARTIFACT_ID}-${VERSION}.${PACKAGING} *
+    zip -q -r -S ../../../target/${ARTIFACT_ID}-${VERSION}.${PACKAGING} *
 
     popd
 }
@@ -454,7 +454,7 @@ build_node() {
         npm install -s
     fi
 
-    zip -q -r ../../../target/${ARTIFACT_ID}-${VERSION}.zip *
+    zip -q -r -S ../../../target/${ARTIFACT_ID}-${VERSION}.zip *
 
     popd
 }
