@@ -656,9 +656,9 @@ deploy_beanstalk() {
         ENV_NAME="${PARAM2}"
     fi
 
-    echo_ "releases to beanstalk versions... [${ENV_NAME}] [${VERSION}]"
-
     S3_KEY="maven2/${GROUP_PATH}/${ARTIFACT_ID}/${VERSION}/${ARTIFACT_ID}-${VERSION}.zip"
+
+    echo_ "releases to beanstalk versions... [${ENV_NAME}] [${VERSION}]"
 
     aws elasticbeanstalk delete-application-version \
         --application-name "${ARTIFACT_ID}" \
