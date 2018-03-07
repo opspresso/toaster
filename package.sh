@@ -19,6 +19,9 @@ cp -rf install-v2.sh target/install
 cp -rf install-v2.sh target/install-v2
 cp -rf install-v3.sh target/install-v3
 
+# chmod
+find ./** | grep [.]sh | xargs chmod 755
+
 # toaster v2
 pushd v2
 tar -czf ../target/toaster-v2.tar.gz extra install package *.sh
