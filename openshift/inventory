@@ -8,6 +8,7 @@ ${IP} openshift_ip=${IP} openshift_schedulable=true
 
 [nodes]
 ${IP} openshift_ip=${IP} openshift_schedulable=true openshift_node_labels="{'region': 'infra', 'zone': 'default'}"
+#NODE_LIST#
 
 [etcd]
 ${IP} openshift_ip=${IP}
