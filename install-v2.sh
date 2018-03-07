@@ -57,5 +57,8 @@ tar -zxf /tmp/toaster.tar.gz -C ~/toaster
 # cp version
 cp -rf /tmp/toaster.new /tmp/toaster.old
 
+# chmod 755
+find ~/toaster/** | grep [.]sh | xargs chmod 755
+
 # done
 success "${MSG}"
