@@ -6,11 +6,11 @@ etcd
 [masters]
 ${IP} openshift_ip=${IP} openshift_schedulable=true
 
-[etcd]
-${IP} openshift_ip=${IP}
-
 [nodes]
 ${IP} openshift_ip=${IP} openshift_schedulable=true openshift_node_labels="{'region': 'infra', 'zone': 'default'}"
+
+[etcd]
+${IP} openshift_ip=${IP}
 
 [OSEv3:vars]
 ansible_ssh_user=root
