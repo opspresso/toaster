@@ -90,13 +90,11 @@ install_openshift() {
 }
 
 build_hosts() {
-    curl -o hosts.download ${REPO_URL}/hosts
-    envsubst < hosts.download > /etc/hosts
+    envsubst < ${SHELL_DIR}/hosts > /etc/hosts
 }
 
 build_inventory() {
-    curl -o inventory.download ${REPO_URL}/inventory.ini
-    envsubst < inventory.download > inventory.ini
+    envsubst < ${SHELL_DIR}/hosts.ini > inventory.ini
 }
 
 generate_key() {
@@ -106,6 +104,8 @@ generate_key() {
         ssh -o StrictHostKeyChecking=no root@${IP} "pwd" < /dev/null
     fi
 }
+
+export SHELL_DIR=$(dirname "$0")
 
 configure
 
