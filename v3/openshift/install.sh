@@ -95,7 +95,7 @@ build_hosts() {
 }
 
 build_inventory() {
-    envsubst < ${SHELL_DIR}/inventory.ini > inventory.ini
+    envsubst < ${SHELL_DIR}/inventory > inventory.ini
 }
 
 generate_key() {
