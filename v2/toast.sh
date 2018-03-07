@@ -301,6 +301,9 @@ init() {
         filebeat)
             init_filebeat
             ;;
+        openshift)
+            init_openshift
+            ;;
         mysql)
             init_mysql 55
             ;;
@@ -1346,6 +1349,14 @@ init_filebeat() {
     echo_ "init filebeat..."
 
     ${SHELL_DIR}/install/filebeat.sh
+
+    echo_bar
+}
+
+init_openshift() {
+    echo_ "init openshift..."
+
+    ${SHELL_DIR}/openshift/install.sh
 
     echo_bar
 }
