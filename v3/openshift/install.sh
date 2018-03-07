@@ -35,9 +35,9 @@ install_dependency() {
         "@Development Tools"
 
     if ! command -v docker > /dev/null; then
-        wget -qO- https://get.docker.com/ | sh
-        #yum-config-manager --enable rhui-REGION-rhel-server-extras
-        #yum install -y docker
+        #wget -qO- https://get.docker.com/ | sh
+        yum-config-manager --enable rhui-REGION-rhel-server-extras
+        yum install -y docker
     fi
 
     systemctl | grep "NetworkManager.*running"
