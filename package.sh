@@ -11,6 +11,9 @@ echo "${VERSION}" > target/toaster.txt
 echo "v2-${VERSION}" > target/toaster-v2.txt
 echo "v3-${VERSION}" > target/toaster-v3.txt
 
+# chmod
+find ./** | grep [.]sh | xargs chmod 755
+
 # web
 cp -rf web/* target/
 
@@ -18,9 +21,6 @@ cp -rf web/* target/
 cp -rf install-v2.sh target/install
 cp -rf install-v2.sh target/install-v2
 cp -rf install-v3.sh target/install-v3
-
-# chmod
-find ./** | grep [.]sh | xargs chmod 755
 
 # toaster v2
 pushd v2
