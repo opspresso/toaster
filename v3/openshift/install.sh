@@ -1,29 +1,29 @@
 #!/bin/bash
 
-configure() {
-    export DOMAIN=${DOMAIN:="$(curl ipinfo.io/ip).nip.io"}
-    export USERNAME=${USERNAME:="$(whoami)"}
-    export PASSWORD=${PASSWORD:=password}
-    export VERSION=${VERSION:="v3.7.1"}
-    export DISK=${DISK:=""}
+export SHELL_DIR=$(dirname "$0")
 
-    export IP="$(ip route get 8.8.8.8 | awk '{print $NF; exit}')"
+export DOMAIN=${DOMAIN:="$(curl ipinfo.io/ip).nip.io"}
+export USERNAME=${USERNAME:="$(whoami)"}
+export PASSWORD=${PASSWORD:=password}
+export VERSION=${VERSION:="v3.7.1"}
+export DISK=${DISK:=""}
 
-    export REPO_URL="http://repo.toast.sh/openshift"
+export IP="$(ip route get 8.8.8.8 | awk '{print $NF; exit}')"
 
-    export METRICS="True"
-    export LOGGING="True"
+export REPO_URL="http://repo.toast.sh/openshift"
 
-    MEMORY=$(cat /proc/meminfo | grep MemTotal | sed "s/MemTotal:[ ]*\([0-9]*\) kB/\1/")
+export METRICS="True"
+export LOGGING="True"
 
-    if [ "$MEMORY" -lt "4194304" ]; then
-        export METRICS="False"
-    fi
+MEMORY=$(cat /proc/meminfo | grep MemTotal | sed "s/MemTotal:[ ]*\([0-9]*\) kB/\1/")
 
-    if [ "$MEMORY" -lt "8388608" ]; then
-        export LOGGING="False"
-    fi
-}
+if [ "$MEMORY" -lt "4194304" ]; then
+    export METRICS="False"
+fi
+
+if [ "$MEMORY" -lt "8388608" ]; then
+    export LOGGING="False"
+fi
 
 install_dependency() {
     rpm -Uvh https://dl.fedoraproject.org/pub/epel/epel-release-latest-7.noarch.rpm
@@ -56,7 +56,18 @@ install_ansible() {
     popd
 }
 
-docker_start() {
+install_openshift() {
+    build_inventory
+
+    ansible-playbook -i inventory.ini openshift-ansible/playbooks/byo/config.yml
+
+    htpasswd -b /etc/origin/master/htpasswd ${USERNAME} ${PASSWORD}
+    oc adm policy add-cluster-role-to-user cluster-admin ${USERNAME}
+
+    systemctl restart origin-master-api
+}
+
+start_docker() {
     if [ -z ${DISK} ]; then
         echo "Not setting the Docker storage."
     else
@@ -78,17 +89,6 @@ docker_start() {
     systemctl enable docker
 }
 
-install_openshift() {
-    build_inventory
-
-    ansible-playbook -i inventory.ini openshift-ansible/playbooks/byo/config.yml
-
-    htpasswd -b /etc/origin/master/htpasswd ${USERNAME} ${PASSWORD}
-    oc adm policy add-cluster-role-to-user cluster-admin ${USERNAME}
-
-    systemctl restart origin-master-api
-}
-
 build_hosts() {
     envsubst < ${SHELL_DIR}/hosts > /etc/hosts
 }
@@ -105,10 +105,6 @@ generate_key() {
     fi
 }
 
-export SHELL_DIR=$(dirname "$0")
-
-configure
-
 echo "**********"
 echo "* Your domain is $DOMAIN "
 echo "* Your username is $USERNAME "
@@ -123,7 +119,7 @@ install_ansible
 
 build_hosts
 
-docker_start
+start_docker
 
 generate_key
 
