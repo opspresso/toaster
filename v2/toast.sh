@@ -1356,7 +1356,7 @@ init_filebeat() {
 init_openshift() {
     echo_ "init openshift..."
 
-    ${SHELL_DIR}/openshift/install.sh
+    ${SUDO} ${SHELL_DIR}/openshift/install.sh
 
     echo_bar
 }

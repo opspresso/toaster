@@ -1,5 +1,10 @@
 #!/bin/bash
 
+if [ "${HOME}" != "/root" ]; then
+    echo "Please run as root."
+    exit 1
+fi
+
 export SHELL_DIR=$(dirname "$0")
 
 export DOMAIN=${DOMAIN:="$(curl ipinfo.io/ip).nip.io"}
@@ -96,6 +101,11 @@ build_hosts() {
 
 build_inventory() {
     envsubst < ${SHELL_DIR}/inventory > inventory.ini
+
+    if [ ! -f inventory.ini ]; then
+        echo "inventory.ini is missing!"
+        exit 1
+    fi
 }
 
 generate_key() {
