@@ -148,7 +148,7 @@ prepare() {
 }
 
 update() {
-    curl -s toast.sh/install-v3 | bash
+    curl -s repo.toast.sh/install-v3 | bash
 }
 
 config() {

@@ -454,7 +454,7 @@ self_info() {
 }
 
 self_update() {
-    curl -s toast.sh/install | bash
+    curl -s repo.toast.sh/install-v2 | bash
 }
 
 prepare() {
