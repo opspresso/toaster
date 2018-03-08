@@ -1,6 +1,6 @@
 #!/bin/bash
 
-bastion_public_ip="13.125.153.54"
-master_public_ip="13.125.25.139"
-node1_public_ip="13.125.239.254"
-node2_public_ip="13.125.160.16"
+export bastion_public_ip="13.125.153.54"
+export master_public_ip="13.125.25.139"
+export node1_public_ip="13.125.239.254"
+export node2_public_ip="13.125.160.16"

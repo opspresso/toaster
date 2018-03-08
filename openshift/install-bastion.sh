@@ -26,20 +26,25 @@ if [ ! -d openshift-ansible ]; then
     popd
 fi
 
+chmod 600 ~/.ssh/id_rsa
+
 if [ "${master_public_ip}" != "" ]; then
     echo "********** master **********"
-    ssh -o "StrictHostKeyChecking=no" ${master_public_ip} < ${SHELL_DIR}/install-master.sh
+    scp ${SHELL_DIR}/install-master.sh ${master_public_ip}:~
+    ssh -t ${master_public_ip} ~/install-master.sh
     echo "********** master **********"
 fi
 
 if [ "${node1_public_ip}" != "" ]; then
     echo "********** node1 **********"
-    ssh -o "StrictHostKeyChecking=no" ${node1_public_ip} < ${SHELL_DIR}/install-node.sh
+    scp ${SHELL_DIR}/install-master.sh ${node1_public_ip}:~
+    ssh -t ${node1_public_ip} ~/install-master.sh
     echo "********** node1 **********"
 fi
 
 if [ "${node2_public_ip}" != "" ]; then
     echo "********** node2 **********"
-    ssh -o "StrictHostKeyChecking=no" ${node2_public_ip} < ${SHELL_DIR}/install-node.sh
+    scp ${SHELL_DIR}/install-master.sh ${node2_public_ip}:~
+    ssh -t ${node2_public_ip} ~/install-master.sh
     echo "********** node2 **********"
 fi

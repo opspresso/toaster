@@ -26,9 +26,7 @@ sudo ~/toaster/openshift/install.sh
 ## 
 ```
 scp -i keys/_key_pairs/nalbam-seoul.pem keys/_key_pairs/nalbam-seoul.pem ec2-user@13.125.153.54:~/.ssh/id_rsa
-ssh -i keys/_key_pairs/nalbam-seoul.pem ec2-user@13.125.153.54
 
-curl -s toast.sh/install-v3 | bash
-
-sudo ~/toaster/openshift/install-bastion.sh
+ssh -i keys/_key_pairs/nalbam-seoul.pem ec2-user@13.125.153.54 -t 'curl -s toast.sh/install-v3 | bash'
+ssh -i keys/_key_pairs/nalbam-seoul.pem ec2-user@13.125.153.54 -t '~/toaster/openshift/install-bastion.sh'
 ```
