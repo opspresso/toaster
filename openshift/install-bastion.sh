@@ -2,6 +2,11 @@
 
 SHELL_DIR=$(dirname "$0")
 
+config=".openshift"
+if [ -f ${config} ]; then
+    source ${config}
+fi
+
 bastion_public_ip=${bastion_public_ip:=""}
 master_public_ip=${master_public_ip:=""}
 node1_public_ip=${node1_public_ip:=""}
