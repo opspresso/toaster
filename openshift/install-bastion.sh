@@ -15,7 +15,7 @@ node2_public_ip=${node2_public_ip:=""}
 sudo yum update -y
 sudo yum install -y git wget gettext httpd-tools
 
-which ansible || pip install -Iv ansible
+which ansible || sudo pip install -Iv ansible
 
 if [ ! -d openshift-ansible ]; then
     git clone https://github.com/openshift/openshift-ansible.git
