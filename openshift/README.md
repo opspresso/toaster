@@ -22,3 +22,13 @@ sudo ~/toaster/openshift/install.sh
 
 ## reference
 * https://blog.openshift.com/installing-openshift-3-7-1-30-minutes/
+
+## 
+```
+scp -i keys/_key_pairs/nalbam-seoul.pem keys/_key_pairs/nalbam-seoul.pem ec2-user@13.125.153.54:~/.ssh/id_rsa
+ssh -i keys/_key_pairs/nalbam-seoul.pem ec2-user@13.125.153.54
+
+curl -s toast.sh/install-v3 | bash
+
+sudo ~/toaster/openshift/install-bastion.sh
+```
