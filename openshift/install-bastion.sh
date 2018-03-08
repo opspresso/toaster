@@ -7,10 +7,10 @@ if [ -f ${config} ]; then
     source ${config}
 fi
 
-bastion_public_ip=${bastion_public_ip:=""}
-master_public_ip=${master_public_ip:=""}
-node1_public_ip=${node1_public_ip:=""}
-node2_public_ip=${node2_public_ip:=""}
+export bastion_public_ip=${bastion_public_ip:=""}
+export master_public_ip=${master_public_ip:=""}
+export node1_public_ip=${node1_public_ip:=""}
+export node2_public_ip=${node2_public_ip:=""}
 
 sudo yum update -y
 sudo yum install -y git wget gettext httpd-tools
