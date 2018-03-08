@@ -17,11 +17,14 @@ sudo yum install -y git wget gettext httpd-tools
 
 which ansible || pip install -Iv ansible
 
-[ ! -d openshift-ansible ] && git clone https://github.com/openshift/openshift-ansible.git
+if [ ! -d openshift-ansible ]; then
+    git clone https://github.com/openshift/openshift-ansible.git
 
-pushd openshift-ansible
-git fetch && git checkout release-3.7
-popd
+    pushd openshift-ansible
+    git fetch
+    git checkout release-3.7
+    popd
+fi
 
 if [ "${master_public_ip}" != "" ]; then
     echo "********** master **********"
