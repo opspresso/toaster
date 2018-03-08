@@ -125,8 +125,8 @@ toast() {
         build)
             build
             ;;
-        releases)
-            releases
+        release)
+            release
             ;;
         deploy)
             deploy
@@ -200,21 +200,21 @@ build() {
     esac
 }
 
-releases() {
+release() {
     parse_version
 
     case ${PARAM1} in
         bucket)
-            releases_bucket
+            release_bucket
             ;;
         beanstalk)
-            releases_beanstalk
+            release_beanstalk
             ;;
         docker)
-            releases_docker
+            release_docker
             ;;
         toast)
-            releases_toast
+            release_toast
             ;;
     esac
 }
@@ -524,12 +524,12 @@ upload_bucket() {
     aws s3 cp "${PACKAGE_PATH}" "${UPLOAD_PATH}" ${OPTION}
 }
 
-releases_bucket() {
+release_bucket() {
     if [ -f pom.xml ] && [ ! -f target/${ARTIFACT_ID}-${VERSION}.pom ]; then
         cp -rf pom.xml target/${ARTIFACT_ID}-${VERSION}.pom
     fi
 
-    echo_ "releases to bucket... [${BUCKET}]"
+    echo_ "release to bucket... [${BUCKET}]"
 
     upload_bucket "pom"
     upload_bucket "war"
@@ -538,7 +538,7 @@ releases_bucket() {
     upload_bucket "tar.gz"
 }
 
-releases_toast() {
+release_toast() {
     if [ "${TOAST}" == "" ] || [ "${TOKEN}" == "" ]; then
         error "Not set TOAST or TOKEN."
     fi
@@ -549,7 +549,7 @@ releases_toast() {
         PACKAGE="${PARAM2}"
     fi
 
-    echo_ "releases to toast... [${TOAST}]"
+    echo_ "release to toast... [${TOAST}]"
 
     # version save
     URL="${TOAST}/version/build/${ARTIFACT_ID}/${VERSION}"
@@ -570,12 +570,12 @@ releases_toast() {
 #    fi
 }
 
-releases_beanstalk() {
+release_beanstalk() {
     build_beanstalk
 
-    releases_bucket
+    release_bucket
 
-    echo_ "releases to beanstalk versions..."
+    echo_ "release to beanstalk versions..."
 
     S3_KEY="maven2/${GROUP_PATH}/${ARTIFACT_ID}/${VERSION}/${ARTIFACT_ID}-${VERSION}.zip"
 
@@ -586,7 +586,7 @@ releases_beanstalk() {
         --source-bundle S3Bucket="${BUCKET}",S3Key="${S3_KEY}"
 }
 
-releases_docker() {
+release_docker() {
     if [ "${REGISTRY}" == "" ]; then
         error "Not set REGISTRY."
     fi
@@ -659,7 +659,7 @@ deploy_beanstalk() {
 
     S3_KEY="maven2/${GROUP_PATH}/${ARTIFACT_ID}/${VERSION}/${ARTIFACT_ID}-${VERSION}.zip"
 
-    echo_ "releases to beanstalk versions... [${ENV_NAME}] [${VERSION}]"
+    echo_ "release to beanstalk versions... [${ENV_NAME}] [${VERSION}]"
 
     aws elasticbeanstalk delete-application-version \
         --application-name "${ARTIFACT_ID}" \
@@ -759,7 +759,7 @@ working() {
 
 usage() {
     echo_toast
-    echo_ " Usage: toast {update|config|install|version|build|releases|deploy}"
+    echo_ " Usage: toast {update|config|install|version|build|release|deploy}"
     echo_bar
 }
 
