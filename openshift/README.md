@@ -2,9 +2,10 @@
 
 ## install : 1 master
 ```
-export master_ip="13.124.152.90"
+export master_ip="13.125.199.79"
 
 scp -i keys/_key_pairs/nalbam-seoul.pem keys/_key_pairs/nalbam-seoul.pem ec2-user@${master_ip}:~/.ssh/id_rsa
+
 ssh -i keys/_key_pairs/nalbam-seoul.pem ec2-user@${master_ip} -t 'curl -s toast.sh/install-v3 | bash'
 ssh -i keys/_key_pairs/nalbam-seoul.pem ec2-user@${master_ip} -t '~/toaster/openshift/install.sh'
 ```

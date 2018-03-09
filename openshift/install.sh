@@ -26,23 +26,23 @@ if [ "$MEMORY" -lt "8388608" ]; then
 fi
 
 install_dependency() {
-    #sudo rpm -Uvh https://dl.fedoraproject.org/pub/epel/epel-release-latest-7.noarch.rpm
-    #sudo yum-config-manager --enable epel
+    #rpm -Uvh https://dl.fedoraproject.org/pub/epel/epel-release-latest-7.noarch.rpm
+    #yum-config-manager --enable epel
 
-    sudo yum install -y git nano wget zip zile net-tools docker \
+    yum install -y git nano wget zip zile net-tools docker \
          python-cryptography python-passlib python-devel python-pip pyOpenSSL.x86_64 \
          openssl-devel httpd-tools java-1.8.0-openjdk-headless NetworkManager \
          "@Development Tools"
 
-    sudo systemctl | grep "NetworkManager.*running"
+    systemctl | grep "NetworkManager.*running"
     if [ $? -eq 1 ]; then
-        sudo systemctl start NetworkManager
-        sudo systemctl enable NetworkManager
+        systemctl start NetworkManager
+        systemctl enable NetworkManager
     fi
 }
 
 install_ansible() {
-    which ansible || sudo pip install -Iv ansible
+    which ansible || pip install -Iv ansible
 
     [ ! -d openshift-ansible ] && git clone https://github.com/openshift/openshift-ansible.git
 
@@ -56,33 +56,33 @@ install_openshift() {
 
     ansible-playbook -i inventory.ini openshift-ansible/playbooks/byo/config.yml
 
-    sudo htpasswd -b /etc/origin/master/htpasswd ${USERNAME} ${PASSWORD}
+    htpasswd -b /etc/origin/master/htpasswd ${USERNAME} ${PASSWORD}
 
     oc adm policy add-cluster-role-to-user cluster-admin ${USERNAME}
 
-    sudo systemctl restart origin-master-api
+    systemctl restart origin-master-api
 }
 
 start_docker() {
     if [ -z ${DISK} ]; then
         echo "Not setting the Docker storage."
     else
-        sudo cp /etc/sysconfig/docker-storage-setup /etc/sysconfig/docker-storage-setup.bk
+        cp /etc/sysconfig/docker-storage-setup /etc/sysconfig/docker-storage-setup.bk
 
-        sudo echo DEVS=${DISK} > /etc/sysconfig/docker-storage-setup
-        sudo echo VG=DOCKER >> /etc/sysconfig/docker-storage-setup
-        sudo echo SETUP_LVM_THIN_POOL=yes >> /etc/sysconfig/docker-storage-setup
-        sudo echo DATA_SIZE="100%FREE" >> /etc/sysconfig/docker-storage-setup
+        echo DEVS=${DISK} > /etc/sysconfig/docker-storage-setup
+        echo VG=DOCKER >> /etc/sysconfig/docker-storage-setup
+        echo SETUP_LVM_THIN_POOL=yes >> /etc/sysconfig/docker-storage-setup
+        echo DATA_SIZE="100%FREE" >> /etc/sysconfig/docker-storage-setup
 
-        sudo systemctl stop docker
+        systemctl stop docker
 
-        sudo rm -rf /var/lib/docker
-        sudo wipefs --all ${DISK}
-        sudo docker-storage-setup
+        rm -rf /var/lib/docker
+        wipefs --all ${DISK}
+        docker-storage-setup
     fi
 
-    sudo systemctl restart docker
-    sudo systemctl enable docker
+    systemctl restart docker
+    systemctl enable docker
 }
 
 build_config() {
@@ -92,7 +92,7 @@ build_config() {
 
 build_hosts() {
     envsubst < ${SHELL_DIR}/hosts > /tmp/hosts
-    sudo cp -rf /tmp/hosts /etc/hosts
+    cp -rf /tmp/hosts /etc/hosts
 }
 
 build_inventory() {
