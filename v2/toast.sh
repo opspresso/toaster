@@ -22,7 +22,9 @@ OS_NAME="$(uname)"
 OS_FULL="$(uname -a)"
 if [ "${OS_NAME}" == "Linux" ]; then
     if [ $(echo "${OS_FULL}" | grep -c "amzn1") -gt 0 ]; then
-        OS_TYPE="amzn1"
+        OS_TYPE="amzn"
+    elif [ $(echo "${OS_FULL}" | grep -c "amzn2") -gt 0 ]; then
+        OS_TYPE="amzn2"
     elif [ $(echo "${OS_FULL}" | grep -c "el6") -gt 0 ]; then
         OS_TYPE="el6"
     elif [ $(echo "${OS_FULL}" | grep -c "el7") -gt 0 ]; then
@@ -2756,7 +2758,7 @@ certbot_apache() {
 
     init_email
 
-    if [ OS_TYPE == "amzn1" ]; then
+    if [ OS_TYPE == "amzn" ]; then
         PARAM="--agree-tos --no-redirect --debug"
     else
         PARAM="--agree-tos --no-redirect"
@@ -2786,7 +2788,7 @@ certbot_nginx() {
 
     init_email
 
-    if [ OS_TYPE == "amzn1" ]; then
+    if [ OS_TYPE == "amzn" ]; then
         PARAM="--agree-tos --no-redirect --debug"
     else
         PARAM="--agree-tos --no-redirect"
@@ -2801,7 +2803,7 @@ certbot_delete() {
         return
     fi
 
-    if [ OS_TYPE == "amzn1" ]; then
+    if [ OS_TYPE == "amzn" ]; then
         PARAM="--debug"
     else
         PARAM=""
@@ -2816,7 +2818,7 @@ certbot_renew() {
         return
     fi
 
-    if [ OS_TYPE == "amzn1" ]; then
+    if [ OS_TYPE == "amzn" ]; then
         PARAM="--debug"
     else
         PARAM=""

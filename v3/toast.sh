@@ -47,7 +47,9 @@ OS_FULL="$(uname -a)"
 
 if [ "${OS_NAME}" == "Linux" ]; then
     if [ $(echo "${OS_FULL}" | grep -c "amzn1") -gt 0 ]; then
-        OS_TYPE="amzn1"
+        OS_TYPE="amzn"
+    elif [ $(echo "${OS_FULL}" | grep -c "amzn2") -gt 0 ]; then
+        OS_TYPE="amzn"
     elif [ $(echo "${OS_FULL}" | grep -c "el6") -gt 0 ]; then
         OS_TYPE="el6"
     elif [ $(echo "${OS_FULL}" | grep -c "el7") -gt 0 ]; then
