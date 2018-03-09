@@ -54,7 +54,7 @@ install_ansible() {
 install_openshift() {
     build_inventory
 
-    sudo ansible-playbook -i inventory.ini openshift-ansible/playbooks/byo/config.yml
+    ansible-playbook -i inventory.ini openshift-ansible/playbooks/byo/config.yml
 
     sudo htpasswd -b /etc/origin/master/htpasswd ${USERNAME} ${PASSWORD}
 
