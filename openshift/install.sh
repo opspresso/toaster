@@ -1,10 +1,5 @@
 #!/bin/bash
 
-if [ "${HOME}" != "/root" ]; then
-    echo "Please run as root."
-    exit 1
-fi
-
 export SHELL_DIR=$(dirname "$0")
 
 export DOMAIN=${DOMAIN:="$(curl ipinfo.io/ip).nip.io"}
@@ -31,29 +26,23 @@ if [ "$MEMORY" -lt "8388608" ]; then
 fi
 
 install_dependency() {
-    rpm -Uvh https://dl.fedoraproject.org/pub/epel/epel-release-latest-7.noarch.rpm
+    #sudo rpm -Uvh https://dl.fedoraproject.org/pub/epel/epel-release-latest-7.noarch.rpm
+    #sudo yum-config-manager --enable epel
 
-    yum-config-manager --enable epel
-    yum install -y git nano wget zip zile net-tools docker \
-        python-cryptography python-passlib python-devel python-pip pyOpenSSL.x86_64 \
-        openssl-devel httpd-tools java-1.8.0-openjdk-headless NetworkManager \
-        "@Development Tools"
+    sudo yum install -y git nano wget zip zile net-tools docker \
+         python-cryptography python-passlib python-devel python-pip pyOpenSSL.x86_64 \
+         openssl-devel httpd-tools java-1.8.0-openjdk-headless NetworkManager \
+         "@Development Tools"
 
-    if ! command -v docker > /dev/null; then
-        #wget -qO- https://get.docker.com/ | sh
-        yum-config-manager --enable rhui-REGION-rhel-server-extras
-        yum install -y docker
-    fi
-
-    systemctl | grep "NetworkManager.*running"
+    sudo systemctl | grep "NetworkManager.*running"
     if [ $? -eq 1 ]; then
-        systemctl start NetworkManager
-        systemctl enable NetworkManager
+        sudo systemctl start NetworkManager
+        sudo systemctl enable NetworkManager
     fi
 }
 
 install_ansible() {
-    which ansible || pip install -Iv ansible
+    which ansible || sudo pip install -Iv ansible
 
     [ ! -d openshift-ansible ] && git clone https://github.com/openshift/openshift-ansible.git
 
@@ -67,32 +56,33 @@ install_openshift() {
 
     ansible-playbook -i inventory.ini openshift-ansible/playbooks/byo/config.yml
 
-    htpasswd -b /etc/origin/master/htpasswd ${USERNAME} ${PASSWORD}
+    sudo htpasswd -b /etc/origin/master/htpasswd ${USERNAME} ${PASSWORD}
+
     oc adm policy add-cluster-role-to-user cluster-admin ${USERNAME}
 
-    systemctl restart origin-master-api
+    sudo systemctl restart origin-master-api
 }
 
 start_docker() {
     if [ -z ${DISK} ]; then
         echo "Not setting the Docker storage."
     else
-        cp /etc/sysconfig/docker-storage-setup /etc/sysconfig/docker-storage-setup.bk
+        sudo cp /etc/sysconfig/docker-storage-setup /etc/sysconfig/docker-storage-setup.bk
 
-        echo DEVS=${DISK} > /etc/sysconfig/docker-storage-setup
-        echo VG=DOCKER >> /etc/sysconfig/docker-storage-setup
-        echo SETUP_LVM_THIN_POOL=yes >> /etc/sysconfig/docker-storage-setup
-        echo DATA_SIZE="100%FREE" >> /etc/sysconfig/docker-storage-setup
+        sudo echo DEVS=${DISK} > /etc/sysconfig/docker-storage-setup
+        sudo echo VG=DOCKER >> /etc/sysconfig/docker-storage-setup
+        sudo echo SETUP_LVM_THIN_POOL=yes >> /etc/sysconfig/docker-storage-setup
+        sudo echo DATA_SIZE="100%FREE" >> /etc/sysconfig/docker-storage-setup
 
-        systemctl stop docker
+        sudo systemctl stop docker
 
-        rm -rf /var/lib/docker
-        wipefs --all ${DISK}
-        docker-storage-setup
+        sudo rm -rf /var/lib/docker
+        sudo wipefs --all ${DISK}
+        sudo docker-storage-setup
     fi
 
-    systemctl restart docker
-    systemctl enable docker
+    sudo systemctl restart docker
+    sudo systemctl enable docker
 }
 
 build_config() {
@@ -101,7 +91,8 @@ build_config() {
 }
 
 build_hosts() {
-    envsubst < ${SHELL_DIR}/hosts > /etc/hosts
+    envsubst < ${SHELL_DIR}/hosts > /tmp/hosts
+    sudo cp -rf /tmp/hosts /etc/hosts
 }
 
 build_inventory() {
