@@ -26,7 +26,11 @@ if [ "$MEMORY" -lt "8388608" ]; then
 fi
 
 install_dependency() {
+    # for docker
     yum-config-manager --enable rhui-REGION-rhel-server-extras
+
+    # for python2-pip, zile
+    rpm -Uvh https://dl.fedoraproject.org/pub/epel/epel-release-latest-7.noarch.rpm
 
     yum update -y
     yum install -y git nano wget zip zile gettext net-tools libffi-devel docker \
