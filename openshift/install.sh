@@ -29,6 +29,8 @@ install_dependency() {
     #rpm -Uvh https://dl.fedoraproject.org/pub/epel/epel-release-latest-7.noarch.rpm
     #yum-config-manager --enable epel
 
+    yum install -y epel-release
+
     yum install -y git nano wget zip zile net-tools docker \
         python-cryptography python-passlib python-devel python-pip pyOpenSSL.x86_64 \
         openssl-devel httpd-tools java-1.8.0-openjdk-headless NetworkManager \
