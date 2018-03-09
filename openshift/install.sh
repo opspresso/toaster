@@ -86,21 +86,15 @@ start_docker() {
 }
 
 build_config() {
-    cp -rf ${SHELL_DIR}/config ~/.ssh/config
-    chmod 600 ~/.ssh/*
-
-    ssh -o StrictHostKeyChecking=no root@${IP} "pwd" < /dev/null
-
-#    if [ ! -f ~/.ssh/id_rsa ]; then
-#        ssh-keygen -q -f ~/.ssh/id_rsa -N ""
-#        cat ~/.ssh/id_rsa.pub >> ~/.ssh/authorized_keys
-#        ssh -o StrictHostKeyChecking=no root@${IP} "pwd" < /dev/null
-#    fi
+    if [ ! -f ~/.ssh/id_rsa ]; then
+        ssh-keygen -q -f ~/.ssh/id_rsa -N ""
+        cat ~/.ssh/id_rsa.pub >> ~/.ssh/authorized_keys
+        ssh -o StrictHostKeyChecking=no root@${IP} "pwd" < /dev/null
+    fi
 }
 
 build_hosts() {
-    envsubst < ${SHELL_DIR}/hosts > /tmp/hosts
-    cp -rf /tmp/hosts /etc/hosts
+    envsubst < ${SHELL_DIR}/hosts > /etc/hosts
 }
 
 build_inventory() {

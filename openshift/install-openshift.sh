@@ -38,8 +38,7 @@ which ansible || pip install -Iv ansible
 
 cd openshift-ansible && git fetch && git checkout release-3.7 && cd ..
 
-envsubst < ${SHELL_DIR}/hosts > /tmp/hosts
-sudo cp -rf /tmp/hosts /etc/hosts
+envsubst < ${SHELL_DIR}/hosts > /etc/hosts
 
 if [ -z ${DISK} ]; then
 	echo "Not setting the Docker storage."
