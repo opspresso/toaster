@@ -8,9 +8,9 @@ export PASSWORD=${PASSWORD:=password}
 export VERSION=${VERSION:="v3.7.1"}
 export DISK=${DISK:=""}
 
-export MASTER_IP="$(ip route get 8.8.8.8 | awk '{print $NF; exit}')"
+export IP="$(ip route get 8.8.8.8 | awk '{print $NF; exit}')"
 
-export REPO_URL="http://repo.toast.sh/openshift"
+#export REPO_URL="http://repo.toast.sh/openshift"
 
 export METRICS="True"
 export LOGGING="True"
