@@ -2,7 +2,8 @@
 
 ## install : 1 master
 ```
-ssh -i /c/work/nalbam/keys/_key_pairs/nalbam-seoul.pem ec2-user@13.125.138.92
+ssh -i /c/work/nalbam/keys/_key_pairs/nalbam-seoul.pem ec2-user@52.78.55.113
+
 
 
 curl -s toast.sh/install-v3 | bash
