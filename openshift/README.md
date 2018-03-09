@@ -2,7 +2,7 @@
 
 ## install : 1 master
 ```
-ssh -i keys/_key_pairs/nalbam-seoul.pem ec2-user@13.125.170.146
+ssh -i keys/_key_pairs/nalbam-seoul.pem ec2-user@13.125.230.122
  
 curl -s toast.sh/install-v3 | bash
 sudo ~/toaster/openshift/install.sh
