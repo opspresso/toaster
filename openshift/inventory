@@ -9,9 +9,12 @@ ${MASTER_IP} openshift_ip=${MASTER_IP} openshift_schedulable=true
 [nodes]
 ${MASTER_IP} openshift_ip=${MASTER_IP} openshift_schedulable=true openshift_node_labels="{'region': 'infra', 'zone': 'default'}"
 
+[etcd]
+${MASTER_IP} openshift_ip=${MASTER_IP}
+
 [OSEv3:vars]
 ansible_ssh_user=${USERNAME}
-ansible_become=true
+#ansible_become=true
 
 enable_excluders=False
 enable_docker_excluder=False

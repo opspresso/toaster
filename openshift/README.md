@@ -2,11 +2,11 @@
 
 ## install : 1 master
 ```
-export master_ip="52.78.222.106"
+export master_ip="13.124.61.41"
 
 scp -i keys/_key_pairs/nalbam-seoul.pem keys/_key_pairs/nalbam-seoul.pem ec2-user@${master_ip}:~/.ssh/id_rsa
 ssh -i keys/_key_pairs/nalbam-seoul.pem ec2-user@${master_ip} -t 'curl -s toast.sh/install-v3 | bash'
-ssh -i keys/_key_pairs/nalbam-seoul.pem ec2-user@${master_ip} -t 'sudo ~/toaster/openshift/install.sh'
+ssh -i keys/_key_pairs/nalbam-seoul.pem ec2-user@${master_ip} -t 'sudo ~/toaster/openshift/install2.sh'
 ```
 
 ## install : 1 bastion, 1 master, 2 node
