@@ -36,7 +36,7 @@ install_dependency() {
     yum-config-manager --enable epel
     yum install -y git nano wget zip zile net-tools docker \
         python-cryptography python-passlib python-devel python-pip pyOpenSSL.x86_64 \
-        openssl-devel httpd-tools NetworkManager java-1.8.0-openjdk-headless \
+        openssl-devel httpd-tools java-1.8.0-openjdk-headless NetworkManager \
         "@Development Tools"
 
     if ! command -v docker > /dev/null; then
@@ -95,6 +95,10 @@ start_docker() {
     systemctl enable docker
 }
 
+build_config() {
+    cat ${SHELL_DIR}/config > ~/.ssh/config
+}
+
 build_hosts() {
     envsubst < ${SHELL_DIR}/hosts > /etc/hosts
 }
@@ -119,6 +123,8 @@ echo "**********"
 install_dependency
 
 install_ansible
+
+build_config
 
 build_hosts
 

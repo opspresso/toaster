@@ -5,7 +5,7 @@ sudo rpm -Uvh https://dl.fedoraproject.org/pub/epel/epel-release-latest-7.noarch
 sudo yum-config-manager --enable epel
 sudo yum install -y git nano wget zip zile net-tools docker \
     python-cryptography python-passlib python-devel python-pip pyOpenSSL.x86_64 \
-    openssl-devel httpd-tools NetworkManager java-1.8.0-openjdk-headless \
+    openssl-devel httpd-tools java-1.8.0-openjdk-headless NetworkManager \
     "@Development Tools"
 
 if ! command -v docker > /dev/null; then

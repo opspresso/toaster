@@ -2,7 +2,7 @@
 
 ## install : 1 master
 ```
-export master_ip="13.124.61.41"
+export master_ip="13.125.198.132"
 
 scp -i keys/_key_pairs/nalbam-seoul.pem keys/_key_pairs/nalbam-seoul.pem ec2-user@${master_ip}:~/.ssh/id_rsa
 ssh -i keys/_key_pairs/nalbam-seoul.pem ec2-user@${master_ip} -t 'curl -s toast.sh/install-v3 | bash'
