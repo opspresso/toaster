@@ -5,9 +5,10 @@
 export SHELL_DIR=$(dirname "$0")
 
 export DOMAIN=${DOMAIN:="$(curl ipinfo.io/ip).nip.io"}
-export USERNAME=${USERNAME:="$(whoami)"}
+export USERNAME=${USERNAME:=root}
 export PASSWORD=${PASSWORD:=password}
 export VERSION=${VERSION:="v3.7.1"}
+export DISK=${DISK:=""}
 
 export SCRIPT_REPO=${SCRIPT_REPO:="https://raw.githubusercontent.com/gshipley/installcentos/master"}
 
@@ -42,12 +43,12 @@ cd openshift-ansible && git fetch && git checkout release-3.7 && cd ..
 envsubst < ${SHELL_DIR}/hosts > /tmp/hosts
 sudo cp -rf /tmp/hosts /etc/hosts
 
-if [ -z $DISK ]; then
+if [ -z ${DISK} ]; then
 	echo "Not setting the Docker storage."
 else
 	cp /etc/sysconfig/docker-storage-setup /etc/sysconfig/docker-storage-setup.bk
 
-	echo DEVS=$DISK > /etc/sysconfig/docker-storage-setup
+	echo DEVS=${DISK} > /etc/sysconfig/docker-storage-setup
 	echo VG=DOCKER >> /etc/sysconfig/docker-storage-setup
 	echo SETUP_LVM_THIN_POOL=yes >> /etc/sysconfig/docker-storage-setup
 	echo DATA_SIZE="100%FREE" >> /etc/sysconfig/docker-storage-setup
@@ -55,7 +56,7 @@ else
 	systemctl stop docker
 
 	rm -rf /var/lib/docker
-	wipefs --all $DISK
+	wipefs --all ${DISK}
 	docker-storage-setup
 fi
 
@@ -65,7 +66,7 @@ systemctl enable docker
 if [ ! -f ~/.ssh/id_rsa ]; then
 	ssh-keygen -q -f ~/.ssh/id_rsa -N ""
 	cat ~/.ssh/id_rsa.pub >> ~/.ssh/authorized_keys
-	ssh -o StrictHostKeyChecking=no root@$IP "pwd" < /dev/null
+	ssh -o StrictHostKeyChecking=no root@${IP} "pwd" < /dev/null
 fi
 
 export METRICS="True"
@@ -81,7 +82,7 @@ if [ "$memory" -lt "8388608" ]; then
 	export LOGGING="False"
 fi
 
-curl -o inventory.download $SCRIPT_REPO/inventory.ini
+curl -o inventory.download ${SCRIPT_REPO}/inventory.ini
 envsubst < inventory.download > inventory.ini
 ansible-playbook -i inventory.ini openshift-ansible/playbooks/byo/config.yml
 
@@ -100,4 +101,4 @@ echo "*"
 echo "$ oc login -u ${USERNAME} -p ${PASSWORD} https://console.$DOMAIN:8443/"
 echo "******"
 
-oc login -u ${USERNAME} -p ${PASSWORD} https://console.$DOMAIN:8443/
+oc login -u ${USERNAME} -p ${PASSWORD} https://console.${DOMAIN}:8443/

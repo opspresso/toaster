@@ -3,7 +3,7 @@
 export SHELL_DIR=$(dirname "$0")
 
 export DOMAIN=${DOMAIN:="$(curl ipinfo.io/ip).nip.io"}
-export USERNAME=${USERNAME:="$(whoami)"}
+export USERNAME=${USERNAME:=root}
 export PASSWORD=${PASSWORD:=password}
 export VERSION=${VERSION:="v3.7.1"}
 export DISK=${DISK:=""}
