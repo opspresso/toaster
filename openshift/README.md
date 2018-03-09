@@ -19,3 +19,4 @@ ssh -i keys/_key_pairs/nalbam-seoul.pem ec2-user@${bastion_ip} -t '~/toaster/ope
 
 ## reference
 * https://blog.openshift.com/installing-openshift-3-7-1-30-minutes/
+* https://github.com/dwmkerr/terraform-aws-openshift
