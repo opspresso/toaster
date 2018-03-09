@@ -2,13 +2,12 @@
 
 ## see: https://www.youtube.com/watch?v=-OOnGK-XeVY
 
-export SHELL_DIR=$(dirname "$0")
-
 export DOMAIN=${DOMAIN:="$(curl ipinfo.io/ip).nip.io"}
 export USERNAME=${USERNAME:=root}
 export PASSWORD=${PASSWORD:=password}
 export VERSION=${VERSION:="v3.7.1"}
-export DISK=${DISK:=""}
+
+export SCRIPT_REPO=${SCRIPT_REPO:="https://raw.githubusercontent.com/gshipley/installcentos/master"}
 
 export IP="$(ip route get 8.8.8.8 | awk '{print $NF; exit}')"
 
@@ -19,7 +18,7 @@ echo "* Your password is $PASSWORD "
 echo "* OpenShift version: $VERSION "
 echo "******"
 
-yum install -y epel-release
+#yum install -y epel-release
 
 yum install -y git wget zile nano net-tools docker \
     python-cryptography pyOpenSSL.x86_64 python2-pip \
@@ -38,9 +37,13 @@ which ansible || pip install -Iv ansible
 
 cd openshift-ansible && git fetch && git checkout release-3.7 && cd ..
 
-envsubst < ${SHELL_DIR}/hosts > /etc/hosts
+cat <<EOD > /etc/hosts
+127.0.0.1   localhost localhost.localdomain localhost4 localhost4.localdomain4
+::1         localhost localhost.localdomain localhost6 localhost6.localdomain6
+${IP}		$(hostname) console console.${DOMAIN}
+EOD
 
-if [ -z ${DISK} ]; then
+if [ -z $DISK ]; then
 	echo "Not setting the Docker storage."
 else
 	cp /etc/sysconfig/docker-storage-setup /etc/sysconfig/docker-storage-setup.bk
@@ -79,7 +82,8 @@ if [ "$memory" -lt "8388608" ]; then
 	export LOGGING="False"
 fi
 
-envsubst < ${SHELL_DIR}/inventory > inventory.ini
+curl -o inventory.download ${SCRIPT_REPO}/inventory.ini
+envsubst < inventory.download > inventory.ini
 ansible-playbook -i inventory.ini openshift-ansible/playbooks/byo/config.yml
 
 htpasswd -b /etc/origin/master/htpasswd ${USERNAME} ${PASSWORD}
