@@ -26,12 +26,10 @@ if [ "$MEMORY" -lt "8388608" ]; then
 fi
 
 install_dependency() {
-    #rpm -Uvh https://dl.fedoraproject.org/pub/epel/epel-release-latest-7.noarch.rpm
-    #yum-config-manager --enable epel
+    yum-config-manager --enable rhui-REGION-rhel-server-extras
 
-    yum install -y epel-release
-
-    yum install -y git nano wget zip zile net-tools docker \
+    yum update -y
+    yum install -y git nano wget zip zile gettext net-tools libffi-devel docker \
         python-cryptography python-passlib python-devel python-pip pyOpenSSL.x86_64 \
         openssl-devel httpd-tools java-1.8.0-openjdk-headless NetworkManager \
         "@Development Tools"
