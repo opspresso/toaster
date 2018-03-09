@@ -87,7 +87,7 @@ start_docker() {
 
 build_config() {
     cat ${SHELL_DIR}/config > ~/.ssh/config
-    chmod 600 ~/.ssh/config
+    chmod 600 ~/.ssh/*
 }
 
 build_hosts() {
