@@ -13,7 +13,7 @@ export PASSWORD=${PASSWORD:=password}
 export VERSION=${VERSION:="v3.7.1"}
 export DISK=${DISK:=""}
 
-export IP="$(ip route get 8.8.8.8 | awk '{print $NF; exit}')"
+export MASTER_IP="$(ip route get 8.8.8.8 | awk '{print $NF; exit}')"
 
 export REPO_URL="http://repo.toast.sh/openshift"
 
@@ -108,14 +108,6 @@ build_inventory() {
     fi
 }
 
-generate_key() {
-    if [ ! -f ~/.ssh/id_rsa ]; then
-        ssh-keygen -q -f ~/.ssh/id_rsa -N ""
-        cat ~/.ssh/id_rsa.pub >> ~/.ssh/authorized_keys
-        ssh -o StrictHostKeyChecking=no root@${IP} "pwd" < /dev/null
-    fi
-}
-
 echo "**********"
 echo "* Your domain is $DOMAIN "
 echo "* Your username is $USERNAME "
@@ -131,8 +123,6 @@ install_ansible
 build_hosts
 
 start_docker
-
-generate_key
 
 install_openshift
 

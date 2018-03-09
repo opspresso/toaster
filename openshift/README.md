@@ -1,15 +1,15 @@
 # terraform-aws-openshift
 
-## install 1 master
+## install : 1 master
 ```
-export master_ip="13.125.11.116"
+export master_ip="52.78.222.106"
 
 scp -i keys/_key_pairs/nalbam-seoul.pem keys/_key_pairs/nalbam-seoul.pem ec2-user@${master_ip}:~/.ssh/id_rsa
 ssh -i keys/_key_pairs/nalbam-seoul.pem ec2-user@${master_ip} -t 'curl -s toast.sh/install-v3 | bash'
 ssh -i keys/_key_pairs/nalbam-seoul.pem ec2-user@${master_ip} -t 'sudo ~/toaster/openshift/install.sh'
 ```
 
-## install bastion bastion, 1 master, 2 node
+## install : 1 bastion, 1 master, 2 node
 ```
 export bastion_ip="13.125.153.54"
 

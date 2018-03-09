@@ -1,13 +1,14 @@
 [OSEv3:children]
 masters
 nodes
-etcd
 
 [masters]
 ${MASTER_IP} openshift_ip=${MASTER_IP} openshift_schedulable=true
 
 [nodes]
 ${MASTER_IP} openshift_ip=${MASTER_IP} openshift_schedulable=true openshift_node_labels="{'region': 'infra', 'zone': 'default'}"
+${NODE1_IP} openshift_hostname=${NODE1_IP} openshift_node_labels="{'region': 'primary', 'zone': 'east'}"
+${NODE2_IP} openshift_hostname=${NODE2_IP} openshift_node_labels="{'region': 'primary', 'zone': 'west'}"
 
 [OSEv3:vars]
 ansible_ssh_user=${USERNAME}
