@@ -6,9 +6,7 @@ nodes
 ${IP} openshift_ip=${IP} openshift_schedulable=true
 
 [nodes]
-${master_hostname} openshift_ip=${master_hostname} openshift_schedulable=true openshift_node_labels="{'region': 'infra', 'zone': 'default'}"
-${node1_hostname} openshift_hostname=${node1_hostname} openshift_node_labels="{'region': 'primary', 'zone': 'east'}"
-${node2_hostname} openshift_hostname=${node2_hostname} openshift_node_labels="{'region': 'primary', 'zone': 'west'}"
+${IP} openshift_ip=${IP} openshift_schedulable=true openshift_node_labels="{'region': 'infra', 'zone': 'default'}"
 
 [OSEv3:vars]
 ansible_ssh_user=${USERNAME}

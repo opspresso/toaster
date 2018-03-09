@@ -1,28 +1,21 @@
 # terraform-aws-openshift
 
-## bastion
-```
-scp -i key_pare.pem key_pare.pem ec2-user@bastion.local:/.ssh/id_rsa
-
-ssh -i key_pare.pem ec2-user@bastion.local
-```
-
 ## install 1 master
 ```
-curl -s toast.sh/install-v3 | bash
+export master_ip="13.125.11.116"
 
-export DOMAIN=nalbam.com
-export DISK=/dev/sdf
-
-sudo ~/toaster/openshift/install.sh
+scp -i keys/_key_pairs/nalbam-seoul.pem keys/_key_pairs/nalbam-seoul.pem ec2-user@${master_ip}:~/.ssh/id_rsa
+ssh -i keys/_key_pairs/nalbam-seoul.pem ec2-user@${master_ip} -t 'curl -s toast.sh/install-v3 | bash'
+ssh -i keys/_key_pairs/nalbam-seoul.pem ec2-user@${master_ip} -t 'sudo ~/toaster/openshift/install.sh'
 ```
 
-## install 1 master 2 node
+## install bastion bastion, 1 master, 2 node
 ```
-scp -i keys/_key_pairs/nalbam-seoul.pem keys/_key_pairs/nalbam-seoul.pem ec2-user@13.125.153.54:~/.ssh/id_rsa
-ssh -i keys/_key_pairs/nalbam-seoul.pem ec2-user@13.125.153.54 -t 'curl -s toast.sh/install-v3 | bash'
+export bastion_ip="13.125.153.54"
 
-ssh -i keys/_key_pairs/nalbam-seoul.pem ec2-user@13.125.153.54 -t '~/toaster/openshift/install-bastion.sh'
+scp -i keys/_key_pairs/nalbam-seoul.pem keys/_key_pairs/nalbam-seoul.pem ec2-user@${bastion_ip}:~/.ssh/id_rsa
+ssh -i keys/_key_pairs/nalbam-seoul.pem ec2-user@${bastion_ip} -t 'curl -s toast.sh/install-v3 | bash'
+ssh -i keys/_key_pairs/nalbam-seoul.pem ec2-user@${bastion_ip} -t '~/toaster/openshift/install-bastion.sh'
 ```
 
 ## console
