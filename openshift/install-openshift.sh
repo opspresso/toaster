@@ -10,8 +10,6 @@ export PASSWORD=${PASSWORD:=password}
 export VERSION=${VERSION:="v3.7.1"}
 export DISK=${DISK:=""}
 
-export SCRIPT_REPO=${SCRIPT_REPO:="https://raw.githubusercontent.com/gshipley/installcentos/master"}
-
 export IP="$(ip route get 8.8.8.8 | awk '{print $NF; exit}')"
 
 echo "******"
@@ -82,8 +80,7 @@ if [ "$memory" -lt "8388608" ]; then
 	export LOGGING="False"
 fi
 
-curl -o inventory.download ${SCRIPT_REPO}/inventory.ini
-envsubst < inventory.download > inventory.ini
+envsubst < ${SHELL_DIR}/inventory > inventory.ini
 ansible-playbook -i inventory.ini openshift-ansible/playbooks/byo/config.yml
 
 htpasswd -b /etc/origin/master/htpasswd ${USERNAME} ${PASSWORD}

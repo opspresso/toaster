@@ -8,7 +8,7 @@ scp -i keys/_key_pairs/nalbam-seoul.pem keys/_key_pairs/nalbam-seoul.pem ec2-use
 ssh -i keys/_key_pairs/nalbam-seoul.pem ec2-user@${master_ip}
  
 curl -s toast.sh/install-v3 | bash
-~/toaster/openshift/install.sh
+sudo ~/toaster/openshift/install.sh
 ```
 
 ## install : 1 bastion, 1 master, 2 node
