@@ -86,9 +86,11 @@ start_docker() {
 }
 
 build_config() {
-    ssh -o StrictHostKeyChecking=no root@${IP} "pwd" < /dev/null
-    cat ${SHELL_DIR}/config > ~/.ssh/config
+    cp -rf ${SHELL_DIR}/config ~/.ssh/config
     chmod 600 ~/.ssh/*
+
+    ssh -o StrictHostKeyChecking=no root@${IP} "pwd" < /dev/null
+    sudo ssh -o StrictHostKeyChecking=no root@${IP} "pwd" < /dev/null
 }
 
 build_hosts() {
