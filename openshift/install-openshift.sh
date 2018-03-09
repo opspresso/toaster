@@ -6,6 +6,7 @@ export DOMAIN=${DOMAIN:="$(curl ipinfo.io/ip).nip.io"}
 export USERNAME=${USERNAME:=root}
 export PASSWORD=${PASSWORD:=password}
 export VERSION=${VERSION:="v3.7.1"}
+export DISK=${DISK:=""}
 
 export SCRIPT_REPO=${SCRIPT_REPO:="https://raw.githubusercontent.com/gshipley/installcentos/master"}
 
@@ -43,7 +44,7 @@ cat <<EOD > /etc/hosts
 ${IP}		$(hostname) console console.${DOMAIN}
 EOD
 
-if [ -z $DISK ]; then
+if [ -z ${DISK} ]; then
 	echo "Not setting the Docker storage."
 else
 	cp /etc/sysconfig/docker-storage-setup /etc/sysconfig/docker-storage-setup.bk

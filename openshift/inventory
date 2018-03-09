@@ -13,7 +13,7 @@ ${IP} openshift_ip=${IP}
 ${IP} openshift_ip=${IP} openshift_schedulable=true openshift_node_labels="{'region':'infra','zone':'default'}"
 
 [OSEv3:vars]
-ansible_ssh_user=${USERNAME}
+ansible_ssh_user=root
 #ansible_become=true
 
 enable_excluders=False
