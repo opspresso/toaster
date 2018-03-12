@@ -28,12 +28,12 @@ cp -rf openshift ./v3/
 
 # toaster v2
 pushd v2
-tar -czf ../target/toaster-v2.tar.gz extra install package openshift *.sh
+tar -czf ../target/toaster-v2.tar.gz extra install package *.sh
 popd
 
 # toaster v3
 pushd v3
-tar -czf ../target/toaster-v3.tar.gz extra install openshift *.sh
+tar -czf ../target/toaster-v3.tar.gz extra install *.sh
 popd
 
 ls -alh target
