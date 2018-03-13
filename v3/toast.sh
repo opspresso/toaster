@@ -63,6 +63,8 @@ if [ "${OS_NAME}" == "Linux" ]; then
     fi
 elif [ "${OS_NAME}" == "Darwin" ]; then
     OS_TYPE="${OS_NAME}"
+elif [ "${OS_NAME}" == "MINGW64" ]; then
+    OS_TYPE="${OS_NAME}"
 fi
 
 if [ "${OS_TYPE}" == "" ]; then
@@ -702,7 +704,7 @@ deploy_lambda() {
 service_update() {
     if [ "${OS_TYPE}" == "Ubuntu" ] || [ "${OS_TYPE}" == "coreos" ]; then
         ${SUDO} apt-get update
-    else
+    elif [ "${OS_TYPE}" == "amzn" ] || [ "${OS_TYPE}" == "el6" ] || [ "${OS_TYPE}" == "el7" ]; then
         ${SUDO} yum update -y
     fi
 }
@@ -710,7 +712,7 @@ service_update() {
 service_install() {
     if [ "${OS_TYPE}" == "Ubuntu" ] || [ "${OS_TYPE}" == "coreos" ]; then
         ${SUDO} apt-get install -y $1
-    else
+    elif [ "${OS_TYPE}" == "amzn" ] || [ "${OS_TYPE}" == "el6" ] || [ "${OS_TYPE}" == "el7" ]; then
         ${SUDO} yum install -y $1
     fi
 }
@@ -718,7 +720,7 @@ service_install() {
 service_remove() {
     if [ "${OS_TYPE}" == "Ubuntu" ] || [ "${OS_TYPE}" == "coreos" ]; then
         ${SUDO} apt-get remove -y $1
-    else
+    elif [ "${OS_TYPE}" == "amzn" ] || [ "${OS_TYPE}" == "el6" ] || [ "${OS_TYPE}" == "el7" ]; then
         ${SUDO} yum remove -y $1
     fi
 }
