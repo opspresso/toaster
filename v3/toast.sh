@@ -763,7 +763,7 @@ working() {
 
 usage() {
     echo_toast
-    echo_ " Usage: toast {update|config|install|version|build|release|deploy}"
+    echo_ " Usage: toast.sh {update|config|install|version|build|release|deploy}"
     echo_bar
 }
 
