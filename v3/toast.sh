@@ -747,10 +747,10 @@ echo_toast() {
 
     #figlet toast
     echo_bar
-    echo_ "  _                  _     "
-    echo_ " | |_ ___   __ _ ___| |_   "
-    echo_ " | __/ _ \ / _\` / __| __| "
-    echo_ " | || (_) | (_| \__ \ |_   "
+    echo_ "  _                  _    "
+    echo_ " | |_ ___   __ _ ___| |_  "
+    echo_ " | __/ _ \ / _' / __| __| "
+    echo_ " | || (_) | (_| \__ \ |_  "
     echo_ "  \__\___/ \__,_|___/\__|  by nalbam (${VER}) "
     echo_bar
 }
