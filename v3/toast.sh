@@ -63,7 +63,7 @@ if [ "${OS_NAME}" == "Linux" ]; then
     fi
 elif [ "${OS_NAME}" == "Darwin" ]; then
     OS_TYPE="${OS_NAME}"
-elif [ "${OS_NAME}" == "MINGW64" ]; then
+elif [ $(echo "${OS_FULL}" | grep -c "MINGW64") -gt 0 ]; then
     OS_TYPE="${OS_NAME}"
 fi
 
