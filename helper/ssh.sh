@@ -66,6 +66,8 @@ directory() {
         error "[${SSH_DIR}] is not directory."
     fi
 
+    chmod 600 *.pem
+
     echo "DIR=${SSH_DIR}" >> "${CONFIG}"
 }
 
