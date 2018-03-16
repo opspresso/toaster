@@ -14,7 +14,7 @@ usage() {
     LS=$(ls -m ${ENV_DIR})
 
     if [ -r /tmp/toaster.old ]; then
-        VER="$(cat /tmp/nsh.old)"
+        VER="$(cat /tmp/toaster.old)"
     else
         VER="0"
     fi
@@ -24,7 +24,7 @@ usage() {
     echo "   ___ _ ____   __ "
     echo "  / _ \ '_ \ \ / / "
     echo " |  __/ | | \ V / "
-    echo "  \___|_| |_|\_/   by nalbam (${VER}) "
+    echo "  \___|_| |_|\_/  by nalbam (${VER}) "
     echo "================================================================================"
     echo " Usage: env.sh {NAME} {REGION} {OUTPUT}"
     echo "  NAME  : ${LS}"
@@ -45,7 +45,7 @@ NAME=$1
 REGION=$2
 OUTPUT=$3
 
-CONFIG=${SHELL_DIR}/.env_dir
+CONFIG=${SHELL_DIR}/.env
 if [ -f "${CONFIG}" ]; then
     . "${CONFIG}"
 fi

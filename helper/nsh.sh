@@ -12,7 +12,7 @@ error() {
 
 usage() {
     if [ -r /tmp/toaster.old ]; then
-        VER="$(cat /tmp/nsh.old)"
+        VER="$(cat /tmp/toaster.old)"
     else
         VER="0"
     fi

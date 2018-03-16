@@ -1,5 +1,6 @@
 #!/bin/bash
 
+alias c="~/toaster/helper/cdw.sh"
 alias e="~/toaster/helper/env.sh"
 alias n="~/toaster/helper/nsh.sh"
 alias s="~/toaster/helper/ssh.sh"

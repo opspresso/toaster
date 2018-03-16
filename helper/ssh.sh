@@ -11,10 +11,10 @@ error() {
 }
 
 usage() {
-    LS=$(ls -m ${DIR})
+    LS=$(ls -m ${SSH_DIR})
 
     if [ -r /tmp/toaster.old ]; then
-        VER="$(cat /tmp/nsh.old)"
+        VER="$(cat /tmp/toaster.old)"
     else
         VER="0"
     fi
@@ -38,13 +38,13 @@ usage() {
 
 ################################################################################
 
-DIR=
+SHELL_DIR=$(dirname "$0")
+
+SSH_DIR=
 
 PEM=$1
 HOST=$2
 USER=$3
-
-SHELL_DIR=$(dirname "$0")
 
 CONFIG=${SHELL_DIR}/.ssh
 if [ -f "${CONFIG}" ]; then
@@ -54,29 +54,29 @@ fi
 ################################################################################
 
 directory() {
-    if [ "${DIR}" == "" ] || [ ! -d "${DIR}" ]; then
+    if [ "${SSH_DIR}" == "" ] || [ ! -d "${SSH_DIR}" ]; then
         echo "Please input pem directory. (ex: ~/pem)"
         read DIR
     fi
 
-    if [ "${DIR}" == "" ]; then
-        error "[${DIR}] is empty."
+    if [ "${SSH_DIR}" == "" ]; then
+        error "[${SSH_DIR}] is empty."
     fi
-    if [ ! -d "${DIR}" ]; then
-        error "[${DIR}] is not directory."
+    if [ ! -d "${SSH_DIR}" ]; then
+        error "[${SSH_DIR}] is not directory."
     fi
 
-    echo "DIR=${DIR}" >> "${CONFIG}"
+    echo "DIR=${SSH_DIR}" >> "${CONFIG}"
 }
 
 connect() {
     if [ "${PEM}" == "" ]; then
         PEM="nalbam"
     fi
-    if [ ! -f "${DIR}/${PEM}" ]; then
+    if [ ! -f "${SSH_DIR}/${PEM}" ]; then
         PEM="${PEM}.pem"
     fi
-    if [ ! -f "${DIR}/${PEM}" ]; then
+    if [ ! -f "${SSH_DIR}/${PEM}" ]; then
         usage
     fi
 
@@ -92,7 +92,7 @@ connect() {
       mkdir -p ~/.aws
     fi
 
-    ssh -i ${DIR}/${PEM} ${USER}@${HOST}
+    ssh -i ${SSH_DIR}/${PEM} ${USER}@${HOST}
 }
 
 ################################################################################
