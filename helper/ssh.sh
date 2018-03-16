@@ -66,9 +66,12 @@ directory() {
         error "[${SSH_DIR}] is not directory."
     fi
 
-    chmod 600 *.pem
+    chmod 600 ${SSH_DIR}/*.pem
 
     echo "DIR=${SSH_DIR}" >> "${CONFIG}"
+
+    echo "Host * " > ~/.ssh/config
+    echo "    StrictHostKeyChecking no " >> ~/.ssh/config
 }
 
 connect() {
