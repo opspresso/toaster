@@ -47,8 +47,8 @@ HOST=$2
 USER=$3
 
 CONFIG=${SHELL_DIR}/.ssh
-if [ -f "${CONFIG}" ]; then
-    . "${CONFIG}"
+if [ -f ${CONFIG} ]; then
+    . ${CONFIG}
 fi
 
 ################################################################################
@@ -68,7 +68,7 @@ directory() {
 
     chmod 600 ${SSH_DIR}/*.pem
 
-    echo "DIR=${SSH_DIR}" >> "${CONFIG}"
+    echo "SSH_DIR=${SSH_DIR}" >> "${CONFIG}"
 
     echo "Host * " > ~/.ssh/config
     echo "    StrictHostKeyChecking no " >> ~/.ssh/config

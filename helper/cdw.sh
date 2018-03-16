@@ -45,8 +45,8 @@ CDW_DIR=
 NAME=$1
 
 CONFIG=${SHELL_DIR}/.cdw
-if [ -f "${CONFIG}" ]; then
-    . "${CONFIG}"
+if [ -f ${CONFIG} ]; then
+    . ${CONFIG}
 fi
 
 ################################################################################
@@ -64,7 +64,7 @@ directory() {
         error "[${CDW_DIR}] is not directory."
     fi
 
-    echo "DIR=${CDW_DIR}" >> "${CONFIG}"
+    echo "CDW_DIR=${CDW_DIR}" >> "${CONFIG}"
 }
 
 cdw() {

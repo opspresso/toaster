@@ -46,8 +46,8 @@ REGION=$2
 OUTPUT=$3
 
 CONFIG=${SHELL_DIR}/.env
-if [ -f "${CONFIG}" ]; then
-    . "${CONFIG}"
+if [ -f ${CONFIG} ]; then
+    . ${CONFIG}
 fi
 
 ################################################################################
@@ -65,7 +65,7 @@ directory() {
         error "[${ENV_DIR}] is not directory."
     fi
 
-    echo "DIR=${ENV_DIR}" >> "${CONFIG}"
+    echo "ENV_DIR=${ENV_DIR}" >> "${CONFIG}"
 }
 
 deploy() {
