@@ -69,8 +69,14 @@ directory() {
 
 cdw() {
 
-    echo ""
+    if [ "${NAME}" == "" ]; then
+        usage
+    fi
+    if [ ! -d "${CDW_DIR}/${NAME}" ]; then
+        usage
+    fi
 
+    cd ${CDW_DIR}/${NAME}
 }
 
 ################################################################################
