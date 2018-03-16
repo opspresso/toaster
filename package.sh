@@ -1,5 +1,6 @@
 #!/bin/bash
 
+mkdir -p build
 mkdir -p target
 
 VERSION="$(git rev-parse --short HEAD)"
@@ -22,18 +23,21 @@ cp -rf install-v2.sh target/install
 cp -rf install-v2.sh target/install-v2
 cp -rf install-v3.sh target/install-v3
 
-# openshift
-cp -rf openshift ./v2/
-cp -rf openshift ./v3/
+# build
+cp -rf v2 build/
+cp -rf v3 build/
+
+cp -rf extra helper install build/v2/
+cp -rf extra helper install build/v3/
 
 # toaster v2
-pushd v2
-tar -czf ../target/toaster-v2.tar.gz extra install package *.sh
+pushd build/v2
+tar -czf ../../target/toaster-v2.tar.gz extra install package *.sh
 popd
 
 # toaster v3
-pushd v3
-tar -czf ../target/toaster-v3.tar.gz extra install *.sh
+pushd build/v3
+tar -czf ../../target/toaster-v3.tar.gz extra install *.sh
 popd
 
 ls -alh target
