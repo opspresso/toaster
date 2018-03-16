@@ -14,7 +14,7 @@ usage() {
     if [ -r /tmp/toaster.old ]; then
         VER="$(cat /tmp/toaster.old)"
     else
-        VER="0"
+        VER="v3"
     fi
 
     #figlet nsh

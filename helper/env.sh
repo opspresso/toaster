@@ -16,7 +16,7 @@ usage() {
     if [ -r /tmp/toaster.old ]; then
         VER="$(cat /tmp/toaster.old)"
     else
-        VER="0"
+        VER="v3"
     fi
 
     #figlet env
@@ -55,7 +55,7 @@ fi
 directory() {
     if [ "${ENV_DIR}" == "" ] || [ ! -d "${ENV_DIR}" ]; then
         echo "Please input credentials directory. (ex: ~/credentials)"
-        read DIR
+        read ENV_DIR
     fi
 
     if [ "${ENV_DIR}" == "" ]; then

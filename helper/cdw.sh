@@ -16,7 +16,7 @@ usage() {
     if [ -r /tmp/toaster.old ]; then
         VER="$(cat /tmp/toaster.old)"
     else
-        VER="0"
+        VER="v3"
     fi
 
     #figlet cdw
@@ -54,7 +54,7 @@ fi
 directory() {
     if [ "${CDW_DIR}" == "" ] || [ ! -d "${CDW_DIR}" ]; then
         echo "Please input credentials directory. (ex: ~/work/src)"
-        read DIR
+        read CDW_DIR
     fi
 
     if [ "${CDW_DIR}" == "" ]; then

@@ -16,7 +16,7 @@ usage() {
     if [ -r /tmp/toaster.old ]; then
         VER="$(cat /tmp/toaster.old)"
     else
-        VER="0"
+        VER="v3"
     fi
 
     #figlet ssh
@@ -56,7 +56,7 @@ fi
 directory() {
     if [ "${SSH_DIR}" == "" ] || [ ! -d "${SSH_DIR}" ]; then
         echo "Please input pem directory. (ex: ~/pem)"
-        read DIR
+        read SSH_DIR
     fi
 
     if [ "${SSH_DIR}" == "" ]; then
