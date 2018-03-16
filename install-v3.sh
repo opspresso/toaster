@@ -60,6 +60,16 @@ tar -zxf /tmp/toaster.tar.gz -C ${SHELL_DIR}
 # cp version
 cp -rf /tmp/toaster.new /tmp/toaster.old
 
+# alias
+if [ -f ${SHELL_DIR}/bin/alias.sh ]; then
+    cp -rf ${SHELL_DIR}/bin/alias.sh ${ALIAS}
+    chmod 644 ${ALIAS}
+fi
+
+if [ -f ${ALIAS} ]; then
+    . ${ALIAS}
+fi
+
 # chmod 755
 find ${SHELL_DIR}/** | grep [.]sh | xargs chmod 755
 
