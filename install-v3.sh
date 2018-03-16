@@ -19,9 +19,12 @@ fi
 
 REPO="http://repo.toast.sh"
 
+SHELL_DIR="~/toaster"
+ALIAS="~/.bash_aliases"
+
 ################################################################################
 
-mkdir -p ~/toaster
+mkdir -p ${SHELL_DIR}
 
 # version
 curl -s -o /tmp/toaster.new ${REPO}/toaster-v3.txt
@@ -52,13 +55,13 @@ if [ ! -f /tmp/toaster.tar.gz ]; then
 fi
 
 # install
-tar -zxf /tmp/toaster.tar.gz -C ~/toaster
+tar -zxf /tmp/toaster.tar.gz -C ${SHELL_DIR}
 
 # cp version
 cp -rf /tmp/toaster.new /tmp/toaster.old
 
 # chmod 755
-find ~/toaster/** | grep [.]sh | xargs chmod 755
+find ${SHELL_DIR}/** | grep [.]sh | xargs chmod 755
 
 # done
 success "${MSG}"

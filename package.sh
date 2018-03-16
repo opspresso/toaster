@@ -32,12 +32,12 @@ cp -rf extra helper install build/v3/
 
 # toaster v2
 pushd build/v2
-tar -czf ../../target/toaster-v2.tar.gz extra install package *.sh
+tar -czf ../../target/toaster-v2.tar.gz *
 popd
 
 # toaster v3
 pushd build/v3
-tar -czf ../../target/toaster-v3.tar.gz extra install *.sh
+tar -czf ../../target/toaster-v3.tar.gz *
 popd
 
 ls -alh target
