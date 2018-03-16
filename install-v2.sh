@@ -12,15 +12,15 @@ error() {
 
 ################################################################################
 
+REPO="http://repo.toast.sh"
+
 CONFIG="${HOME}/.toast"
 if [ -f "${CONFIG}" ]; then
     source "${CONFIG}"
 fi
 
-REPO="http://repo.toast.sh"
-
-SHELL_DIR="~/toaster"
-ALIAS="~/.bash_aliases"
+SHELL_DIR="${HOME}/toaster"
+ALIAS="${HOME}/.bash_aliases"
 
 ################################################################################
 
