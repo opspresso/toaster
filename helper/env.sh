@@ -11,7 +11,7 @@ error() {
 }
 
 usage() {
-    LS=$(ls -m ${DIR})
+    LS=$(ls -m ${ENV_DIR})
 
     if [ -r /tmp/toaster.old ]; then
         VER="$(cat /tmp/nsh.old)"
@@ -37,15 +37,15 @@ usage() {
 
 ################################################################################
 
-DIR=
+SHELL_DIR=$(dirname "$0")
+
+ENV_DIR=
 
 NAME=$1
 REGION=$2
 OUTPUT=$3
 
-SHELL_DIR=$(dirname "$0")
-
-CONFIG=${SHELL_DIR}/.env
+CONFIG=${SHELL_DIR}/.env_dir
 if [ -f "${CONFIG}" ]; then
     . "${CONFIG}"
 fi
@@ -53,26 +53,26 @@ fi
 ################################################################################
 
 directory() {
-    if [ "${DIR}" == "" ] || [ ! -d "${DIR}" ]; then
+    if [ "${ENV_DIR}" == "" ] || [ ! -d "${ENV_DIR}" ]; then
         echo "Please input credentials directory. (ex: ~/credentials)"
         read DIR
     fi
 
-    if [ "${DIR}" == "" ]; then
-        error "[${DIR}] is empty."
+    if [ "${ENV_DIR}" == "" ]; then
+        error "[${ENV_DIR}] is empty."
     fi
-    if [ ! -d "${DIR}" ]; then
-        error "[${DIR}] is not directory."
+    if [ ! -d "${ENV_DIR}" ]; then
+        error "[${ENV_DIR}] is not directory."
     fi
 
-    echo "DIR=${DIR}" >> "${CONFIG}"
+    echo "DIR=${ENV_DIR}" >> "${CONFIG}"
 }
 
 deploy() {
     if [ "${NAME}" == "" ]; then
         usage
     fi
-    if [ ! -f "${DIR}/${NAME}" ]; then
+    if [ ! -f "${ENV_DIR}/${NAME}" ]; then
         usage
     fi
 
@@ -87,7 +87,7 @@ deploy() {
       mkdir -p ~/.aws
     fi
 
-    cp -rf ${DIR}/${NAME} ~/.aws/credentials
+    cp -rf ${ENV_DIR}/${NAME} ~/.aws/credentials
 
     aws configure set default.region ${REGION}
     aws configure set default.output ${OUTPUT}
