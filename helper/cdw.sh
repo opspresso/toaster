@@ -46,7 +46,7 @@ fi
 
 directory() {
     if [ "${CDW_DIR}" == "" ] || [ ! -d "${CDW_DIR}" ]; then
-        echo "Please input credentials directory. (ex: ~/work/src)"
+        echo "Please input base directory. (ex: ~/work/src)"
         read CDW_DIR
     fi
 
@@ -98,6 +98,7 @@ cdw() {
 
     echo ${DIR}
     cd ${DIR}
+    exec bash
 }
 
 ################################################################################
