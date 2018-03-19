@@ -60,6 +60,21 @@ directory() {
     echo "CDW_DIR=${CDW_DIR}" > "${CONFIG}"
 }
 
+dir() {
+    TEMP=/tmp/cdr.tmp
+    find ${CDW_DIR} -maxdepth 2 -type d -exec ls -d "{}" \; > ${TEMP}
+
+    echo "================================================================================"
+
+    i=0
+    while read v; do
+        i=$(( ${i} + 1 ))
+        printf "%3s %s\n" "$i" "$v";
+    done < ${TEMP}
+
+    echo "================================================================================"
+}
+
 cdw() {
     TEMP=/tmp/cdr.tmp
     find ${CDW_DIR} -maxdepth 2 -type d -exec ls -d "{}" \; > ${TEMP}
@@ -105,4 +120,4 @@ cdw() {
 
 directory
 
-cdw
+dir
