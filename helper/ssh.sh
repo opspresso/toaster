@@ -72,6 +72,8 @@ directory() {
 
     echo "Host * " > ~/.ssh/config
     echo "    StrictHostKeyChecking no " >> ~/.ssh/config
+
+    echo "" > ~/.ssh/known_hosts
 }
 
 connect() {

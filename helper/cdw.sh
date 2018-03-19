@@ -96,7 +96,8 @@ cdw() {
         usage
     fi
 
-    echo ${DIR}
+    success "cd ${DIR}"
+
     cd ${DIR}
 }
 
