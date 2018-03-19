@@ -11,13 +11,13 @@ error() {
 }
 
 usage() {
-    LS=$(ls -m ${ENV_DIR})
-
     if [ -r /tmp/toaster.old ]; then
         VER="$(cat /tmp/toaster.old)"
     else
         VER="v3"
     fi
+
+    LS=$(ls -m ${ENV_DIR})
 
     #figlet env
     echo "================================================================================"
@@ -65,7 +65,7 @@ directory() {
         error "[${ENV_DIR}] is not directory."
     fi
 
-    echo "ENV_DIR=${ENV_DIR}" >> "${CONFIG}"
+    echo "ENV_DIR=${ENV_DIR}" > "${CONFIG}"
 }
 
 deploy() {

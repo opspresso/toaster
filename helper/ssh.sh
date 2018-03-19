@@ -11,13 +11,13 @@ error() {
 }
 
 usage() {
-    LS=$(ls -m ${SSH_DIR})
-
     if [ -r /tmp/toaster.old ]; then
         VER="$(cat /tmp/toaster.old)"
     else
         VER="v3"
     fi
+
+    LS=$(ls -m ${SSH_DIR})
 
     #figlet ssh
     echo "================================================================================"

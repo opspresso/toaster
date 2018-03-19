@@ -11,8 +11,6 @@ error() {
 }
 
 usage() {
-    LS=$(find ${CDW_DIR} -maxdepth 2 -type d -exec ls -d "{}" \;)
-
     if [ -r /tmp/toaster.old ]; then
         VER="$(cat /tmp/toaster.old)"
     else
@@ -27,9 +25,6 @@ usage() {
     echo " | (_| (_| |\ V  V /  "
     echo "  \___\__,_| \_/\_/  by nalbam (${VER}) "
     echo "================================================================================"
-    echo " Usage: cdw.sh {NAME}"
-    echo "  NAME  : ${LS}"
-    echo "================================================================================"
 
     exit 1
 }
@@ -40,7 +35,7 @@ SHELL_DIR=$(dirname "$0")
 
 CDW_DIR=
 
-NAME=$1
+NUM=$1
 
 CONFIG=${SHELL_DIR}/.cdw
 if [ -f ${CONFIG} ]; then
@@ -62,19 +57,45 @@ directory() {
         error "[${CDW_DIR}] is not directory."
     fi
 
-    echo "CDW_DIR=${CDW_DIR}" >> "${CONFIG}"
+    echo "CDW_DIR=${CDW_DIR}" > "${CONFIG}"
 }
 
 cdw() {
+    TEMP=/tmp/cdr.tmp
+    find ${CDW_DIR} -maxdepth 2 -type d -exec ls -d "{}" \; > ${TEMP}
 
-    if [ "${NAME}" == "" ]; then
+    echo "================================================================================"
+
+    i=0
+    while read v; do
+        i=$(( ${i} + 1 ))
+        printf "%3s %s\n" "$i" "$v";
+    done < ${TEMP}
+
+    echo "================================================================================"
+
+    read NUM
+
+    if [ "${NUM}" == "" ]; then
         usage
     fi
-    if [ ! -d "${CDW_DIR}/${NAME}" ]; then
+
+    DIR=
+
+    i=0
+    while read v; do
+        i=$(( ${i} + 1 ))
+        if [ "${i}" == "${NUM}" ]; then
+            DIR="${v}"
+        fi
+    done < ${TEMP}
+
+    if [ "${DIR}" == "" ] || [ ! -d ${DIR} ]; then
         usage
     fi
 
-    cd ${CDW_DIR}/${NAME}
+    echo ${DIR}
+    cd ${DIR}
 }
 
 ################################################################################
