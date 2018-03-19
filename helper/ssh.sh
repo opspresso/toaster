@@ -55,7 +55,7 @@ fi
 
 directory() {
     if [ "${SSH_DIR}" == "" ] || [ ! -d "${SSH_DIR}" ]; then
-        echo "Please input pem directory. (ex: ~/pem)"
+        echo "Please input pem directory. (ex: ~/keys/pem)"
         read SSH_DIR
     fi
 

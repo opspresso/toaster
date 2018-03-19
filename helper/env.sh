@@ -54,7 +54,7 @@ fi
 
 directory() {
     if [ "${ENV_DIR}" == "" ] || [ ! -d "${ENV_DIR}" ]; then
-        echo "Please input credentials directory. (ex: ~/credentials)"
+        echo "Please input credentials directory. (ex: ~/keys/credentials)"
         read ENV_DIR
     fi
 
