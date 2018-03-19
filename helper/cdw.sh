@@ -11,7 +11,7 @@ error() {
 }
 
 usage() {
-    LS=$(ls -m ${CDW_DIR})
+    LS=$(find ${CDW_DIR} -maxdepth 2 -type d -exec ls -d "{}" \;)
 
     if [ -r /tmp/toaster.old ]; then
         VER="$(cat /tmp/toaster.old)"
@@ -27,10 +27,8 @@ usage() {
     echo " | (_| (_| |\ V  V /  "
     echo "  \___\__,_| \_/\_/  by nalbam (${VER}) "
     echo "================================================================================"
-    echo " Usage: env.sh {NAME} {REGION} {OUTPUT}"
+    echo " Usage: cdw.sh {NAME}"
     echo "  NAME  : ${LS}"
-    echo "  REGION: ap-northeast-2"
-    echo "  OUTPUT: json"
     echo "================================================================================"
 
     exit 1
