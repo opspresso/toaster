@@ -92,7 +92,7 @@ deploy() {
     aws configure set default.region ${REGION}
     aws configure set default.output ${OUTPUT}
 
-    success ">> ${NAME} ${REGION} ${OUTPUT}"
+    success "=> ${NAME} ${REGION} ${OUTPUT}"
 }
 
 ################################################################################
