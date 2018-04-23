@@ -6,6 +6,9 @@ VOLUMES=/tmp/aws_ec2_volumes
 
 aws ec2 describe-regions | grep RegionName | cut -d'"' -f4 > ${REGIONS}
 
+echo "################################################################################"
+echo "# EC2 Instances."
+
 while read REGION; do
     echo ">> region : ${REGION}"
 
@@ -13,7 +16,7 @@ while read REGION; do
 
     # EC2 Instances ('running', 'pending', 'stopping', 'stopped') ('shutting-down', 'terminated')
     aws ec2 describe-instances | \
-        jq '.Reservations[].Instances[] | select(.State != "terminated") | {InstanceId: .InstanceId, InstanceType: .InstanceType, State: .State.Name}' | \
+        jq '.Reservations[].Instances[] | {InstanceId: .InstanceId, InstanceType: .InstanceType, State: .State.Name} | select(.State != "terminated")' | \
         grep InstanceId | cut -d'"' -f4 > ${INSTANCES}
 
     while read ID; do
@@ -21,8 +24,12 @@ while read REGION; do
         aws ec2 terminate-instances --instance-ids ${ID} | grep InstanceId
     done < ${INSTANCES}
 
-    aws ec2 describe-instances | jq '.Reservations[].Instances[] | {InstanceId: .InstanceId, InstanceType: .InstanceType, State: .State.Name}'
+    aws ec2 describe-instances | \
+        jq '.Reservations[].Instances[] | {InstanceId: .InstanceId, InstanceType: .InstanceType, State: .State.Name}'
 done < ${REGIONS}
+
+echo "################################################################################"
+echo "# EBS volumes."
 
 while read REGION; do
     echo ">> region : ${REGION}"
@@ -46,4 +53,5 @@ while read REGION; do
     aws ec2 describe-volumes | jq '.Volumes[] | {VolumeId: .VolumeId, State: .State}'
 done < ${REGIONS}
 
+echo "################################################################################"
 echo "# done."
