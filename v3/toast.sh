@@ -266,6 +266,9 @@ install_aws() {
 
         ${SUDO} ./awscli-bundle/install -i /usr/local/aws -b /usr/bin/aws
 
+        ${SUDO} rm -rf /usr/local/bin/aws
+        ${SUDO} ln -s /usr/bin/aws /usr/local/bin/aws
+
         popd
     fi
 
