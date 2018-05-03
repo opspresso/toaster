@@ -252,6 +252,10 @@ config_save() {
     echo "${KEY}=${VAL}" >> "${CONFIG}"
 
     echo_ "${KEY}=${VAL}"
+
+    if [ "${KEY}" == "REGION" ]; then
+        aws configure set default.region ${VAL}
+    fi
 }
 
 install_aws() {
@@ -766,7 +770,7 @@ working() {
 
 usage() {
     echo_toast
-    echo_ " Usage: toast.sh {update|config|install|version|build|release|deploy}"
+    echo_ " Usage: toast.sh {update|config|install|build|release|deploy}"
     echo_bar
 }
 
