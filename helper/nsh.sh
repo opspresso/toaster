@@ -187,6 +187,9 @@ git_clone() {
         git remote add --track master upstream "git@${PROVIDER}:${UP_ID}/${APP}.git"
     fi
 
+    git secrets --install
+    git secrets --register-aws
+
     git branch -v
 }
 
