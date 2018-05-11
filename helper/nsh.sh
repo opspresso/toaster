@@ -194,7 +194,7 @@ git_remote() {
     git remote > ${REMOTES}
 
     while read REMOTE; do
-        if [ "${MSG}" == "${REMOTE}" ]; then
+        if [ "${REMOTE}" == "${MSG}" ]; then
             error "Remote ${MSG} already exists."
         fi
     done < ${REMOTES}
@@ -220,8 +220,12 @@ git_pull() {
     REMOTES="/tmp/${APP}-remote"
     git remote > ${REMOTES}
 
+    git pull origin ${BRANCH}
+
     while read REMOTE; do
-        git pull ${REMOTE} ${BRANCH}
+        if [ "${REMOTE}" != "origin" ]; then
+            git pull ${REMOTE} ${BRANCH}
+        fi
     done < ${REMOTES}
 }
 
