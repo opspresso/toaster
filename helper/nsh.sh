@@ -187,6 +187,17 @@ git_clone() {
 }
 
 git_remote() {
+    git branch -v
+
+    REMOTES="/tmp/${APP}-remote"
+    git remote > ${REMOTES}
+
+    while read REMOTE; do
+        if [ "${MSG}" == "${REMOTE}" ]; then
+            error "Remote ${MSG} already exists."
+        fi
+    done < ${REMOTES}
+
     git remote add --track master ${MSG} "git@${PROVIDER}:${MSG}/${APP}.git"
     git remote
 }
@@ -219,6 +230,7 @@ git_push() {
 }
 
 git_tag() {
+    git branch -v
     git pull
     git tag
 }
