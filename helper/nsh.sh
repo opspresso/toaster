@@ -43,11 +43,9 @@ BRANCH=""
 BCH=""
 
 NOW_DIR=$(pwd)
-NSH_DIR="${NOW_DIR}/.nsh"
 
 PROVIDER=""
 MY_ID=""
-UP_ID=""
 
 ################################################################################
 
@@ -55,6 +53,9 @@ nsh() {
     case "${CMD}" in
         cl|clone)
             git_clone
+            ;;
+        r|remote)
+            git_remote
             ;;
         b|branch)
             git_branch
@@ -108,7 +109,6 @@ prepare() {
                 PROVIDER="${V}"
             elif [ "${MY_ID}" == "" ]; then
                 MY_ID="${V}"
-                UP_ID="${V}"
             fi
         elif [ "${V}" == "src" ]; then
             DETECT=true
@@ -129,8 +129,6 @@ get_cmd() {
             PROJECT="${APP}"
             ;;
     esac
-
-    BCH="${NSH_DIR}/${PROJECT}.bch"
 
     case "${CMD}" in
         cl|clone)
@@ -171,7 +169,6 @@ ch_app_dir() {
 
 rm_app_dir() {
     rm -rf "${NOW_DIR}/${PROJECT}"
-    rm -rf "${NSH_DIR}/${PROJECT}".*
 }
 
 git_clone() {
@@ -183,14 +180,15 @@ git_clone() {
 
     ch_app_dir
 
-    if [ "${MY_ID}" != "${UP_ID}" ]; then
-        git remote add --track master upstream "git@${PROVIDER}:${UP_ID}/${APP}.git"
-    fi
-
     git secrets --install
     git secrets --register-aws
 
     git branch -v
+}
+
+git_remote() {
+    git remote add --track master ${MSG} "git@${PROVIDER}:${MSG}/${APP}.git"
+    git remote
 }
 
 git_diff() {
@@ -206,11 +204,13 @@ git_commit() {
 
 git_pull() {
     git branch -v
-    git pull origin "${BRANCH}"
 
-    if [ "${MY_ID}" != "${UP_ID}" ]; then
-        git pull upstream "${BRANCH}"
-    fi
+    REMOTES="/tmp/${APP}-remote"
+    git remote > ${REMOTES}
+
+    while read REMOTE; do
+        git pull ${REMOTE} ${BRANCH}
+    done < ${REMOTES}
 }
 
 git_push() {
