@@ -157,17 +157,7 @@ ch_app_dir() {
 
     cd "${NOW_DIR}/${PROJECT}"
 
-    BRANCHES="/tmp/${APP}-branch"
-    git branch > ${BRANCHES}
-
-    while read VAL; do
-        V=$(echo ${VAL} | cut -d' ' -f1)
-
-        if [ "${V}" != "" ]; then
-            BRANCH=$(echo ${VAL} | cut -d' ' -f2)
-            break
-        fi
-    done < ${BRANCHES}
+    BRANCH=$(git branch | grep \* | cut -d' ' -f2)
 
     if [ "${BRANCH}" == "" ]; then
         BRANCH="master"
