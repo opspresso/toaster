@@ -163,7 +163,7 @@ ch_app_dir() {
     while read VAL; do
         V=$(echo ${VAL} | cut -d' ' -f1)
 
-        if [ "${V}" == "*" ]; then
+        if [ "${V}" != "" ]; then
             BRANCH=$(echo ${VAL} | cut -d' ' -f2)
             break
         fi
@@ -200,8 +200,8 @@ git_remote() {
     REMOTES="/tmp/${APP}-remote"
     git remote > ${REMOTES}
 
-    while read VAL; do
-        if [ "${VAL}" == "${MSG}" ]; then
+    while read REMOTE; do
+        if [ "${REMOTE}" == "${MSG}" ]; then
             error "Remote ${MSG} already exists."
         fi
     done < ${REMOTES}
@@ -229,9 +229,9 @@ git_pull() {
 
     git pull origin ${BRANCH}
 
-    while read VAL; do
-        if [ "${VAL}" != "origin" ]; then
-            git pull ${VAL} ${BRANCH}
+    while read REMOTE; do
+        if [ "${REMOTE}" != "origin" ]; then
+            git pull ${REMOTE} ${BRANCH}
         fi
     done < ${REMOTES}
 }
@@ -251,7 +251,7 @@ git_branch() {
     git branch -v
 
     if [ "${MSG}" == "" ]; then
-        error "Branch is empty. ${BRANCH}"
+        error "Target branch is empty. ${BRANCH}"
     fi
     if [ "${MSG}" == "${BRANCH}" ]; then
         error "Branch already exists. ${BRANCH}"
