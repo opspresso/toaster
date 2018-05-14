@@ -249,10 +249,8 @@ git_branch() {
         error "Already on '${BRANCH}'."
     fi
 
-    if [ "${TAG}" != "" ]; then
-        if [ "${MSG}" != "${TAG}" ]; then
-            git branch "${MSG}" "${TAG}"
-        fi
+    if [ "${MSG}" != "${TAG}" ]; then
+        git branch "${MSG}" "${TAG}"
     fi
 
     git checkout "${MSG}"
