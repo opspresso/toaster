@@ -251,10 +251,10 @@ git_branch() {
     git branch -v
 
     if [ "${MSG}" == "" ]; then
-        error "Target branch is empty. ${BRANCH}"
+        error "Branch is empty. ${BRANCH}"
     fi
     if [ "${MSG}" == "${BRANCH}" ]; then
-        error "Branch already exists. ${BRANCH}"
+        error "Already on '${BRANCH}'."
     fi
 
     BRANCH="${MSG}"
