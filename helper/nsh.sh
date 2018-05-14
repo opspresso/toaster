@@ -172,6 +172,8 @@ ch_app_dir() {
     if [ "${BRANCH}" == "" ]; then
         BRANCH="master"
     fi
+
+    echo "branch: ${BRANCH}"
 }
 
 rm_app_dir() {
