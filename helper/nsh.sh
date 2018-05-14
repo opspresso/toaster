@@ -158,7 +158,7 @@ ch_app_dir() {
     cd "${NOW_DIR}/${PROJECT}"
 
     BRANCHES="/tmp/${APP}-branch"
-    git branch -v > ${BRANCHES}
+    git branch > ${BRANCHES}
 
     while read VAL; do
         V=$(echo ${VAL} | cut -d' ' -f1)
@@ -173,7 +173,7 @@ ch_app_dir() {
         BRANCH="master"
     fi
 
-    echo "branch: ${BRANCH}"
+    echo "# ${BRANCH}"
 }
 
 rm_app_dir() {
