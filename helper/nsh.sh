@@ -40,7 +40,6 @@ TAG="$4"
 
 PROJECT=""
 BRANCH=""
-BCH=""
 
 NOW_DIR=$(pwd)
 
@@ -158,9 +157,17 @@ ch_app_dir() {
 
     cd "${NOW_DIR}/${PROJECT}"
 
-    if [ -f "${BCH}" ]; then
-        read BRANCH < "${BCH}"
-    fi
+    BRANCHES="/tmp/${APP}-branch"
+    git branch -v > ${BRANCHES}
+
+    while read VAL; do
+        V=$(echo ${VAL} | cut -d' ' -f1)
+
+        if [ "${V}" == "*" ]; then
+            BRANCH=$(echo ${VAL} | cut -d' ' -f2)
+            break
+        fi
+    done < ${BRANCHES}
 
     if [ "${BRANCH}" == "" ]; then
         BRANCH="master"
@@ -193,8 +200,8 @@ git_remote() {
     REMOTES="/tmp/${APP}-remote"
     git remote > ${REMOTES}
 
-    while read REMOTE; do
-        if [ "${REMOTE}" == "${MSG}" ]; then
+    while read VAL; do
+        if [ "${VAL}" == "${MSG}" ]; then
             error "Remote ${MSG} already exists."
         fi
     done < ${REMOTES}
@@ -222,9 +229,9 @@ git_pull() {
 
     git pull origin ${BRANCH}
 
-    while read REMOTE; do
-        if [ "${REMOTE}" != "origin" ]; then
-            git pull ${REMOTE} ${BRANCH}
+    while read VAL; do
+        if [ "${VAL}" != "origin" ]; then
+            git pull ${VAL} ${BRANCH}
         fi
     done < ${REMOTES}
 }
@@ -259,7 +266,6 @@ git_branch() {
     fi
 
     git checkout "${BRANCH}"
-    echo "${BRANCH}" > "${BCH}"
 
     git branch -v
 }
