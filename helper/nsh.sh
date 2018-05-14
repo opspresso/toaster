@@ -240,7 +240,7 @@ git_pull() {
 
 git_push() {
     git branch -v
-    git push origin "${BRANCH}"
+    git push origin ${BRANCH}
 }
 
 git_tag() {
