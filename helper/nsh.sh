@@ -250,10 +250,10 @@ git_branch() {
     fi
 
     if [ "${MSG}" != "${TAG}" ]; then
-        git branch "${MSG}" "${TAG}"
+        git branch ${MSG} ${TAG}
     fi
 
-    git checkout "${MSG}"
+    git checkout ${MSG}
 
     git branch -v
 }
