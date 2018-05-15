@@ -189,6 +189,10 @@ git_clone() {
 git_remote() {
     git branch -v
 
+    if [ "${MSG}" != "" ]; then
+        return
+    fi
+
     REMOTES="/tmp/${APP}-remote"
     git remote > ${REMOTES}
 
@@ -200,6 +204,25 @@ git_remote() {
 
     git remote add --track master ${MSG} "git@${PROVIDER}:${MSG}/${APP}.git"
     git remote
+}
+
+git_branch() {
+    git branch -v
+
+    if [ "${MSG}" != "" ]; then
+        return
+    fi
+    if [ "${MSG}" == "${BRANCH}" ]; then
+        error "Already on '${BRANCH}'."
+    fi
+
+    if [ "${MSG}" != "${TAG}" ]; then
+        git branch ${MSG} ${TAG}
+    fi
+
+    git checkout ${MSG}
+
+    git branch -v
 }
 
 git_diff() {
@@ -237,25 +260,6 @@ git_tag() {
     git branch -v
     git pull
     git tag
-}
-
-git_branch() {
-    git branch -v
-
-    if [ "${MSG}" != "" ]; then
-        return
-    fi
-    if [ "${MSG}" == "${BRANCH}" ]; then
-        error "Already on '${BRANCH}'."
-    fi
-
-    if [ "${MSG}" != "${TAG}" ]; then
-        git branch ${MSG} ${TAG}
-    fi
-
-    git checkout ${MSG}
-
-    git branch -v
 }
 
 ################################################################################
