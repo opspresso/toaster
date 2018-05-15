@@ -242,8 +242,8 @@ git_tag() {
 git_branch() {
     git branch -v
 
-    if [ "${MSG}" == "" ]; then
-        error "Branch is empty. ${BRANCH}"
+    if [ "${MSG}" != "" ]; then
+        return
     fi
     if [ "${MSG}" == "${BRANCH}" ]; then
         error "Already on '${BRANCH}'."
