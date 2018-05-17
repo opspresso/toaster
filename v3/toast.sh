@@ -462,7 +462,7 @@ build_node() {
     pushd src/main/node
 
     if [ -f package.json ]; then
-        npm install -s
+        npm install
     fi
 
     zip -q -r ../../../target/${ARTIFACT_ID}-${VERSION}.zip *
