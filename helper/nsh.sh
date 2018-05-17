@@ -187,7 +187,7 @@ git_clone() {
 }
 
 git_remote() {
-    git branch -v
+    git remote
 
     if [ "${MSG}" == "" ]; then
         return
@@ -221,7 +221,6 @@ git_branch() {
     fi
 
     git checkout ${MSG}
-
     git branch -v
 }
 
