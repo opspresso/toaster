@@ -189,7 +189,7 @@ git_clone() {
 git_remote() {
     git branch -v
 
-    if [ "${MSG}" != "" ]; then
+    if [ "${MSG}" == "" ]; then
         return
     fi
 
@@ -209,7 +209,7 @@ git_remote() {
 git_branch() {
     git branch -v
 
-    if [ "${MSG}" != "" ]; then
+    if [ "${MSG}" == "" ]; then
         return
     fi
     if [ "${MSG}" == "${BRANCH}" ]; then
