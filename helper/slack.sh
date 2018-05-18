@@ -9,51 +9,58 @@ usage() {
     echo " \__ \ | (_| | (__|   < "
     echo " |___/_|\__,_|\___|_|\_\  by nalbam"
     echo "================================================================================"
-    echo " Usage: slack.sh -w {webhook} -n {channel} -i {icon} -u {username} -c {color} -m {message}"
+    echo " Usage: slack.sh [args] message "
+    echo " "
+    echo " Arguments: "
+    echo "   webhook_url"
+    echo "   channel"
+    echo "   icon_emoji"
+    echo "   username="
+    echo "   color"
+    echo "   message"
     echo "================================================================================"
 
     exit 1
 }
 
-url=
+debug=
+webhook_url=
 channel=
 icon_emoji=
 username=
 color=
 text=
 
-while getopts ":w:c:m:n:u:i:" opt; do
-  case ${opt} in
-    w)
-      url="$OPTARG"
-      ;;
-    n)
-      channel="$OPTARG"
-      ;;
-    c)
-      color="$OPTARG"
-      ;;
-    i)
-      icon_emoji="$OPTARG"
-      ;;
-    u)
-      username="$OPTARG"
-      ;;
-    m)
-      text="$OPTARG"
-      ;;
-    \?)
-      echo "Invalid option: -$OPTARG"
-      exit 1
-      ;;
-    :)
-      echo "Option -$OPTARG requires an argument."
-      exit 1
-      ;;
-  esac
+for v in "$@"; do
+    case ${v} in
+    -w=*|--webhook_url=*)
+        webhook_url="${v#*=}"
+        shift
+        ;;
+    --channel=*)
+        channel="${v#*=}"
+        shift
+        ;;
+    --icon_emoji=*)
+        icon_emoji="${v#*=}"
+        shift
+        ;;
+    --username=*)
+        username="${v#*=}"
+        shift
+        ;;
+    --color=*)
+        color="${v#*=}"
+        shift
+        ;;
+    *)
+        text=$*
+        break
+        ;;
+    esac
 done
 
-if [ "${url}" == "" ]; then
+if [ "${webhook_url}" == "" ]; then
     usage
 fi
 if [ "${text}" == "" ]; then
@@ -63,27 +70,26 @@ fi
 message=$(echo ${text} | sed 's/"/\"/g' | sed "s/'/\'/g")
 
 json="{"
+    if [ "${channel}" != "" ]; then
+        json="$json\"channel\":\"${channel}\","
+    fi
+    if [ "${icon_emoji}" != "" ]; then
+        json="$json\"icon_emoji\":\"${icon_emoji}\","
+    fi
+    if [ "${username}" != "" ]; then
+        json="$json\"username\":\"${username}\","
+    fi
+    json="$json\"attachments\":[{"
+        if [ "${color}" != "" ]; then
+            json="$json\"color\":\"${color}\","
+        fi
+        json="$json\"text\":\"${message}\""
+    json="$json}]"
+json="$json}"
 
-if [ "${channel}" != "" ]; then
-    json="$json\"channel\":\"${channel}\","
+if [ "${debug}" == "" ]; then
+    curl -s -d "payload=${json}" "${webhook_url}"
+else
+    echo "url=${webhook_url}"
+    echo "payload=${json}"
 fi
-if [ "${icon_emoji}" != "" ]; then
-    json="$json\"icon_emoji\":\"${icon_emoji}\","
-fi
-if [ "${username}" != "" ]; then
-    json="$json\"username\":\"${username}\","
-fi
-
-json="$json\"attachments\":[{"
-
-if [ "${color}" != "" ]; then
-    json="$json\"color\":\"${color}\","
-fi
-
-json="$json\"text\":\"${message}\""
-json="$json}]}"
-
-#echo "url=$url"
-#echo "payload=$json"
-
-curl -s -d "payload=$json" "$url"
