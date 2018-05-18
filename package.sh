@@ -30,6 +30,9 @@ cp -rf v3 build/
 cp -rf extra helper install build/v2/
 cp -rf extra helper install build/v3/
 
+# helper
+cp -rf helper target/
+
 # toaster v2
 pushd build/v2
 tar -czf ../../target/toaster-v2.tar.gz *
