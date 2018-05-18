@@ -9,31 +9,31 @@ usage() {
     echo " \__ \ | (_| | (__|   < "
     echo " |___/_|\__,_|\___|_|\_\  by nalbam"
     echo "================================================================================"
-    echo " Usage: slack.sh [args] message "
+    echo " Usage: slack.sh [args] {message} "
     echo " "
-    echo " Arguments: "
-    echo "   webhook_url"
-    echo "   channel"
-    echo "   icon_emoji"
-    echo "   username="
-    echo "   color"
-    echo "   message"
+    echo " Basic Arguments: "
+    echo "   webhook_url      Slack Webhook Url"
+    echo "   channel          Slack Webhook Channel"
+    echo "   icon_emoji       "
+    echo "   username         "
+    echo " "
+    echo " Attachments Arguments: "
+    echo "   color            Like traffic signals. [good, warning, danger, or hex code (eg. #439FE0)]."
+    echo "   title            The title is displayed as larger, bold text near the top of a message attachment."
+    echo "   image_url        A valid URL to an image file that will be displayed inside a message attachment."
+    echo "   footer           Add some brief text to help contextualize and identify an attachment."
     echo "================================================================================"
 
     exit 1
 }
 
-debug=
-webhook_url=
-channel=
-icon_emoji=
-username=
-color=
-text=
-
 for v in "$@"; do
     case ${v} in
-    -w=*|--webhook_url=*)
+    -d=*|--debug=*)
+        debug="${v#*=}"
+        shift
+        ;;
+    -u=*|--url=*|--webhook_url=*)
         webhook_url="${v#*=}"
         shift
         ;;
@@ -51,6 +51,18 @@ for v in "$@"; do
         ;;
     --color=*)
         color="${v#*=}"
+        shift
+        ;;
+    --title=*)
+        title="${v#*=}"
+        shift
+        ;;
+    --image_url=*)
+        image_url="${v#*=}"
+        shift
+        ;;
+    --footer=*)
+        footer="${v#*=}"
         shift
         ;;
     *)
@@ -82,6 +94,15 @@ json="{"
     json="$json\"attachments\":[{"
         if [ "${color}" != "" ]; then
             json="$json\"color\":\"${color}\","
+        fi
+        if [ "${title}" != "" ]; then
+            json="$json\"title\":\"${title}\","
+        fi
+        if [ "${image_url}" != "" ]; then
+            json="$json\"image_url\":\"${image_url}\","
+        fi
+        if [ "${footer}" != "" ]; then
+            json="$json\"footer\":\"${footer}\","
         fi
         json="$json\"text\":\"${message}\""
     json="$json}]"
