@@ -79,7 +79,7 @@ if [ "${text}" == "" ]; then
     usage
 fi
 
-message="$(echo ${text} | sed 's/"/\"/g' | sed "s/'/\'/g")"
+message=$(echo ${text} | sed 's/"/\"/g' | sed "s/'/\'/g" | sed "s/%/%25/g")
 
 json="{"
     if [ "${channel}" != "" ]; then
