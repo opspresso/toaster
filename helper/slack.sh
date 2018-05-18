@@ -9,7 +9,7 @@ usage() {
     echo " \__ \ | (_| | (__|   < "
     echo " |___/_|\__,_|\___|_|\_\  by nalbam"
     echo "================================================================================"
-    echo " Usage: slack.sh {webhook_url} {channel} {username} {message}"
+    echo " Usage: slack.sh {webhook_url} {channel} {message}"
     echo "================================================================================"
 
     exit 1
@@ -30,14 +30,6 @@ fi
 
 # ------------
 shift
-username=$1
-if [[ "${username}" == "" ]]; then
-    usage
-fi
-
-# ------------
-shift
-
 text=$*
 
 if [[ "${text}" == "" ]]; then
@@ -52,6 +44,6 @@ fi
 
 message=$(echo ${text} | sed 's/"/\"/g' | sed "s/'/\'/g")
 
-json="{\"channel\": \"$channel\", \"username\":\"$username\", \"icon_emoji\":\"ghost\", \"attachments\":[{\"color\":\"danger\" , \"text\": \"$message\"}]}"
+json="{\"channel\": \"$channel\", \"attachments\":[{\"text\": \"$message\"}]}"
 
 curl -s -d "payload=$json" "$webhook_url"
