@@ -37,6 +37,10 @@ for v in "$@"; do
         webhook_url="${v#*=}"
         shift
         ;;
+    --token=*)
+        token="${v#*=}"
+        shift
+        ;;
     --channel=*)
         channel="${v#*=}"
         shift
@@ -71,6 +75,10 @@ for v in "$@"; do
         ;;
     esac
 done
+
+if [ "${token}" != "" ]; then
+    webhook_url="https://hooks.slack.com/services/${token}"
+fi
 
 if [ "${webhook_url}" == "" ]; then
     usage
