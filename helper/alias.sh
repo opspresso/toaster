@@ -24,3 +24,5 @@ alias vg="vagrant"
 alias vgu="vg up"
 alias vgh="vg halt"
 alias vgd="vg destroy"
+
+alias p="reveal-md"
