@@ -14,10 +14,10 @@ alias tu="t update"
 alias td="t deploy"
 
 alias tf="terraform"
-alias tfp="tf plan -var-file=${TERRAFORM_VARS}"
-alias tfa="tf plan -out=${TERRAFORM_PLAN} && tf apply -input=false ${TERRAFORM_PLAN}"
+alias tfp="tf init && tf plan"
+alias tfa="tf init && tf apply -auto-approve"
+alias tfd="tf init && tf destroy -auto-approve"
 alias tfg="tf graph"
-alias tfd="tf destroy -force"
 alias tfc="rm -rf .terraform && tf init"
 
 alias vg="vagrant"
