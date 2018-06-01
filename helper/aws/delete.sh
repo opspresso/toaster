@@ -1,5 +1,16 @@
 #!/bin/bash
 
+echo "################################################################################"
+echo "#                                                                              #"
+echo "#    !!! Warning, If you enter 'yes', All Instances will be Terminate. !!!     #"
+echo "#                                                                              #"
+echo "################################################################################"
+
+read YES
+if [ "${YES}" != "yes" ]; then
+    exit 1
+fi
+
 REGIONS=/tmp/aws_regions
 INSTANCES=/tmp/aws_ec2_instances
 VOLUMES=/tmp/aws_ec2_volumes
