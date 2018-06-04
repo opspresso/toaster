@@ -207,7 +207,7 @@ git_remote() {
 }
 
 git_branch() {
-    git branch -v
+    git branch -a
 
     if [ "${MSG}" == "" ]; then
         return
