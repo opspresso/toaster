@@ -216,7 +216,8 @@ git_branch() {
         error "Already on '${BRANCH}'."
     fi
 
-    git branch ${MSG} ${TAG}
+    #git branch ${MSG} ${TAG}
+
     git checkout ${MSG}
     git branch -v
 }
