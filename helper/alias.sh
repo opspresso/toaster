@@ -18,6 +18,7 @@ alias tfp="tf init && tf plan"
 alias tfa="tf init && tf apply -auto-approve"
 alias tfd="tf init && tf destroy -auto-approve"
 alias tfg="tf graph"
+alias tfo="tf output"
 alias tfc="rm -rf .terraform && tf init"
 
 alias vg="vagrant"
