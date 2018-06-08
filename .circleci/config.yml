@@ -5,9 +5,9 @@ version: 2
 jobs:
   build:
     docker:
-    - image: nalbam/builder:python
+      - image: nalbam/builder:python
     steps:
-    - checkout
-    - run: ./package.sh
-    - run: ./publish.sh toast.sh
-    - run: ./publish.sh repo.toast.sh
+      - checkout
+      - run: ./package.sh
+      - run: ./publish.sh toast.sh
+      - run: ./publish.sh repo.toast.sh
