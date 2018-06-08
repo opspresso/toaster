@@ -1,0 +1,11 @@
+# CircleCI 2.0
+#
+version: 2
+jobs:
+  build:
+    docker:
+      - image: nalbam/builder:python
+
+    steps:
+      - checkout
+      - run: ./package.sh
