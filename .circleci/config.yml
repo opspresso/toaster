@@ -11,3 +11,4 @@ jobs:
       - run: ./package.sh
       - run: ./publish.sh toast.sh
       - run: ./publish.sh repo.toast.sh
+      - run: ./publish.sh www.toast.sh
