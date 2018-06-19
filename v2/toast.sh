@@ -459,7 +459,7 @@ self_info() {
 }
 
 self_update() {
-    curl -s repo.toast.sh/install-v2 | bash
+    curl -s https://repo.toast.sh/install-v2 | bash
 }
 
 prepare() {
@@ -2623,7 +2623,7 @@ download() {
 
     if [ ! -f "${FILEPATH}" ]; then
         if [ "${ARTIFACT_ID}" == "toast-web" ]; then
-            SOURCE="http://repo.toast.sh/maven2/${GROUP_PATH}/${ARTIFACT_ID}/${VERSION}/${FILENAME}"
+            SOURCE="https://repo.toast.sh/maven2/${GROUP_PATH}/${ARTIFACT_ID}/${VERSION}/${FILENAME}"
             echo_ "--> ${SOURCE}"
             wget -q -N -P "${TEMP_DIR}" "${SOURCE}"
         fi

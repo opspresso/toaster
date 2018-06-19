@@ -50,7 +50,7 @@ download() {
     fi
 
     if [ ! -f ${_FILE} ]; then
-        URL="http://repo.toast.sh/${_PATH}/${_FILE}"
+        URL="https://repo.toast.sh/${_PATH}/${_FILE}"
 
         echo_ "download... [${URL}]"
 
