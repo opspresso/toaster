@@ -12,7 +12,7 @@ error() {
 
 ################################################################################
 
-REPO="http://repo.toast.sh"
+REPO="https://repo.toast.sh"
 
 CONFIG="${HOME}/.toast"
 if [ -f "${CONFIG}" ]; then
