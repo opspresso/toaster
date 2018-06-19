@@ -13,6 +13,8 @@ alias ta="t auto"
 alias tu="t update"
 alias td="t deploy"
 
+alias st="/Applications/Sublime\ Text.app"
+
 alias tf="terraform"
 alias tfp="tf init && tf plan"
 alias tfa="tf init && tf apply -auto-approve"
