@@ -228,6 +228,8 @@ git_diff() {
 }
 
 git_commit() {
+    MSG=$*
+
     git branch -v
     git add --all
     git commit -m "${MSG}"
