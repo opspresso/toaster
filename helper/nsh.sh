@@ -158,6 +158,7 @@ ch_app_dir() {
 
     cd "${NOW_DIR}/${PROJECT}"
 
+    # selected branch
     BRANCH=$(git branch | grep \* | cut -d' ' -f2)
 
     if [ "${BRANCH}" == "" ]; then
@@ -197,9 +198,9 @@ git_remote() {
     REMOTES="/tmp/${APP}-remote"
     git remote > ${REMOTES}
 
-    while read REMOTE; do
-        if [ "${REMOTE}" == "${MSG}" ]; then
-            error "Remote ${MSG} already exists."
+    while read VAR; do
+        if [ "${VAR}" == "${MSG}" ]; then
+            error "Remote '${MSG}' already exists."
         fi
     done < ${REMOTES}
 
@@ -217,7 +218,26 @@ git_branch() {
         error "Already on '${BRANCH}'."
     fi
 
-    #git branch ${MSG} ${TAG}
+    HAS="false"
+    BRANCHES="/tmp/${APP}-branch"
+    git branch -a > ${BRANCHES}
+
+    while read VAR; do
+        ARR=(${VAR})
+        if [ "${ARR[1]}" == "" ]; then
+            if [ "${ARR[0]}" == "${MSG}" ]; then
+                HAS="true"
+            fi
+        else
+            if [ "${ARR[1]}" == "${MSG}" ]; then
+                HAS="true"
+            fi
+        fi
+    done < ${BRANCHES}
+
+    if [ "${HAS}" != "true" ]; then
+        git branch ${MSG} ${TAG}
+    fi
 
     git checkout ${MSG}
     git branch -v
@@ -232,7 +252,6 @@ git_commit() {
     shift && shift
     MSG=$*
 
-    git branch -v
     git add --all
     git commit -m "${MSG}"
 }
