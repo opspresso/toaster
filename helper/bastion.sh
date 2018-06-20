@@ -103,9 +103,11 @@ java -version
 echo "================================================================================"
 echo "# install maven... "
 export VERSION=3.5.3
-curl -sL https://www.apache.org/dist/maven/maven-3/${VERSION}/binaries/apache-maven-${VERSION}-bin.tar.gz | tar xz
-sudo mv -f apache-maven-${VERSION} /usr/local/
-sudo ln -sf /usr/local/apache-maven-${VERSION}/bin/mvn /usr/local/bin/mvn
+if [ ! -f /usr/local/apache-maven-${VERSION} ]; then
+    curl -sL https://www.apache.org/dist/maven/maven-3/${VERSION}/binaries/apache-maven-${VERSION}-bin.tar.gz | tar xz
+    sudo mv -f apache-maven-${VERSION} /usr/local/
+    sudo ln -sf /usr/local/apache-maven-${VERSION}/bin/mvn /usr/local/bin/mvn
+fi
 mvn -version
 
 # nodejs
