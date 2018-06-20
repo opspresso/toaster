@@ -72,7 +72,7 @@ echo "==========================================================================
 echo "# install helm... "
 export VERSION=$(curl -s https://api.github.com/repos/kubernetes/helm/releases/latest | jq --raw-output '.tag_name')
 curl -sL https://storage.googleapis.com/kubernetes-helm/helm-${VERSION}-linux-amd64.tar.gz | tar xz
-sudo mv linux-amd64/helm /usr/local/bin/helm
+sudo mv linux-amd64/helm /usr/local/bin/helm && rm -rf linux-amd64
 helm version --client --short
 
 # jenkins-x
