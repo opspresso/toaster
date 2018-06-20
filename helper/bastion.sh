@@ -17,10 +17,10 @@ echo "==========================================================================
 echo "# update "
 sudo yum update -y
 
-# git, jq
+# tools
 echo "================================================================================"
-echo "# install git vim jq "
-sudo yum install -y git vim jq
+echo "# install tools "
+sudo yum install -y git vim telnet jq
 
 # aws-cli
 echo "================================================================================"
