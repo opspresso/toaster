@@ -459,7 +459,7 @@ self_info() {
 }
 
 self_update() {
-    curl -s https://repo.toast.sh/install-v2 | bash
+    curl -sL toast.sh/install-v2 | bash
 }
 
 prepare() {
@@ -560,7 +560,7 @@ config_save() {
             echo_ "config save... [${UUID}][${SNO}]"
 
             URL="${TOAST_URL}/server/config"
-            RES=$(curl -s --data "org=${ORG}&token=${TOKEN}&phase=${PHASE}&fleet=${FLEET}&id=${UUID}&name=${NAME}&host=${HOST}&port=${PORT}&user=${USER}&no=${SNO}" "${URL}")
+            RES=$(curl -sL --data "org=${ORG}&token=${TOKEN}&phase=${PHASE}&fleet=${FLEET}&id=${UUID}&name=${NAME}&host=${HOST}&port=${PORT}&user=${USER}&no=${SNO}" "${URL}")
             ARR=(${RES})
 
             if [ "${ARR[0]}" != "OK" ]; then
@@ -688,7 +688,7 @@ init_hosts() {
 
     # hosts
     URL="${TOAST_URL}/server/hosts/${SNO}"
-    RES=$(curl -s --data "org=${ORG}&token=${TOKEN}&no=${SNO}" "${URL}")
+    RES=$(curl -sL --data "org=${ORG}&token=${TOKEN}&no=${SNO}" "${URL}")
 
     if [ "${RES}" == "" ]; then
         warning "empty hosts. [${URL}]"
@@ -711,7 +711,7 @@ init_profile() {
 
     # profile
     URL="${TOAST_URL}/server/profile/${SNO}"
-    RES=$(curl -s --data "org=${ORG}&token=${TOKEN}&no=${SNO}" "${URL}")
+    RES=$(curl -sL --data "org=${ORG}&token=${TOKEN}&no=${SNO}" "${URL}")
 
     if [ "${RES}" == "" ]; then
         warning "empty profile. [${URL}]"
@@ -730,7 +730,7 @@ init_email() {
     echo_ "init email..."
 
     URL="${TOAST_URL}/config/key/email"
-    RES=$(curl -s --data "org=${ORG}&token=${TOKEN}&no=${SNO}" "${URL}")
+    RES=$(curl -sL --data "org=${ORG}&token=${TOKEN}&no=${SNO}" "${URL}")
 
     if [ "${RES}" != "" ]; then
         EMAIL="${RES}"
@@ -750,7 +750,7 @@ init_master() {
 
     # .ssh/id_rsa
     URL="${TOAST_URL}/config/key/aws_key_pem"
-    RES=$(curl -s --data "org=${ORG}&token=${TOKEN}&no=${SNO}" "${URL}")
+    RES=$(curl -sL --data "org=${ORG}&token=${TOKEN}&no=${SNO}" "${URL}")
 
     if [ "${RES}" != "" ]; then
         TARGET="${HOME}/.ssh/id_rsa"
@@ -759,7 +759,7 @@ init_master() {
     else
         # .ssh/id_rsa
         URL="${TOAST_URL}/config/key/rsa_private_key"
-        RES=$(curl -s --data "org=${ORG}&token=${TOKEN}&no=${SNO}" "${URL}")
+        RES=$(curl -sL --data "org=${ORG}&token=${TOKEN}&no=${SNO}" "${URL}")
 
         if [ "${RES}" != "" ]; then
             TARGET="${HOME}/.ssh/id_rsa"
@@ -769,7 +769,7 @@ init_master() {
 
         # .ssh/id_rsa.pub
 #        URL="${TOAST_URL}/config/key/rsa_public_key"
-#        RES=$(curl -s --data "org=${ORG}&token=${TOKEN}&no=${SNO}" "${URL}")
+#        RES=$(curl -sL --data "org=${ORG}&token=${TOKEN}&no=${SNO}" "${URL}")
 #
 #        if [ "${RES}" != "" ]; then
 #            TARGET="${HOME}/.ssh/id_rsa.pub"
@@ -780,7 +780,7 @@ init_master() {
 
     # .aws/config
     URL="${TOAST_URL}/config/key/aws_config"
-    RES=$(curl -s --data "org=${ORG}&token=${TOKEN}&no=${SNO}" "${URL}")
+    RES=$(curl -sL --data "org=${ORG}&token=${TOKEN}&no=${SNO}" "${URL}")
 
     if [ "${RES}" != "" ]; then
         TARGET="${HOME}/.aws/config"
@@ -790,7 +790,7 @@ init_master() {
 
     # .aws/credentials
     URL="${TOAST_URL}/config/key/aws_master"
-    RES=$(curl -s --data "org=${ORG}&token=${TOKEN}&no=${SNO}" "${URL}")
+    RES=$(curl -sL --data "org=${ORG}&token=${TOKEN}&no=${SNO}" "${URL}")
 
     if [ "${RES}" != "" ]; then
         TARGET="${HOME}/.aws/credentials"
@@ -820,7 +820,7 @@ init_slave() {
 #
 #    if [ $(cat ${TARGET} | grep -c "admin@toast.sh") -eq 0 ]; then
 #        URL="${TOAST_URL}/config/key/rsa_public_key"
-#        RES=$(curl -s --data "org=${ORG}&token=${TOKEN}&no=${SNO}" "${URL}")
+#        RES=$(curl -sL --data "org=${ORG}&token=${TOKEN}&no=${SNO}" "${URL}")
 #
 #        if [ "${RES}" != "" ]; then
 #            echo "${RES}" >> ${TARGET}
@@ -830,7 +830,7 @@ init_slave() {
 
     # .aws/config
     URL="${TOAST_URL}/config/key/aws_config"
-    RES=$(curl -s --data "org=${ORG}&token=${TOKEN}&no=${SNO}" "${URL}")
+    RES=$(curl -sL --data "org=${ORG}&token=${TOKEN}&no=${SNO}" "${URL}")
 
     if [ "${RES}" != "" ]; then
         TARGET="${HOME}/.aws/config"
@@ -840,7 +840,7 @@ init_slave() {
 
     # .aws/credentials
     URL="${TOAST_URL}/config/key/aws_slave"
-    RES=$(curl -s --data "org=${ORG}&token=${TOKEN}&no=${SNO}" "${URL}")
+    RES=$(curl -sL --data "org=${ORG}&token=${TOKEN}&no=${SNO}" "${URL}")
 
     if [ "${RES}" != "" ]; then
         TARGET="${HOME}/.aws/credentials"
@@ -1005,7 +1005,7 @@ init_auto() {
     fi
 
     URL="${TOAST_URL}/server/apps/${SNO}"
-    RES=$(curl -s --data "org=${ORG}&token=${TOKEN}&no=${SNO}" "${URL}")
+    RES=$(curl -sL --data "org=${ORG}&token=${TOKEN}&no=${SNO}" "${URL}")
     ARR=(${RES})
 
     for VAL in "${ARR[@]}"; do
@@ -1059,7 +1059,7 @@ init_script() {
 
     # script
     URL="${TOAST_URL}/server/script/${SNO}"
-    RES=$(curl -s --data "org=${ORG}&token=${TOKEN}&no=${SNO}" "${URL}")
+    RES=$(curl -sL --data "org=${ORG}&token=${TOKEN}&no=${SNO}" "${URL}")
 
     if [ "${RES}" != "" ]; then
         echo "${RES}" > ${TARGET}
@@ -1547,7 +1547,7 @@ build_version() {
     fi
 
     URL="${TOAST_URL}/version/latest/${ARTIFACT_ID}"
-    RES=$(curl -s --data "org=${ORG}&token=${TOKEN}&groupId=${GROUP_ID}&artifactId=${ARTIFACT_ID}&packaging=${PACKAGE}&no=${SNO}&branch=${BRANCH}" "${URL}")
+    RES=$(curl -sL --data "org=${ORG}&token=${TOKEN}&groupId=${GROUP_ID}&artifactId=${ARTIFACT_ID}&packaging=${PACKAGE}&no=${SNO}&branch=${BRANCH}" "${URL}")
     ARR=(${RES})
 
     if [ "${ARR[0]}" != "OK" ]; then
@@ -1650,7 +1650,7 @@ build_save() {
 
     # version save
     URL="${TOAST_URL}/version/build/${ARTIFACT_ID}/${VERSION}"
-    RES=$(curl -s --data "org=${ORG}&token=${TOKEN}&groupId=${GROUP_ID}&artifactId=${ARTIFACT_ID}&packaging=${PACKAGE}&no=${SNO}&url=${GIT_URL}&git=${GIT_ID}&branch=${BRANCH}&note=${NOTE}" "${URL}")
+    RES=$(curl -sL --data "org=${ORG}&token=${TOKEN}&groupId=${GROUP_ID}&artifactId=${ARTIFACT_ID}&packaging=${PACKAGE}&no=${SNO}&url=${GIT_URL}&git=${GIT_ID}&branch=${BRANCH}&note=${NOTE}" "${URL}")
     ARR=(${RES})
 
     if [ "${ARR[0]}" != "OK" ]; then
@@ -1955,7 +1955,7 @@ nginx_lb() {
 
                 if [ "${CUSTOM}" != "" ]; then
                     URL="${TOAST_URL}/fleet/custom/${FNO}"
-                    RES=$(curl -s --data "org=${ORG}&token=${TOKEN}&no=${SNO}" "${URL}")
+                    RES=$(curl -sL --data "org=${ORG}&token=${TOKEN}&no=${SNO}" "${URL}")
 
                     if [ "${RES}" != "" ]; then
                         echo "${RES}" > ${TEMP_CUSTOM}
@@ -2312,7 +2312,7 @@ repo_path() {
     fi
 
     URL="${TOAST_URL}/config/key/repo_bucket"
-    RES=$(curl -s --data "org=${ORG}&token=${TOKEN}&no=${SNO}" "${URL}")
+    RES=$(curl -sL --data "org=${ORG}&token=${TOKEN}&no=${SNO}" "${URL}")
 
     if [ "${RES}" != "" ]; then
         REPO_BUCKET="${RES}"
@@ -2732,7 +2732,7 @@ placement() {
 
     # version status
     URL="${TOAST_URL}/version/deploy/${ARTIFACT_ID}/${VERSION}"
-    RES=$(curl -s --data "org=${ORG}&token=${TOKEN}&phase=${PHASE}&fleet=${FLEET}&name=${NAME}&groupId=${GROUP_ID}&no=${SNO}&t_no=${TNO}" "${URL}")
+    RES=$(curl -sL --data "org=${ORG}&token=${TOKEN}&phase=${PHASE}&fleet=${FLEET}&name=${NAME}&groupId=${GROUP_ID}&no=${SNO}&t_no=${TNO}" "${URL}")
     ARR=(${RES})
 
     if [ "${ARR[0]}" != "OK" ]; then
@@ -3002,7 +3002,7 @@ health() {
     UPTIME="$(uptime)"
 
     URL="${TOAST_URL}/server/health/${SNO}"
-    RES=$(curl -s --data "org=${ORG}&token=${TOKEN}&id=${UUID}&cpu=${CPU}&hdd=${DISK_PER}&os=${OS_FULL}&uptime=${UPTIME}&toast=${TOAST}" "${URL}")
+    RES=$(curl -sL --data "org=${ORG}&token=${TOKEN}&id=${UUID}&cpu=${CPU}&hdd=${DISK_PER}&os=${OS_FULL}&uptime=${UPTIME}&toast=${TOAST}" "${URL}")
     ARR=(${RES})
 
     if [ "${ARR[0]}" == "OK" ]; then
@@ -3028,7 +3028,7 @@ reset() {
     fi
 
     URL="${TOAST_URL}/server/info/${SNO}"
-    RES=$(curl -s --data "org=${ORG}&token=${TOKEN}&id=${UUID}" "${URL}")
+    RES=$(curl -sL --data "org=${ORG}&token=${TOKEN}&id=${UUID}" "${URL}")
     ARR=(${RES})
 
     if [ "${ARR[0]}" == "OK" ]; then

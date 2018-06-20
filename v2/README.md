@@ -2,7 +2,7 @@
 
 ### Install
 ```
-curl -s toast.sh/install | bash
+curl -sL toast.sh/install | bash
 
 ~/toaster/toast.sh auto {fleet} {phase} {org} {token}
 ```
@@ -11,7 +11,7 @@ curl -s toast.sh/install | bash
 ```
 #!/bin/bash
 
-runuser -l {user} -c 'curl -s toast.sh/install | bash'
+runuser -l {user} -c 'curl -sL toast.sh/install | bash'
 
 runuser -l {user} -c '~/toaster/toast.sh auto {fleet} {phase} {org} {token}'
 ```

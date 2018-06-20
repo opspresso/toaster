@@ -152,7 +152,7 @@ prepare() {
 }
 
 update() {
-    curl -s https://repo.toast.sh/install-v3 | bash
+    curl -sL toast.sh/install-v3 | bash
 }
 
 config() {
@@ -564,7 +564,7 @@ release_toast() {
 
     # version save
     URL="${TOAST}/version/build/${ARTIFACT_ID}/${VERSION}"
-    RES=$(curl -s --data "token=${TOKEN}&groupId=${GROUP_ID}&artifactId=${ARTIFACT_ID}&packaging=${PACKAGE}&branch=${BRANCH}" "${URL}")
+    RES=$(curl -sL --data "token=${TOKEN}&groupId=${GROUP_ID}&artifactId=${ARTIFACT_ID}&packaging=${PACKAGE}&branch=${BRANCH}" "${URL}")
     ARR=(${RES})
 
     if [ "${ARR[0]}" != "OK" ]; then
@@ -573,7 +573,7 @@ release_toast() {
 
     # get version
 #    URL="${TOAST}/version/latest/${ARTIFACT_ID}"
-#    RES=$(curl -s --data "token=${TOKEN}&groupId=${GROUP_ID}&artifactId=${ARTIFACT_ID}&packaging=${PACKAGING}&branch=${BRANCH}" "${URL}")
+#    RES=$(curl -sL --data "token=${TOKEN}&groupId=${GROUP_ID}&artifactId=${ARTIFACT_ID}&packaging=${PACKAGING}&branch=${BRANCH}" "${URL}")
 #    ARR=(${RES})
 #
 #    if [ "${ARR[0]}" != "OK" ]; then

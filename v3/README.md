@@ -2,7 +2,7 @@
 
 ### Install
 ```
-curl -s toast.sh/install-v3 | bash
+curl -sL toast.sh/install-v3 | bash
 ```
 
 ### Usage

@@ -27,7 +27,7 @@ ALIAS="${HOME}/.bash_aliases"
 mkdir -p ${SHELL_DIR}
 
 # version
-curl -s -o /tmp/toaster.new ${REPO}/toaster-v2.txt
+curl -sL -o /tmp/toaster.new ${REPO}/toaster-v2.txt
 
 if [ ! -f /tmp/toaster.new ]; then
     error "Can not download. [${REPO}]"
@@ -48,7 +48,7 @@ else
 fi
 
 # download
-curl -s -o /tmp/toaster.tar.gz ${REPO}/toaster-v2.tar.gz
+curl -sL -o /tmp/toaster.tar.gz ${REPO}/toaster-v2.tar.gz
 
 if [ ! -f /tmp/toaster.tar.gz ]; then
     error "Can not download. [${REPO}]"
