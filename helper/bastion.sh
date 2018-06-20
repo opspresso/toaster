@@ -38,7 +38,7 @@ gpgcheck=1
 repo_gpgcheck=1
 gpgkey=https://packages.cloud.google.com/yum/doc/yum-key.gpg https://packages.cloud.google.com/yum/doc/rpm-package-key.gpg
 EOF
-sudo cp -rf kubernetes.repo /etc/yum.repos.d/kubernetes.repo
+sudo mv kubernetes.repo /etc/yum.repos.d/kubernetes.repo
 sudo yum install -y kubectl
 kubectl version --client --short
 
