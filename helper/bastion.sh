@@ -95,7 +95,7 @@ terraform version
 # java
 echo "================================================================================"
 echo "# install java... "
-sudo yum remove -y java-1.7.0-openjdk java-1.7.0-openjdk-devel
+sudo yum remove -y java-1.7.0-openjdk
 sudo yum install -y java-1.8.0-openjdk java-1.8.0-openjdk-devel
 java -version
 
