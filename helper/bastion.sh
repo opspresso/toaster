@@ -57,7 +57,7 @@ gpgkey=https://packages.cloud.google.com/yum/doc/yum-key.gpg https://packages.cl
 EOF
 sudo mv kubernetes.repo /etc/yum.repos.d/kubernetes.repo
 sudo yum install -y kubectl
-echo "Kubectl $(kubectl version --client --short)"
+kubectl version --client --short
 
 # kops
 echo "================================================================================"
@@ -65,7 +65,7 @@ echo "# install kops... "
 export VERSION=$(curl -s https://api.github.com/repos/kubernetes/kops/releases/latest | jq --raw-output '.tag_name')
 curl -sLO https://github.com/kubernetes/kops/releases/download/${VERSION}/kops-linux-amd64
 chmod +x kops-linux-amd64 && sudo mv kops-linux-amd64 /usr/local/bin/kops
-echo "Kops $(kops version)"
+kops version
 
 # helm
 echo "================================================================================"
@@ -73,7 +73,7 @@ echo "# install helm... "
 export VERSION=$(curl -s https://api.github.com/repos/kubernetes/helm/releases/latest | jq --raw-output '.tag_name')
 curl -sL https://storage.googleapis.com/kubernetes-helm/helm-${VERSION}-linux-amd64.tar.gz | tar xz
 sudo mv linux-amd64/helm /usr/local/bin/helm
-echo "Helm $(helm version --client --short)"
+helm version --client --short
 
 # jenkins-x
 echo "================================================================================"
@@ -81,7 +81,7 @@ echo "# install jenkins-x... "
 export VERSION=$(curl -s https://api.github.com/repos/jenkins-x/jx/releases/latest | jq --raw-output '.tag_name')
 curl -sL https://github.com/jenkins-x/jx/releases/download/${VERSION}/jx-linux-amd64.tar.gz | tar xz
 sudo mv jx /usr/local/bin/jx
-echo "Jenkins-X $(jx --version)"
+jx --version
 
 # terraform
 echo "================================================================================"
