@@ -74,3 +74,6 @@ curl -sLO https://releases.hashicorp.com/terraform/${VERSION}/terraform_${VERSIO
 unzip terraform_${VERSION}_linux_amd64.zip && rm -rf terraform_${VERSION}_linux_amd64.zip
 sudo mv terraform /usr/local/bin/terraform
 terraform version
+
+echo "================================================================================"
+echo "# Done. "
