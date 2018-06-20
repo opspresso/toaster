@@ -37,6 +37,7 @@ APP=$(echo "$1" | sed -e "s/\///g")
 CMD="$2"
 MSG="$3"
 TAG="$4"
+ALL="$*"
 
 PROJECT=""
 BRANCH=""
@@ -67,7 +68,7 @@ nsh() {
             ;;
         c|commit)
             git_pull
-            git_commit
+            git_commit ${ALL}
             git_push
             ;;
         p|pp)
