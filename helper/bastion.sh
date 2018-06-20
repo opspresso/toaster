@@ -104,7 +104,7 @@ echo "==========================================================================
 echo "# install maven... "
 export VERSION=3.5.3
 curl -sL https://www.apache.org/dist/maven/maven-3/${VERSION}/binaries/apache-maven-${VERSION}-bin.tar.gz | tar xz
-sudo mv apache-maven-${VERSION} /usr/local/
+sudo mv -f apache-maven-${VERSION} /usr/local/
 sudo ln -sf /usr/local/apache-maven-${VERSION}/bin/mvn /usr/local/bin/mvn
 mvn -version
 
