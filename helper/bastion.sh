@@ -117,5 +117,11 @@ sudo yum install -y nodejs
 echo "node $(node -v)"
 echo "npm $(npm -v)"
 
+# heptio
+echo "================================================================================"
+echo "# install heptio... "
+wget https://amazon-eks.s3-us-west-2.amazonaws.com/1.10.3/2018-06-05/bin/linux/amd64/heptio-authenticator-aws
+chmod +x heptio-authenticator-aws && sudo mv heptio-authenticator-aws /usr/local/bin/heptio-authenticator-aws
+
 echo "================================================================================"
 echo "# Done. "
