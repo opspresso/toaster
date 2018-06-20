@@ -12,6 +12,11 @@ echo "==========================================================================
 
 # curl -sL toast.sh/helper/bastion.sh | bash
 
+# Date
+sudo rm -rf "/etc/localtime"
+sudo ln -sf "/usr/share/zoneinfo/Asia/Seoul" "/etc/localtime"
+date
+
 # update
 echo "================================================================================"
 echo "# update... "
