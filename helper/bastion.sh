@@ -12,8 +12,7 @@ echo "==========================================================================
 
 # curl -sL toast.sh/helper/bastion.sh | bash
 
-# Date
-sudo rm -rf "/etc/localtime"
+# localtime
 sudo ln -sf "/usr/share/zoneinfo/Asia/Seoul" "/etc/localtime"
 date
 
@@ -25,11 +24,11 @@ sudo yum update -y
 # tools
 echo "================================================================================"
 echo "# install tools... "
-sudo yum install -y git vim telnet jq gcc-c++ make
+sudo yum install -y git vim telnet jq gcc-c++ make wget
 
 # aws-cli
 echo "================================================================================"
-echo "# install awscli... "
+echo "# install aws-cli... "
 pip install --upgrade --user awscli
 aws --version
 
@@ -63,7 +62,7 @@ kubectl version --client --short
 echo "================================================================================"
 echo "# install kops... "
 export VERSION=$(curl -s https://api.github.com/repos/kubernetes/kops/releases/latest | jq --raw-output '.tag_name')
-curl -sLO https://github.com/kubernetes/kops/releases/download/${VERSION}/kops-linux-amd64
+wget https://github.com/kubernetes/kops/releases/download/${VERSION}/kops-linux-amd64
 chmod +x kops-linux-amd64 && sudo mv kops-linux-amd64 /usr/local/bin/kops
 kops version
 
@@ -87,7 +86,7 @@ jx --version
 echo "================================================================================"
 echo "# install terraform... "
 export VERSION=$(curl -s https://api.github.com/repos/hashicorp/terraform/releases/latest | jq --raw-output '.tag_name' | cut -c 2-)
-curl -sLO https://releases.hashicorp.com/terraform/${VERSION}/terraform_${VERSION}_linux_amd64.zip
+wget https://releases.hashicorp.com/terraform/${VERSION}/terraform_${VERSION}_linux_amd64.zip
 unzip terraform_${VERSION}_linux_amd64.zip && rm -rf terraform_${VERSION}_linux_amd64.zip
 sudo mv terraform /usr/local/bin/terraform
 terraform version
@@ -103,7 +102,7 @@ java -version
 echo "================================================================================"
 echo "# install maven... "
 export VERSION=3.5.3
-if [ ! -f /usr/local/apache-maven-${VERSION} ]; then
+if [ ! -d /usr/local/apache-maven-${VERSION} ]; then
   curl -sL https://www.apache.org/dist/maven/maven-3/${VERSION}/binaries/apache-maven-${VERSION}-bin.tar.gz | tar xz
   sudo mv -f apache-maven-${VERSION} /usr/local/
   sudo ln -sf /usr/local/apache-maven-${VERSION}/bin/mvn /usr/local/bin/mvn
