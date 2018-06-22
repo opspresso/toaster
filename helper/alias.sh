@@ -25,4 +25,4 @@ alias vgu="vg up"
 alias vgh="vg halt"
 alias vgd="vg destroy"
 
-alias p="reveal-md"
+alias p="reveal-md --theme https://raw.githubusercontent.com/nalbam/docs/master/.theme/black.css"
