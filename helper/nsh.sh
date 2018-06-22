@@ -17,6 +17,8 @@ MY_ID=""
 GIT_URL=""
 GIT_PWD=""
 
+SHELL_DIR=$(dirname $(dirname "$0"))
+
 ################################################################################
 
 success() {
@@ -30,8 +32,8 @@ error() {
 }
 
 usage() {
-    if [ -r /tmp/toaster.old ]; then
-        VER="$(cat /tmp/toaster.old)"
+    if [ -r ${SHELL_DIR}/conf/.toaster.old ]; then
+        VER="$(cat ${SHELL_DIR}/conf/.toaster.old)"
     else
         VER="v3"
     fi

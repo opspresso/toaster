@@ -1,16 +1,16 @@
 #!/bin/bash
 
-ENV_DIR=
-
 NAME=$1
 REGION=$2
 OUTPUT=$3
+
+ENV_DIR=
 
 SHELL_DIR=$(dirname $(dirname "$0"))
 
 mkdir -p ${SHELL_DIR}/conf
 
-CONFIG=${SHELL_DIR}/conf/.cdw
+CONFIG=${SHELL_DIR}/conf/$(basename $0)
 if [ -f ${CONFIG} ]; then
     . ${CONFIG}
 fi
@@ -28,8 +28,8 @@ error() {
 }
 
 usage() {
-    if [ -r /tmp/toaster.old ]; then
-        VER="$(cat /tmp/toaster.old)"
+    if [ -r ${SHELL_DIR}/conf/.toaster.old ]; then
+        VER="$(cat ${SHELL_DIR}/conf/.toaster.old)"
     else
         VER="v3"
     fi
