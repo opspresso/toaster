@@ -25,7 +25,7 @@ sudo yum update -y
 # tools
 echo "================================================================================"
 echo "# install tools... "
-sudo yum install -y git vim telnet jq gcc-c++ make wget
+sudo yum install -y git vim telnet jq make wget docker
 
 # aws-cli
 echo "================================================================================"
