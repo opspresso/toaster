@@ -33,11 +33,11 @@ download() {
     fi
 
     if [ ! -f ${_FILE} ]; then
-        URL="https://repo.toast.sh/${_PATH}/${_FILE}"
+        URL="repo.toast.sh/${_PATH}/${_FILE}"
 
         echo_ "download... [${URL}]"
 
-        /usr/bin/curl -O ${URL}
+        /usr/bin/curl -LO ${URL}
     fi
 }
 
