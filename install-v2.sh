@@ -20,23 +20,24 @@ if [ -f "${CONFIG}" ]; then
 fi
 
 SHELL_DIR="${HOME}/toaster"
+
 ALIAS="${HOME}/.bash_aliases"
 
 ################################################################################
 
-mkdir -p ${SHELL_DIR}/.version
+mkdir -p ${SHELL_DIR}/conf
 
 # version
-curl -sL -o ${SHELL_DIR}/.version/.toaster.new ${REPO}/toaster-v2.txt
+curl -sL -o ${SHELL_DIR}/conf/.toaster.new ${REPO}/toaster-v2.txt
 
-if [ ! -f ${SHELL_DIR}/.version/.toaster.new ]; then
+if [ ! -f ${SHELL_DIR}/conf/.toaster.new ]; then
     error "Can not download. [${REPO}]"
 fi
 
-NEW="$(cat ${SHELL_DIR}/.version/.toaster.new)"
+NEW="$(cat ${SHELL_DIR}/conf/.toaster.new)"
 
-if [ -f ${SHELL_DIR}/.version/.toaster.old ]; then
-    OLD="$(cat ${SHELL_DIR}/.version/.toaster.old)"
+if [ -f ${SHELL_DIR}/conf/.toaster.old ]; then
+    OLD="$(cat ${SHELL_DIR}/conf/.toaster.old)"
 
     if [ "${NEW}" == "${OLD}" ]; then
         success "Already have latest version. [${NEW}]"
@@ -58,7 +59,7 @@ fi
 tar -zxf /tmp/toaster.tar.gz -C ${SHELL_DIR}
 
 # cp version
-cp -rf ${SHELL_DIR}/.version/.toaster.new ${SHELL_DIR}/.version/.toaster.old
+cp -rf ${SHELL_DIR}/conf/.toaster.new ${SHELL_DIR}/conf/.toaster.old
 
 # alias
 if [ -f ${SHELL_DIR}/helper/alias.sh ]; then

@@ -9,8 +9,7 @@ function usage() {
 
 ############################################################
 
-BASEDIR=$(dirname $0)
-cd ${BASEDIR}
+cd $(dirname $0)
 
 USER=${1}
 HOST=${2}

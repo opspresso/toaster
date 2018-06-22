@@ -1,14 +1,16 @@
 #!/bin/bash
 
-SHELL_DIR=$(dirname "$0")
-
 ENV_DIR=
 
 NAME=$1
 REGION=$2
 OUTPUT=$3
 
-CONFIG=${SHELL_DIR}/.env
+SHELL_DIR=$(dirname $(dirname "$0"))
+
+mkdir -p ${SHELL_DIR}/conf
+
+CONFIG=${SHELL_DIR}/conf/.cdw
 if [ -f ${CONFIG} ]; then
     . ${CONFIG}
 fi

@@ -1,12 +1,14 @@
 #!/bin/bash
 
-SHELL_DIR=$(dirname "$0")
-
 CDW_DIR=
 
 NUM=$1
 
-CONFIG=${SHELL_DIR}/.cdw
+SHELL_DIR=$(dirname $(dirname "$0"))
+
+mkdir -p ${SHELL_DIR}/conf
+
+CONFIG=${SHELL_DIR}/conf/.cdw
 if [ -f ${CONFIG} ]; then
     . ${CONFIG}
 fi
@@ -46,7 +48,7 @@ usage() {
 
 directory() {
     if [ "${CDW_DIR}" == "" ] || [ ! -d "${CDW_DIR}" ]; then
-        echo "Please input base directory. (ex: ~/work/src)"
+        echo "Please input base directory. (ex: $(pwd)"
         read CDW_DIR
     fi
 

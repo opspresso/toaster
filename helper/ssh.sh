@@ -1,14 +1,16 @@
 #!/bin/bash
 
-SHELL_DIR=$(dirname "$0")
-
 SSH_DIR=
 
 PEM=$1
 HOST=$2
 USER=$3
 
-CONFIG=${SHELL_DIR}/.ssh
+SHELL_DIR=$(dirname $(dirname "$0"))
+
+mkdir -p ${SHELL_DIR}/conf
+
+CONFIG=${SHELL_DIR}/conf/.cdw
 if [ -f ${CONFIG} ]; then
     . ${CONFIG}
 fi
