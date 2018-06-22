@@ -1,11 +1,8 @@
 #!/bin/bash
 
-export TERRAFORM_VARS="sample.tfvars"
-export TERRAFORM_PLAN=".terraform/terraform.tfplan"
-
+alias n="~/toaster/helper/nsh.sh"
 alias c="~/toaster/helper/cdw.sh"
 alias e="~/toaster/helper/env.sh"
-alias n="~/toaster/helper/nsh.sh"
 alias s="~/toaster/helper/ssh.sh"
 
 alias t="~/toaster/toast.sh"
