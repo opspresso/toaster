@@ -27,16 +27,16 @@ ALIAS="${HOME}/.bash_aliases"
 mkdir -p ${SHELL_DIR}
 
 # version
-curl -sL -o /tmp/toaster.new ${REPO}/toaster-v3.txt
+curl -sL -o ${SHELL_DIR}/.toaster.new ${REPO}/toaster-v3.txt
 
-if [ ! -f /tmp/toaster.new ]; then
+if [ ! -f ${SHELL_DIR}/.toaster.new ]; then
     error "Can not download. [${REPO}]"
 fi
 
-NEW="$(cat /tmp/toaster.new)"
+NEW="$(cat ${SHELL_DIR}/.toaster.new)"
 
-if [ -f /tmp/toaster.old ]; then
-    OLD="$(cat /tmp/toaster.old)"
+if [ -f ${SHELL_DIR}/.toaster.old ]; then
+    OLD="$(cat ${SHELL_DIR}/.toaster.old)"
 
     if [ "${NEW}" == "${OLD}" ]; then
         success "Already have latest version. [${NEW}]"
@@ -58,7 +58,7 @@ fi
 tar -zxf /tmp/toaster.tar.gz -C ${SHELL_DIR}
 
 # cp version
-cp -rf /tmp/toaster.new /tmp/toaster.old
+cp -rf ${SHELL_DIR}/.toaster.new ${SHELL_DIR}/.toaster.old
 
 # alias
 if [ -f ${SHELL_DIR}/helper/alias.sh ]; then
