@@ -25,7 +25,7 @@ ALIAS="${HOME}/.bash_aliases"
 
 ################################################################################
 
-mkdir -p ${SHELL_DIR}
+mkdir -p ${SHELL_DIR}/conf
 
 # version
 curl -sL -o ${SHELL_DIR}/conf/.toaster.new ${REPO}/toaster-v3.txt
