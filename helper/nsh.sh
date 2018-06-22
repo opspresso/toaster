@@ -1,5 +1,24 @@
 #!/bin/bash
 
+APP=$(echo "$1" | sed -e "s/\///g")
+CMD="$2"
+MSG="$3"
+TAG="$4"
+ALL="$*"
+
+PROJECT=""
+BRANCH=""
+
+NOW_DIR=$(pwd)
+
+PROVIDER=""
+MY_ID=""
+
+GIT_URL=""
+GIT_PWD=""
+
+################################################################################
+
 success() {
     echo -e "$(tput setaf 2)$1$(tput sgr0)"
     exit 0
@@ -26,26 +45,12 @@ usage() {
     echo " |_| |_|___/_| |_|  by nalbam (${VER}) "
     echo "================================================================================"
     echo " Usage: nsh.sh {name} {clone|remove|branch|tag|diff|commit|pull|push|pp}"
+    echo " [${NOW_DIR}]"
+    echo " [${PROVIDER}][${GIT_URL}][${MY_ID}][${APP}]"
     echo "================================================================================"
 
     exit 1
 }
-
-################################################################################
-
-APP=$(echo "$1" | sed -e "s/\///g")
-CMD="$2"
-MSG="$3"
-TAG="$4"
-ALL="$*"
-
-PROJECT=""
-BRANCH=""
-
-NOW_DIR=$(pwd)
-
-PROVIDER=""
-MY_ID=""
 
 ################################################################################
 
@@ -93,17 +98,13 @@ nsh() {
 ################################################################################
 
 prepare() {
-    if [ "${APP}" == "" ]; then
-        usage
-    fi
-    if [ "${CMD}" == "" ]; then
-        usage
-    fi
-
     LIST=$(echo ${NOW_DIR} | tr "/" " ")
     DETECT=false
 
     for V in ${LIST}; do
+        if [ "${PROVIDER}" == "" ]; then
+            GIT_PWD="${GIT_PWD}/${V}"
+        fi
         if [ "${DETECT}" == "true" ]; then
             if [ "${PROVIDER}" == "" ]; then
                 PROVIDER="${V}"
@@ -114,9 +115,32 @@ prepare() {
             DETECT=true
         fi
     done
+
+    # git@github.com:
+    # ssh://git@1.1.1.1:1/
+    if [ "${PROVIDER}" != "" ]; then
+        if [ "${PROVIDER}" == "github.com" ]; then
+            GIT_URL="git@${PROVIDER}:"
+        else
+            if [ -f ${GIT_PWD}/.git_url ]; then
+                GIT_URL=$(cat ${GIT_PWD}/.git_url)
+            else
+                echo "Please input git url. (ex: ssh://git@8.8.8.8:8/)"
+                read GIT_URL
+
+                if [ "${GIT_URL}" != "" ]; then
+                    echo "${GIT_URL}" > ${GIT_PWD}/.git_url
+                fi
+            fi
+        fi
+    fi
 }
 
 get_cmd() {
+    if [ "${CMD}" == "" ]; then
+        usage
+    fi
+
     case "${CMD}" in
         cl|clone)
             if [ "${MSG}" == "" ]; then
@@ -173,7 +197,7 @@ rm_app_dir() {
 }
 
 git_clone() {
-    git clone "git@${PROVIDER}:${MY_ID}/${APP}.git" "${PROJECT}"
+    git clone "${GIT_URL}${MY_ID}/${APP}.git" "${PROJECT}"
 
     if [ ! -d "${NOW_DIR}/${PROJECT}" ]; then
         error "Not set project."
@@ -204,7 +228,7 @@ git_remote() {
         fi
     done < ${REMOTES}
 
-    git remote add --track master ${MSG} "git@${PROVIDER}:${MSG}/${APP}.git"
+    git remote add --track master ${MSG} "${GIT_URL}${MSG}/${APP}.git"
     git remote
 }
 

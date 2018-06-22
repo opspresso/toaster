@@ -1,5 +1,18 @@
 #!/bin/bash
 
+SHELL_DIR=$(dirname "$0")
+
+CDW_DIR=
+
+NUM=$1
+
+CONFIG=${SHELL_DIR}/.cdw
+if [ -f ${CONFIG} ]; then
+    . ${CONFIG}
+fi
+
+################################################################################
+
 success() {
     echo -e "$(tput setaf 2)$1$(tput sgr0)"
     exit 0
@@ -28,19 +41,6 @@ usage() {
 
     exit 1
 }
-
-################################################################################
-
-SHELL_DIR=$(dirname "$0")
-
-CDW_DIR=
-
-NUM=$1
-
-CONFIG=${SHELL_DIR}/.cdw
-if [ -f ${CONFIG} ]; then
-    . ${CONFIG}
-fi
 
 ################################################################################
 

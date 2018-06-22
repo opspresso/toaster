@@ -1,5 +1,20 @@
 #!/bin/bash
 
+SHELL_DIR=$(dirname "$0")
+
+SSH_DIR=
+
+PEM=$1
+HOST=$2
+USER=$3
+
+CONFIG=${SHELL_DIR}/.ssh
+if [ -f ${CONFIG} ]; then
+    . ${CONFIG}
+fi
+
+################################################################################
+
 success() {
     echo -e "$(tput setaf 2)$1$(tput sgr0)"
     exit 0
@@ -35,21 +50,6 @@ usage() {
 
     exit 1
 }
-
-################################################################################
-
-SHELL_DIR=$(dirname "$0")
-
-SSH_DIR=
-
-PEM=$1
-HOST=$2
-USER=$3
-
-CONFIG=${SHELL_DIR}/.ssh
-if [ -f ${CONFIG} ]; then
-    . ${CONFIG}
-fi
 
 ################################################################################
 
