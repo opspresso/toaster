@@ -26,8 +26,8 @@ error() {
 }
 
 usage() {
-    if [ -r ${SHELL_DIR}/conf/.toaster.old ]; then
-        VER="$(cat ${SHELL_DIR}/conf/.toaster.old)"
+    if [ -r ${SHELL_DIR}/conf/ver.now ]; then
+        VER="$(cat ${SHELL_DIR}/conf/ver.now)"
     else
         VER="v3"
     fi

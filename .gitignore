@@ -31,6 +31,3 @@ build/
 # JetBrains
 .idea/
 *.iml
-
-# log
-*.log
