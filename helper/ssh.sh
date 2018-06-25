@@ -8,13 +8,6 @@ SSH_DIR=
 
 SHELL_DIR=$(dirname $(dirname "$0"))
 
-mkdir -p ${SHELL_DIR}/conf
-
-CONFIG=${SHELL_DIR}/conf/$(basename $0)
-if [ -f ${CONFIG} ]; then
-    . ${CONFIG}
-fi
-
 ################################################################################
 
 success() {
@@ -46,7 +39,7 @@ usage() {
     echo "================================================================================"
     echo " Usage: ssh.sh {PEM} {HOST} {USER}"
     echo "  PEM : ${LS}"
-    echo "  HOST: hostname.com"
+    echo "  HOST: hostname"
     echo "  USER: ec2-user"
     echo "================================================================================"
 
@@ -56,6 +49,13 @@ usage() {
 ################################################################################
 
 directory() {
+    mkdir -p ${SHELL_DIR}/conf
+
+    CONFIG=${SHELL_DIR}/conf/$(basename $0)
+    if [ -f ${CONFIG} ]; then
+        . ${CONFIG}
+    fi
+
     if [ "${SSH_DIR}" == "" ] || [ ! -d "${SSH_DIR}" ]; then
         echo "Please input pem directory. (ex: ~/keys/pem)"
         read SSH_DIR

@@ -1,17 +1,11 @@
 #!/bin/bash
 
 NUM=$1
+DIR=
 
 CDW_DIR=
 
 SHELL_DIR=$(dirname $(dirname "$0"))
-
-mkdir -p ${SHELL_DIR}/conf
-
-CONFIG=${SHELL_DIR}/conf/$(basename $0)
-if [ -f ${CONFIG} ]; then
-    . ${CONFIG}
-fi
 
 ################################################################################
 
@@ -47,6 +41,13 @@ usage() {
 ################################################################################
 
 directory() {
+    mkdir -p ${SHELL_DIR}/conf
+
+    CONFIG=${SHELL_DIR}/conf/$(basename $0)
+    if [ -f ${CONFIG} ]; then
+        . ${CONFIG}
+    fi
+
     if [ "${CDW_DIR}" == "" ] || [ ! -d "${CDW_DIR}" ]; then
         echo "Please input base directory. (ex: $(pwd)"
         read CDW_DIR
@@ -99,8 +100,6 @@ cdw() {
         usage
     fi
 
-    DIR=
-
     i=0
     while read v; do
         i=$(( ${i} + 1 ))
@@ -116,6 +115,8 @@ cdw() {
     success "cd ${DIR}"
 
     cd ${DIR}
+
+    exec bash
 }
 
 ################################################################################
@@ -123,3 +124,4 @@ cdw() {
 directory
 
 dir
+#cdw

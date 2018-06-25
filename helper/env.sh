@@ -8,13 +8,6 @@ ENV_DIR=
 
 SHELL_DIR=$(dirname $(dirname "$0"))
 
-mkdir -p ${SHELL_DIR}/conf
-
-CONFIG=${SHELL_DIR}/conf/$(basename $0)
-if [ -f ${CONFIG} ]; then
-    . ${CONFIG}
-fi
-
 ################################################################################
 
 success() {
@@ -55,6 +48,13 @@ usage() {
 ################################################################################
 
 directory() {
+    mkdir -p ${SHELL_DIR}/conf
+
+    CONFIG=${SHELL_DIR}/conf/$(basename $0)
+    if [ -f ${CONFIG} ]; then
+        . ${CONFIG}
+    fi
+
     if [ "${ENV_DIR}" == "" ] || [ ! -d "${ENV_DIR}" ]; then
         echo "Please input credentials directory. (ex: ~/keys/credentials)"
         read ENV_DIR
