@@ -33,6 +33,7 @@ echo "# install aws-cli... "
 pip install --upgrade --user awscli
 aws --version
 
+if [ ! -f ~/.aws/credentials ]; then
 # aws region
 aws configure set default.region ap-northeast-2
 
@@ -42,6 +43,7 @@ cat <<EOF > ~/.aws/credentials
 aws_access_key_id=
 aws_secret_access_key=
 EOF
+fi
 
 # kubectl
 echo "================================================================================"
