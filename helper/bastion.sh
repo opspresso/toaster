@@ -101,6 +101,15 @@ fi
 
 kubectl version --client --short
 
+# eksctl
+echo "================================================================================"
+echo "# install eksctl... "
+
+export VERSION=$(curl -s https://api.github.com/repos/weaveworks/eksctl/releases/latest | jq --raw-output '.tag_name')
+curl -L https://github.com/weaveworks/eksctl/releases/download/${VERSION}/eksctl_Linux_amd64.tar.gz | tar xz
+chmod +x eksctl && sudo mv eksctl /usr/local/bin/eksctl
+eksctl version
+
 # kops
 echo "================================================================================"
 echo "# install kops... "
