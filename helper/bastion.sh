@@ -115,16 +115,25 @@ echo "==========================================================================
 echo "# install helm... "
 
 export VERSION=$(curl -s https://api.github.com/repos/kubernetes/helm/releases/latest | jq --raw-output '.tag_name')
-curl -sL https://storage.googleapis.com/kubernetes-helm/helm-${VERSION}-linux-amd64.tar.gz | tar xz
+curl -L https://storage.googleapis.com/kubernetes-helm/helm-${VERSION}-linux-amd64.tar.gz | tar xz
 sudo mv linux-amd64/helm /usr/local/bin/helm && rm -rf linux-amd64
 helm version --client --short
+
+# draft
+echo "================================================================================"
+echo "# install draft... "
+
+export VERSION=$(curl -s https://api.github.com/repos/Azure/draft/releases/latest | jq --raw-output '.tag_name')
+curl -L https://azuredraft.blob.core.windows.net/draft/draft-${VERSION}-linux-amd64.tar.gz | tar xz
+sudo mv linux-amd64/draft /usr/local/bin/draft && rm -rf linux-amd64
+draft version --short
 
 # jenkins-x
 echo "================================================================================"
 echo "# install jenkins-x... "
 
 export VERSION=$(curl -s https://api.github.com/repos/jenkins-x/jx/releases/latest | jq --raw-output '.tag_name')
-curl -sL https://github.com/jenkins-x/jx/releases/download/${VERSION}/jx-linux-amd64.tar.gz | tar xz
+curl -L https://github.com/jenkins-x/jx/releases/download/${VERSION}/jx-linux-amd64.tar.gz | tar xz
 sudo mv jx /usr/local/bin/jx
 jx --version
 
@@ -157,7 +166,7 @@ echo "# install maven... "
 
 export VERSION=3.5.3
 if [ ! -d /usr/local/apache-maven-${VERSION} ]; then
-  curl -sL https://www.apache.org/dist/maven/maven-3/${VERSION}/binaries/apache-maven-${VERSION}-bin.tar.gz | tar xz
+  curl -L https://www.apache.org/dist/maven/maven-3/${VERSION}/binaries/apache-maven-${VERSION}-bin.tar.gz | tar xz
   sudo mv -f apache-maven-${VERSION} /usr/local/
   sudo ln -sf /usr/local/apache-maven-${VERSION}/bin/mvn /usr/local/bin/mvn
 fi
