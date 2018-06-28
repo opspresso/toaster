@@ -68,15 +68,13 @@ pip install --upgrade --user awscli
 aws --version
 
 if [ ! -f ~/.aws/credentials ]; then
-# aws region
-aws configure set default.region ap-northeast-2
+    # aws region
+    aws configure set default.region ap-northeast-2
 
-# aws credentials
-cat <<EOF > ~/.aws/credentials
-[default]
-aws_access_key_id=
-aws_secret_access_key=
-EOF
+    # aws credentials
+    echo "[default]" > ~/.aws/credentials
+    echo "aws_access_key_id=" >> ~/.aws/credentials
+    echo "aws_secret_access_key=" >> ~/.aws/credentials
 fi
 
 # kubectl
@@ -90,15 +88,13 @@ if [ "${OS_TYPE}" == "Ubuntu" ] || [ "${OS_TYPE}" == "coreos" ]; then
     echo "deb http://apt.kubernetes.io/ kubernetes-xenial main" | sudo tee -a /etc/apt/sources.list.d/kubernetes.list
     sudo apt-get update && sudo apt-get install -y kubectl
 elif [ "${OS_TYPE}" == "amzn" ] || [ "${OS_TYPE}" == "el6" ] || [ "${OS_TYPE}" == "el7" ]; then
-    cat <<EOF > kubernetes.repo
-[kubernetes]
-name=Kubernetes
-baseurl=https://packages.cloud.google.com/yum/repos/kubernetes-el7-x86_64
-enabled=1
-gpgcheck=1
-repo_gpgcheck=1
-gpgkey=https://packages.cloud.google.com/yum/doc/yum-key.gpg https://packages.cloud.google.com/yum/doc/rpm-package-key.gpg
-EOF
+    echo "[kubernetes]" > kubernetes.repo
+    echo "name=Kubernetes" >> kubernetes.repo
+    echo "baseurl=https://packages.cloud.google.com/yum/repos/kubernetes-el7-x86_64" >> kubernetes.repo
+    echo "enabled=1" >> kubernetes.repo
+    echo "gpgcheck=1" >> kubernetes.repo
+    echo "repo_gpgcheck=1" >> kubernetes.repo
+    echo "gpgkey=https://packages.cloud.google.com/yum/doc/yum-key.gpg https://packages.cloud.google.com/yum/doc/rpm-package-key.gpg" >> kubernetes.repo
     sudo mv kubernetes.repo /etc/yum.repos.d/kubernetes.repo
     sudo yum install -y kubectl
 fi
