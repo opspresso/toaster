@@ -41,10 +41,10 @@ sudo ln -sf "/usr/share/zoneinfo/Asia/Seoul" "/etc/localtime"
 date
 
 # version
-EKSCTL=
 KOPS=
 HELM=
 DRAFT=
+EKSCTL=
 JX=
 TF=
 JAVA=
@@ -121,21 +121,6 @@ fi
 
 command -v kubectl > /dev/null || kubectl version --client --short
 
-# eksctl
-echo "================================================================================"
-echo "# install eksctl... "
-
-VERSION=$(curl -s https://api.github.com/repos/weaveworks/eksctl/releases/latest | jq --raw-output '.tag_name')
-
-if [ "${EKSCTL}" != "${VERSION}" ]; then
-    curl -L https://github.com/weaveworks/eksctl/releases/download/${VERSION}/eksctl_Linux_amd64.tar.gz | tar xz
-    chmod +x eksctl && sudo mv eksctl /usr/local/bin/eksctl
-
-    EKSCTL="${VERSION}"
-fi
-
-eksctl version
-
 # kops
 echo "================================================================================"
 echo "# install kops... "
@@ -180,6 +165,21 @@ if [ "${DRAFT}" != "${VERSION}" ]; then
 fi
 
 draft version --short
+
+# eksctl
+#echo "================================================================================"
+#echo "# install eksctl... "
+#
+#VERSION=$(curl -s https://api.github.com/repos/weaveworks/eksctl/releases/latest | jq --raw-output '.tag_name')
+#
+#if [ "${EKSCTL}" != "${VERSION}" ]; then
+#    curl -L https://github.com/weaveworks/eksctl/releases/download/${VERSION}/eksctl_Linux_amd64.tar.gz | tar xz
+#    chmod +x eksctl && sudo mv eksctl /usr/local/bin/eksctl
+#
+#    EKSCTL="${VERSION}"
+#fi
+#
+#eksctl version
 
 # jenkins-x
 echo "================================================================================"
@@ -294,10 +294,10 @@ echo "# Done. "
 
 rm -rf ${config}
 
-echo "EKSCTL=${EKSCTL}" >> ${config}
 echo "KOPS=${KOPS}" >> ${config}
 echo "HELM=${HELM}" >> ${config}
 echo "DRAFT=${DRAFT}" >> ${config}
+echo "EKSCTL=${EKSCTL}" >> ${config}
 echo "JX=${JX}" >> ${config}
 echo "TF=${TF}" >> ${config}
 echo "JAVA=${JAVA}" >> ${config}
