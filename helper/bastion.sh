@@ -117,7 +117,7 @@ elif [ "${OS_TYPE}" == "amzn" ] || [ "${OS_TYPE}" == "el6" ] || [ "${OS_TYPE}" =
     sudo yum install -y kubectl
 fi
 
-command -v kubectl > /dev/null || kubectl version --client --short
+kubectl version --client --short
 
 # kops
 echo "================================================================================"
