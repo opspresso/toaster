@@ -47,9 +47,9 @@ DRAFT=
 EKSCTL=
 JX=
 TF=
+NODE=
 JAVA=
 MAVEN=
-NODE=
 HEPTIO=
 
 config=~/.bastion
@@ -212,6 +212,27 @@ fi
 
 terraform version
 
+# nodejs
+echo "================================================================================"
+echo "# install nodejs... "
+
+VERSION=10
+
+if [ "${NODE}" != "${VERSION}" ]; then
+    if [ "${OS_TYPE}" == "Ubuntu" ] || [ "${OS_TYPE}" == "coreos" ]; then
+        curl -sL https://deb.nodesource.com/setup_10.x | sudo -E bash -
+        sudo apt-get install -y nodejs
+    elif [ "${OS_TYPE}" == "amzn" ] || [ "${OS_TYPE}" == "el6" ] || [ "${OS_TYPE}" == "el7" ]; then
+        curl -sL https://rpm.nodesource.com/setup_10.x | sudo bash -
+        sudo yum install -y nodejs
+    fi
+
+    NODE="${VERSION}"
+fi
+
+echo "node $(node -v)"
+echo "npm $(npm -v)"
+
 # java
 echo "================================================================================"
 echo "# install java... "
@@ -249,27 +270,6 @@ fi
 
 mvn -version
 
-# nodejs
-echo "================================================================================"
-echo "# install nodejs... "
-
-VERSION=10
-
-if [ "${NODE}" != "${VERSION}" ]; then
-    if [ "${OS_TYPE}" == "Ubuntu" ] || [ "${OS_TYPE}" == "coreos" ]; then
-        curl -sL https://deb.nodesource.com/setup_10.x | sudo -E bash -
-        sudo apt-get install -y nodejs
-    elif [ "${OS_TYPE}" == "amzn" ] || [ "${OS_TYPE}" == "el6" ] || [ "${OS_TYPE}" == "el7" ]; then
-        curl -sL https://rpm.nodesource.com/setup_10.x | sudo bash -
-        sudo yum install -y nodejs
-    fi
-
-    NODE="${VERSION}"
-fi
-
-echo "node $(node -v)"
-echo "npm $(npm -v)"
-
 # heptio
 echo "================================================================================"
 echo "# install heptio... "
@@ -296,7 +296,7 @@ echo "DRAFT=${DRAFT}" >> ${config}
 echo "EKSCTL=${EKSCTL}" >> ${config}
 echo "JX=${JX}" >> ${config}
 echo "TF=${TF}" >> ${config}
+echo "NODE=${NODE}" >> ${config}
 echo "JAVA=${JAVA}" >> ${config}
 echo "MAVEN=${MAVEN}" >> ${config}
-echo "NODE=${NODE}" >> ${config}
 echo "HEPTIO=${HEPTIO}" >> ${config}
