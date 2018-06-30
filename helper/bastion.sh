@@ -81,11 +81,9 @@ fi
 echo "================================================================================"
 echo "# install aws-cli... "
 
-command -v aws > /dev/null || aws --version
-
 pip install --upgrade --user awscli
 
-command -v aws > /dev/null || aws --version
+aws --version
 
 if [ ! -f ~/.aws/credentials ]; then
     # aws region
