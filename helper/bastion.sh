@@ -64,8 +64,11 @@ fi
 echo "================================================================================"
 echo "# install aws-cli... "
 
+command -v aws > /dev/null || aws --version
+
 pip install --upgrade --user awscli
-aws --version
+
+command -v aws > /dev/null || aws --version
 
 if [ ! -f ~/.aws/credentials ]; then
     # aws region
@@ -80,6 +83,8 @@ fi
 # kubectl
 echo "================================================================================"
 echo "# install kubectl... "
+
+command -v kubectl > /dev/null || kubectl version --client --short
 
 if [ "${OS_TYPE}" == "Ubuntu" ] || [ "${OS_TYPE}" == "coreos" ]; then
     sudo apt-get update && sudo apt-get install -y apt-transport-https
@@ -99,66 +104,86 @@ elif [ "${OS_TYPE}" == "amzn" ] || [ "${OS_TYPE}" == "el6" ] || [ "${OS_TYPE}" =
     sudo yum install -y kubectl
 fi
 
-kubectl version --client --short
+command -v kubectl > /dev/null || kubectl version --client --short
 
 # eksctl
 echo "================================================================================"
 echo "# install eksctl... "
 
+command -v eksctl > /dev/null || eksctl version
+
 export VERSION=$(curl -s https://api.github.com/repos/weaveworks/eksctl/releases/latest | jq --raw-output '.tag_name')
 curl -L https://github.com/weaveworks/eksctl/releases/download/${VERSION}/eksctl_Linux_amd64.tar.gz | tar xz
 chmod +x eksctl && sudo mv eksctl /usr/local/bin/eksctl
-eksctl version
+
+command -v eksctl > /dev/null || eksctl version
 
 # kops
 echo "================================================================================"
 echo "# install kops... "
 
+command -v kops > /dev/null || kops version
+
 export VERSION=$(curl -s https://api.github.com/repos/kubernetes/kops/releases/latest | jq --raw-output '.tag_name')
 wget https://github.com/kubernetes/kops/releases/download/${VERSION}/kops-linux-amd64
 chmod +x kops-linux-amd64 && sudo mv kops-linux-amd64 /usr/local/bin/kops
-kops version
+
+command -v kops > /dev/null || kops version
 
 # helm
 echo "================================================================================"
 echo "# install helm... "
 
+command -v helm > /dev/null || helm version --client --short
+
 export VERSION=$(curl -s https://api.github.com/repos/kubernetes/helm/releases/latest | jq --raw-output '.tag_name')
 curl -L https://storage.googleapis.com/kubernetes-helm/helm-${VERSION}-linux-amd64.tar.gz | tar xz
 sudo mv linux-amd64/helm /usr/local/bin/helm && rm -rf linux-amd64
-helm version --client --short
+
+command -v helm > /dev/null || helm version --client --short
 
 # draft
 echo "================================================================================"
 echo "# install draft... "
 
+command -v draft > /dev/null || draft version --short
+
 export VERSION=$(curl -s https://api.github.com/repos/Azure/draft/releases/latest | jq --raw-output '.tag_name')
 curl -L https://azuredraft.blob.core.windows.net/draft/draft-${VERSION}-linux-amd64.tar.gz | tar xz
 sudo mv linux-amd64/draft /usr/local/bin/draft && rm -rf linux-amd64
-draft version --short
+
+command -v draft > /dev/null || draft version --short
 
 # jenkins-x
 echo "================================================================================"
 echo "# install jenkins-x... "
 
+command -v jx > /dev/null || jx --version
+
 export VERSION=$(curl -s https://api.github.com/repos/jenkins-x/jx/releases/latest | jq --raw-output '.tag_name')
 curl -L https://github.com/jenkins-x/jx/releases/download/${VERSION}/jx-linux-amd64.tar.gz | tar xz
 sudo mv jx /usr/local/bin/jx
-jx --version
+
+command -v jx > /dev/null || jx --version
 
 # terraform
 echo "================================================================================"
 echo "# install terraform... "
 
+command -v terraform > /dev/null || terraform version
+
 export VERSION=$(curl -s https://api.github.com/repos/hashicorp/terraform/releases/latest | jq --raw-output '.tag_name' | cut -c 2-)
 wget https://releases.hashicorp.com/terraform/${VERSION}/terraform_${VERSION}_linux_amd64.zip
 unzip terraform_${VERSION}_linux_amd64.zip && rm -rf terraform_${VERSION}_linux_amd64.zip
 sudo mv terraform /usr/local/bin/terraform
-terraform version
+
+command -v terraform > /dev/null || terraform version
 
 # java
 echo "================================================================================"
 echo "# install java... "
+
+command -v java > /dev/null || java -version
 
 if [ "${OS_TYPE}" == "Ubuntu" ] || [ "${OS_TYPE}" == "coreos" ]; then
     sudo apt-get install -y openjdk-8-jdk
@@ -167,11 +192,13 @@ elif [ "${OS_TYPE}" == "amzn" ] || [ "${OS_TYPE}" == "el6" ] || [ "${OS_TYPE}" =
     sudo yum install -y java-1.8.0-openjdk java-1.8.0-openjdk-devel
 fi
 
-java -version
+command -v java > /dev/null || java -version
 
 # maven
 echo "================================================================================"
 echo "# install maven... "
+
+command -v mvn > /dev/null || mvn -version
 
 export VERSION=3.5.3
 if [ ! -d /usr/local/apache-maven-${VERSION} ]; then
@@ -179,7 +206,8 @@ if [ ! -d /usr/local/apache-maven-${VERSION} ]; then
   sudo mv -f apache-maven-${VERSION} /usr/local/
   sudo ln -sf /usr/local/apache-maven-${VERSION}/bin/mvn /usr/local/bin/mvn
 fi
-mvn -version
+
+command -v mvn > /dev/null || mvn -version
 
 # nodejs
 echo "================================================================================"
