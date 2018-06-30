@@ -40,6 +40,23 @@ fi
 sudo ln -sf "/usr/share/zoneinfo/Asia/Seoul" "/etc/localtime"
 date
 
+# version
+EKSCTL=
+KOPS=
+HELM=
+DRAFT=
+JX=
+TF=
+JAVA=
+MAVEN=
+NODE=
+HEPTIO=
+
+config=~/.bastion
+if [ -f ${config} ]; then
+  . ${config}
+fi
+
 # update
 echo "================================================================================"
 echo "# update... "
@@ -110,126 +127,177 @@ command -v kubectl > /dev/null || kubectl version --client --short
 echo "================================================================================"
 echo "# install eksctl... "
 
-command -v eksctl > /dev/null || eksctl version
+VERSION=$(curl -s https://api.github.com/repos/weaveworks/eksctl/releases/latest | jq --raw-output '.tag_name')
 
-export VERSION=$(curl -s https://api.github.com/repos/weaveworks/eksctl/releases/latest | jq --raw-output '.tag_name')
-curl -L https://github.com/weaveworks/eksctl/releases/download/${VERSION}/eksctl_Linux_amd64.tar.gz | tar xz
-chmod +x eksctl && sudo mv eksctl /usr/local/bin/eksctl
+if [ "${EKSCTL}" != "${VERSION}" ]; then
+    curl -L https://github.com/weaveworks/eksctl/releases/download/${VERSION}/eksctl_Linux_amd64.tar.gz | tar xz
+    chmod +x eksctl && sudo mv eksctl /usr/local/bin/eksctl
 
-command -v eksctl > /dev/null || eksctl version
+    eksctl version
+
+    EKSCTL="${VERSION}"
+fi
 
 # kops
 echo "================================================================================"
 echo "# install kops... "
 
-command -v kops > /dev/null || kops version
+VERSION=$(curl -s https://api.github.com/repos/kubernetes/kops/releases/latest | jq --raw-output '.tag_name')
 
-export VERSION=$(curl -s https://api.github.com/repos/kubernetes/kops/releases/latest | jq --raw-output '.tag_name')
-wget https://github.com/kubernetes/kops/releases/download/${VERSION}/kops-linux-amd64
-chmod +x kops-linux-amd64 && sudo mv kops-linux-amd64 /usr/local/bin/kops
+if [ "${KOPS}" != "${VERSION}" ]; then
+    wget https://github.com/kubernetes/kops/releases/download/${VERSION}/kops-linux-amd64
+    chmod +x kops-linux-amd64 && sudo mv kops-linux-amd64 /usr/local/bin/kops
 
-command -v kops > /dev/null || kops version
+    kops version
+
+    KOPS="${VERSION}"
+fi
 
 # helm
 echo "================================================================================"
 echo "# install helm... "
 
-command -v helm > /dev/null || helm version --client --short
+VERSION=$(curl -s https://api.github.com/repos/kubernetes/helm/releases/latest | jq --raw-output '.tag_name')
 
-export VERSION=$(curl -s https://api.github.com/repos/kubernetes/helm/releases/latest | jq --raw-output '.tag_name')
-curl -L https://storage.googleapis.com/kubernetes-helm/helm-${VERSION}-linux-amd64.tar.gz | tar xz
-sudo mv linux-amd64/helm /usr/local/bin/helm && rm -rf linux-amd64
+if [ "${KOPS}" != "${VERSION}" ]; then
+    curl -L https://storage.googleapis.com/kubernetes-helm/helm-${VERSION}-linux-amd64.tar.gz | tar xz
+    sudo mv linux-amd64/helm /usr/local/bin/helm && rm -rf linux-amd64
 
-command -v helm > /dev/null || helm version --client --short
+    helm version --client --short
+
+    KOPS="${VERSION}"
+fi
 
 # draft
 echo "================================================================================"
 echo "# install draft... "
 
-command -v draft > /dev/null || draft version --short
+VERSION=$(curl -s https://api.github.com/repos/Azure/draft/releases/latest | jq --raw-output '.tag_name')
 
-export VERSION=$(curl -s https://api.github.com/repos/Azure/draft/releases/latest | jq --raw-output '.tag_name')
-curl -L https://azuredraft.blob.core.windows.net/draft/draft-${VERSION}-linux-amd64.tar.gz | tar xz
-sudo mv linux-amd64/draft /usr/local/bin/draft && rm -rf linux-amd64
+if [ "${DRAFT}" != "${VERSION}" ]; then
+    curl -L https://azuredraft.blob.core.windows.net/draft/draft-${VERSION}-linux-amd64.tar.gz | tar xz
+    sudo mv linux-amd64/draft /usr/local/bin/draft && rm -rf linux-amd64
 
-command -v draft > /dev/null || draft version --short
+    draft version --short
+
+    DRAFT="${VERSION}"
+fi
 
 # jenkins-x
 echo "================================================================================"
 echo "# install jenkins-x... "
 
-command -v jx > /dev/null || jx --version
+VERSION=$(curl -s https://api.github.com/repos/jenkins-x/jx/releases/latest | jq --raw-output '.tag_name')
 
-export VERSION=$(curl -s https://api.github.com/repos/jenkins-x/jx/releases/latest | jq --raw-output '.tag_name')
-curl -L https://github.com/jenkins-x/jx/releases/download/${VERSION}/jx-linux-amd64.tar.gz | tar xz
-sudo mv jx /usr/local/bin/jx
+if [ "${JX}" != "${VERSION}" ]; then
+    curl -L https://github.com/jenkins-x/jx/releases/download/${VERSION}/jx-linux-amd64.tar.gz | tar xz
+    sudo mv jx /usr/local/bin/jx
 
-command -v jx > /dev/null || jx --version
+    jx --version
+
+    JX="${VERSION}"
+fi
 
 # terraform
 echo "================================================================================"
 echo "# install terraform... "
 
-command -v terraform > /dev/null || terraform version
+VERSION=$(curl -s https://api.github.com/repos/hashicorp/terraform/releases/latest | jq --raw-output '.tag_name' | cut -c 2-)
 
-export VERSION=$(curl -s https://api.github.com/repos/hashicorp/terraform/releases/latest | jq --raw-output '.tag_name' | cut -c 2-)
-wget https://releases.hashicorp.com/terraform/${VERSION}/terraform_${VERSION}_linux_amd64.zip
-unzip terraform_${VERSION}_linux_amd64.zip && rm -rf terraform_${VERSION}_linux_amd64.zip
-sudo mv terraform /usr/local/bin/terraform
+if [ "${TF}" != "${VERSION}" ]; then
+    wget https://releases.hashicorp.com/terraform/${VERSION}/terraform_${VERSION}_linux_amd64.zip
+    unzip terraform_${VERSION}_linux_amd64.zip && rm -rf terraform_${VERSION}_linux_amd64.zip
+    sudo mv terraform /usr/local/bin/terraform
 
-command -v terraform > /dev/null || terraform version
+    terraform version
+
+    TF="${VERSION}"
+fi
 
 # java
 echo "================================================================================"
 echo "# install java... "
 
-command -v java > /dev/null || java -version
+VERSION=1.8.0
 
-if [ "${OS_TYPE}" == "Ubuntu" ] || [ "${OS_TYPE}" == "coreos" ]; then
-    sudo apt-get install -y openjdk-8-jdk
-elif [ "${OS_TYPE}" == "amzn" ] || [ "${OS_TYPE}" == "el6" ] || [ "${OS_TYPE}" == "el7" ]; then
-    sudo yum remove -y java-1.7.0-openjdk
-    sudo yum install -y java-1.8.0-openjdk java-1.8.0-openjdk-devel
+if [ "${JAVA}" != "${VERSION}" ]; then
+    if [ "${OS_TYPE}" == "Ubuntu" ] || [ "${OS_TYPE}" == "coreos" ]; then
+        sudo apt-get install -y openjdk-8-jdk
+    elif [ "${OS_TYPE}" == "amzn" ] || [ "${OS_TYPE}" == "el6" ] || [ "${OS_TYPE}" == "el7" ]; then
+        sudo yum remove -y java-1.7.0-openjdk
+        sudo yum install -y java-1.8.0-openjdk java-1.8.0-openjdk-devel
+    fi
+
+    java -version
+
+    JAVA="${VERSION}"
 fi
-
-command -v java > /dev/null || java -version
 
 # maven
 echo "================================================================================"
 echo "# install maven... "
 
-command -v mvn > /dev/null || mvn -version
+VERSION=3.5.3
 
-export VERSION=3.5.3
-if [ ! -d /usr/local/apache-maven-${VERSION} ]; then
-  curl -L https://www.apache.org/dist/maven/maven-3/${VERSION}/binaries/apache-maven-${VERSION}-bin.tar.gz | tar xz
-  sudo mv -f apache-maven-${VERSION} /usr/local/
-  sudo ln -sf /usr/local/apache-maven-${VERSION}/bin/mvn /usr/local/bin/mvn
+if [ "${MAVEN}" != "${VERSION}" ]; then
+    if [ ! -d /usr/local/apache-maven-${VERSION} ]; then
+      curl -L https://www.apache.org/dist/maven/maven-3/${VERSION}/binaries/apache-maven-${VERSION}-bin.tar.gz | tar xz
+      sudo mv -f apache-maven-${VERSION} /usr/local/
+      sudo ln -sf /usr/local/apache-maven-${VERSION}/bin/mvn /usr/local/bin/mvn
+    fi
+
+    mvn -version
+
+    MAVEN="${VERSION}"
 fi
-
-command -v mvn > /dev/null || mvn -version
 
 # nodejs
 echo "================================================================================"
 echo "# install nodejs... "
 
-if [ "${OS_TYPE}" == "Ubuntu" ] || [ "${OS_TYPE}" == "coreos" ]; then
-    curl -sL https://deb.nodesource.com/setup_10.x | sudo -E bash -
-    sudo apt-get install -y nodejs
-elif [ "${OS_TYPE}" == "amzn" ] || [ "${OS_TYPE}" == "el6" ] || [ "${OS_TYPE}" == "el7" ]; then
-    curl -sL https://rpm.nodesource.com/setup_10.x | sudo bash -
-    sudo yum install -y nodejs
-fi
+VERSION=$(command -v node > /dev/null || node --version)
 
-echo "node $(node -v)"
-echo "npm $(npm -v)"
+if [ "${NODE}" != "${VERSION}" ]; then
+    if [ "${OS_TYPE}" == "Ubuntu" ] || [ "${OS_TYPE}" == "coreos" ]; then
+        curl -sL https://deb.nodesource.com/setup_10.x | sudo -E bash -
+        sudo apt-get install -y nodejs
+    elif [ "${OS_TYPE}" == "amzn" ] || [ "${OS_TYPE}" == "el6" ] || [ "${OS_TYPE}" == "el7" ]; then
+        curl -sL https://rpm.nodesource.com/setup_10.x | sudo bash -
+        sudo yum install -y nodejs
+    fi
+
+    echo "node $(node -v)"
+    echo "npm $(npm -v)"
+
+    NODE="${VERSION}"
+fi
 
 # heptio
 echo "================================================================================"
 echo "# install heptio... "
 
-wget https://amazon-eks.s3-us-west-2.amazonaws.com/1.10.3/2018-06-05/bin/linux/amd64/heptio-authenticator-aws
-chmod +x heptio-authenticator-aws && sudo mv heptio-authenticator-aws /usr/local/bin/heptio-authenticator-aws
+VERSION=1.10.3
+
+if [ "${HEPTIO}" != "${VERSION}" ]; then
+    wget https://amazon-eks.s3-us-west-2.amazonaws.com/${VERSION}/2018-06-05/bin/linux/amd64/heptio-authenticator-aws
+    chmod +x heptio-authenticator-aws && sudo mv heptio-authenticator-aws /usr/local/bin/heptio-authenticator-aws
+
+    echo "heptio ${VERSION}"
+
+    HEPTIO="${VERSION}"
+fi
 
 echo "================================================================================"
 echo "# Done. "
+
+echo "" > ${config}
+echo "EKSCTL=${EKSCTL}" >> ${config}
+echo "KOPS=${KOPS}" >> ${config}
+echo "HELM=${HELM}" >> ${config}
+echo "DRAFT=${DRAFT}" >> ${config}
+echo "JX=${JX}" >> ${config}
+echo "TF=${TF}" >> ${config}
+echo "JAVA=${JAVA}" >> ${config}
+echo "MAVEN=${MAVEN}" >> ${config}
+echo "NODE=${NODE}" >> ${config}
+echo "HEPTIO=${HEPTIO}" >> ${config}
