@@ -101,8 +101,6 @@ fi
 echo "================================================================================"
 echo "# install kubectl... "
 
-command -v kubectl > /dev/null || kubectl version --client --short
-
 if [ "${OS_TYPE}" == "Ubuntu" ] || [ "${OS_TYPE}" == "coreos" ]; then
     sudo apt-get update && sudo apt-get install -y apt-transport-https
     curl -s https://packages.cloud.google.com/apt/doc/apt-key.gpg | sudo apt-key add -
@@ -133,10 +131,10 @@ if [ "${EKSCTL}" != "${VERSION}" ]; then
     curl -L https://github.com/weaveworks/eksctl/releases/download/${VERSION}/eksctl_Linux_amd64.tar.gz | tar xz
     chmod +x eksctl && sudo mv eksctl /usr/local/bin/eksctl
 
-    eksctl version
-
     EKSCTL="${VERSION}"
 fi
+
+eksctl version
 
 # kops
 echo "================================================================================"
@@ -148,10 +146,10 @@ if [ "${KOPS}" != "${VERSION}" ]; then
     wget https://github.com/kubernetes/kops/releases/download/${VERSION}/kops-linux-amd64
     chmod +x kops-linux-amd64 && sudo mv kops-linux-amd64 /usr/local/bin/kops
 
-    kops version
-
     KOPS="${VERSION}"
 fi
+
+kops version
 
 # helm
 echo "================================================================================"
@@ -159,14 +157,14 @@ echo "# install helm... "
 
 VERSION=$(curl -s https://api.github.com/repos/kubernetes/helm/releases/latest | jq --raw-output '.tag_name')
 
-if [ "${KOPS}" != "${VERSION}" ]; then
+if [ "${HELM}" != "${VERSION}" ]; then
     curl -L https://storage.googleapis.com/kubernetes-helm/helm-${VERSION}-linux-amd64.tar.gz | tar xz
     sudo mv linux-amd64/helm /usr/local/bin/helm && rm -rf linux-amd64
 
-    helm version --client --short
-
-    KOPS="${VERSION}"
+    HELM="${VERSION}"
 fi
+
+helm version --client --short
 
 # draft
 echo "================================================================================"
@@ -178,10 +176,10 @@ if [ "${DRAFT}" != "${VERSION}" ]; then
     curl -L https://azuredraft.blob.core.windows.net/draft/draft-${VERSION}-linux-amd64.tar.gz | tar xz
     sudo mv linux-amd64/draft /usr/local/bin/draft && rm -rf linux-amd64
 
-    draft version --short
-
     DRAFT="${VERSION}"
 fi
+
+draft version --short
 
 # jenkins-x
 echo "================================================================================"
@@ -193,10 +191,10 @@ if [ "${JX}" != "${VERSION}" ]; then
     curl -L https://github.com/jenkins-x/jx/releases/download/${VERSION}/jx-linux-amd64.tar.gz | tar xz
     sudo mv jx /usr/local/bin/jx
 
-    jx --version
-
     JX="${VERSION}"
 fi
+
+jx --version
 
 # terraform
 echo "================================================================================"
@@ -209,10 +207,10 @@ if [ "${TF}" != "${VERSION}" ]; then
     unzip terraform_${VERSION}_linux_amd64.zip && rm -rf terraform_${VERSION}_linux_amd64.zip
     sudo mv terraform /usr/local/bin/terraform
 
-    terraform version
-
     TF="${VERSION}"
 fi
+
+terraform version
 
 # java
 echo "================================================================================"
@@ -228,10 +226,10 @@ if [ "${JAVA}" != "${VERSION}" ]; then
         sudo yum install -y java-1.8.0-openjdk java-1.8.0-openjdk-devel
     fi
 
-    java -version
-
     JAVA="${VERSION}"
 fi
+
+java -version
 
 # maven
 echo "================================================================================"
@@ -246,31 +244,35 @@ if [ "${MAVEN}" != "${VERSION}" ]; then
       sudo ln -sf /usr/local/apache-maven-${VERSION}/bin/mvn /usr/local/bin/mvn
     fi
 
-    mvn -version
-
     MAVEN="${VERSION}"
 fi
+
+mvn -version
 
 # nodejs
 echo "================================================================================"
 echo "# install nodejs... "
 
-VERSION=$(command -v node > /dev/null || node --version)
+VERSION=10
 
 if [ "${NODE}" != "${VERSION}" ]; then
     if [ "${OS_TYPE}" == "Ubuntu" ] || [ "${OS_TYPE}" == "coreos" ]; then
         curl -sL https://deb.nodesource.com/setup_10.x | sudo -E bash -
-        sudo apt-get install -y nodejs
     elif [ "${OS_TYPE}" == "amzn" ] || [ "${OS_TYPE}" == "el6" ] || [ "${OS_TYPE}" == "el7" ]; then
         curl -sL https://rpm.nodesource.com/setup_10.x | sudo bash -
-        sudo yum install -y nodejs
     fi
-
-    echo "node $(node -v)"
-    echo "npm $(npm -v)"
 
     NODE="${VERSION}"
 fi
+
+if [ "${OS_TYPE}" == "Ubuntu" ] || [ "${OS_TYPE}" == "coreos" ]; then
+    sudo apt-get install -y nodejs
+elif [ "${OS_TYPE}" == "amzn" ] || [ "${OS_TYPE}" == "el6" ] || [ "${OS_TYPE}" == "el7" ]; then
+    sudo yum install -y nodejs
+fi
+
+echo "node $(node -v)"
+echo "npm $(npm -v)"
 
 # heptio
 echo "================================================================================"
@@ -282,15 +284,16 @@ if [ "${HEPTIO}" != "${VERSION}" ]; then
     wget https://amazon-eks.s3-us-west-2.amazonaws.com/${VERSION}/2018-06-05/bin/linux/amd64/heptio-authenticator-aws
     chmod +x heptio-authenticator-aws && sudo mv heptio-authenticator-aws /usr/local/bin/heptio-authenticator-aws
 
-    echo "heptio ${VERSION}"
-
     HEPTIO="${VERSION}"
 fi
+
+echo "heptio ${VERSION}"
 
 echo "================================================================================"
 echo "# Done. "
 
-echo "" > ${config}
+rm -rf ${config}
+
 echo "EKSCTL=${EKSCTL}" >> ${config}
 echo "KOPS=${KOPS}" >> ${config}
 echo "HELM=${HELM}" >> ${config}
