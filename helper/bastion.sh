@@ -258,17 +258,13 @@ VERSION=10
 if [ "${NODE}" != "${VERSION}" ]; then
     if [ "${OS_TYPE}" == "Ubuntu" ] || [ "${OS_TYPE}" == "coreos" ]; then
         curl -sL https://deb.nodesource.com/setup_10.x | sudo -E bash -
+        sudo apt-get install -y nodejs
     elif [ "${OS_TYPE}" == "amzn" ] || [ "${OS_TYPE}" == "el6" ] || [ "${OS_TYPE}" == "el7" ]; then
         curl -sL https://rpm.nodesource.com/setup_10.x | sudo bash -
+        sudo yum install -y nodejs
     fi
 
     NODE="${VERSION}"
-fi
-
-if [ "${OS_TYPE}" == "Ubuntu" ] || [ "${OS_TYPE}" == "coreos" ]; then
-    sudo apt-get install -y nodejs
-elif [ "${OS_TYPE}" == "amzn" ] || [ "${OS_TYPE}" == "el6" ] || [ "${OS_TYPE}" == "el7" ]; then
-    sudo yum install -y nodejs
 fi
 
 echo "node $(node -v)"
@@ -287,7 +283,7 @@ if [ "${HEPTIO}" != "${VERSION}" ]; then
     HEPTIO="${VERSION}"
 fi
 
-echo "heptio ${VERSION}"
+echo "${VERSION}"
 
 echo "================================================================================"
 echo "# Done. "
