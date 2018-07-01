@@ -50,7 +50,6 @@ TF=
 NODE=
 JAVA=
 MAVEN=
-JMETER=
 HEPTIO=
 
 config=~/.bastion
@@ -73,9 +72,9 @@ echo "==========================================================================
 echo "# install tools... "
 
 if [ "${OS_TYPE}" == "Ubuntu" ] || [ "${OS_TYPE}" == "coreos" ]; then
-    sudo apt-get install -y git vim telnet jq make wget docker
+    sudo apt-get install -y git vim telnet jq make wget docker httpd
 elif [ "${OS_TYPE}" == "amzn" ] || [ "${OS_TYPE}" == "el6" ] || [ "${OS_TYPE}" == "el7" ]; then
-    sudo yum install -y git vim telnet jq make wget docker
+    sudo yum install -y git vim telnet jq make wget docker httpd
 fi
 
 # aws-cli
@@ -269,24 +268,6 @@ fi
 
 mvn -version
 
-# jmeter
-echo "================================================================================"
-echo "# install jmeter... "
-
-VERSION=4.0
-
-if [ "${JMETER}" != "${VERSION}" ]; then
-    if [ ! -d /usr/local/apache-jmeter-${VERSION} ]; then
-      curl -L http://mirror.apache-kr.org//jmeter/binaries/apache-jmeter-${VERSION}.tgz | tar xz
-      sudo mv -f apache-jmeter-${VERSION} /usr/local/
-      sudo ln -sf /usr/local/apache-jmeter-${VERSION}/bin/jmeter /usr/local/bin/jmeter
-    fi
-
-    JMETER="${VERSION}"
-fi
-
-jmeter -v
-
 # heptio
 echo "================================================================================"
 echo "# install heptio... "
@@ -316,5 +297,4 @@ echo "TF=${TF}" >> ${config}
 echo "NODE=${NODE}" >> ${config}
 echo "JAVA=${JAVA}" >> ${config}
 echo "MAVEN=${MAVEN}" >> ${config}
-echo "JMETER=${JMETER}" >> ${config}
 echo "HEPTIO=${HEPTIO}" >> ${config}
