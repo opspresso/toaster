@@ -50,6 +50,7 @@ TF=
 NODE=
 JAVA=
 MAVEN=
+JMETER=
 HEPTIO=
 
 config=~/.bastion
@@ -268,6 +269,24 @@ fi
 
 mvn -version
 
+# jmeter
+echo "================================================================================"
+echo "# install jmeter... "
+
+VERSION=4.0
+
+if [ "${JMETER}" != "${VERSION}" ]; then
+    if [ ! -d /usr/local/apache-jmeter-${VERSION} ]; then
+      curl -L http://mirror.apache-kr.org//jmeter/binaries/apache-jmeter-${VERSION}.tgz | tar xz
+      sudo mv -f apache-jmeter-${VERSION} /usr/local/
+      sudo ln -sf /usr/local/apache-jmeter-${VERSION}/bin/jmeter /usr/local/bin/jmeter
+    fi
+
+    JMETER="${VERSION}"
+fi
+
+mvn -version
+
 # heptio
 echo "================================================================================"
 echo "# install heptio... "
@@ -297,4 +316,5 @@ echo "TF=${TF}" >> ${config}
 echo "NODE=${NODE}" >> ${config}
 echo "JAVA=${JAVA}" >> ${config}
 echo "MAVEN=${MAVEN}" >> ${config}
+echo "JMETER=${JMETER}" >> ${config}
 echo "HEPTIO=${HEPTIO}" >> ${config}
