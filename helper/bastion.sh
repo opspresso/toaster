@@ -285,7 +285,7 @@ if [ "${JMETER}" != "${VERSION}" ]; then
     JMETER="${VERSION}"
 fi
 
-mvn -version
+jmeter -version
 
 # heptio
 echo "================================================================================"
