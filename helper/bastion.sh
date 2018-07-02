@@ -291,7 +291,7 @@ rm -rf ${config}
 echo "KOPS=${KOPS}" >> ${config}
 echo "HELM=${HELM}" >> ${config}
 echo "DRAFT=${DRAFT}" >> ${config}
-echo "EKSCTL=${EKSCTL}" >> ${config}
+#echo "EKSCTL=${EKSCTL}" >> ${config}
 echo "JX=${JX}" >> ${config}
 echo "TF=${TF}" >> ${config}
 echo "NODE=${NODE}" >> ${config}
