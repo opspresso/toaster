@@ -69,10 +69,11 @@ fi
 
 if [ -f ${ALIAS} ]; then
     HAS_ALIAS="$(cat ~/.bashrc | grep bash_aliases | wc -l)"
+
     if [ "${HAS_ALIAS}" == "0" ]; then
         echo "" >> ~/.bashrc
         echo "if [ -f ~/.bash_aliases ]; then" >> ~/.bashrc
-        echo "    . ~/.bash_aliases" >> ~/.bashrc
+        echo "  . ~/.bash_aliases" >> ~/.bashrc
         echo "fi" >> ~/.bashrc
     fi
 
