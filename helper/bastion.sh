@@ -42,7 +42,6 @@ date
 
 # version
 DATE=
-AWSCLI=
 KUBECTL=
 KOPS=
 HELM=
@@ -283,7 +282,6 @@ echo "==========================================================================
 
 echo "# bastion" > ${config}
 echo "DATE=\"${DATE}\"" >> ${config}
-echo "AWSCLI=\"${AWSCLI}\"" >> ${config}
 echo "KUBECTL=\"${KUBECTL}\"" >> ${config}
 echo "KOPS=\"${KOPS}\"" >> ${config}
 echo "HELM=\"${HELM}\"" >> ${config}
