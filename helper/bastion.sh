@@ -41,6 +41,9 @@ sudo ln -sf "/usr/share/zoneinfo/Asia/Seoul" "/etc/localtime"
 date
 
 # version
+DATE=
+AWSCLI=
+KUBECTL=
 KOPS=
 HELM=
 DRAFT=
@@ -61,20 +64,22 @@ fi
 echo "================================================================================"
 echo "# update... "
 
-if [ "${OS_TYPE}" == "Ubuntu" ] || [ "${OS_TYPE}" == "coreos" ]; then
-    sudo apt-get update
-elif [ "${OS_TYPE}" == "amzn" ] || [ "${OS_TYPE}" == "el6" ] || [ "${OS_TYPE}" == "el7" ]; then
-    sudo yum update -y
-fi
+VERSION=$(date '+%Y-%m-%d %H')
 
-# tools
-echo "================================================================================"
-echo "# install tools... "
+if [ "${DATE}" != "${VERSION}" ]; then
+    if [ "${OS_TYPE}" == "Ubuntu" ] || [ "${OS_TYPE}" == "coreos" ]; then
+        sudo apt-get update
+    elif [ "${OS_TYPE}" == "amzn" ] || [ "${OS_TYPE}" == "el6" ] || [ "${OS_TYPE}" == "el7" ]; then
+        sudo yum update -y
+    fi
 
-if [ "${OS_TYPE}" == "Ubuntu" ] || [ "${OS_TYPE}" == "coreos" ]; then
-    sudo apt-get install -y git vim telnet jq make wget docker httpd
-elif [ "${OS_TYPE}" == "amzn" ] || [ "${OS_TYPE}" == "el6" ] || [ "${OS_TYPE}" == "el7" ]; then
-    sudo yum install -y git vim telnet jq make wget docker httpd
+    if [ "${OS_TYPE}" == "Ubuntu" ] || [ "${OS_TYPE}" == "coreos" ]; then
+        sudo apt-get install -y git vim telnet jq make wget docker httpd
+    elif [ "${OS_TYPE}" == "amzn" ] || [ "${OS_TYPE}" == "el6" ] || [ "${OS_TYPE}" == "el7" ]; then
+        sudo yum install -y git vim telnet jq make wget docker httpd
+    fi
+
+    DATE=$(date '+%Y-%m-%d %H')
 fi
 
 # aws-cli
@@ -99,22 +104,13 @@ fi
 echo "================================================================================"
 echo "# install kubectl... "
 
-if [ "${OS_TYPE}" == "Ubuntu" ] || [ "${OS_TYPE}" == "coreos" ]; then
-    sudo apt-get update && sudo apt-get install -y apt-transport-https
-    curl -s https://packages.cloud.google.com/apt/doc/apt-key.gpg | sudo apt-key add -
-    sudo touch /etc/apt/sources.list.d/kubernetes.list
-    echo "deb http://apt.kubernetes.io/ kubernetes-xenial main" | sudo tee -a /etc/apt/sources.list.d/kubernetes.list
-    sudo apt-get update && sudo apt-get install -y kubectl
-elif [ "${OS_TYPE}" == "amzn" ] || [ "${OS_TYPE}" == "el6" ] || [ "${OS_TYPE}" == "el7" ]; then
-    echo "[kubernetes]" > kubernetes.repo
-    echo "name=Kubernetes" >> kubernetes.repo
-    echo "baseurl=https://packages.cloud.google.com/yum/repos/kubernetes-el7-x86_64" >> kubernetes.repo
-    echo "enabled=1" >> kubernetes.repo
-    echo "gpgcheck=1" >> kubernetes.repo
-    echo "repo_gpgcheck=1" >> kubernetes.repo
-    echo "gpgkey=https://packages.cloud.google.com/yum/doc/yum-key.gpg https://packages.cloud.google.com/yum/doc/rpm-package-key.gpg" >> kubernetes.repo
-    sudo mv kubernetes.repo /etc/yum.repos.d/kubernetes.repo
-    sudo yum install -y kubectl
+VERSION=$(curl -s https://storage.googleapis.com/kubernetes-release/release/stable.txt)
+
+if [ "${KUBECTL}" != "${VERSION}" ]; then
+    wget https://storage.googleapis.com/kubernetes-release/release/${VERSION}/bin/linux/amd64/kubectl
+    chmod +x kubectl && sudo mv kubectl /usr/local/bin/kubectl
+
+    KUBECTL="${VERSION}"
 fi
 
 kubectl version --client --short
@@ -284,17 +280,22 @@ fi
 echo "${VERSION}"
 
 echo "================================================================================"
-echo "# Done. "
 
-rm -rf ${config}
+echo "# bastion" > ${config}
+echo "DATE=\"${DATE}\"" >> ${config}
+echo "AWSCLI=\"${AWSCLI}\"" >> ${config}
+echo "KUBECTL=\"${KUBECTL}\"" >> ${config}
+echo "KOPS=\"${KOPS}\"" >> ${config}
+echo "HELM=\"${HELM}\"" >> ${config}
+echo "DRAFT=\"${DRAFT}\"" >> ${config}
+#echo "EKSCTL=\"${EKSCTL}\"" >> ${config}
+echo "JX=\"${JX}\"" >> ${config}
+echo "TF=\"${TF}\"" >> ${config}
+echo "NODE=\"${NODE}\"" >> ${config}
+echo "JAVA=\"${JAVA}\"" >> ${config}
+echo "MAVEN=\"${MAVEN}\"" >> ${config}
+echo "HEPTIO=\"${HEPTIO}\"" >> ${config}
 
-echo "KOPS=${KOPS}" >> ${config}
-echo "HELM=${HELM}" >> ${config}
-echo "DRAFT=${DRAFT}" >> ${config}
-#echo "EKSCTL=${EKSCTL}" >> ${config}
-echo "JX=${JX}" >> ${config}
-echo "TF=${TF}" >> ${config}
-echo "NODE=${NODE}" >> ${config}
-echo "JAVA=${JAVA}" >> ${config}
-echo "MAVEN=${MAVEN}" >> ${config}
-echo "HEPTIO=${HEPTIO}" >> ${config}
+cat ${config}
+
+echo "# Done."
