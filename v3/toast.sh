@@ -261,20 +261,7 @@ config_save() {
 install_aws() {
     echo_ "install aws cli..."
 
-    curl -s -o ${TEMP_DIR}/awscli-bundle.zip https://s3.amazonaws.com/aws-cli/awscli-bundle.zip
-
-    if [ -f "${TEMP_DIR}/awscli-bundle.zip" ]; then
-        pushd ${TEMP_DIR}
-
-        unzip -q awscli-bundle.zip
-
-        ${SUDO} ./awscli-bundle/install -i /usr/local/aws -b /usr/bin/aws
-
-        ${SUDO} rm -rf /usr/local/bin/aws
-        ${SUDO} ln -s /usr/bin/aws /usr/local/bin/aws
-
-        popd
-    fi
+    pip install --upgrade --user awscli
 
     echo_bar
     echo_ "$(aws --version)"

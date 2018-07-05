@@ -54,7 +54,7 @@ download() {
 
         echo_ "download... [${URL}]"
 
-        curl -O ${URL}
+        curl -LO ${URL}
     fi
 }
 
