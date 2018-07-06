@@ -47,8 +47,8 @@ KOPS=
 HELM=
 DRAFT=
 EKSCTL=
-JX=
-TF=
+JENKINS_X=
+TERRAFORM=
 NODE=
 JAVA=
 MAVEN=
@@ -180,11 +180,11 @@ echo "# install jenkins-x... "
 
 VERSION=$(curl -s https://api.github.com/repos/jenkins-x/jx/releases/latest | jq --raw-output '.tag_name')
 
-if [ "${JX}" != "${VERSION}" ]; then
+if [ "${JENKINS_X}" != "${VERSION}" ]; then
     curl -L https://github.com/jenkins-x/jx/releases/download/${VERSION}/jx-linux-amd64.tar.gz | tar xz
     sudo mv jx /usr/local/bin/jx
 
-    JX="${VERSION}"
+    JENKINS_X="${VERSION}"
 fi
 
 jx --version
@@ -195,12 +195,12 @@ echo "# install terraform... "
 
 VERSION=$(curl -s https://api.github.com/repos/hashicorp/terraform/releases/latest | jq --raw-output '.tag_name' | cut -c 2-)
 
-if [ "${TF}" != "${VERSION}" ]; then
+if [ "${TERRAFORM}" != "${VERSION}" ]; then
     wget https://releases.hashicorp.com/terraform/${VERSION}/terraform_${VERSION}_linux_amd64.zip
     unzip terraform_${VERSION}_linux_amd64.zip && rm -rf terraform_${VERSION}_linux_amd64.zip
     sudo mv terraform /usr/local/bin/terraform
 
-    TF="${VERSION}"
+    TERRAFORM="${VERSION}"
 fi
 
 terraform version
@@ -287,8 +287,8 @@ echo "KOPS=\"${KOPS}\"" >> ${config}
 echo "HELM=\"${HELM}\"" >> ${config}
 echo "DRAFT=\"${DRAFT}\"" >> ${config}
 #echo "EKSCTL=\"${EKSCTL}\"" >> ${config}
-echo "JX=\"${JX}\"" >> ${config}
-echo "TF=\"${TF}\"" >> ${config}
+echo "JENKINS_X=\"${JENKINS_X}\"" >> ${config}
+echo "TERRAFORM=\"${TERRAFORM}\"" >> ${config}
 echo "NODE=\"${NODE}\"" >> ${config}
 echo "JAVA=\"${JAVA}\"" >> ${config}
 echo "MAVEN=\"${MAVEN}\"" >> ${config}
