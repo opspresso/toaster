@@ -310,6 +310,10 @@ echo "${VERSION}"
 
 echo "================================================================================"
 
+if [ "${OS_TYPE}" == "brew" ]; then
+    brew cleanup
+fi
+
 echo "# bastion" > ${config}
 echo "DATE=\"${DATE}\"" >> ${config}
 echo "KUBECTL=\"${KUBECTL}\"" >> ${config}
