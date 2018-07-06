@@ -73,9 +73,9 @@ if [ "${DATE}" != "${VERSION}" ]; then
     fi
 
     if [ "${OS_TYPE}" == "Ubuntu" ] || [ "${OS_TYPE}" == "coreos" ]; then
-        sudo apt-get install -y git vim telnet jq make wget docker httpd
+        sudo apt-get install -y git vim telnet jq make wget docker httpd python-pip
     elif [ "${OS_TYPE}" == "amzn" ] || [ "${OS_TYPE}" == "el6" ] || [ "${OS_TYPE}" == "el7" ]; then
-        sudo yum install -y git vim telnet jq make wget docker httpd
+        sudo yum install -y git vim telnet jq make wget docker httpd python-pip
     fi
 
     DATE=$(date '+%Y-%m-%d %H')
