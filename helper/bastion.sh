@@ -70,11 +70,11 @@ VERSION=$(date '+%Y-%m-%d %H')
 
 if [ "${DATE}" != "${VERSION}" ]; then
     if [ "${OS_TYPE}" == "apt" ]; then
-        sudo apt update
+        sudo apt update && sudo apt clean all
     elif [ "${OS_TYPE}" == "yum" ]; then
-        sudo yum update -y
+        sudo yum update -y && sudo yum clean all
     elif [ "${OS_TYPE}" == "brew" ]; then
-        brew update && brew upgrade
+        brew update && brew upgrade && brew cleanup
     fi
 
     if [ "${OS_TYPE}" == "apt" ]; then
@@ -309,10 +309,6 @@ fi
 echo "${VERSION}"
 
 echo "================================================================================"
-
-if [ "${OS_TYPE}" == "brew" ]; then
-    brew cleanup
-fi
 
 echo "# bastion" > ${config}
 echo "DATE=\"${DATE}\"" >> ${config}
