@@ -62,6 +62,11 @@ if [ "${OS_TYPE}" == "brew" ]; then
     command -v brew > /dev/null || ruby -e "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install)"
 fi
 
+# for ubuntu
+if [ "${OS_TYPE}" == "apt" ]; then
+    export LC_ALL=C
+fi
+
 # update
 echo "================================================================================"
 echo "# update... "
@@ -101,9 +106,6 @@ echo "# install aws-cli... "
 if [ "${OS_TYPE}" == "brew" ]; then
     command -v aws > /dev/null || brew install awscli
 else
-    if [ "${OS_TYPE}" == "apt" ]; then
-        export LC_ALL=C
-    fi
     pip install --upgrade --user awscli
 fi
 
