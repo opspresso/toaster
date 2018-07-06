@@ -78,7 +78,7 @@ if [ "${DATE}" != "${VERSION}" ]; then
     fi
 
     if [ "${OS_TYPE}" == "apt" ]; then
-        sudo apt install -y git vim telnet jq make wget docker httpd python-pip
+        sudo apt install -y git vim telnet jq make wget docker apache2 python-pip
     elif [ "${OS_TYPE}" == "yum" ]; then
         sudo yum install -y git vim telnet jq make wget docker httpd python-pip
     elif [ "${OS_TYPE}" == "brew" ]; then
