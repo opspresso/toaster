@@ -101,6 +101,9 @@ echo "# install aws-cli... "
 if [ "${OS_TYPE}" == "brew" ]; then
     command -v aws > /dev/null || brew install awscli
 else
+    if [ "${OS_TYPE}" == "apt" ]; then
+        export LC_ALL=C
+    fi
     pip install --upgrade --user awscli
 fi
 
