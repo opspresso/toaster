@@ -177,9 +177,9 @@ helm version --client --short
 echo "================================================================================"
 echo "# install draft... "
 
-if [ "${OS_TYPE}" == "brew" ]; then
-    command -v draft > /dev/null || brew install draft
-else
+#if [ "${OS_TYPE}" == "brew" ]; then
+#    command -v draft > /dev/null || brew install draft
+#else
     VERSION=$(curl -s https://api.github.com/repos/Azure/draft/releases/latest | jq --raw-output '.tag_name')
 
     if [ "${DRAFT}" != "${VERSION}" ]; then
@@ -188,7 +188,7 @@ else
 
         DRAFT="${VERSION}"
     fi
-fi
+#fi
 
 draft version --short
 
