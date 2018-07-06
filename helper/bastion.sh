@@ -70,11 +70,11 @@ VERSION=$(date '+%Y-%m-%d %H')
 
 if [ "${DATE}" != "${VERSION}" ]; then
     if [ "${OS_TYPE}" == "apt" ]; then
-        sudo apt update && sudo apt clean all
+        sudo apt update
     elif [ "${OS_TYPE}" == "yum" ]; then
-        sudo yum update -y && sudo yum clean all
+        sudo yum update -y
     elif [ "${OS_TYPE}" == "brew" ]; then
-        brew update && brew upgrade && brew cleanup
+        brew update && brew upgrade
     fi
 
     if [ "${OS_TYPE}" == "apt" ]; then
@@ -307,6 +307,17 @@ if [ "${HEPTIO}" != "${VERSION}" ]; then
 fi
 
 echo "${VERSION}"
+
+echo "================================================================================"
+echo "# clean all... "
+
+if [ "${OS_TYPE}" == "apt" ]; then
+    sudo apt clean all
+elif [ "${OS_TYPE}" == "yum" ]; then
+    sudo yum clean all
+elif [ "${OS_TYPE}" == "brew" ]; then
+    brew cleanup
+fi
 
 echo "================================================================================"
 
