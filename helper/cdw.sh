@@ -10,12 +10,16 @@ SHELL_DIR=$(dirname $(dirname "$0"))
 ################################################################################
 
 success() {
-    echo -e "$(tput setaf 2)$1$(tput sgr0)"
+    tput setaf 2
+    echo -e $@
+    tput sgr0
     exit 0
 }
 
 error() {
-    echo -e "$(tput setaf 1)$1$(tput sgr0)"
+    tput setaf 1
+    echo -e $@
+    tput sgr0
     exit 1
 }
 
