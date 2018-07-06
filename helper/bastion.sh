@@ -26,7 +26,7 @@ if [ "${OS_NAME}" == "linux" ]; then
         OS_TYPE="yum"
     elif [ $(echo "${OS_FULL}" | grep -c "el7") -gt 0 ]; then
         OS_TYPE="yum"
-    elif [ $(echo "${OS_FULL}" | grep -c "ubuntu") -gt 0 ]; then
+    elif [ $(echo "${OS_FULL}" | grep -c "Ubuntu") -gt 0 ]; then
         OS_TYPE="apt"
     elif [ $(echo "${OS_FULL}" | grep -c "coreos") -gt 0 ]; then
         OS_TYPE="apt"
