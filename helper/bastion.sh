@@ -52,9 +52,9 @@ JAVA=
 MAVEN=
 HEPTIO=
 
-config=~/.bastion
-if [ -f ${config} ]; then
-  . ${config}
+CONFIG=~/.bastion
+if [ -f ${CONFIG} ]; then
+  . ${CONFIG}
 fi
 
 # brew for mac
@@ -326,17 +326,17 @@ fi
 
 echo "================================================================================"
 
-echo "# bastion" > ${config}
-echo "DATE=\"${DATE}\"" >> ${config}
-echo "KUBECTL=\"${KUBECTL}\"" >> ${config}
-echo "KOPS=\"${KOPS}\"" >> ${config}
-echo "HELM=\"${HELM}\"" >> ${config}
-echo "DRAFT=\"${DRAFT}\"" >> ${config}
-echo "JENKINS_X=\"${JENKINS_X}\"" >> ${config}
-echo "TERRAFORM=\"${TERRAFORM}\"" >> ${config}
-echo "NODE=\"${NODE}\"" >> ${config}
-echo "JAVA=\"${JAVA}\"" >> ${config}
-echo "MAVEN=\"${MAVEN}\"" >> ${config}
-echo "HEPTIO=\"${HEPTIO}\"" >> ${config}
+echo "# bastion" > ${CONFIG}
+echo "DATE=\"${DATE}\"" >> ${CONFIG}
+echo "KUBECTL=\"${KUBECTL}\"" >> ${CONFIG}
+echo "KOPS=\"${KOPS}\"" >> ${CONFIG}
+echo "HELM=\"${HELM}\"" >> ${CONFIG}
+echo "DRAFT=\"${DRAFT}\"" >> ${CONFIG}
+echo "JENKINS_X=\"${JENKINS_X}\"" >> ${CONFIG}
+echo "TERRAFORM=\"${TERRAFORM}\"" >> ${CONFIG}
+echo "NODE=\"${NODE}\"" >> ${CONFIG}
+echo "JAVA=\"${JAVA}\"" >> ${CONFIG}
+echo "MAVEN=\"${MAVEN}\"" >> ${CONFIG}
+echo "HEPTIO=\"${HEPTIO}\"" >> ${CONFIG}
 
 echo "# Done."
