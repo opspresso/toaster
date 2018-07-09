@@ -262,7 +262,7 @@ if [ "${NODE}" != "${VERSION}" ] || [ "$(command -v node)" == "" ]; then
         brew install node
     fi
 
-    VERSION="${VERSION}"
+    NODE="${VERSION}"
 fi
 
 echo "node $(node -v)"
