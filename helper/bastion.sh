@@ -92,8 +92,6 @@ if [ "${OS_TYPE}" == "apt" ]; then
     sudo apt update && sudo apt upgrade -y
     command -v jq > /dev/null || sudo apt install -y jq
     command -v git > /dev/null || sudo apt install -y git
-    command -v make > /dev/null || sudo apt install -y make
-    command -v wget > /dev/null || sudo apt install -y wget
     command -v apachectl > /dev/null || sudo apt install -y apache2
     command -v docker > /dev/null || sudo apt install -y docker
     command -v pip > /dev/null || sudo apt install -y python-pip
@@ -101,8 +99,6 @@ elif [ "${OS_TYPE}" == "yum" ]; then
     sudo yum update -y
     command -v jq > /dev/null || sudo yum install -y jq
     command -v git > /dev/null || sudo yum install -y git
-    command -v make > /dev/null || sudo yum install -y make
-    command -v wget > /dev/null || sudo yum install -y wget
     command -v httpd > /dev/null || sudo yum install -y httpd
     command -v docker > /dev/null || sudo yum install -y docker
     command -v pip > /dev/null || sudo yum install -y python-pip
@@ -110,8 +106,6 @@ elif [ "${OS_TYPE}" == "brew" ]; then
     brew update && brew upgrade
     command -v jq > /dev/null || brew install jq
     command -v git > /dev/null || brew install git
-    command -v make > /dev/null || brew install make
-    command -v wget > /dev/null || brew install wget
 fi
 
 # aws-cli
@@ -146,7 +140,7 @@ else
     VERSION=$(curl -s https://storage.googleapis.com/kubernetes-release/release/stable.txt)
 
     if [ "${KUBECTL}" != "${VERSION}" ]; then
-        wget https://storage.googleapis.com/kubernetes-release/release/${VERSION}/bin/${OS_NAME}/amd64/kubectl
+        curl -LO https://storage.googleapis.com/kubernetes-release/release/${VERSION}/bin/${OS_NAME}/amd64/kubectl
         chmod +x kubectl && sudo mv kubectl /usr/local/bin/kubectl
 
         KUBECTL="${VERSION}"
@@ -165,7 +159,7 @@ else
     VERSION=$(curl -s https://api.github.com/repos/kubernetes/kops/releases/latest | jq --raw-output '.tag_name')
 
     if [ "${KOPS}" != "${VERSION}" ]; then
-        wget https://github.com/kubernetes/kops/releases/download/${VERSION}/kops-${OS_NAME}-amd64
+        curl -LO https://github.com/kubernetes/kops/releases/download/${VERSION}/kops-${OS_NAME}-amd64
         chmod +x kops-${OS_NAME}-amd64 && sudo mv kops-${OS_NAME}-amd64 /usr/local/bin/kops
 
         KOPS="${VERSION}"
@@ -241,7 +235,7 @@ else
     VERSION=$(curl -s https://api.github.com/repos/hashicorp/terraform/releases/latest | jq --raw-output '.tag_name' | cut -c 2-)
 
     if [ "${TERRAFORM}" != "${VERSION}" ]; then
-        wget https://releases.hashicorp.com/terraform/${VERSION}/terraform_${VERSION}_${OS_NAME}_amd64.zip
+        curl -LO https://releases.hashicorp.com/terraform/${VERSION}/terraform_${VERSION}_${OS_NAME}_amd64.zip
         unzip terraform_${VERSION}_${OS_NAME}_amd64.zip && rm -rf terraform_${VERSION}_${OS_NAME}_amd64.zip
         sudo mv terraform /usr/local/bin/terraform
 
@@ -257,7 +251,7 @@ echo "# install nodejs... "
 
 VERSION=10
 
-if [ "${NODE}" != "${VERSION}" ]; then
+if [ "${NODE}" != "${VERSION}" ] || [ "$(command -v node)" == "" ]; then
     if [ "${OS_TYPE}" == "apt" ]; then
         curl -sL https://deb.nodesource.com/setup_10.x | sudo -E bash -
         sudo apt install -y nodejs
@@ -265,7 +259,7 @@ if [ "${NODE}" != "${VERSION}" ]; then
         curl -sL https://rpm.nodesource.com/setup_10.x | sudo bash -
         sudo yum install -y nodejs
     elif [ "${OS_TYPE}" == "brew" ]; then
-        command -v node > /dev/null || brew install node
+        brew install node
     fi
 fi
 
@@ -278,14 +272,14 @@ echo "# install java... "
 
 VERSION=1.8.0
 
-if [ "${JAVA}" != "${VERSION}" ]; then
+if [ "${JAVA}" != "${VERSION}" ] || [ "$(command -v java)" == "" ]; then
     if [ "${OS_TYPE}" == "apt" ]; then
         sudo apt install -y openjdk-8-jdk
     elif [ "${OS_TYPE}" == "yum" ]; then
         sudo yum remove -y java-1.7.0-openjdk
         sudo yum install -y java-1.8.0-openjdk java-1.8.0-openjdk-devel
     elif [ "${OS_TYPE}" == "brew" ]; then
-        command -v java > /dev/null || brew cask install java
+        brew cask install java
     fi
 
     JAVA="${VERSION}"
@@ -318,7 +312,7 @@ echo "# install heptio... "
 VERSION=1.10.3
 
 if [ "${HEPTIO}" != "${VERSION}" ]; then
-    wget https://amazon-eks.s3-us-west-2.amazonaws.com/${VERSION}/2018-06-05/bin/${OS_NAME}/amd64/heptio-authenticator-aws
+    curl -LO https://amazon-eks.s3-us-west-2.amazonaws.com/${VERSION}/2018-06-05/bin/${OS_NAME}/amd64/heptio-authenticator-aws
     chmod +x heptio-authenticator-aws && sudo mv heptio-authenticator-aws /usr/local/bin/heptio-authenticator-aws
 
     HEPTIO="${VERSION}"
