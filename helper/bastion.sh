@@ -297,12 +297,10 @@ echo "# install maven... "
 
 VERSION=3.5.3
 
-if [ "${MAVEN}" != "${VERSION}" ]; then
-    if [ ! -d /usr/local/apache-maven-${VERSION} ]; then
-      curl -L https://www.apache.org/dist/maven/maven-3/${VERSION}/binaries/apache-maven-${VERSION}-bin.tar.gz | tar xz
-      sudo mv -f apache-maven-${VERSION} /usr/local/
-      sudo ln -sf /usr/local/apache-maven-${VERSION}/bin/mvn /usr/local/bin/mvn
-    fi
+if [ "${MAVEN}" != "${VERSION}" ] || [ "$(command -v mvn)" == "" ]; then
+    curl -L https://www.apache.org/dist/maven/maven-3/${VERSION}/binaries/apache-maven-${VERSION}-bin.tar.gz | tar xz
+    sudo mv -f apache-maven-${VERSION} /usr/local/
+    sudo ln -sf /usr/local/apache-maven-${VERSION}/bin/mvn /usr/local/bin/mvn
 
     MAVEN="${VERSION}"
 fi
