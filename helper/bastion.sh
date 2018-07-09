@@ -13,31 +13,45 @@ echo "==========================================================================
 
 # curl -sL toast.sh/helper/bastion.sh | bash
 
-OS_NAME="$(uname)"
+OS_NAME="$(uname | awk '{print tolower($0)}')"
 OS_FULL="$(uname -a)"
+OS_TYPE=
 
-if [ "${OS_NAME}" == "Linux" ]; then
+if [ "${OS_NAME}" == "linux" ]; then
     if [ $(echo "${OS_FULL}" | grep -c "amzn1") -gt 0 ]; then
-        OS_TYPE="amzn"
+        OS_TYPE="yum"
     elif [ $(echo "${OS_FULL}" | grep -c "amzn2") -gt 0 ]; then
-        OS_TYPE="amzn"
+        OS_TYPE="yum"
     elif [ $(echo "${OS_FULL}" | grep -c "el6") -gt 0 ]; then
-        OS_TYPE="el6"
+        OS_TYPE="yum"
     elif [ $(echo "${OS_FULL}" | grep -c "el7") -gt 0 ]; then
-        OS_TYPE="el7"
+        OS_TYPE="yum"
     elif [ $(echo "${OS_FULL}" | grep -c "Ubuntu") -gt 0 ]; then
-        OS_TYPE="Ubuntu"
+        OS_TYPE="apt"
     elif [ $(echo "${OS_FULL}" | grep -c "coreos") -gt 0 ]; then
-        OS_TYPE="coreos"
+        OS_TYPE="apt"
     fi
+elif [ "${OS_NAME}" == "darwin" ]; then
+    OS_TYPE="brew"
 fi
 
 if [ "${OS_TYPE}" == "" ]; then
     error "Not supported OS. [${OS_FULL}]"
 fi
 
-# localtime
-sudo ln -sf "/usr/share/zoneinfo/Asia/Seoul" "/etc/localtime"
+if [ "${OS_TYPE}" == "brew" ]; then
+    # brew for mac
+    command -v brew > /dev/null || ruby -e "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install)"
+else
+    # localtime
+    sudo ln -sf "/usr/share/zoneinfo/Asia/Seoul" "/etc/localtime"
+
+    # for ubuntu
+    if [ "${OS_TYPE}" == "apt" ]; then
+        export LC_ALL=C
+    fi
+fi
+
 date
 
 # version
@@ -46,7 +60,6 @@ KUBECTL=
 KOPS=
 HELM=
 DRAFT=
-EKSCTL=
 JENKINS_X=
 TERRAFORM=
 NODE=
@@ -63,29 +76,43 @@ fi
 echo "================================================================================"
 echo "# update... "
 
-VERSION=$(date '+%Y-%m-%d %H')
+DATE=$(date '+%Y-%m-%d %H:%M:%S')
 
-if [ "${DATE}" != "${VERSION}" ]; then
-    if [ "${OS_TYPE}" == "Ubuntu" ] || [ "${OS_TYPE}" == "coreos" ]; then
-        sudo apt-get update
-    elif [ "${OS_TYPE}" == "amzn" ] || [ "${OS_TYPE}" == "el6" ] || [ "${OS_TYPE}" == "el7" ]; then
-        sudo yum update -y
-    fi
-
-    if [ "${OS_TYPE}" == "Ubuntu" ] || [ "${OS_TYPE}" == "coreos" ]; then
-        sudo apt-get install -y git vim telnet jq make wget docker httpd python-pip
-    elif [ "${OS_TYPE}" == "amzn" ] || [ "${OS_TYPE}" == "el6" ] || [ "${OS_TYPE}" == "el7" ]; then
-        sudo yum install -y git vim telnet jq make wget docker httpd python-pip
-    fi
-
-    DATE=$(date '+%Y-%m-%d %H')
+if [ "${OS_TYPE}" == "apt" ]; then
+    sudo apt update && sudo apt upgrade -y
+    command -v jq > /dev/null     || sudo apt install -y jq
+    command -v git > /dev/null    || sudo apt install -y git
+    command -v make > /dev/null   || sudo apt install -y make
+    command -v wget > /dev/null   || sudo apt install -y wget
+    command -v httpd > /dev/null  || sudo apt install -y httpd
+    command -v docker > /dev/null || sudo apt install -y docker
+    command -v pip > /dev/null    || sudo apt install -y python-pip
+elif [ "${OS_TYPE}" == "yum" ]; then
+    sudo yum update -y
+    command -v jq > /dev/null     || sudo yum install -y jq
+    command -v git > /dev/null    || sudo yum install -y git
+    command -v make > /dev/null   || sudo yum install -y make
+    command -v wget > /dev/null   || sudo yum install -y wget
+    command -v httpd > /dev/null  || sudo yum install -y httpd
+    command -v docker > /dev/null || sudo yum install -y docker
+    command -v pip > /dev/null    || sudo yum install -y python-pip
+elif [ "${OS_TYPE}" == "brew" ]; then
+    brew update && brew upgrade
+    command -v jq > /dev/null   || brew install jq
+    command -v git > /dev/null  || brew install git
+    command -v make > /dev/null || brew install make
+    command -v wget > /dev/null || brew install wget
 fi
 
 # aws-cli
 echo "================================================================================"
 echo "# install aws-cli... "
 
-pip install --upgrade --user awscli
+if [ "${OS_TYPE}" == "brew" ]; then
+    command -v aws > /dev/null || brew install awscli
+else
+    pip install --upgrade --user awscli
+fi
 
 aws --version
 
@@ -103,13 +130,17 @@ fi
 echo "================================================================================"
 echo "# install kubectl... "
 
-VERSION=$(curl -s https://storage.googleapis.com/kubernetes-release/release/stable.txt)
+if [ "${OS_TYPE}" == "brew" ]; then
+    command -v kubectl > /dev/null || brew install kubernetes-cli
+else
+    VERSION=$(curl -s https://storage.googleapis.com/kubernetes-release/release/stable.txt)
 
-if [ "${KUBECTL}" != "${VERSION}" ]; then
-    wget https://storage.googleapis.com/kubernetes-release/release/${VERSION}/bin/linux/amd64/kubectl
-    chmod +x kubectl && sudo mv kubectl /usr/local/bin/kubectl
+    if [ "${KUBECTL}" != "${VERSION}" ]; then
+        wget https://storage.googleapis.com/kubernetes-release/release/${VERSION}/bin/${OS_NAME}/amd64/kubectl
+        chmod +x kubectl && sudo mv kubectl /usr/local/bin/kubectl
 
-    KUBECTL="${VERSION}"
+        KUBECTL="${VERSION}"
+    fi
 fi
 
 kubectl version --client --short
@@ -118,13 +149,17 @@ kubectl version --client --short
 echo "================================================================================"
 echo "# install kops... "
 
-VERSION=$(curl -s https://api.github.com/repos/kubernetes/kops/releases/latest | jq --raw-output '.tag_name')
+if [ "${OS_TYPE}" == "brew" ]; then
+    command -v kops > /dev/null || brew install kops
+else
+    VERSION=$(curl -s https://api.github.com/repos/kubernetes/kops/releases/latest | jq --raw-output '.tag_name')
 
-if [ "${KOPS}" != "${VERSION}" ]; then
-    wget https://github.com/kubernetes/kops/releases/download/${VERSION}/kops-linux-amd64
-    chmod +x kops-linux-amd64 && sudo mv kops-linux-amd64 /usr/local/bin/kops
+    if [ "${KOPS}" != "${VERSION}" ]; then
+        wget https://github.com/kubernetes/kops/releases/download/${VERSION}/kops-${OS_NAME}-amd64
+        chmod +x kops-${OS_NAME}-amd64 && sudo mv kops-${OS_NAME}-amd64 /usr/local/bin/kops
 
-    KOPS="${VERSION}"
+        KOPS="${VERSION}"
+    fi
 fi
 
 kops version
@@ -133,13 +168,17 @@ kops version
 echo "================================================================================"
 echo "# install helm... "
 
-VERSION=$(curl -s https://api.github.com/repos/kubernetes/helm/releases/latest | jq --raw-output '.tag_name')
+if [ "${OS_TYPE}" == "brew" ]; then
+    command -v helm > /dev/null || brew install kubernetes-helm
+else
+    VERSION=$(curl -s https://api.github.com/repos/kubernetes/helm/releases/latest | jq --raw-output '.tag_name')
 
-if [ "${HELM}" != "${VERSION}" ]; then
-    curl -L https://storage.googleapis.com/kubernetes-helm/helm-${VERSION}-linux-amd64.tar.gz | tar xz
-    sudo mv linux-amd64/helm /usr/local/bin/helm && rm -rf linux-amd64
+    if [ "${HELM}" != "${VERSION}" ]; then
+        curl -L https://storage.googleapis.com/kubernetes-helm/helm-${VERSION}-${OS_NAME}-amd64.tar.gz | tar xz
+        sudo mv ${OS_NAME}-amd64/helm /usr/local/bin/helm && rm -rf ${OS_NAME}-amd64
 
-    HELM="${VERSION}"
+        HELM="${VERSION}"
+    fi
 fi
 
 helm version --client --short
@@ -151,56 +190,45 @@ echo "# install draft... "
 VERSION=$(curl -s https://api.github.com/repos/Azure/draft/releases/latest | jq --raw-output '.tag_name')
 
 if [ "${DRAFT}" != "${VERSION}" ]; then
-    curl -L https://azuredraft.blob.core.windows.net/draft/draft-${VERSION}-linux-amd64.tar.gz | tar xz
-    sudo mv linux-amd64/draft /usr/local/bin/draft && rm -rf linux-amd64
+    curl -L https://azuredraft.blob.core.windows.net/draft/draft-${VERSION}-${OS_NAME}-amd64.tar.gz | tar xz
+    sudo mv ${OS_NAME}-amd64/draft /usr/local/bin/draft && rm -rf ${OS_NAME}-amd64
 
     DRAFT="${VERSION}"
 fi
 
 draft version --short
 
-# eksctl
+# jenkins-x
 #echo "================================================================================"
-#echo "# install eksctl... "
+#echo "# install jenkins-x... "
 #
-#VERSION=$(curl -s https://api.github.com/repos/weaveworks/eksctl/releases/latest | jq --raw-output '.tag_name')
+#VERSION=$(curl -s https://api.github.com/repos/jenkins-x/jx/releases/latest | jq --raw-output '.tag_name')
 #
-#if [ "${EKSCTL}" != "${VERSION}" ]; then
-#    curl -L https://github.com/weaveworks/eksctl/releases/download/${VERSION}/eksctl_Linux_amd64.tar.gz | tar xz
-#    chmod +x eksctl && sudo mv eksctl /usr/local/bin/eksctl
+#if [ "${JENKINS_X}" != "${VERSION}" ]; then
+#    curl -L https://github.com/jenkins-x/jx/releases/download/${VERSION}/jx-linux-amd64.tar.gz | tar xz
+#    sudo mv jx /usr/local/bin/jx
 #
-#    EKSCTL="${VERSION}"
+#    JENKINS_X="${VERSION}"
 #fi
 #
-#eksctl version
-
-# jenkins-x
-echo "================================================================================"
-echo "# install jenkins-x... "
-
-VERSION=$(curl -s https://api.github.com/repos/jenkins-x/jx/releases/latest | jq --raw-output '.tag_name')
-
-if [ "${JENKINS_X}" != "${VERSION}" ]; then
-    curl -L https://github.com/jenkins-x/jx/releases/download/${VERSION}/jx-linux-amd64.tar.gz | tar xz
-    sudo mv jx /usr/local/bin/jx
-
-    JENKINS_X="${VERSION}"
-fi
-
-jx --version
+#jx --version
 
 # terraform
 echo "================================================================================"
 echo "# install terraform... "
 
-VERSION=$(curl -s https://api.github.com/repos/hashicorp/terraform/releases/latest | jq --raw-output '.tag_name' | cut -c 2-)
+if [ "${OS_TYPE}" == "brew" ]; then
+    command -v terraform > /dev/null || brew install terraform
+else
+    VERSION=$(curl -s https://api.github.com/repos/hashicorp/terraform/releases/latest | jq --raw-output '.tag_name' | cut -c 2-)
 
-if [ "${TERRAFORM}" != "${VERSION}" ]; then
-    wget https://releases.hashicorp.com/terraform/${VERSION}/terraform_${VERSION}_linux_amd64.zip
-    unzip terraform_${VERSION}_linux_amd64.zip && rm -rf terraform_${VERSION}_linux_amd64.zip
-    sudo mv terraform /usr/local/bin/terraform
+    if [ "${TERRAFORM}" != "${VERSION}" ]; then
+        wget https://releases.hashicorp.com/terraform/${VERSION}/terraform_${VERSION}_${OS_NAME}_amd64.zip
+        unzip terraform_${VERSION}_linux_amd64.zip && rm -rf terraform_${VERSION}_${OS_NAME}_amd64.zip
+        sudo mv terraform /usr/local/bin/terraform
 
-    TERRAFORM="${VERSION}"
+        TERRAFORM="${VERSION}"
+    fi
 fi
 
 terraform version
@@ -209,18 +237,22 @@ terraform version
 echo "================================================================================"
 echo "# install nodejs... "
 
-VERSION=10
+if [ "${OS_TYPE}" == "brew" ]; then
+    command -v node > /dev/null || brew install node
+else
+    VERSION=10
 
-if [ "${NODE}" != "${VERSION}" ]; then
-    if [ "${OS_TYPE}" == "Ubuntu" ] || [ "${OS_TYPE}" == "coreos" ]; then
-        curl -sL https://deb.nodesource.com/setup_10.x | sudo -E bash -
-        sudo apt-get install -y nodejs
-    elif [ "${OS_TYPE}" == "amzn" ] || [ "${OS_TYPE}" == "el6" ] || [ "${OS_TYPE}" == "el7" ]; then
-        curl -sL https://rpm.nodesource.com/setup_10.x | sudo bash -
-        sudo yum install -y nodejs
+    if [ "${NODE}" != "${VERSION}" ]; then
+        if [ "${OS_TYPE}" == "apt" ]; then
+            curl -sL https://deb.nodesource.com/setup_10.x | sudo -E bash -
+            sudo apt install -y nodejs
+        elif [ "${OS_TYPE}" == "yum" ]; then
+            curl -sL https://rpm.nodesource.com/setup_10.x | sudo bash -
+            sudo yum install -y nodejs
+        fi
+
+        NODE="${VERSION}"
     fi
-
-    NODE="${VERSION}"
 fi
 
 echo "node $(node -v)"
@@ -230,17 +262,21 @@ echo "npm $(npm -v)"
 echo "================================================================================"
 echo "# install java... "
 
-VERSION=1.8.0
+if [ "${OS_TYPE}" == "brew" ]; then
+    command -v java > /dev/null || brew cask install java
+else
+    VERSION=1.8.0
 
-if [ "${JAVA}" != "${VERSION}" ]; then
-    if [ "${OS_TYPE}" == "Ubuntu" ] || [ "${OS_TYPE}" == "coreos" ]; then
-        sudo apt-get install -y openjdk-8-jdk
-    elif [ "${OS_TYPE}" == "amzn" ] || [ "${OS_TYPE}" == "el6" ] || [ "${OS_TYPE}" == "el7" ]; then
-        sudo yum remove -y java-1.7.0-openjdk
-        sudo yum install -y java-1.8.0-openjdk java-1.8.0-openjdk-devel
+    if [ "${JAVA}" != "${VERSION}" ]; then
+        if [ "${OS_TYPE}" == "apt" ]; then
+            sudo apt-get install -y openjdk-8-jdk
+        elif [ "${OS_TYPE}" == "yum" ]; then
+            sudo yum remove -y java-1.7.0-openjdk
+            sudo yum install -y java-1.8.0-openjdk java-1.8.0-openjdk-devel
+        fi
+
+        JAVA="${VERSION}"
     fi
-
-    JAVA="${VERSION}"
 fi
 
 java -version
@@ -270,13 +306,24 @@ echo "# install heptio... "
 VERSION=1.10.3
 
 if [ "${HEPTIO}" != "${VERSION}" ]; then
-    wget https://amazon-eks.s3-us-west-2.amazonaws.com/${VERSION}/2018-06-05/bin/linux/amd64/heptio-authenticator-aws
+    wget https://amazon-eks.s3-us-west-2.amazonaws.com/${VERSION}/2018-06-05/bin/${OS_NAME}/amd64/heptio-authenticator-aws
     chmod +x heptio-authenticator-aws && sudo mv heptio-authenticator-aws /usr/local/bin/heptio-authenticator-aws
 
     HEPTIO="${VERSION}"
 fi
 
 echo "${VERSION}"
+
+echo "================================================================================"
+echo "# clean all... "
+
+if [ "${OS_TYPE}" == "apt" ]; then
+    sudo apt clean all
+elif [ "${OS_TYPE}" == "yum" ]; then
+    sudo yum clean all
+elif [ "${OS_TYPE}" == "brew" ]; then
+    brew cleanup
+fi
 
 echo "================================================================================"
 
@@ -286,14 +333,11 @@ echo "KUBECTL=\"${KUBECTL}\"" >> ${config}
 echo "KOPS=\"${KOPS}\"" >> ${config}
 echo "HELM=\"${HELM}\"" >> ${config}
 echo "DRAFT=\"${DRAFT}\"" >> ${config}
-#echo "EKSCTL=\"${EKSCTL}\"" >> ${config}
 echo "JENKINS_X=\"${JENKINS_X}\"" >> ${config}
 echo "TERRAFORM=\"${TERRAFORM}\"" >> ${config}
 echo "NODE=\"${NODE}\"" >> ${config}
 echo "JAVA=\"${JAVA}\"" >> ${config}
 echo "MAVEN=\"${MAVEN}\"" >> ${config}
 echo "HEPTIO=\"${HEPTIO}\"" >> ${config}
-
-cat ${config}
 
 echo "# Done."
