@@ -39,6 +39,7 @@ if [ "${OS_TYPE}" == "" ]; then
     error "Not supported OS. [${OS_FULL}]"
 fi
 
+<<<<<<< HEAD
 if [ "${OS_TYPE}" == "brew" ]; then
     # brew for mac
     command -v brew > /dev/null || ruby -e "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install)"
@@ -54,6 +55,8 @@ fi
 
 date
 
+=======
+>>>>>>> 02be0ebea4b65328127f4793019ec51642fec0ca
 # version
 DATE=
 KUBECTL=
@@ -67,15 +70,26 @@ JAVA=
 MAVEN=
 HEPTIO=
 
-config=~/.bastion
-if [ -f ${config} ]; then
-  . ${config}
+CONFIG=~/.bastion
+if [ -f ${CONFIG} ]; then
+  . ${CONFIG}
+fi
+
+# brew for mac
+if [ "${OS_TYPE}" == "brew" ]; then
+    command -v brew > /dev/null || ruby -e "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install)"
+fi
+
+# for ubuntu
+if [ "${OS_TYPE}" == "apt" ]; then
+    export LC_ALL=C
 fi
 
 # update
 echo "================================================================================"
 echo "# update... "
 
+<<<<<<< HEAD
 DATE=$(date '+%Y-%m-%d %H:%M:%S')
 
 if [ "${OS_TYPE}" == "apt" ]; then
@@ -102,6 +116,34 @@ elif [ "${OS_TYPE}" == "brew" ]; then
     command -v git > /dev/null  || brew install git
     command -v make > /dev/null || brew install make
     command -v wget > /dev/null || brew install wget
+=======
+VERSION=$(date '+%Y-%m-%d %H')
+
+if [ "${DATE}" != "${VERSION}" ]; then
+    if [ "${OS_TYPE}" == "apt" ]; then
+        sudo apt update
+    elif [ "${OS_TYPE}" == "yum" ]; then
+        sudo yum update -y
+    elif [ "${OS_TYPE}" == "brew" ]; then
+        brew update && brew upgrade
+    fi
+
+    if [ "${OS_TYPE}" == "apt" ]; then
+        sudo apt install -y git vim telnet jq make wget docker apache2 python-pip
+    elif [ "${OS_TYPE}" == "yum" ]; then
+        sudo yum install -y git vim telnet jq make wget docker httpd python-pip
+    elif [ "${OS_TYPE}" == "brew" ]; then
+        command -v jq > /dev/null || brew install jq
+        command -v git > /dev/null || brew install git
+        command -v vim > /dev/null || brew install vim
+        command -v make > /dev/null || brew install make
+        command -v wget > /dev/null || brew install wget
+        command -v docker > /dev/null || brew install docker
+        command -v telnet > /dev/null || brew install telnet
+    fi
+
+    DATE="${VERSION}"
+>>>>>>> 02be0ebea4b65328127f4793019ec51642fec0ca
 fi
 
 # aws-cli
@@ -187,18 +229,29 @@ helm version --client --short
 echo "================================================================================"
 echo "# install draft... "
 
-VERSION=$(curl -s https://api.github.com/repos/Azure/draft/releases/latest | jq --raw-output '.tag_name')
+#if [ "${OS_TYPE}" == "brew" ]; then
+#    command -v draft > /dev/null || brew install draft
+#else
+    VERSION=$(curl -s https://api.github.com/repos/Azure/draft/releases/latest | jq --raw-output '.tag_name')
 
+<<<<<<< HEAD
 if [ "${DRAFT}" != "${VERSION}" ]; then
     curl -L https://azuredraft.blob.core.windows.net/draft/draft-${VERSION}-${OS_NAME}-amd64.tar.gz | tar xz
     sudo mv ${OS_NAME}-amd64/draft /usr/local/bin/draft && rm -rf ${OS_NAME}-amd64
+=======
+    if [ "${DRAFT}" != "${VERSION}" ]; then
+        curl -L https://azuredraft.blob.core.windows.net/draft/draft-${VERSION}-${OS_NAME}-amd64.tar.gz | tar xz
+        sudo mv ${OS_NAME}-amd64/draft /usr/local/bin/draft && rm -rf ${OS_NAME}-amd64
+>>>>>>> 02be0ebea4b65328127f4793019ec51642fec0ca
 
-    DRAFT="${VERSION}"
-fi
+        DRAFT="${VERSION}"
+    fi
+#fi
 
 draft version --short
 
 # jenkins-x
+<<<<<<< HEAD
 #echo "================================================================================"
 #echo "# install jenkins-x... "
 #
@@ -212,6 +265,25 @@ draft version --short
 #fi
 #
 #jx --version
+=======
+echo "================================================================================"
+echo "# install jenkins-x... "
+
+if [ "${OS_TYPE}" == "brew" ]; then
+    command -v jx > /dev/null || brew install jx
+else
+    VERSION=$(curl -s https://api.github.com/repos/jenkins-x/jx/releases/latest | jq --raw-output '.tag_name')
+
+    if [ "${JENKINS_X}" != "${VERSION}" ]; then
+        curl -L https://github.com/jenkins-x/jx/releases/download/${VERSION}/jx-${OS_NAME}-amd64.tar.gz | tar xz
+        sudo mv jx /usr/local/bin/jx
+
+        JENKINS_X="${VERSION}"
+    fi
+fi
+
+jx --version
+>>>>>>> 02be0ebea4b65328127f4793019ec51642fec0ca
 
 # terraform
 echo "================================================================================"
@@ -224,7 +296,11 @@ else
 
     if [ "${TERRAFORM}" != "${VERSION}" ]; then
         wget https://releases.hashicorp.com/terraform/${VERSION}/terraform_${VERSION}_${OS_NAME}_amd64.zip
+<<<<<<< HEAD
         unzip terraform_${VERSION}_linux_amd64.zip && rm -rf terraform_${VERSION}_${OS_NAME}_amd64.zip
+=======
+        unzip terraform_${VERSION}_${OS_NAME}_amd64.zip && rm -rf terraform_${VERSION}_${OS_NAME}_amd64.zip
+>>>>>>> 02be0ebea4b65328127f4793019ec51642fec0ca
         sudo mv terraform /usr/local/bin/terraform
 
         TERRAFORM="${VERSION}"
@@ -237,6 +313,7 @@ terraform version
 echo "================================================================================"
 echo "# install nodejs... "
 
+<<<<<<< HEAD
 if [ "${OS_TYPE}" == "brew" ]; then
     command -v node > /dev/null || brew install node
 else
@@ -252,6 +329,19 @@ else
         fi
 
         NODE="${VERSION}"
+=======
+VERSION=10
+
+if [ "${NODE}" != "${VERSION}" ]; then
+    if [ "${OS_TYPE}" == "apt" ]; then
+        curl -sL https://deb.nodesource.com/setup_10.x | sudo -E bash -
+        sudo apt-get install -y nodejs
+    elif [ "${OS_TYPE}" == "yum" ]; then
+        curl -sL https://rpm.nodesource.com/setup_10.x | sudo bash -
+        sudo yum install -y nodejs
+    elif [ "${OS_TYPE}" == "brew" ]; then
+        command -v node > /dev/null || brew install node
+>>>>>>> 02be0ebea4b65328127f4793019ec51642fec0ca
     fi
 fi
 
@@ -267,6 +357,7 @@ if [ "${OS_TYPE}" == "brew" ]; then
 else
     VERSION=1.8.0
 
+<<<<<<< HEAD
     if [ "${JAVA}" != "${VERSION}" ]; then
         if [ "${OS_TYPE}" == "apt" ]; then
             sudo apt-get install -y openjdk-8-jdk
@@ -274,6 +365,17 @@ else
             sudo yum remove -y java-1.7.0-openjdk
             sudo yum install -y java-1.8.0-openjdk java-1.8.0-openjdk-devel
         fi
+=======
+if [ "${JAVA}" != "${VERSION}" ]; then
+    if [ "${OS_TYPE}" == "apt" ]; then
+        sudo apt-get install -y openjdk-8-jdk
+    elif [ "${OS_TYPE}" == "yum" ]; then
+        sudo yum remove -y java-1.7.0-openjdk
+        sudo yum install -y java-1.8.0-openjdk java-1.8.0-openjdk-devel
+    elif [ "${OS_TYPE}" == "brew" ]; then
+        command -v java > /dev/null || brew cask install java
+    fi
+>>>>>>> 02be0ebea4b65328127f4793019ec51642fec0ca
 
         JAVA="${VERSION}"
     fi
@@ -327,6 +429,7 @@ fi
 
 echo "================================================================================"
 
+<<<<<<< HEAD
 echo "# bastion" > ${config}
 echo "DATE=\"${DATE}\"" >> ${config}
 echo "KUBECTL=\"${KUBECTL}\"" >> ${config}
@@ -339,5 +442,19 @@ echo "NODE=\"${NODE}\"" >> ${config}
 echo "JAVA=\"${JAVA}\"" >> ${config}
 echo "MAVEN=\"${MAVEN}\"" >> ${config}
 echo "HEPTIO=\"${HEPTIO}\"" >> ${config}
+=======
+echo "# bastion" > ${CONFIG}
+echo "DATE=\"${DATE}\"" >> ${CONFIG}
+echo "KUBECTL=\"${KUBECTL}\"" >> ${CONFIG}
+echo "KOPS=\"${KOPS}\"" >> ${CONFIG}
+echo "HELM=\"${HELM}\"" >> ${CONFIG}
+echo "DRAFT=\"${DRAFT}\"" >> ${CONFIG}
+echo "JENKINS_X=\"${JENKINS_X}\"" >> ${CONFIG}
+echo "TERRAFORM=\"${TERRAFORM}\"" >> ${CONFIG}
+echo "NODE=\"${NODE}\"" >> ${CONFIG}
+echo "JAVA=\"${JAVA}\"" >> ${CONFIG}
+echo "MAVEN=\"${MAVEN}\"" >> ${CONFIG}
+echo "HEPTIO=\"${HEPTIO}\"" >> ${CONFIG}
+>>>>>>> 02be0ebea4b65328127f4793019ec51642fec0ca
 
 echo "# Done."
