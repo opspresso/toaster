@@ -197,10 +197,9 @@ helm version --client --short
 echo "================================================================================"
 echo "# install draft... "
 
-if [ "${OS_TYPE}" == "brew" ]; then
-    #command -v draft > /dev/null || brew install draft
-    echo "Not supported MocOS yet."
-else
+#if [ "${OS_TYPE}" == "brew" ]; then
+#    command -v draft > /dev/null || brew install draft
+#else
     VERSION=$(curl -s https://api.github.com/repos/Azure/draft/releases/latest | jq --raw-output '.tag_name')
 
     if [ "${DRAFT}" != "${VERSION}" ]; then
@@ -209,7 +208,7 @@ else
 
         DRAFT="${VERSION}"
     fi
-fi
+#fi
 
 draft version --short
 
@@ -217,9 +216,9 @@ draft version --short
 echo "================================================================================"
 echo "# install jenkins-x... "
 
-if [ "${OS_TYPE}" == "brew" ]; then
-    command -v jx > /dev/null || brew install jx
-else
+#if [ "${OS_TYPE}" == "brew" ]; then
+#    command -v jx > /dev/null || brew install jx
+#else
     VERSION=$(curl -s https://api.github.com/repos/jenkins-x/jx/releases/latest | jq --raw-output '.tag_name')
 
     if [ "${JENKINS_X}" != "${VERSION}" ]; then
@@ -228,7 +227,7 @@ else
 
         JENKINS_X="${VERSION}"
     fi
-fi
+#fi
 
 jx --version
 
