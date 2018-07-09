@@ -261,6 +261,8 @@ if [ "${NODE}" != "${VERSION}" ] || [ "$(command -v node)" == "" ]; then
     elif [ "${OS_TYPE}" == "brew" ]; then
         brew install node
     fi
+
+    VERSION="${VERSION}"
 fi
 
 echo "node $(node -v)"
