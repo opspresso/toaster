@@ -17,6 +17,8 @@ OS_NAME="$(uname | awk '{print tolower($0)}')"
 OS_FULL="$(uname -a)"
 OS_TYPE=
 
+echo "${OS_FULL}"
+
 if [ "${OS_NAME}" == "linux" ]; then
     if [ $(echo "${OS_FULL}" | grep -c "amzn1") -gt 0 ]; then
         OS_TYPE="yum"
@@ -36,7 +38,7 @@ elif [ "${OS_NAME}" == "darwin" ]; then
 fi
 
 if [ "${OS_TYPE}" == "" ]; then
-    error "Not supported OS. [${OS_FULL}]"
+    error "Not supported OS."
 fi
 
 if [ "${OS_TYPE}" == "brew" ]; then
