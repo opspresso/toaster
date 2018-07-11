@@ -23,7 +23,6 @@ usage() {
     echo "   image_url        A valid URL to an image file that will be displayed inside a message attachment."
     echo "   footer           Add some brief text to help contextualize and identify an attachment."
     echo "================================================================================"
-
     exit 1
 }
 

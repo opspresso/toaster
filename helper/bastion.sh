@@ -13,11 +13,25 @@ echo "==========================================================================
 
 # curl -sL toast.sh/helper/bastion.sh | bash
 
+title() {
+    echo -e "$(tput setaf 3)$@$(tput sgr0)"
+}
+
+success() {
+    echo -e "$(tput setaf 2)$@$(tput sgr0)"
+    exit 0
+}
+
+error() {
+    echo -e "$(tput setaf 1)$@$(tput sgr0)"
+    exit 1
+}
+
+DATE=$(date '+%Y-%m-%d %H:%M:%S')
+
 OS_NAME="$(uname | awk '{print tolower($0)}')"
 OS_FULL="$(uname -a)"
 OS_TYPE=
-
-echo "${OS_FULL}"
 
 if [ "${OS_NAME}" == "linux" ]; then
     if [ $(echo "${OS_FULL}" | grep -c "amzn1") -gt 0 ]; then
@@ -37,8 +51,11 @@ elif [ "${OS_NAME}" == "darwin" ]; then
     OS_TYPE="brew"
 fi
 
+echo "${OS_FULL}"
+echo "${DATE}"
+
 if [ "${OS_TYPE}" == "" ]; then
-    error "Not supported OS."
+    error "Not supported OS. [${OS_NAME}]"
 fi
 
 if [ "${OS_TYPE}" == "brew" ]; then
@@ -53,8 +70,6 @@ else
         export LC_ALL=C
     fi
 fi
-
-date
 
 # version
 DATE=
@@ -86,9 +101,7 @@ fi
 
 # update
 echo "================================================================================"
-echo "# update... "
-
-DATE=$(date '+%Y-%m-%d %H:%M:%S')
+title "# update..."
 
 if [ "${OS_TYPE}" == "apt" ]; then
     sudo apt update && sudo apt upgrade -y
@@ -112,7 +125,7 @@ fi
 
 # aws-cli
 echo "================================================================================"
-echo "# install aws-cli... "
+title "# install aws-cli..."
 
 if [ "${OS_TYPE}" == "brew" ]; then
     command -v aws > /dev/null || brew install awscli
@@ -134,7 +147,7 @@ fi
 
 # kubectl
 echo "================================================================================"
-echo "# install kubectl... "
+title "# install kubectl..."
 
 if [ "${OS_TYPE}" == "brew" ]; then
     command -v kubectl > /dev/null || brew install kubernetes-cli
@@ -153,7 +166,7 @@ kubectl version --client --short
 
 # kops
 echo "================================================================================"
-echo "# install kops... "
+title "# install kops..."
 
 if [ "${OS_TYPE}" == "brew" ]; then
     command -v kops > /dev/null || brew install kops
@@ -172,7 +185,7 @@ kops version
 
 # helm
 echo "================================================================================"
-echo "# install helm... "
+title "# install helm..."
 
 if [ "${OS_TYPE}" == "brew" ]; then
     command -v helm > /dev/null || brew install kubernetes-helm
@@ -191,7 +204,7 @@ helm version --client --short
 
 # draft
 echo "================================================================================"
-echo "# install draft... "
+title "# install draft..."
 
 #if [ "${OS_TYPE}" == "brew" ]; then
 #    command -v draft > /dev/null || brew install draft
@@ -210,7 +223,7 @@ draft version --short
 
 # jenkins-x
 echo "================================================================================"
-echo "# install jenkins-x... "
+title "# install jenkins-x..."
 
 #if [ "${OS_TYPE}" == "brew" ]; then
 #    command -v jx > /dev/null || brew install jx
@@ -229,7 +242,7 @@ jx --version
 
 # terraform
 echo "================================================================================"
-echo "# install terraform... "
+title "# install terraform..."
 
 if [ "${OS_TYPE}" == "brew" ]; then
     command -v terraform > /dev/null || brew install terraform
@@ -249,7 +262,7 @@ terraform version
 
 # nodejs
 echo "================================================================================"
-echo "# install nodejs... "
+title "# install nodejs..."
 
 VERSION=10
 
@@ -272,7 +285,7 @@ echo "npm $(npm -v)"
 
 # java
 echo "================================================================================"
-echo "# install java... "
+title "# install java..."
 
 VERSION=1.8.0
 
@@ -293,7 +306,7 @@ java -version
 
 # maven
 echo "================================================================================"
-echo "# install maven... "
+title "# install maven..."
 
 VERSION=3.5.3
 
@@ -309,7 +322,7 @@ mvn -version
 
 # heptio
 echo "================================================================================"
-echo "# install heptio... "
+title "# install heptio..."
 
 VERSION=1.10.3
 
@@ -323,7 +336,7 @@ fi
 echo "${VERSION}"
 
 echo "================================================================================"
-echo "# clean all... "
+title "# clean all..."
 
 if [ "${OS_TYPE}" == "apt" ]; then
     sudo apt clean all
@@ -349,4 +362,4 @@ echo "JAVA=\"${JAVA}\"" >> ${CONFIG}
 echo "MAVEN=\"${MAVEN}\"" >> ${CONFIG}
 echo "HEPTIO=\"${HEPTIO}\"" >> ${CONFIG}
 
-echo "# Done."
+success "# Done."

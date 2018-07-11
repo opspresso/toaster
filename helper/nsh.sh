@@ -27,17 +27,17 @@ question() {
     read -p "$(tput setaf 6)$@$(tput sgr0)" ANSWER
 }
 
+title() {
+    echo -e "$(tput setaf 3)$@$(tput sgr0)"
+}
+
 success() {
-    tput setaf 2
-    echo -e "$@"
-    tput sgr0
+    echo -e "$(tput setaf 2)$@$(tput sgr0)"
     exit 0
 }
 
 error() {
-    tput setaf 1
-    echo -e "$@"
-    tput sgr0
+    echo -e "$(tput setaf 1)$@$(tput sgr0)"
     exit 1
 }
 

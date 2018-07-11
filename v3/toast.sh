@@ -1,18 +1,50 @@
 #!/bin/bash
 
-echo_() {
-    echo -e "$1"
-    echo "$1" >> /tmp/toast.log
+print() {
+    echo -e "$@"
 }
 
 success() {
-    echo_ "$1"
+    echo -e "$(tput setaf 2)$@$(tput sgr0)"
     exit 0
 }
 
 error() {
-    echo_ "$1"
+    echo -e "$(tput setaf 1)$@$(tput sgr0)"
     exit 1
+}
+
+logo() {
+    if [ -r /tmp/toaster.old ]; then
+        VER="$(cat /tmp/toaster.old)"
+    else
+        VER="v3"
+    fi
+
+    #figlet toast
+    bar
+    print "  _                  _    "
+    print " | |_ ___   __ _ ___| |_  "
+    print " | __/ _ \ / _' / __| __| "
+    print " | || (_) | (_| \__ \ |_  "
+    print "  \__\___/ \__,_|___/\__|  by nalbam (${VER}) "
+    bar
+}
+
+working() {
+    logo
+    print " Not Implemented. "
+    bar
+}
+
+usage() {
+    logo
+    print " Usage: toast.sh {update|config|install|build|release|deploy} "
+    bar
+}
+
+bar() {
+    print "================================================================================"
 }
 
 nothing() {
@@ -258,7 +290,7 @@ config_save() {
 
     echo "${KEY}=${VAL}" >> "${CONFIG}"
 
-    echo_ "${KEY}=${VAL}"
+    print "${KEY}=${VAL}"
 
     if [ "${KEY}" == "REGION" ]; then
         aws configure set default.region ${VAL}
@@ -266,13 +298,13 @@ config_save() {
 }
 
 install_aws() {
-    echo_ "install aws cli..."
+    print "install aws cli..."
 
     pip install --upgrade --user awscli
 
-    echo_bar
-    echo_ "$(aws --version)"
-    echo_bar
+    bar
+    print "$(aws --version)"
+    bar
 }
 
 install_java() {
@@ -282,45 +314,45 @@ install_java() {
         VERSION="8"
     fi
 
-    echo_ "install java${VERSION}..."
+    print "install java${VERSION}..."
 
     ${SHELL_DIR}/install/java${VERSION}.sh "${BUCKET}"
 
-    echo_bar
-    echo_ "$(java -version)"
-    echo_bar
+    bar
+    print "$(java -version)"
+    bar
 }
 
 install_elasticsearch() {
-    echo_ "install elasticsearch..."
+    print "install elasticsearch..."
 
     ${SHELL_DIR}/install/elasticsearch.sh "${BUCKET}"
 
-    echo_bar
+    bar
 }
 
 install_kibana() {
-    echo_ "install kibana..."
+    print "install kibana..."
 
     ${SHELL_DIR}/install/kibana.sh "${BUCKET}"
 
-    echo_bar
+    bar
 }
 
 install_logstash() {
-    echo_ "install logstash..."
+    print "install logstash..."
 
     ${SHELL_DIR}/install/logstash.sh "${BUCKET}"
 
-    echo_bar
+    bar
 }
 
 install_filebeat() {
-    echo_ "install filebeat..."
+    print "install filebeat..."
 
     ${SHELL_DIR}/install/filebeat.sh "${BUCKET}"
 
-    echo_bar
+    bar
 }
 
 parse_version() {
@@ -352,10 +384,10 @@ parse_version() {
 
     GROUP_PATH=$(echo "${GROUP_ID}" | sed "s/\./\//")
 
-    echo_ "groupId=${GROUP_ID}"
-    echo_ "artifactId=${ARTIFACT_ID}"
-    echo_ "version=${VERSION}"
-    echo_ "packaging=${PACKAGING}"
+    print "groupId=${GROUP_ID}"
+    print "artifactId=${ARTIFACT_ID}"
+    print "version=${VERSION}"
+    print "packaging=${PACKAGING}"
 
     # branch
     if [ "${CIRCLE_BRANCH}" != "" ]; then
@@ -380,7 +412,7 @@ parse_version() {
 }
 
 build_version() {
-    echo_ "build version... [${BRANCH}] [${BUILD}]"
+    print "build version... [${BRANCH}] [${BUILD}]"
 
     if [ "${BRANCH}" == "master" ] && [ "${BUILD}" != "" ]; then
         VERSION="${VERSION}-${BUILD}"
@@ -390,7 +422,7 @@ build_version() {
         error "Not set VERSION."
     fi
 
-    echo_ "version=${VERSION}"
+    print "version=${VERSION}"
 
     VER1="<version>[0-9a-zA-Z\.\-]\+<\/version>"
     VER2="<version>${VERSION}<\/version>"
@@ -417,7 +449,7 @@ build_filebeat() {
         return
     fi
 
-    echo_ "build filebeat... [${ARTIFACT_ID}] [${VERSION}]"
+    print "build filebeat... [${ARTIFACT_ID}] [${VERSION}]"
 
     TEMP_FILE="/tmp/${FILE}"
 
@@ -429,7 +461,7 @@ build_filebeat() {
 }
 
 build_webapp() {
-    echo_ "build for webapp..."
+    print "build for webapp..."
 
     mkdir -p target
 
@@ -449,7 +481,7 @@ build_webapp() {
 }
 
 build_node() {
-    echo_ "build for node..."
+    print "build for node..."
 
     mkdir -p target
 
@@ -465,7 +497,7 @@ build_node() {
 }
 
 build_beanstalk() {
-    echo_ "build for beanstalk..."
+    print "build for beanstalk..."
 
     mkdir -p target
 
@@ -517,8 +549,8 @@ upload_bucket() {
 
     UPLOAD_PATH="s3://${BUCKET}/maven2/${GROUP_PATH}/${ARTIFACT_ID}/${VERSION}/"
 
-    echo_ "--> from: ${PACKAGE_PATH}"
-    echo_ "--> to  : ${UPLOAD_PATH}"
+    print "--> from: ${PACKAGE_PATH}"
+    print "--> to  : ${UPLOAD_PATH}"
 
     if [ "${PARAM2}" == "public" ]; then
         OPTION="--quiet --acl public-read"
@@ -534,7 +566,7 @@ release_bucket() {
         cp -rf pom.xml target/${ARTIFACT_ID}-${VERSION}.pom
     fi
 
-    echo_ "release to bucket... [${BUCKET}]"
+    print "release to bucket... [${BUCKET}]"
 
     upload_bucket "pom"
     upload_bucket "war"
@@ -554,7 +586,7 @@ release_toast() {
         PACKAGE="${PARAM2}"
     fi
 
-    echo_ "release to toast... [${TOAST}]"
+    print "release to toast... [${TOAST}]"
 
     # version save
     URL="${TOAST}/version/build/${ARTIFACT_ID}/${VERSION}"
@@ -562,7 +594,7 @@ release_toast() {
     ARR=(${RES})
 
     if [ "${ARR[0]}" != "OK" ]; then
-        echo_ "Server Error. [${URL}][${RES}]"
+        print "Server Error. [${URL}][${RES}]"
     fi
 
     # get version
@@ -571,7 +603,7 @@ release_toast() {
 #    ARR=(${RES})
 #
 #    if [ "${ARR[0]}" != "OK" ]; then
-#        echo_ "Server Error. [${URL}][${RES}]"
+#        print "Server Error. [${URL}][${RES}]"
 #    fi
 }
 
@@ -580,7 +612,7 @@ release_beanstalk() {
 
     release_bucket
 
-    echo_ "release to beanstalk versions... [${ARTIFACT_ID}] [${VERSION}]"
+    print "release to beanstalk versions... [${ARTIFACT_ID}] [${VERSION}]"
 
     S3_KEY="maven2/${GROUP_PATH}/${ARTIFACT_ID}/${VERSION}/${ARTIFACT_ID}-${VERSION}.zip"
 
@@ -596,7 +628,7 @@ release_docker() {
         error "Not set REGISTRY."
     fi
 
-    echo_ ">> docker registry... [${REGISTRY}]"
+    print ">> docker registry... [${REGISTRY}]"
 
     IMAGE="${ARTIFACT_ID}:${VERSION}"
 
@@ -607,28 +639,28 @@ release_docker() {
 
     docker version
 
-    echo_ ">> docker build... [${IMAGE}]"
+    print ">> docker build... [${IMAGE}]"
 
     docker build --rm=false -t ${REGISTRY}/${IMAGE} .
 
     docker images
 
     if [ "${PARAM2}" == "ECR" ]; then
-        echo_ ">> docker login..."
+        print ">> docker login..."
 
         ECR_LOGIN=$(aws ecr get-login --region ${REGION})
         eval ${ECR_LOGIN}
     else
-        echo_ ">> docker login..."
+        print ">> docker login..."
 
         docker login REGISTRY
     fi
 
-    echo_ ">> docker push... [${IMAGE}]"
+    print ">> docker push... [${IMAGE}]"
 
     docker push ${REGISTRY}/${IMAGE}
 
-    echo_ ">> docker tag... [${ARTIFACT_ID}:latest]"
+    print ">> docker tag... [${ARTIFACT_ID}:latest]"
 
     docker tag ${REGISTRY}/${IMAGE} ${REGISTRY}/${ARTIFACT_ID}:latest
     docker push ${REGISTRY}/${ARTIFACT_ID}:latest
@@ -648,7 +680,7 @@ deploy_bucket() {
 
     DEPLOY_PATH="s3://${BUCKET}"
 
-    echo_ "deploy to bucket... [${DEPLOY_PATH}]"
+    print "deploy to bucket... [${DEPLOY_PATH}]"
 
     OPTION="--quiet --acl public-read"
 
@@ -666,7 +698,7 @@ deploy_beanstalk() {
 
     release_bucket
 
-    echo_ "release to beanstalk versions... [${ENV_NAME}] [${VERSION}]"
+    print "release to beanstalk versions... [${ENV_NAME}] [${VERSION}]"
 
     S3_KEY="maven2/${GROUP_PATH}/${ARTIFACT_ID}/${VERSION}/${ARTIFACT_ID}-${VERSION}.zip"
 
@@ -679,7 +711,7 @@ deploy_beanstalk() {
         --version-label "${ENV_NAME}" \
         --source-bundle S3Bucket="${BUCKET}",S3Key="${S3_KEY}"
 
-    echo_ "deploy to beanstalk... [${ENV_NAME}] [${VERSION}]"
+    print "deploy to beanstalk... [${ENV_NAME}] [${VERSION}]"
 
     aws elasticbeanstalk update-environment \
         --application-name "${ARTIFACT_ID}" \
@@ -694,7 +726,7 @@ deploy_lambda() {
         FUNCTION_NAME="${PARAM2}"
     fi
 
-    echo_ "deploy to lambda... [${FUNCTION_NAME}] [${VERSION}]"
+    print "deploy to lambda... [${FUNCTION_NAME}] [${VERSION}]"
 
     #PACKAGE_PATH="target/${ARTIFACT_ID}-${VERSION}.zip"
     S3_KEY="maven2/${GROUP_PATH}/${ARTIFACT_ID}/${VERSION}/${ARTIFACT_ID}-${VERSION}.zip"
@@ -733,43 +765,10 @@ service_remove() {
 ################################################################################
 
 self_info() {
-    echo_bar
-    echo_ "OS    : ${OS_NAME} ${OS_TYPE}"
-    echo_ "HOME  : ${HOME}"
-    echo_bar
-}
-
-echo_bar() {
-    echo_ "================================================================================"
-}
-
-echo_toast() {
-    if [ -r /tmp/toaster.old ]; then
-        VER="$(cat /tmp/toaster.old)"
-    else
-        VER="v3"
-    fi
-
-    #figlet toast
-    echo_bar
-    echo_ "  _                  _    "
-    echo_ " | |_ ___   __ _ ___| |_  "
-    echo_ " | __/ _ \ / _' / __| __| "
-    echo_ " | || (_) | (_| \__ \ |_  "
-    echo_ "  \__\___/ \__,_|___/\__|  by nalbam (${VER}) "
-    echo_bar
-}
-
-working() {
-    echo_toast
-    echo_ " Not Implemented."
-    echo_bar
-}
-
-usage() {
-    echo_toast
-    echo_ " Usage: toast.sh {update|config|install|build|release|deploy}"
-    echo_bar
+    bar
+    print "OS    : ${OS_NAME} ${OS_TYPE}"
+    print "HOME  : ${HOME}"
+    bar
 }
 
 ################################################################################
