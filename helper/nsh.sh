@@ -137,10 +137,11 @@ prepare() {
             if [ -f ${GIT_PWD}/.git_url ]; then
                 GIT_URL=$(cat ${GIT_PWD}/.git_url)
             else
-                echo "Please input git url. (ex: ssh://git@8.8.8.8:8/)"
-                read GIT_URL
+                question "Please input git url. (ex: ssh://git@8.8.8.8:8/): "
 
-                if [ "${GIT_URL}" != "" ]; then
+                GIT_URL=${ANSWER}
+
+                if [ ! -z "${GIT_URL}" ]; then
                     echo "${GIT_URL}" > ${GIT_PWD}/.git_url
                 fi
             fi

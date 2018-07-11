@@ -69,18 +69,18 @@ prepare() {
 }
 
 directory() {
-    USER=${USER:=$(whoami)}
-
-    pushd ~
-    DEFAULT="$(pwd)/work/src/github.com/${USER}/keys/credentials"
-    popd
-
     if [ -z "${ENV_DIR}" ] || [ ! -d "${ENV_DIR}" ]; then
-        question "Please input credentials directory."
+        USER=${USER:=$(whoami)}
+
+        pushd ~
+        DEFAULT="$(pwd)/work/src/github.com/${USER}/keys/credentials"
+        popd
+
+        question "Please input credentials directory. [${DEFAULT}]: "
         ENV_DIR=${ANSWER:-${DEFAULT}}
     fi
 
-    if [ ! -d "${ENV_DIR}" ]; then
+    if [ -z "${ENV_DIR}" ] || [ ! -d "${ENV_DIR}" ]; then
         error "[${ENV_DIR}] is not directory."
     fi
 

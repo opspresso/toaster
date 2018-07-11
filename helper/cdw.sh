@@ -60,12 +60,12 @@ prepare() {
 }
 
 directory() {
-    pushd ~
-    DEFAULT="$(pwd)/work/src"
-    popd
-
     if [ -z "${CDW_DIR}" ] || [ ! -d "${CDW_DIR}" ]; then
-        question "Please input base directory."
+        pushd ~
+        DEFAULT="$(pwd)/work/src"
+        popd
+
+        question "Please input base directory. [${DEFAULT}]: "
         CDW_DIR=${ANSWER:-${DEFAULT}}
     fi
 

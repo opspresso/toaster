@@ -68,18 +68,18 @@ prepare() {
 }
 
 directory() {
-    USER=${USER:=$(whoami)}
-
-    pushd ~
-    DEFAULT="$(pwd)/work/src/github.com/${USER}/keys/pem"
-    popd
-
     if [ -z "${SSH_DIR}" ] || [ ! -d "${SSH_DIR}" ]; then
-        question "Please input pem directory."
+        USER=${USER:=$(whoami)}
+
+        pushd ~
+        DEFAULT="$(pwd)/work/src/github.com/${USER}/keys/pem"
+        popd
+
+        question "Please input pem directory. [${DEFAULT}]: "
         SSH_DIR=${ANSWER:-${DEFAULT}}
     fi
 
-    if [ ! -d "${SSH_DIR}" ]; then
+    if [ -z "${SSH_DIR}" ] || [ ! -d "${SSH_DIR}" ]; then
         error "[${SSH_DIR}] is not directory."
     fi
 
