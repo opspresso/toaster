@@ -3,22 +3,28 @@
 NUM=$1
 DIR=
 
+ANSWER=
+
 CDW_DIR=
 
 SHELL_DIR=$(dirname $(dirname "$0"))
 
 ################################################################################
 
+question() {
+    read -p "$(tput setaf 6)$@$(tput sgr0)" ANSWER
+}
+
 success() {
     tput setaf 2
-    echo -e $@
+    echo -e "$@"
     tput sgr0
     exit 0
 }
 
 error() {
     tput setaf 1
-    echo -e $@
+    echo -e "$@"
     tput sgr0
     exit 1
 }
@@ -44,22 +50,27 @@ usage() {
 
 ################################################################################
 
-directory() {
+prepare() {
     mkdir -p ${SHELL_DIR}/conf
 
     CONFIG=${SHELL_DIR}/conf/$(basename $0)
     if [ -f ${CONFIG} ]; then
         . ${CONFIG}
     fi
+}
 
-    if [ "${CDW_DIR}" == "" ] || [ ! -d "${CDW_DIR}" ]; then
-        echo "Please input base directory. (ex: $(pwd)"
-        read CDW_DIR
+directory() {
+    pushd ~
+    DEFAULT="$(pwd)/work/src"
+    popd
+
+    if [ -z "${CDW_DIR}" ] || [ ! -d "${CDW_DIR}" ]; then
+        question "Please input base directory."
+        CDW_DIR=${ANSWER:-${DEFAULT}}
     fi
 
-    if [ "${CDW_DIR}" == "" ]; then
-        error "[${CDW_DIR}] is empty."
-    fi
+    mkdir -p ${CDW_DIR}
+
     if [ ! -d "${CDW_DIR}" ]; then
         error "[${CDW_DIR}] is not directory."
     fi
@@ -124,6 +135,8 @@ cdw() {
 }
 
 ################################################################################
+
+prepare
 
 directory
 

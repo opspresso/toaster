@@ -4,22 +4,28 @@ NAME=$1
 REGION=$2
 OUTPUT=$3
 
+ANSWER=
+
 ENV_DIR=
 
 SHELL_DIR=$(dirname $(dirname "$0"))
 
 ################################################################################
 
+question() {
+    read -p "$(tput setaf 6)$@$(tput sgr0)" ANSWER
+}
+
 success() {
     tput setaf 2
-    echo -e $@
+    echo -e "$@"
     tput sgr0
     exit 0
 }
 
 error() {
     tput setaf 1
-    echo -e $@
+    echo -e "$@"
     tput sgr0
     exit 1
 }
@@ -51,22 +57,29 @@ usage() {
 
 ################################################################################
 
-directory() {
+prepare() {
+    mkdir -p ~/.aws
+
     mkdir -p ${SHELL_DIR}/conf
 
     CONFIG=${SHELL_DIR}/conf/$(basename $0)
     if [ -f ${CONFIG} ]; then
         . ${CONFIG}
     fi
+}
 
-    if [ "${ENV_DIR}" == "" ] || [ ! -d "${ENV_DIR}" ]; then
-        echo "Please input credentials directory. (ex: ~/keys/credentials)"
-        read ENV_DIR
+directory() {
+    USER=${USER:=$(whoami)}
+
+    pushd ~
+    DEFAULT="$(pwd)/work/src/github.com/${USER}/keys/credentials"
+    popd
+
+    if [ -z "${ENV_DIR}" ] || [ ! -d "${ENV_DIR}" ]; then
+        question "Please input credentials directory."
+        ENV_DIR=${ANSWER:-${DEFAULT}}
     fi
 
-    if [ "${ENV_DIR}" == "" ]; then
-        error "[${ENV_DIR}] is empty."
-    fi
     if [ ! -d "${ENV_DIR}" ]; then
         error "[${ENV_DIR}] is not directory."
     fi
@@ -75,23 +88,15 @@ directory() {
 }
 
 deploy() {
-    if [ "${NAME}" == "" ]; then
+    if [ -z "${NAME}" ]; then
         usage
     fi
     if [ ! -f "${ENV_DIR}/${NAME}" ]; then
         usage
     fi
 
-    if [ "${REGION}" == "" ] || [ "${REGION}" == "seoul" ]; then
-        REGION="ap-northeast-2"
-    fi
-    if [ "${OUTPUT}" == "" ]; then
-        OUTPUT="json"
-    fi
-
-    if [ ! -d ~/.aws ]; then
-      mkdir -p ~/.aws
-    fi
+    REGION=${REGION:-ap-northeast-2}
+    OUTPUT=${OUTPUT:-json}
 
     cp -rf ${ENV_DIR}/${NAME} ~/.aws/credentials
 
@@ -102,6 +107,8 @@ deploy() {
 }
 
 ################################################################################
+
+prepare
 
 directory
 

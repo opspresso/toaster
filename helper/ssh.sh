@@ -4,22 +4,28 @@ PEM=$1
 HOST=$2
 USER=$3
 
+ANSWER=
+
 SSH_DIR=
 
 SHELL_DIR=$(dirname $(dirname "$0"))
 
 ################################################################################
 
+question() {
+    read -p "$(tput setaf 6)$@$(tput sgr0)" ANSWER
+}
+
 success() {
     tput setaf 2
-    echo -e $@
+    echo -e "$@"
     tput sgr0
     exit 0
 }
 
 error() {
     tput setaf 1
-    echo -e $@
+    echo -e "$@"
     tput sgr0
     exit 1
 }
@@ -52,22 +58,27 @@ usage() {
 
 ################################################################################
 
-directory() {
+prepare() {
     mkdir -p ${SHELL_DIR}/conf
 
     CONFIG=${SHELL_DIR}/conf/$(basename $0)
     if [ -f ${CONFIG} ]; then
         . ${CONFIG}
     fi
+}
 
-    if [ "${SSH_DIR}" == "" ] || [ ! -d "${SSH_DIR}" ]; then
-        echo "Please input pem directory. (ex: ~/keys/pem)"
-        read SSH_DIR
+directory() {
+    USER=${USER:=$(whoami)}
+
+    pushd ~
+    DEFAULT="$(pwd)/work/src/github.com/${USER}/keys/pem"
+    popd
+
+    if [ -z "${SSH_DIR}" ] || [ ! -d "${SSH_DIR}" ]; then
+        question "Please input pem directory."
+        SSH_DIR=${ANSWER:-${DEFAULT}}
     fi
 
-    if [ "${SSH_DIR}" == "" ]; then
-        error "[${SSH_DIR}] is empty."
-    fi
     if [ ! -d "${SSH_DIR}" ]; then
         error "[${SSH_DIR}] is not directory."
     fi
@@ -109,6 +120,8 @@ connect() {
 }
 
 ################################################################################
+
+prepare
 
 directory
 

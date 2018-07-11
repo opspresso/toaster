@@ -9,6 +9,8 @@ ALL="$*"
 PROJECT=""
 BRANCH=""
 
+ANSWER=
+
 NOW_DIR=$(pwd)
 
 PROVIDER=""
@@ -21,16 +23,20 @@ SHELL_DIR=$(dirname $(dirname "$0"))
 
 ################################################################################
 
+question() {
+    read -p "$(tput setaf 6)$@$(tput sgr0)" ANSWER
+}
+
 success() {
     tput setaf 2
-    echo -e $@
+    echo -e "$@"
     tput sgr0
     exit 0
 }
 
 error() {
     tput setaf 1
-    echo -e $@
+    echo -e "$@"
     tput sgr0
     exit 1
 }
