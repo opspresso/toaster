@@ -74,33 +74,43 @@ nothing() {
 
 ################################################################################
 
-OS_NAME="$(uname)"
+OS_NAME="$(uname | awk '{print tolower($0)}')"
 OS_FULL="$(uname -a)"
+OS_TYPE=
 
-if [ "${OS_NAME}" == "Linux" ]; then
+if [ "${OS_NAME}" == "linux" ]; then
     if [ $(echo "${OS_FULL}" | grep -c "amzn1") -gt 0 ]; then
-        OS_TYPE="amzn"
+        OS_TYPE="yum"
     elif [ $(echo "${OS_FULL}" | grep -c "amzn2") -gt 0 ]; then
-        OS_TYPE="amzn"
+        OS_TYPE="yum"
     elif [ $(echo "${OS_FULL}" | grep -c "el6") -gt 0 ]; then
-        OS_TYPE="el6"
+        OS_TYPE="yum"
     elif [ $(echo "${OS_FULL}" | grep -c "el7") -gt 0 ]; then
-        OS_TYPE="el7"
+        OS_TYPE="yum"
     elif [ $(echo "${OS_FULL}" | grep -c "Ubuntu") -gt 0 ]; then
-        OS_TYPE="Ubuntu"
-    elif [ $(echo "${OS_FULL}" | grep -c "generic") -gt 0 ]; then
-        OS_TYPE="generic"
+        OS_TYPE="apt"
     elif [ $(echo "${OS_FULL}" | grep -c "coreos") -gt 0 ]; then
-        OS_TYPE="coreos"
+        OS_TYPE="apt"
     fi
-elif [ "${OS_NAME}" == "Darwin" ]; then
-    OS_TYPE="${OS_NAME}"
-elif [ $(echo "${OS_FULL}" | grep -c "MINGW64") -gt 0 ]; then
-    OS_TYPE="${OS_NAME}"
+elif [ "${OS_NAME}" == "darwin" ]; then
+    OS_TYPE="brew"
 fi
 
 if [ "${OS_TYPE}" == "" ]; then
-    error "Not supported OS. [${OS_FULL}]"
+    error "Not supported OS. [${OS_NAME}]"
+fi
+
+if [ "${OS_TYPE}" == "brew" ]; then
+    # brew for mac
+    command -v brew > /dev/null || ruby -e "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install)"
+else
+    # localtime
+    sudo ln -sf "/usr/share/zoneinfo/Asia/Seoul" "/etc/localtime"
+
+    # for ubuntu
+    if [ "${OS_TYPE}" == "apt" ]; then
+        export LC_ALL=C
+    fi
 fi
 
 ################################################################################
@@ -123,19 +133,8 @@ if [ "${HOME}" != "/root" ]; then
     SUDO="sudo"
 fi
 
-################################################################################
-
-BUCKET="repo.toast.sh"
-if [ "${AWS_DEFAULT_BUCKET}" != "" ]; then
-    BUCKET="${AWS_DEFAULT_BUCKET}"
-fi
-
-REGION="ap-northeast-2"
-if [ "${AWS_DEFAULT_REGION}" != "" ]; then
-    REGION="${AWS_DEFAULT_REGION}"
-fi
-
-################################################################################
+BUCKET=${AWS_DEFAULT_BUCKET:-repo.toast.sh}
+REGION=${AWS_DEFAULT_REGION:-ap-northeast-2}
 
 CONFIG="${HOME}/.toast"
 if [ -f "${CONFIG}" ]; then
@@ -179,11 +178,10 @@ toast() {
 
 prepare() {
     service_update
-    service_install "git zip unzip"
 
-#    command -v git   > /dev/null || service_install git
-#    command -v zip   > /dev/null || service_install zip
-#    command -v unzip > /dev/null || service_install unzip
+    command -v git   > /dev/null || service_install git
+    command -v zip   > /dev/null || service_install zip
+    command -v unzip > /dev/null || service_install unzip
 }
 
 update() {
@@ -739,26 +737,30 @@ deploy_lambda() {
 }
 
 service_update() {
-    if [ "${OS_TYPE}" == "Ubuntu" ] || [ "${OS_TYPE}" == "coreos" ]; then
-        ${SUDO} apt-get update
-    elif [ "${OS_TYPE}" == "amzn" ] || [ "${OS_TYPE}" == "el6" ] || [ "${OS_TYPE}" == "el7" ]; then
+    if [ "${OS_TYPE}" == "apt" ]; then
+        ${SUDO} apt update && ${SUDO} apt upgrade -y
+    elif [ "${OS_TYPE}" == "yum" ]; then
         ${SUDO} yum update -y
+    elif [ "${OS_TYPE}" == "brew" ]; then
+        brew update && brew upgrade
     fi
 }
 
 service_install() {
-    if [ "${OS_TYPE}" == "Ubuntu" ] || [ "${OS_TYPE}" == "coreos" ]; then
-        ${SUDO} apt-get install -y $1
-    elif [ "${OS_TYPE}" == "amzn" ] || [ "${OS_TYPE}" == "el6" ] || [ "${OS_TYPE}" == "el7" ]; then
+    if [ "${OS_TYPE}" == "apt" ]; then
+        ${SUDO} apt install -y $1
+    elif [ "${OS_TYPE}" == "yum" ]; then
         ${SUDO} yum install -y $1
     fi
 }
 
 service_remove() {
-    if [ "${OS_TYPE}" == "Ubuntu" ] || [ "${OS_TYPE}" == "coreos" ]; then
-        ${SUDO} apt-get remove -y $1
-    elif [ "${OS_TYPE}" == "amzn" ] || [ "${OS_TYPE}" == "el6" ] || [ "${OS_TYPE}" == "el7" ]; then
+    if [ "${OS_TYPE}" == "apt" ]; then
+        ${SUDO} apt remove -y $1
+    elif [ "${OS_TYPE}" == "yum" ]; then
         ${SUDO} yum remove -y $1
+    elif [ "${OS_TYPE}" == "brew" ]; then
+        brew install $1
     fi
 }
 
@@ -766,7 +768,7 @@ service_remove() {
 
 self_info() {
     bar
-    print "OS    : ${OS_NAME} ${OS_TYPE}"
+    print "OS    : ${OS_FULL}"
     print "HOME  : ${HOME}"
     bar
 }
