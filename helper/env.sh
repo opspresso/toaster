@@ -6,7 +6,7 @@ OUTPUT=$3
 
 ANSWER=
 
-ENV_DIR=
+HOME_DIR=
 
 SHELL_DIR=$(dirname $(dirname "$0"))
 
@@ -37,7 +37,7 @@ usage() {
         VER="v3"
     fi
 
-    LS=$(ls -m ${ENV_DIR})
+    LS=$(ls -m ${HOME_DIR})
 
     #figlet env
     echo "================================================================================"
@@ -51,7 +51,7 @@ usage() {
     echo "  REGION: ap-northeast-2"
     echo "  OUTPUT: json"
     echo "================================================================================"
-    echo "  PATH  : ${ENV_DIR}"
+    echo "  PATH  : ${HOME_DIR}"
     echo "================================================================================"
 
     exit 1
@@ -71,7 +71,7 @@ prepare() {
 }
 
 directory() {
-    if [ -z "${ENV_DIR}" ] || [ ! -d "${ENV_DIR}" ]; then
+    if [ -z "${HOME_DIR}" ] || [ ! -d "${HOME_DIR}" ]; then
         USER=${USER:=$(whoami)}
 
         pushd ~
@@ -79,28 +79,28 @@ directory() {
         popd
 
         question "Please input credentials directory. [${DEFAULT}]: "
-        ENV_DIR=${ANSWER:-${DEFAULT}}
+        HOME_DIR=${ANSWER:-${DEFAULT}}
     fi
 
-    if [ -z "${ENV_DIR}" ] || [ ! -d "${ENV_DIR}" ]; then
-        error "[${ENV_DIR}] is not directory."
+    if [ -z "${HOME_DIR}" ] || [ ! -d "${HOME_DIR}" ]; then
+        error "[${HOME_DIR}] is not directory."
     fi
 
-    echo "ENV_DIR=${ENV_DIR}" > "${CONFIG}"
+    echo "HOME_DIR=${HOME_DIR}" > "${CONFIG}"
 }
 
 deploy() {
     if [ -z "${NAME}" ]; then
         usage
     fi
-    if [ ! -f "${ENV_DIR}/${NAME}" ]; then
+    if [ ! -f "${HOME_DIR}/${NAME}" ]; then
         usage
     fi
 
     REGION=${REGION:-ap-northeast-2}
     OUTPUT=${OUTPUT:-json}
 
-    cp -rf ${ENV_DIR}/${NAME} ~/.aws/credentials
+    cp -rf ${HOME_DIR}/${NAME} ~/.aws/credentials
 
     aws configure set default.region ${REGION}
     aws configure set default.output ${OUTPUT}

@@ -6,7 +6,7 @@ USER=$3
 
 ANSWER=
 
-SSH_DIR=
+HOME_DIR=
 
 SHELL_DIR=$(dirname $(dirname "$0"))
 
@@ -37,7 +37,7 @@ usage() {
         VER="v3"
     fi
 
-    LS=$(ls -m ${SSH_DIR})
+    LS=$(ls -m ${HOME_DIR})
 
     #figlet ssh
     echo "================================================================================"
@@ -52,7 +52,7 @@ usage() {
     echo "  HOST: hostname"
     echo "  USER: ec2-user"
     echo "================================================================================"
-    echo "  PATH: ${SSH_DIR}"
+    echo "  PATH: ${HOME_DIR}"
     echo "================================================================================"
 
     exit 1
@@ -70,7 +70,7 @@ prepare() {
 }
 
 directory() {
-    if [ -z "${SSH_DIR}" ] || [ ! -d "${SSH_DIR}" ]; then
+    if [ -z "${HOME_DIR}" ] || [ ! -d "${HOME_DIR}" ]; then
         USER=${USER:=$(whoami)}
 
         pushd ~
@@ -78,16 +78,16 @@ directory() {
         popd
 
         question "Please input pem directory. [${DEFAULT}]: "
-        SSH_DIR=${ANSWER:-${DEFAULT}}
+        HOME_DIR=${ANSWER:-${DEFAULT}}
     fi
 
-    if [ -z "${SSH_DIR}" ] || [ ! -d "${SSH_DIR}" ]; then
-        error "[${SSH_DIR}] is not directory."
+    if [ -z "${HOME_DIR}" ] || [ ! -d "${HOME_DIR}" ]; then
+        error "[${HOME_DIR}] is not directory."
     fi
 
-    chmod 600 ${SSH_DIR}/*.pem
+    chmod 600 ${HOME_DIR}/*.pem
 
-    echo "SSH_DIR=${SSH_DIR}" > "${CONFIG}"
+    echo "HOME_DIR=${HOME_DIR}" > "${CONFIG}"
 
     echo "Host * " > ~/.ssh/config
     echo "    StrictHostKeyChecking no " >> ~/.ssh/config
@@ -99,10 +99,10 @@ connect() {
     if [ "${PEM}" == "" ]; then
         PEM="nalbam"
     fi
-    if [ ! -f "${SSH_DIR}/${PEM}" ]; then
+    if [ ! -f "${HOME_DIR}/${PEM}" ]; then
         PEM="${PEM}.pem"
     fi
-    if [ ! -f "${SSH_DIR}/${PEM}" ]; then
+    if [ ! -f "${HOME_DIR}/${PEM}" ]; then
         usage
     fi
 
@@ -118,7 +118,7 @@ connect() {
       mkdir -p ~/.aws
     fi
 
-    ssh -i ${SSH_DIR}/${PEM} ${USER}@${HOST}
+    ssh -i ${HOME_DIR}/${PEM} ${USER}@${HOST}
 }
 
 ################################################################################

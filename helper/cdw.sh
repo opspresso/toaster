@@ -5,7 +5,7 @@ DIR=
 
 ANSWER=
 
-CDW_DIR=
+HOME_DIR=
 
 SHELL_DIR=$(dirname $(dirname "$0"))
 
@@ -44,7 +44,7 @@ usage() {
     echo " | (_| (_| |\ V  V /  "
     echo "  \___\__,_| \_/\_/  by nalbam (${VER}) "
     echo "================================================================================"
-    echo "  PATH  : ${CDW_DIR}"
+    echo "  PATH  : ${HOME_DIR}"
     echo "================================================================================"
 
     exit 1
@@ -62,27 +62,27 @@ prepare() {
 }
 
 directory() {
-    if [ -z "${CDW_DIR}" ] || [ ! -d "${CDW_DIR}" ]; then
+    if [ -z "${HOME_DIR}" ] || [ ! -d "${HOME_DIR}" ]; then
         pushd ~
         DEFAULT="$(pwd)/work/src"
         popd
 
         question "Please input base directory. [${DEFAULT}]: "
-        CDW_DIR=${ANSWER:-${DEFAULT}}
+        HOME_DIR=${ANSWER:-${DEFAULT}}
     fi
 
-    mkdir -p ${CDW_DIR}
+    mkdir -p ${HOME_DIR}
 
-    if [ ! -d "${CDW_DIR}" ]; then
-        error "[${CDW_DIR}] is not directory."
+    if [ ! -d "${HOME_DIR}" ]; then
+        error "[${HOME_DIR}] is not directory."
     fi
 
-    echo "CDW_DIR=${CDW_DIR}" > "${CONFIG}"
+    echo "HOME_DIR=${HOME_DIR}" > "${CONFIG}"
 }
 
 dir() {
     TEMP=/tmp/cdr.tmp
-    find ${CDW_DIR} -maxdepth 2 -type d -exec ls -d "{}" \; > ${TEMP}
+    find ${HOME_DIR} -maxdepth 2 -type d -exec ls -d "{}" \; > ${TEMP}
 
     echo "================================================================================"
 
@@ -97,7 +97,7 @@ dir() {
 
 cdw() {
     TEMP=/tmp/cdr.tmp
-    find ${CDW_DIR} -maxdepth 2 -type d -exec ls -d "{}" \; > ${TEMP}
+    find ${HOME_DIR} -maxdepth 2 -type d -exec ls -d "{}" \; > ${TEMP}
 
     if [ "${NUM}" == "" ]; then
         echo "================================================================================"
