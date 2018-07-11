@@ -1,12 +1,12 @@
 #!/bin/bash
 
 success() {
-    echo -e "$1"
+    echo -e "$(tput setaf 2)$@$(tput sgr0)"
     exit 0
 }
 
 error() {
-    echo -e "$1"
+    echo -e "$(tput setaf 1)$@$(tput sgr0)"
     exit 1
 }
 
