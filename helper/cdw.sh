@@ -103,13 +103,13 @@ cdw() {
     fi
 
     if [ -z "${ANSWER}" ]; then
-        usage
+        error
     fi
 
     DIR=$(sed -n ${ANSWER}p ${TEMP})
 
     if [ -z "${DIR}" ] || [ ! -d ${DIR} ]; then
-        usage
+        error
     fi
 
     success "cd ${DIR}"
@@ -127,4 +127,4 @@ directory
 
 dir
 
-#cdw
+cdw
