@@ -120,6 +120,9 @@ toast() {
         update)
             update
             ;;
+        bastion)
+            bastion
+            ;;
         config)
             config
             ;;
@@ -153,6 +156,10 @@ prepare() {
 
 update() {
     curl -sL toast.sh/install-v3 | bash
+}
+
+bastion() {
+    curl -sL toast.sh/helper/bastion.sh | bash
 }
 
 config() {

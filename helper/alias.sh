@@ -6,9 +6,8 @@ alias e="~/toaster/helper/env.sh"
 alias s="~/toaster/helper/ssh.sh"
 
 alias t="~/toaster/toast.sh"
-alias ta="t auto"
 alias tu="t update"
-alias td="t deploy"
+alias tb="t bastion"
 
 alias st="/Applications/Sublime\ Text.app/Contents/SharedSupport/bin/subl"
 
