@@ -114,10 +114,6 @@ connect() {
         USER="ec2-user"
     fi
 
-    if [ ! -d ~/.aws ]; then
-      mkdir -p ~/.aws
-    fi
-
     ssh -i ${HOME_DIR}/${PEM} ${USER}@${HOST}
 }
 

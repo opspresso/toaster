@@ -100,10 +100,10 @@ deploy() {
     REGION=${REGION:-ap-northeast-2}
     OUTPUT=${OUTPUT:-json}
 
-    cp -rf ${HOME_DIR}/${NAME} ~/.aws/credentials
-
     aws configure set default.region ${REGION}
     aws configure set default.output ${OUTPUT}
+
+    cp -f ${HOME_DIR}/${NAME} ~/.aws/credentials
 
     success "=> ${NAME} ${REGION} ${OUTPUT}"
 }

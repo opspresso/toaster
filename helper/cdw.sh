@@ -1,9 +1,8 @@
 #!/bin/bash
 
-NUM=$1
 DIR=
 
-ANSWER=
+ANSWER=$1
 
 HOME_DIR=
 
@@ -82,50 +81,34 @@ directory() {
 
 dir() {
     TEMP=/tmp/cdr.tmp
+
     find ${HOME_DIR} -maxdepth 2 -type d -exec ls -d "{}" \; > ${TEMP}
 
-    echo "================================================================================"
-
-    i=0
-    while read v; do
-        i=$(( ${i} + 1 ))
-        printf "%3s %s\n" "$i" "$v";
-    done < ${TEMP}
-
-    echo "================================================================================"
-}
-
-cdw() {
-    TEMP=/tmp/cdr.tmp
-    find ${HOME_DIR} -maxdepth 2 -type d -exec ls -d "{}" \; > ${TEMP}
-
-    if [ "${NUM}" == "" ]; then
+    if [ -z "${ANSWER}" ]; then
         echo "================================================================================"
 
-        i=0
-        while read v; do
-            i=$(( ${i} + 1 ))
-            printf "%3s %s\n" "$i" "$v";
+        IDX=0
+        while read VAL; do
+            IDX=$(( ${IDX} + 1 ))
+            printf "%3s %s\n" "$IDX" "$VAL";
         done < ${TEMP}
 
         echo "================================================================================"
+    fi
+}
 
-        read NUM
+cdw() {
+    if [ -z "${ANSWER}" ]; then
+        question
     fi
 
-    if [ "${NUM}" == "" ]; then
+    if [ -z "${ANSWER}" ]; then
         usage
     fi
 
-    i=0
-    while read v; do
-        i=$(( ${i} + 1 ))
-        if [ "${i}" == "${NUM}" ]; then
-            DIR="${v}"
-        fi
-    done < ${TEMP}
+    DIR=$(sed -n ${ANSWER}p ${TEMP})
 
-    if [ "${DIR}" == "" ] || [ ! -d ${DIR} ]; then
+    if [ -z "${DIR}" ] || [ ! -d ${DIR} ]; then
         usage
     fi
 
@@ -143,4 +126,5 @@ prepare
 directory
 
 dir
+
 #cdw
