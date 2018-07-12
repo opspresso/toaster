@@ -225,20 +225,22 @@ draft version --short
 echo "================================================================================"
 title "# install jenkins-x..."
 
+echo "Temporary skipped."
+
 #if [ "${OS_TYPE}" == "brew" ]; then
 #    command -v jx > /dev/null || brew install jx
 #else
-    VERSION=$(curl -s https://api.github.com/repos/jenkins-x/jx/releases/latest | jq --raw-output '.tag_name')
-
-    if [ "${JENKINS_X}" != "${VERSION}" ]; then
-        curl -L https://github.com/jenkins-x/jx/releases/download/${VERSION}/jx-${OS_NAME}-amd64.tar.gz | tar xz
-        sudo mv jx /usr/local/bin/jx
-
-        JENKINS_X="${VERSION}"
-    fi
+#    VERSION=$(curl -s https://api.github.com/repos/jenkins-x/jx/releases/latest | jq --raw-output '.tag_name')
+#
+#    if [ "${JENKINS_X}" != "${VERSION}" ]; then
+#        curl -L https://github.com/jenkins-x/jx/releases/download/${VERSION}/jx-${OS_NAME}-amd64.tar.gz | tar xz
+#        sudo mv jx /usr/local/bin/jx
+#
+#        JENKINS_X="${VERSION}"
+#    fi
 #fi
 
-jx --version
+#jx --version
 
 # terraform
 echo "================================================================================"
