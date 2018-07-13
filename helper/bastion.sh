@@ -89,16 +89,6 @@ if [ -f ${CONFIG} ]; then
   . ${CONFIG}
 fi
 
-# brew for mac
-if [ "${OS_TYPE}" == "brew" ]; then
-    command -v brew > /dev/null || ruby -e "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install)"
-fi
-
-# for ubuntu
-if [ "${OS_TYPE}" == "apt" ]; then
-    export LC_ALL=C
-fi
-
 # update
 echo "================================================================================"
 title "# update..."
