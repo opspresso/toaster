@@ -10,6 +10,7 @@ alias tu="t update"
 alias tb="t bastion"
 
 alias st="/Applications/Sublime\ Text.app/Contents/SharedSupport/bin/subl"
+alias vs="/Applications/Visual\ Studio\ Code.app/Contents/Resources/app/bin/code"
 
 alias tf="terraform"
 alias tfp="tf init && tf plan"
