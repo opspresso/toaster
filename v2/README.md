@@ -1,14 +1,16 @@
 # toaster
 
-### Install
-```
+## Install
+
+```bash
 curl -sL toast.sh/install | bash
 
 ~/toaster/toast.sh auto {fleet} {phase} {org} {token}
 ```
 
-### AWS User data
-```
+## AWS User data
+
+```bash
 #!/bin/bash
 
 runuser -l {user} -c 'curl -sL toast.sh/install | bash'
@@ -16,12 +18,13 @@ runuser -l {user} -c 'curl -sL toast.sh/install | bash'
 runuser -l {user} -c '~/toaster/toast.sh auto {fleet} {phase} {org} {token}'
 ```
 
-```
+```bash
 cat /var/log/cloud-init-output.log
 ```
 
-### Usage
-```
+## Usage
+
+```bash
 ~/toaster/toast.sh auto
 ~/toaster/toast.sh init java
 ~/toaster/toast.sh deploy fleet
@@ -29,8 +32,9 @@ cat /var/log/cloud-init-output.log
 ~/toaster/toast.sh bucket {target}
 ```
 
-### Remote
-```
+## Remote
+
+```bash
 ~/toaster/remote.sh {user} {host} {port} auto
 ~/toaster/remote.sh {user} {host} {port} init java
 ~/toaster/remote.sh {user} {host} {port} deploy fleet
