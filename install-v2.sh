@@ -68,6 +68,7 @@ if [ -f ${SHELL_DIR}/helper/alias.sh ]; then
 fi
 
 if [ -f ${ALIAS} ]; then
+    touch ~/.bashrc
     HAS_ALIAS="$(cat ~/.bashrc | grep bash_aliases | wc -l)"
 
     if [ "${HAS_ALIAS}" == "0" ]; then
