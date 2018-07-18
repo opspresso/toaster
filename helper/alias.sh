@@ -4,6 +4,7 @@ alias n="~/toaster/helper/nsh.sh"
 alias c="~/toaster/helper/cdw.sh"
 alias e="~/toaster/helper/env.sh"
 alias s="~/toaster/helper/ssh.sh"
+alias v="~/toaster/helper/vscode.sh"
 
 alias t="~/toaster/toast.sh"
 alias tu="t update"
