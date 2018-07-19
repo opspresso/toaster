@@ -113,7 +113,7 @@ vscode() {
     fi
 
     if [ "${OS_NAME}" == "linux" ]; then
-        bash /usr/local/bin/code ${DIR}
+        bash /usr/bin/code ${DIR}
     elif [ "${OS_NAME}" == "darwin" ]; then
         bash /Applications/Visual\ Studio\ Code.app/Contents/Resources/app/bin/code ${DIR}
     fi
