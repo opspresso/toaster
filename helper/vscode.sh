@@ -106,7 +106,11 @@ vscode() {
         error
     fi
 
-    DIR=$(sed -n ${ANSWER}p ${TEMP})
+    if [ "${ANSWER}" == "." ]; then
+        DIR="."
+    else
+        DIR=$(sed -n ${ANSWER}p ${TEMP})
+    fi
 
     if [ -z "${DIR}" ] || [ ! -d ${DIR} ]; then
         error
