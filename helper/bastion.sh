@@ -78,6 +78,7 @@ KOPS=
 HELM=
 DRAFT=
 SKAFFOLD=
+ISTIOCTL=
 JENKINS_X=
 TERRAFORM=
 NODE=
@@ -206,6 +207,30 @@ title "# install draft..."
 #fi
 
 draft version --short
+
+# istioctl
+echo "================================================================================"
+title "# install istioctl..."
+
+# if [ "${OS_TYPE}" == "brew" ]; then
+#     command -v istioctl > /dev/null || brew install istioctl
+# else
+    VERSION=$(curl -s https://api.github.com/repos/istio/istio/releases/latest | jq --raw-output '.tag_name')
+
+    if [ "${ISTIOCTL}" != "${VERSION}" ]; then
+        if [ "${OS_NAME}" == "darwin" ]; then
+            ISTIO_OS="osx"
+        else
+            ISTIO_OS="${OS_NAME}"
+        fi
+        curl -L https://github.com/istio/istio/releases/download/${VERSION}/istio-${VERSION}-${ISTIO_OS}.tar.gz | tar xz
+        sudo mv istio-${VERSION}/bin/istioctl /usr/local/bin/istioctl && rm -rf istio-${VERSION}
+
+        ISTIOCTL="${VERSION}"
+    fi
+# fi
+
+istioctl version
 
 # skaffold
 echo "================================================================================"
@@ -362,6 +387,7 @@ echo "KUBECTL=\"${KUBECTL}\"" >> ${CONFIG}
 echo "KOPS=\"${KOPS}\"" >> ${CONFIG}
 echo "HELM=\"${HELM}\"" >> ${CONFIG}
 echo "DRAFT=\"${DRAFT}\"" >> ${CONFIG}
+echo "ISTIOCTL=\"${ISTIOCTL}\"" >> ${CONFIG}
 echo "SKAFFOLD=\"${SKAFFOLD}\"" >> ${CONFIG}
 echo "JENKINS_X=\"${JENKINS_X}\"" >> ${CONFIG}
 echo "TERRAFORM=\"${TERRAFORM}\"" >> ${CONFIG}
