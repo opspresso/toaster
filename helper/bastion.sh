@@ -230,7 +230,7 @@ title "# install istioctl..."
     fi
 # fi
 
-istioctl version
+istioctl version --short
 
 # skaffold
 echo "================================================================================"
