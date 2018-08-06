@@ -208,6 +208,25 @@ title "# install draft..."
 
 draft version --short
 
+# skaffold
+echo "================================================================================"
+title "# install skaffold..."
+
+#if [ "${OS_TYPE}" == "brew" ]; then
+#    command -v skaffold > /dev/null || brew install skaffold
+#else
+    VERSION=$(curl -s https://api.github.com/repos/GoogleContainerTools/skaffold/releases/latest | jq --raw-output '.tag_name')
+
+    if [ "${SKAFFOLD}" != "${VERSION}" ]; then
+        curl -LO https://storage.googleapis.com/skaffold/releases/${VERSION}/skaffold-${OS_NAME}-amd64
+        chmod +x skaffold-${OS_NAME}-amd64 && sudo mv skaffold-${OS_NAME}-amd64 /usr/local/bin/skaffold
+
+        SKAFFOLD="${VERSION}"
+    fi
+#fi
+
+skaffold version
+
 # istioctl
 echo "================================================================================"
 title "# install istioctl..."
@@ -231,25 +250,6 @@ title "# install istioctl..."
 # fi
 
 istioctl version --short
-
-# skaffold
-echo "================================================================================"
-title "# install skaffold..."
-
-#if [ "${OS_TYPE}" == "brew" ]; then
-#    command -v skaffold > /dev/null || brew install skaffold
-#else
-    VERSION=$(curl -s https://api.github.com/repos/GoogleContainerTools/skaffold/releases/latest | jq --raw-output '.tag_name')
-
-    if [ "${SKAFFOLD}" != "${VERSION}" ]; then
-        curl -LO https://storage.googleapis.com/skaffold/releases/${VERSION}/skaffold-${OS_NAME}-amd64
-        chmod +x skaffold-${OS_NAME}-amd64 && sudo mv skaffold-${OS_NAME}-amd64 /usr/local/bin/skaffold
-
-        SKAFFOLD="${VERSION}"
-    fi
-#fi
-
-skaffold version
 
 # jenkins-x
 echo "================================================================================"
@@ -387,8 +387,8 @@ echo "KUBECTL=\"${KUBECTL}\"" >> ${CONFIG}
 echo "KOPS=\"${KOPS}\"" >> ${CONFIG}
 echo "HELM=\"${HELM}\"" >> ${CONFIG}
 echo "DRAFT=\"${DRAFT}\"" >> ${CONFIG}
-echo "ISTIOCTL=\"${ISTIOCTL}\"" >> ${CONFIG}
 echo "SKAFFOLD=\"${SKAFFOLD}\"" >> ${CONFIG}
+echo "ISTIOCTL=\"${ISTIOCTL}\"" >> ${CONFIG}
 echo "JENKINS_X=\"${JENKINS_X}\"" >> ${CONFIG}
 echo "TERRAFORM=\"${TERRAFORM}\"" >> ${CONFIG}
 echo "NODE=\"${NODE}\"" >> ${CONFIG}
