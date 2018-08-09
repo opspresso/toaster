@@ -8,7 +8,7 @@ ANSWER=
 
 HOME_DIR=
 
-SHELL_DIR=$(dirname $(dirname "$0"))
+SHELL_DIR=${HOME}/toaster
 
 ################################################################################
 

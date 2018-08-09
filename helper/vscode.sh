@@ -6,7 +6,7 @@ ANSWER=$1
 
 HOME_DIR=
 
-SHELL_DIR=$(dirname $(dirname "$0"))
+SHELL_DIR=${HOME}/toaster
 
 OS_NAME="$(uname | awk '{print tolower($0)}')"
 

@@ -1,10 +1,12 @@
 #!/bin/bash
 
-alias n="~/toaster/helper/nsh.sh"
-alias c="~/toaster/helper/cdw.sh"
+#alias c="~/toaster/helper/cdw.sh"
 alias e="~/toaster/helper/env.sh"
+alias n="~/toaster/helper/nsh.sh"
 alias s="~/toaster/helper/ssh.sh"
+
 alias v="~/toaster/helper/vscode.sh"
+alias v.="~/toaster/helper/vscode.sh ."
 
 alias t="~/toaster/toast.sh"
 alias tu="t update"
@@ -27,3 +29,11 @@ alias vgh="vg halt"
 alias vgd="vg destroy"
 
 alias p="reveal-md -w --port 8888 --theme https://raw.githubusercontent.com/nalbam/docs/master/.theme/black.css"
+
+c() {
+    ~/toaster/helper/cdw.sh
+    DIR=$(cat /tmp/cdw.result)
+    if [ ! -z ${DIR} ]; then
+        cd ${DIR}
+    fi
+}

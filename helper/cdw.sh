@@ -6,7 +6,7 @@ ANSWER=$1
 
 HOME_DIR=
 
-SHELL_DIR=$(dirname $(dirname "$0"))
+SHELL_DIR=${HOME}/toaster
 
 ################################################################################
 
@@ -58,6 +58,8 @@ prepare() {
     if [ -f ${CONFIG} ]; then
         . ${CONFIG}
     fi
+
+    rm -rf /tmp/cdw.*
 }
 
 directory() {
@@ -80,7 +82,7 @@ directory() {
 }
 
 dir() {
-    TEMP=/tmp/cdr.tmp
+    TEMP=/tmp/cdw.tmp
 
     find ${HOME_DIR} -maxdepth 2 -type d -exec ls -d "{}" \; > ${TEMP}
 
@@ -106,17 +108,15 @@ cdw() {
         error
     fi
 
-    DIR=$(sed -n ${ANSWER}p ${TEMP})
+    export DIR=$(sed -n ${ANSWER}p ${TEMP})
 
     if [ -z "${DIR}" ] || [ ! -d ${DIR} ]; then
         error
     fi
 
-    success "cd ${DIR}"
+    success "${DIR}"
 
-    cd ${DIR}
-
-    exec bash
+    echo "${DIR}" > /tmp/cdw.result
 }
 
 ################################################################################
@@ -127,4 +127,4 @@ directory
 
 dir
 
-#cdw
+cdw
