@@ -101,7 +101,7 @@ dir() {
 
 cdw() {
     if [ -z "${ANSWER}" ]; then
-        question
+        question "Choose directory: "
     fi
 
     if [ -z "${ANSWER}" ]; then
