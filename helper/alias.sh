@@ -31,7 +31,7 @@ alias vgd="vg destroy"
 alias p="reveal-md -w --port 8888 --theme https://raw.githubusercontent.com/nalbam/docs/master/.theme/black.css"
 
 c() {
-    ~/toaster/helper/cdw.sh
+    ~/toaster/helper/cdw.sh ${1}
     DIR=$(cat /tmp/cdw.result)
     if [ ! -z ${DIR} ]; then
         cd ${DIR}
