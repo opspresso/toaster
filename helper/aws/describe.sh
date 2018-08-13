@@ -34,8 +34,7 @@ while read REGION; do
 
     aws configure set default.region ${REGION}
 
-    aws ec2 describe-instances | \
-        jq '.Reservations[].Instances[] | {InstanceId,InstanceType,State:.State.Name}'
+    aws ec2 describe-instances | jq '.Reservations[].Instances[] | {InstanceId,InstanceType,State:.State.Name}'
 done < ${REGIONS}
 
 echo "################################################################################"

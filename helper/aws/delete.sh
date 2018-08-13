@@ -63,8 +63,7 @@ while read REGION; do
     aws configure set default.region ${REGION}
 
     # EC2 Instances ('running', 'pending', 'stopping', 'stopped') ('shutting-down', 'terminated')
-    aws ec2 describe-instances | \
-        jq '.Reservations[].Instances[] | {InstanceId,InstanceType,State:.State.Name} | select(.State != "terminated")' | \
+    aws ec2 describe-instances | jq '.Reservations[].Instances[] | {InstanceId,InstanceType,State:.State.Name} | select(.State != "terminated")' | \
         grep InstanceId | cut -d'"' -f4 > ${RESOURCES}
 
     while read KEY; do
@@ -72,8 +71,7 @@ while read REGION; do
         aws ec2 terminate-instances --instance-ids ${KEY} | grep InstanceId
     done < ${RESOURCES}
 
-    aws ec2 describe-instances | \
-        jq '.Reservations[].Instances[] | {InstanceId,InstanceType,State:.State.Name}'
+    aws ec2 describe-instances | jq '.Reservations[].Instances[] | {InstanceId,InstanceType,State:.State.Name}'
 done < ${REGIONS}
 
 echo "################################################################################"
