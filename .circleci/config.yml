@@ -5,7 +5,7 @@ version: 2
 jobs:
   build:
     docker:
-      - image: nalbam/builder:python
+      - image: nalbam/builder
     steps:
       - checkout
       - run: ./package.sh
