@@ -44,7 +44,7 @@ usage() {
     echo "   ___ _ ____   __ "
     echo "  / _ \ '_ \ \ / / "
     echo " |  __/ | | \ V / "
-    echo "  \___|_| |_|\_/  by nalbam (${VER}) "
+    echo "  \___|_| |_|\_/  (${VER}) "
     echo "================================================================================"
     echo " Usage: env.sh {NAME} {REGION} {OUTPUT}"
     echo "  NAME  : ${LS}"

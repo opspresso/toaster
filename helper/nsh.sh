@@ -54,7 +54,7 @@ usage() {
     echo "  _ __  ___| |__ "
     echo " | '_ \/ __| '_ \ "
     echo " | | | \__ \ | | | "
-    echo " |_| |_|___/_| |_|  by nalbam (${VER}) "
+    echo " |_| |_|___/_| |_|  (${VER}) "
     echo "================================================================================"
     echo " Usage: nsh.sh {name} {clone|remove|branch|tag|diff|commit|pull|push|pp}"
     echo " [${NOW_DIR}]"

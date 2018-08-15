@@ -48,15 +48,17 @@ else
     MSG="Toast.sh installed. [${NEW}]"
 fi
 
-# download
-curl -sL -o /tmp/toaster.tar.gz ${REPO}/toaster-v2.tar.gz
+DIST=/tmp/toaster.tar.gz
 
-if [ ! -f /tmp/toaster.tar.gz ]; then
+# download
+curl -sL -o ${DIST} ${REPO}/toaster-v2.tar.gz
+
+if [ ! -f ${DIST} ]; then
     error "Can not download. [${REPO}]"
 fi
 
 # install
-tar -zxf /tmp/toaster.tar.gz -C ${SHELL_DIR}
+tar -zxf ${DIST} -C ${SHELL_DIR}
 
 # cp version
 cp -rf ${SHELL_DIR}/conf/ver.new ${SHELL_DIR}/conf/ver.now

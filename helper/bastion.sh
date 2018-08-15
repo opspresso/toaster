@@ -1,6 +1,8 @@
 #!/bin/bash
 
-VERSION=$(curl -sL toast.sh/toaster.txt)
+# curl -sL toast.sh/helper/bastion.sh | bash
+
+VER=$(curl -sL toast.sh/toaster.txt)
 
 #figlet bastion
 echo "================================================================================"
@@ -8,10 +10,8 @@ echo "  _               _   _              "
 echo " | |__   __ _ ___| |_(_) ___  _ __   "
 echo " | '_ \ / _' / __| __| |/ _ \| '_ \  "
 echo " | |_) | (_| \__ \ |_| | (_) | | | | "
-echo " |_.__/ \__,_|___/\__|_|\___/|_| |_|  by nalbam (${VERSION}) "
+echo " |_.__/ \__,_|___/\__|_|\___/|_| |_|  (${VER}) "
 echo "================================================================================"
-
-# curl -sL toast.sh/helper/bastion.sh | bash
 
 title() {
     echo -e "$(tput setaf 3)$@$(tput sgr0)"

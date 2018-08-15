@@ -33,6 +33,12 @@ cp -rf extra helper install build/v3/
 # helper
 cp -rf helper target/
 
+# draft
+cp -rf draft.sh target/draft
+pushd draft
+tar -czf ../target/draft.tar.gz *
+popd
+
 # toaster v2
 pushd build/v2
 tar -czf ../../target/toaster-v2.tar.gz *
