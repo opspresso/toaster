@@ -45,6 +45,20 @@ usage() {
 
 ################################################################################
 
+if [ ! -f Dockerfile ]; then
+    error "File not found. [Dockerfile]"
+fi
+
+if [ -f draft.toml ]; then
+    question "Are you sure? (YES/[no]) : "
+
+    if [ "${ANSWER}" == "YES" ]; then
+        exit 0
+    fi
+fi
+
+mkdir -p charts/acme/templates
+
 DIST=/tmp/draft.tar.gz
 
 # download
@@ -54,5 +68,8 @@ if [ ! -f ${DIST} ]; then
     error "Can not download. [${REPO}]"
 fi
 
-# un pack
-tar -zxf ${DIST}
+# untar
+tar -zxf ${DIST} ${TMP}
+
+mv -f dockerignore .dockerignore
+mv -f draftignore .draftignore
