@@ -1147,7 +1147,7 @@ init_nginx() {
     if [ ! -f "${SHELL_DIR}/.config_nginx" ]; then
         echo_ "init nginx..."
 
-        ${SHELL_DIR}/install/nginx.sh "${REPO_PATH}"
+        ${SHELL_DIR}/extra/install/nginx.sh "${REPO_PATH}"
 
         NGINX_HOME="/usr/local/nginx"
 
@@ -1213,7 +1213,7 @@ init_node() {
     if [ ! -f "${SHELL_DIR}/.config_node" ]; then
         echo_ "init node..."
 
-        ${SHELL_DIR}/install/node.sh "${REPO_PATH}"
+        ${SHELL_DIR}/extra/install/node.sh "${REPO_PATH}"
 
         NODE_HOME="/usr/local/node"
 
@@ -1247,7 +1247,7 @@ init_java() {
 
         echo_ "init java${VERSION}..."
 
-        ${SHELL_DIR}/install/java${VERSION}.sh
+        ${SHELL_DIR}/extra/install/java${VERSION}.sh
 
         JAVA_HOME="/usr/java/default"
 
@@ -1275,7 +1275,7 @@ init_maven() {
 
         echo_ "init maven${VERSION}..."
 
-        ${SHELL_DIR}/install/maven${VERSION}.sh "${REPO_PATH}"
+        ${SHELL_DIR}/extra/install/maven${VERSION}.sh "${REPO_PATH}"
 
         MAVEN_HOME="${APPS_DIR}/maven${VERSION}"
 
@@ -1304,7 +1304,7 @@ init_tomcat() {
 
         echo_ "init tomcat${VERSION}..."
 
-        ${SHELL_DIR}/install/tomcat${VERSION}.sh "${REPO_PATH}"
+        ${SHELL_DIR}/extra/install/tomcat${VERSION}.sh "${REPO_PATH}"
 
         CATALINA_HOME="${APPS_DIR}/tomcat${VERSION}"
 
@@ -1326,7 +1326,7 @@ init_tomcat() {
 init_elasticsearch() {
     echo_ "init elasticsearch..."
 
-    ${SHELL_DIR}/install/elasticsearch.sh
+    ${SHELL_DIR}/extra/install/elasticsearch.sh
 
     echo_bar
 }
@@ -1334,7 +1334,7 @@ init_elasticsearch() {
 init_kibana() {
     echo_ "init kibana..."
 
-    ${SHELL_DIR}/install/kibana.sh
+    ${SHELL_DIR}/extra/install/kibana.sh
 
     echo_bar
 }
@@ -1342,7 +1342,7 @@ init_kibana() {
 init_logstash() {
     echo_ "init logstash..."
 
-    ${SHELL_DIR}/install/logstash.sh
+    ${SHELL_DIR}/extra/install/logstash.sh
 
     echo_bar
 }
@@ -1350,7 +1350,7 @@ init_logstash() {
 init_filebeat() {
     echo_ "init filebeat..."
 
-    ${SHELL_DIR}/install/filebeat.sh
+    ${SHELL_DIR}/extra/install/filebeat.sh
 
     echo_bar
 }

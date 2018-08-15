@@ -314,7 +314,7 @@ install_java() {
 
     print "install java${VERSION}..."
 
-    ${SHELL_DIR}/install/java${VERSION}.sh "${BUCKET}"
+    ${SHELL_DIR}/extra/install/java${VERSION}.sh "${BUCKET}"
 
     bar
     print "$(java -version)"
@@ -324,7 +324,7 @@ install_java() {
 install_elasticsearch() {
     print "install elasticsearch..."
 
-    ${SHELL_DIR}/install/elasticsearch.sh "${BUCKET}"
+    ${SHELL_DIR}/extra/install/elasticsearch.sh "${BUCKET}"
 
     bar
 }
@@ -332,7 +332,7 @@ install_elasticsearch() {
 install_kibana() {
     print "install kibana..."
 
-    ${SHELL_DIR}/install/kibana.sh "${BUCKET}"
+    ${SHELL_DIR}/extra/install/kibana.sh "${BUCKET}"
 
     bar
 }
@@ -340,7 +340,7 @@ install_kibana() {
 install_logstash() {
     print "install logstash..."
 
-    ${SHELL_DIR}/install/logstash.sh "${BUCKET}"
+    ${SHELL_DIR}/extra/install/logstash.sh "${BUCKET}"
 
     bar
 }
@@ -348,7 +348,7 @@ install_logstash() {
 install_filebeat() {
     print "install filebeat..."
 
-    ${SHELL_DIR}/install/filebeat.sh "${BUCKET}"
+    ${SHELL_DIR}/extra/install/filebeat.sh "${BUCKET}"
 
     bar
 }

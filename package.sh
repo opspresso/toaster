@@ -27,8 +27,8 @@ cp -rf install-v3.sh target/install-v3
 cp -rf v2 build/
 cp -rf v3 build/
 
-cp -rf extra helper install build/v2/
-cp -rf extra helper install build/v3/
+cp -rf extra helper build/v2/
+cp -rf extra helper build/v3/
 
 # helper
 cp -rf helper target/
