@@ -158,7 +158,7 @@ title "# install kops..."
 if [ "${OS_TYPE}" == "brew" ]; then
     command -v kops > /dev/null || brew install kops
 else
-    VERSION=$(curl -s https://api.github.com/repos/kubernetes/kops/releases/latest | jq --raw-output '.tag_name')
+    VERSION=$(curl -s https://api.github.com/repos/kubernetes/kops/releases/latest | jq -r '.tag_name')
 
     if [ "${KOPS}" != "${VERSION}" ]; then
         curl -LO https://github.com/kubernetes/kops/releases/download/${VERSION}/kops-${OS_NAME}-amd64
@@ -177,7 +177,7 @@ title "# install helm..."
 if [ "${OS_TYPE}" == "brew" ]; then
     command -v helm > /dev/null || brew install kubernetes-helm
 else
-    VERSION=$(curl -s https://api.github.com/repos/helm/helm/releases/latest | jq --raw-output '.tag_name')
+    VERSION=$(curl -s https://api.github.com/repos/helm/helm/releases/latest | jq -r '.tag_name')
 
     if [ "${HELM}" != "${VERSION}" ]; then
         curl -L https://storage.googleapis.com/kubernetes-helm/helm-${VERSION}-${OS_NAME}-amd64.tar.gz | tar xz
@@ -196,7 +196,7 @@ title "# install draft..."
 #if [ "${OS_TYPE}" == "brew" ]; then
 #    command -v draft > /dev/null || brew install draft
 #else
-    VERSION=$(curl -s https://api.github.com/repos/Azure/draft/releases/latest | jq --raw-output '.tag_name')
+    VERSION=$(curl -s https://api.github.com/repos/Azure/draft/releases/latest | jq -r '.tag_name')
 
     if [ "${DRAFT}" != "${VERSION}" ]; then
         curl -L https://azuredraft.blob.core.windows.net/draft/draft-${VERSION}-${OS_NAME}-amd64.tar.gz | tar xz
@@ -215,7 +215,7 @@ title "# install skaffold..."
 #if [ "${OS_TYPE}" == "brew" ]; then
 #    command -v skaffold > /dev/null || brew install skaffold
 #else
-    VERSION=$(curl -s https://api.github.com/repos/GoogleContainerTools/skaffold/releases/latest | jq --raw-output '.tag_name')
+    VERSION=$(curl -s https://api.github.com/repos/GoogleContainerTools/skaffold/releases/latest | jq -r '.tag_name')
 
     if [ "${SKAFFOLD}" != "${VERSION}" ]; then
         curl -LO https://storage.googleapis.com/skaffold/releases/${VERSION}/skaffold-${OS_NAME}-amd64
@@ -234,7 +234,7 @@ title "# install istioctl..."
 # if [ "${OS_TYPE}" == "brew" ]; then
 #     command -v istioctl > /dev/null || brew install istioctl
 # else
-    VERSION=$(curl -s https://api.github.com/repos/istio/istio/releases/latest | jq --raw-output '.tag_name')
+    VERSION=$(curl -s https://api.github.com/repos/istio/istio/releases/latest | jq -r '.tag_name')
 
     if [ "${ISTIOCTL}" != "${VERSION}" ]; then
         if [ "${OS_NAME}" == "darwin" ]; then
@@ -260,7 +260,7 @@ echo "Temporary skipped."
 #if [ "${OS_TYPE}" == "brew" ]; then
 #    command -v jx > /dev/null || brew install jx
 #else
-#    VERSION=$(curl -s https://api.github.com/repos/jenkins-x/jx/releases/latest | jq --raw-output '.tag_name')
+#    VERSION=$(curl -s https://api.github.com/repos/jenkins-x/jx/releases/latest | jq -r '.tag_name')
 #
 #    if [ "${JENKINS_X}" != "${VERSION}" ]; then
 #        curl -L https://github.com/jenkins-x/jx/releases/download/${VERSION}/jx-${OS_NAME}-amd64.tar.gz | tar xz
@@ -279,7 +279,7 @@ title "# install terraform..."
 if [ "${OS_TYPE}" == "brew" ]; then
     command -v terraform > /dev/null || brew install terraform
 else
-    VERSION=$(curl -s https://api.github.com/repos/hashicorp/terraform/releases/latest | jq --raw-output '.tag_name' | cut -c 2-)
+    VERSION=$(curl -s https://api.github.com/repos/hashicorp/terraform/releases/latest | jq -r '.tag_name' | cut -c 2-)
 
     if [ "${TERRAFORM}" != "${VERSION}" ]; then
         curl -LO https://releases.hashicorp.com/terraform/${VERSION}/terraform_${VERSION}_${OS_NAME}_amd64.zip
