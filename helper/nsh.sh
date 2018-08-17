@@ -129,7 +129,7 @@ prepare() {
     done
 
     # git@github.com:
-    # ssh://git@1.1.1.1:1/
+    # ssh://git@8.8.8.8:443/
     if [ "${PROVIDER}" != "" ]; then
         if [ "${PROVIDER}" == "github.com" ]; then
             GIT_URL="git@${PROVIDER}:"
@@ -139,7 +139,7 @@ prepare() {
             if [ -f ${GIT_PWD}/.git_url ]; then
                 GIT_URL=$(cat ${GIT_PWD}/.git_url)
             else
-                question "Please input git url. (ex: ssh://git@8.8.8.8:8/): "
+                question "Please input git url. (ex: ssh://git@8.8.8.8:443/): "
 
                 GIT_URL=${ANSWER}
 
