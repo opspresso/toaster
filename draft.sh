@@ -52,7 +52,7 @@ fi
 if [ -f draft.toml ]; then
     question "Are you sure? (YES/[no]) : "
 
-    if [ "${ANSWER}" == "YES" ]; then
+    if [ "${ANSWER}" != "YES" ]; then
         exit 0
     fi
 fi
