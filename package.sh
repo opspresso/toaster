@@ -9,44 +9,33 @@ echo "VERSION=${VERSION}"
 
 # toaster.txt
 echo "${VERSION}" > target/toaster.txt
-echo "v2-${VERSION}" > target/toaster-v2.txt
-echo "v3-${VERSION}" > target/toaster-v3.txt
 
-# chmod
+# 755
 find ./** | grep [.]sh | xargs chmod 755
+
+# draft
+cp -rf draft.sh target/draft
+pushd draft/
+tar -czf ../target/draft.tar.gz *
+popd
+
+# helper
+cp -rf helper build/
+cp -rf helper target/
 
 # web
 cp -rf web/* target/
 
 # install.sh
-cp -rf install-v2.sh target/install
-cp -rf install-v2.sh target/install-v2
-cp -rf install-v3.sh target/install-v3
+cp -rf install.sh target/install
+
+# toast.sh
+cp -rf toast.sh build/
 
 # build
-cp -rf v2 build/
-cp -rf v3 build/
-
-cp -rf extra helper build/v2/
-cp -rf extra helper build/v3/
-
-# helper
-cp -rf helper target/
-
-# draft
-cp -rf draft.sh target/draft
-pushd draft
-tar -czf ../target/draft.tar.gz *
+pushd build/
+tar -czf ../target/toaster.tar.gz *
 popd
 
-# toaster v2
-pushd build/v2
-tar -czf ../../target/toaster-v2.tar.gz *
-popd
-
-# toaster v3
-pushd build/v3
-tar -czf ../../target/toaster-v3.tar.gz *
-popd
-
-ls -alh target
+ls -al build
+ls -al target

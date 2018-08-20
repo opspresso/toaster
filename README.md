@@ -2,18 +2,8 @@
 
 <https://toast.sh>
 
-## v2
+## install
 
 ```bash
-curl -sL toast.sh/install-v2 | bash
+curl -sL toast.sh/install | bash
 ```
-
-## v3
-
-```bash
-curl -sL toast.sh/install-v3 | bash
-```
-
-## demo
-
-<http://demo.toast.sh>

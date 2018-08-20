@@ -4,8 +4,8 @@
     <meta charset="utf-8">
     <meta http-equiv="x-ua-compatible" content="ie=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="https://s3.ap-northeast-2.amazonaws.com/cdn.nalbam.com/bootstrap/3.3.7/css/bootstrap.min.css">
-    <link rel="stylesheet" href="https://s3.ap-northeast-2.amazonaws.com/cdn.nalbam.com/bootstrap/3.3.7/css/bootstrap-theme.min.css">
+    <link rel="stylesheet" href="https://cdn.nalbam.com/bootstrap/3.3.7/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://cdn.nalbam.com/bootstrap/3.3.7/css/bootstrap-theme.min.css">
     <title>toast.sh</title>
 </head>
 <body>
@@ -23,33 +23,7 @@
                     <div class="clearfix"></div>
                 </div>
                 <div class="x_content">
-                    <pre>
-curl -sL toast.sh/install | bash
-
-~/toaster/toast.sh auto {fleet} {phase} {org} {token}</pre>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <div class="row">
-        <div class="col-md-12 col-sm-12 col-xs-12">
-            <div class="x_panel">
-                <div class="x_title">
-                    <h2>AWS User data</h2>
-                    <div class="clearfix"></div>
-                </div>
-                <div class="x_content">
-                    <pre>
-#!/bin/bash
-
-runuser -l {user} -c 'curl -sL toast.sh/install | bash'
-
-runuser -l {user} -c '~/toaster/toast.sh auto {fleet} {phase} {org} {token}'</pre>
-                </div>
-                <div class="x_content">
-                        <pre>
-cat /var/log/cloud-init-output.log</pre>
+                    <pre>curl -sL toast.sh/install | bash</pre>
                 </div>
             </div>
         </div>
@@ -63,31 +37,7 @@ cat /var/log/cloud-init-output.log</pre>
                     <div class="clearfix"></div>
                 </div>
                 <div class="x_content">
-                    <pre>
-~/toaster/toast.sh auto
-~/toaster/toast.sh init java
-~/toaster/toast.sh deploy fleet
-~/toaster/toast.sh deploy target {target}
-~/toaster/toast.sh bucket {target}</pre>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <div class="row">
-        <div class="col-md-12 col-sm-12 col-xs-12">
-            <div class="x_panel">
-                <div class="x_title">
-                    <h2>Remote</h2>
-                    <div class="clearfix"></div>
-                </div>
-                <div class="x_content">
-                    <pre>
-~/toaster/remote.sh {user} {host} {port} auto
-~/toaster/remote.sh {user} {host} {port} init java
-~/toaster/remote.sh {user} {host} {port} deploy fleet
-~/toaster/remote.sh {user} {host} {port} deploy target {target}
-~/toaster/remote.sh {user} {host} {port} bucket {target}</pre>
+                    <pre>~/toaster/toast.sh init</pre>
                 </div>
             </div>
         </div>
@@ -101,9 +51,9 @@ cat /var/log/cloud-init-output.log</pre>
 
 </div> <!-- /container -->
 
-<script src="https://s3.ap-northeast-2.amazonaws.com/cdn.nalbam.com/jquery/jquery-3.2.1.min.js"></script>
-<script src="https://s3.ap-northeast-2.amazonaws.com/cdn.nalbam.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
-<script src="https://s3.ap-northeast-2.amazonaws.com/cdn.nalbam.com/analytics/toast.js"></script>
+<script src="https://cdn.nalbam.com/jquery/jquery-3.2.1.min.js"></script>
+<script src="https://cdn.nalbam.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+<script src="https://cdn.nalbam.com/analytics/toast.js"></script>
 
 </body>
 </html>
