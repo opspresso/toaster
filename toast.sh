@@ -49,7 +49,13 @@ done
 ################################################################################
 
 _print() {
-    echo -e "$@"
+    TPUT=
+    command -v tput > /dev/null || TPUT=true
+    if [ -z ${TPUT} ]; then
+        echo -e "$(tput setaf $2)$1$(tput sgr0)"
+    else
+        echo -e "$1"
+    fi
 }
 
 _bar() {
@@ -57,20 +63,20 @@ _bar() {
 }
 
 _result() {
-    _print "$(tput setaf 4)# $@$(tput sgr0)"
+    _print "# $@" 4
 }
 
 _command() {
-    _print "$(tput setaf 3)$ $@$(tput sgr0)"
+    _print "$ $@" 3
 }
 
 _success() {
-    _print "$(tput setaf 2)+ $@$(tput sgr0)"
+    _print "+ $@" 2
     exit 0
 }
 
 _error() {
-    _print "$(tput setaf 1)- $@$(tput sgr0)"
+    _print "- $@" 1
     exit 1
 }
 
