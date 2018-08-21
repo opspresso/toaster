@@ -6,7 +6,6 @@ jobs:
   build:
     docker:
       - image: opspresso/awscli
-    working_directory: ~/repo
     steps:
       - checkout
       - run:
@@ -16,12 +15,10 @@ jobs:
             ./publish.sh toast.sh
             ./publish.sh repo.toast.sh
             ./publish.sh www.toast.sh
-      - store_artifacts:
-          path: ~/repo/target
       - persist_to_workspace:
-          root: ~/repo
+          root: /tmp/workspace
           paths:
-            - target/*
+            - target/
   release:
     docker:
       - image: circleci/golang
