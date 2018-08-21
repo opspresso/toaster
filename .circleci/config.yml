@@ -20,24 +20,24 @@ jobs:
           root: /tmp/workspace
           paths:
             - target/*
-  release:
-    docker:
-      - image: circleci/golang
-    steps:
-      - attach_workspace:
-          at: target
-      - run:
-          name: "Release on GitHub"
-          command: |
-            go get github.com/tcnksm/ghr
-            VERSION=$(cat target/toaster.txt)
-            ghr -t ${GITHUB_TOKEN} -u ${CIRCLE_PROJECT_USERNAME} -r ${CIRCLE_PROJECT_REPONAME} -c ${CIRCLE_SHA1} -delete ${VERSION} target/dist/
+  # release:
+  #   docker:
+  #     - image: circleci/golang
+  #   steps:
+  #     - attach_workspace:
+  #         at: target
+  #     - run:
+  #         name: "Release on GitHub"
+  #         command: |
+  #           go get github.com/tcnksm/ghr
+  #           VERSION=$(cat target/toaster.txt)
+  #           ghr -t ${GITHUB_TOKEN} -u ${CIRCLE_PROJECT_USERNAME} -r ${CIRCLE_PROJECT_REPONAME} -c ${CIRCLE_SHA1} -delete ${VERSION} target/dist/
 
-workflows:
-  version: 2
-  maven:
-    jobs:
-      - build
-      - release:
-          requires:
-            - build
+# workflows:
+#   version: 2
+#   maven:
+#     jobs:
+#       - build
+#       - release:
+#           requires:
+#             - build
