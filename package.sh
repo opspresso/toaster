@@ -13,7 +13,7 @@ increment_version() {
 }
 
 mkdir -p build
-mkdir -p target
+mkdir -p target/dist
 
 VERSION="$(cat VERSION | perl -pe 's/^((\d+\.)*)(\d+)(.*)$/$1.($3+1).$4/e')"
 
@@ -27,9 +27,9 @@ printf "${VERSION}" > target/toaster.txt
 find ./** | grep [.]sh | xargs chmod 755
 
 # draft
-cp -rf draft.sh target/draft
+cp -rf draft.sh target/dist/draft
 pushd draft/
-tar -czf ../target/draft.tar.gz *
+tar -czf ../target/dist/draft.tar.gz *
 popd
 
 # helper
@@ -43,11 +43,11 @@ cp -rf web/* target/
 cp -rf install.sh target/install
 
 # toast.sh
-cp -rf toast.sh build/toast
+cp -rf toast.sh build/dist/toaster
 
 # build
 pushd build/
-tar -czf ../target/toaster.tar.gz *
+tar -czf ../target/dist/toaster.tar.gz *
 popd
 
 ls -al build

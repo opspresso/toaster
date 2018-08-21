@@ -8,10 +8,13 @@ jobs:
       - image: opspresso/awscli
     steps:
       - checkout
-      - run: ./package.sh
-      - run: ./publish.sh toast.sh
-      - run: ./publish.sh repo.toast.sh
-      - run: ./publish.sh www.toast.sh
+      - run:
+          name: "Build"
+          command: |
+            ./package.sh
+            ./publish.sh toast.sh
+            ./publish.sh repo.toast.sh
+            ./publish.sh www.toast.sh
   release:
     docker:
       - image: circleci/golang
@@ -21,7 +24,7 @@ jobs:
           command: |
             go get github.com/tcnksm/ghr
             VERSION=$(cat VERSION)
-            ghr -t ${GITHUB_TOKEN} -u ${CIRCLE_PROJECT_USERNAME} -r ${CIRCLE_PROJECT_REPONAME} -c ${CIRCLE_SHA1} \ -delete ${VERSION} ./build/
+            ghr -t ${GITHUB_TOKEN} -u ${CIRCLE_PROJECT_USERNAME} -r ${CIRCLE_PROJECT_REPONAME} -c ${CIRCLE_SHA1} -delete ${VERSION} target/dist/
 
 workflows:
   version: 2
