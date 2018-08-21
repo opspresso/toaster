@@ -6,6 +6,7 @@ jobs:
   build:
     docker:
       - image: opspresso/awscli
+    working_directory: /tmp/workspace
     steps:
       - checkout
       - run:
@@ -18,7 +19,7 @@ jobs:
       - persist_to_workspace:
           root: /tmp/workspace
           paths:
-            - target/
+            - target/*
   release:
     docker:
       - image: circleci/golang
