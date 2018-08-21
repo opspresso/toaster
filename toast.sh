@@ -153,10 +153,10 @@ _detect() {
 
 _build() {
     case ${SUB} in
-        init)
+        chart)
             _build_chart
             ;;
-        up)
+        image)
             _build_image
             ;;
         *)
@@ -388,7 +388,7 @@ _helm_deploy() {
                 --set fullnameOverride=$NAME-$NAMESPACE
 
     _command "helm history $NAME-$NAMESPACE"
-    helm history $NAME-$NAMESPACE
+    helm history $NAME-$NAMESPACE --max 5
 }
 
 _helm_remove() {
@@ -408,7 +408,7 @@ _helm_remove() {
     helm history $NAME-$NAMESPACE
 
     _command "helm delete --purge $NAME-$NAMESPACE"
-    helm delete --purge $NAME-$NAMESPACE
+    helm delete --purge $NAME-$NAMESPACE --max 5
 }
 
 _config_save_all() {
