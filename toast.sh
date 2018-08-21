@@ -41,7 +41,7 @@ for v in "$@"; do
         shift
         ;;
     *)
-        break
+        shift
         ;;
     esac
 done
@@ -420,7 +420,7 @@ get_domain() {
         if [ "${TARGET_NAME}" == "jenkins" ]; then
             BASE_DOMAIN=${DOMAIN:$(expr index $DOMAIN \.)}
             printf "$BASE_DOMAIN" > ${HOME}/.BASE_DOMAIN
-            _result "BASE_DOMAIN: $(cat ${HOME}/.BASE_DOMAIN)"
+            _result ".BASE_DOMAIN: $(cat ${HOME}/.BASE_DOMAIN)"
         fi
 
         if [ ! -z ${BASE_DOMAIN} ]; then
