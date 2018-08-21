@@ -5,6 +5,8 @@ TOASTER=4.0.0
 CMD=$1
 SUB=$2
 
+CONFIG=${HOME}/.toaster
+
 NAME=
 BRANCH=
 VERSION=
@@ -17,6 +19,8 @@ REGISTRY=
 CHARTMUSEUM=
 SONARQUBE=
 NEXUS=
+
+touch ${CONFIG} && . ${CONFIG}
 
 for v in "$@"; do
     case ${v} in
@@ -143,6 +147,8 @@ _detect() {
         *)
             _usage
     esac
+
+    _config_save_all
 }
 
 _build() {
@@ -188,25 +194,27 @@ _helm() {
 }
 
 _detect_domain() {
-    get_domain jenkins JENKINS
-    get_domain chartmuseum CHARTMUSEUM
-    get_domain docker-registry REGISTRY
-    get_domain sonarqube SONARQUBE
-    get_domain sonatype-nexus NEXUS
+    JENKINS=$(_domain_find jenkins)
 
-    get_maven_mirror
+    if [ ! -z ${JENKINS} ]; then
+        BASE_DOMAIN=${JENKINS:$(expr index ${JENKINS} \.)}
+    fi
+
+    CHARTMUSEUM=$(_domain_find chartmuseum ${BASE_DOMAIN})
+    REGISTRY=$(_domain_find docker-registry ${BASE_DOMAIN})
+    SONARQUBE=$(_domain_find sonarqube ${BASE_DOMAIN})
+    NEXUS=$(_domain_find sonatype-nexus ${BASE_DOMAIN})
+
+    _maven_mirror
 }
 
 _detect_source() {
-    get_version
+    _version_build
 
-    printf "." > ${HOME}/.SOURCE_ROOT
-    cat ${HOME}/.SOURCE_LANG > /dev/null 2>&1 || get_language pom.xml java
-    cat ${HOME}/.SOURCE_LANG > /dev/null 2>&1 || get_language package.json nodejs
-    cat ${HOME}/.SOURCE_LANG > /dev/null 2>&1 || printf "-" > ${HOME}/.SOURCE_LANG
-
-    _result "SOURCE_LANG: $(cat ${HOME}/.SOURCE_LANG)"
-    _result "SOURCE_ROOT: $(cat ${HOME}/.SOURCE_ROOT)"
+    SOURCE_ROOT="."
+    [ ! -z ${SOURCE_LANG} ] || _language_detect pom.xml java
+    [ ! -z ${SOURCE_LANG} ] || _language_detect package.json nodejs
+    [ ! -z ${SOURCE_LANG} ] || SOURCE_LANG="-"
 
     if [ -z ${NAME} ]; then
         _error "NAME is empty."
@@ -258,12 +266,9 @@ _build_chart() {
     _command "helm lint ."
     helm lint .
 
-    if [ -f ${HOME}/.CHARTMUSEUM ]; then
-        CHARTMUSEUM=$(cat ${HOME}/.CHARTMUSEUM)
-        if [ ! -z ${CHARTMUSEUM} ]; then
-            _command "helm push . chartmuseum"
-            helm push . chartmuseum
-        fi
+    if [ ! -z ${CHARTMUSEUM} ]; then
+        _command "helm push . chartmuseum"
+        helm push . chartmuseum
     fi
 
     _command "helm repo update"
@@ -280,9 +285,6 @@ _build_image() {
         _error "Not found Dockerfile"
     fi
 
-    if [ -f ${HOME}/.REGISTRY ]; then
-        REGISTRY=$(cat ${HOME}/.REGISTRY)
-    fi
     if [ -z ${REGISTRY} ]; then
         _error "REGISTRY is empty."
     fi
@@ -308,12 +310,9 @@ _draft_init() {
     _command "draft init"
 	draft init
 
-    if [ -f ${HOME}/.REGISTRY ]; then
-        REGISTRY=$(cat ${HOME}/.REGISTRY)
-        if [ ! -z ${REGISTRY} ]; then
-            _command "draft config set registry ${REGISTRY}"
-            draft config set registry ${REGISTRY}
-        fi
+    if [ ! -z ${REGISTRY} ]; then
+        _command "draft config set registry ${REGISTRY}"
+        draft config set registry ${REGISTRY}
     fi
 }
 
@@ -348,12 +347,9 @@ _helm_init() {
     _command "helm init --client-only"
 	helm init --client-only
 
-    if [ -f ${HOME}/.CHARTMUSEUM ]; then
-        CHARTMUSEUM=$(cat ${HOME}/.CHARTMUSEUM)
-        if [ ! -z ${CHARTMUSEUM} ]; then
-            _command "helm repo add chartmuseum https://${CHARTMUSEUM}"
-            helm repo add chartmuseum https://${CHARTMUSEUM}
-        fi
+    if [ ! -z ${CHARTMUSEUM} ]; then
+        _command "helm repo add chartmuseum https://${CHARTMUSEUM}"
+        helm repo add chartmuseum https://${CHARTMUSEUM}
     fi
 
     _command "helm repo list"
@@ -415,30 +411,50 @@ _helm_remove() {
     helm delete --purge $NAME-$NAMESPACE
 }
 
-get_domain() {
-    TARGET_NAME=${1}
-    SAVE_TARGET=${2}
+_config_save_all() {
+    echo "# toaster" > ${CONFIG}
 
-    # DOMAIN=$(kubectl get ing ${TARGET_NAME} -n ${NAMESPACE} -o json | jq -r '.spec.rules[0].host')
-    DOMAIN=$(kubectl get ing -n ${NAMESPACE} -o wide | grep ${TARGET_NAME} | head -1 | awk '{print $2}' | cut -d',' -f1)
-
-    if [ ! -z ${DOMAIN} ]; then
-        if [ "${TARGET_NAME}" == "jenkins" ]; then
-            BASE_DOMAIN=${DOMAIN:$(expr index $DOMAIN \.)}
-            printf "$BASE_DOMAIN" > ${HOME}/.BASE_DOMAIN
-            _result ".BASE_DOMAIN: $(cat ${HOME}/.BASE_DOMAIN)"
-        fi
-
-        if [ ! -z ${BASE_DOMAIN} ]; then
-            DOMAIN="${TARGET_NAME}-${NAMESPACE}.${BASE_DOMAIN}"
-        fi
-    fi
-
-    printf "${DOMAIN}" > ${HOME}/.${SAVE_TARGET}
-    _result ".${SAVE_TARGET}: $(cat ${HOME}/.${SAVE_TARGET})"
+    _config_save NAME ${NAME}
+    _config_save BRANCH ${BRANCH}
+    _config_save VERSION ${VERSION}
+    _config_save NAMESPACE ${NAMESPACE}
+    _config_save CLUSTER ${CLUSTER}
+    _config_save SOURCE_LANG ${SOURCE_LANG}
+    _config_save SOURCE_ROOT ${SOURCE_ROOT}
+    _config_save BASE_DOMAIN ${BASE_DOMAIN}
+    _config_save JENKINS ${JENKINS}
+    _config_save REGISTRY ${REGISTRY}
+    _config_save CHARTMUSEUM ${CHARTMUSEUM}
+    _config_save SONARQUBE ${SONARQUBE}
+    _config_save NEXUS ${NEXUS}
 }
 
-get_maven_mirror() {
+_config_save() {
+    CONFIG_NAME=$1
+    CONFIG_VALUE=$2
+
+    echo "${CONFIG_NAME}=${CONFIG_VALUE}" >> ${CONFIG}
+
+    printf "${CONFIG_VALUE}" > ${HOME}/${CONFIG_NAME}
+
+    _result "${CONFIG_NAME}: ${CONFIG_VALUE}"
+}
+
+_domain_find() {
+    TARGET_NAME=${1}
+    BASE_DOMAIN=${2}
+
+    # DOMAIN=$(kubectl get ing ${TARGET_NAME} -n ${NAMESPACE} -o json | jq -r '.spec.rules[0].host')
+    DOMAIN=$(kubectl get ing -n ${NAMESPACE} -o wide | grep ${TARGET_NAME} | head -1 | awk '{print $2}' | cut -d',' -f1 | xargs)
+
+    if [ ! -z ${DOMAIN} ] && [ ! -z ${BASE_DOMAIN} ]; then
+        DOMAIN="${TARGET_NAME}-${NAMESPACE}.${BASE_DOMAIN}"
+    fi
+
+    echo "${DOMAIN}"
+}
+
+_maven_mirror() {
     if [ -f .m2/settings.xml ]; then
         cp -rf .m2/settings.xml ${HOME}/settings.xml
     else
@@ -458,7 +474,7 @@ get_maven_mirror() {
     fi
 }
 
-get_version() {
+_version_build() {
     PATCH=
     REVISION=
 
@@ -483,12 +499,9 @@ get_version() {
     else
         VERSION="0.0.${PATCH}-${BRANCH}"
     fi
-
-    printf "${VERSION}" > ${HOME}/.VERSION
-    _result "VERSION: $(cat ${HOME}/.VERSION)"
 }
 
-get_language() {
+_language_detect() {
     TARGET_FILE=${1}
     TARGET_LANG=${2}
 
@@ -498,8 +511,8 @@ get_language() {
         TARGET_ROOT=$(dirname ${TARGET_FIND})
 
         if [ ! -z ${TARGET_ROOT} ]; then
-            printf "${TARGET_LANG}" > ${HOME}/.SOURCE_LANG
-            printf "${TARGET_ROOT}" > ${HOME}/.SOURCE_ROOT
+            SOURCE_LANG=${TARGET_LANG}
+            SOURCE_ROOT=${TARGET_ROOT}
         fi
     fi
 }
