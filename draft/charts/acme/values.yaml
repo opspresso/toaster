@@ -14,8 +14,11 @@ resources:
   requests:
     cpu: 500m
     memory: 512Mi
+ingress:
+  enabled: true
+  basedomain: opspresso.com
 hpa:
-  enabled: false
+  enabled: true
   min: 2
   max: 30
   cpu: 50
@@ -29,6 +32,3 @@ secret:
   enabled: false
   data:
     PASSWORD: cGFzc3dvcmQ=
-ingress:
-  enabled: false
-  basedomain: opspresso.com
