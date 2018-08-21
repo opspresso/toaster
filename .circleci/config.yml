@@ -5,7 +5,7 @@ version: 2
 jobs:
   build:
     docker:
-      - image: opspresso/awscli
+      - image: quay.io/opspresso/awscli
     working_directory: /tmp/workspace
     steps:
       - checkout

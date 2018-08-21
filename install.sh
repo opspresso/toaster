@@ -51,7 +51,7 @@ fi
 DIST=/tmp/toaster.tar.gz
 
 # download
-curl -sL -o ${DIST} ${REPO}/toaster.tar.gz
+curl -sL -o ${DIST} ${REPO}/dist/toaster.tar.gz
 
 if [ ! -f ${DIST} ]; then
     error "Can not download. [${REPO}]"
