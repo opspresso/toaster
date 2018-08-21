@@ -1,27 +1,16 @@
 #!/bin/bash
 
-increment_version() {
-    local v=$1
-    if [ -z $2 ]; then
-        local rgx='^((?:[0-9]+\.)*)([0-9]+)($)'
-    else
-        local rgx='^((?:[0-9]+\.){'$(($2-1))'})([0-9]+)(\.|$)'
-        for (( p=`grep -o "\."<<<".$v"|wc -l`; p<$2; p++)); do
-        v+=.0; done; fi
-    val=$(echo -e "$v" | perl -pe 's/^.*'$rgx'.*$/$2/')
-    echo "$v" | perl -pe s/$rgx.*$'/${1}'`printf %0${#val}s $(($val+1))`/
-}
-
 mkdir -p build
 mkdir -p target/dist
 
-VERSION="$(cat VERSION | perl -pe 's/^((\d+\.)*)(\d+)(.*)$/$1.($3+1).$4/e')"
+# VERSION
+VERSION=$(curl -s https://api.github.com/repos/nalbam/toaster/releases/latest | grep tag_name | cut -d'"' -f4)
+VERSION=$(echo ${VERSION:-0.0.0} | perl -pe 's/^((\d+\.)*)(\d+)(.*)$/$1.($3+1).$4/e')
 
 echo "VERSION=${VERSION}"
+printf "${VERSION}" > target/VERSION
 
-# toaster.txt
-printf "${VERSION}" > VERSION
-printf "${VERSION}" > target/toaster.txt
+sed -i -e "s/TOASTER=.*/TOASTER=${VERSION}/g" toast.sh
 
 # 755
 find ./** | grep [.]sh | xargs chmod 755
@@ -47,7 +36,7 @@ popd
 # target/helper
 cp -rf helper target/
 
-# web
+# target/web
 cp -rf web/* target/
 
 # install.sh

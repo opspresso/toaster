@@ -2,6 +2,10 @@
 
 # curl -sL toast.sh/draft | bash
 
+VERSION=$(curl -s https://api.github.com/repos/nalbam/toaster/releases/latest | grep tag_name | cut -d'"' -f4)
+
+curl -sLO https://github.com/nalbam/toaster/releases/download/${VERSION}/toaster
+
 REPO="repo.toast.sh"
 
 ANSWER=
