@@ -15,15 +15,19 @@ jobs:
             ./publish.sh toast.sh
             ./publish.sh repo.toast.sh
             ./publish.sh www.toast.sh
+      - store_artifacts:
+          path: target
   release:
     docker:
       - image: circleci/golang
     steps:
+      - attach_workspace:
+          at: target
       - run:
           name: "Release on GitHub"
           command: |
             go get github.com/tcnksm/ghr
-            VERSION=$(cat VERSION)
+            VERSION=$(cat target/toaster.txt)
             ghr -t ${GITHUB_TOKEN} -u ${CIRCLE_PROJECT_USERNAME} -r ${CIRCLE_PROJECT_REPONAME} -c ${CIRCLE_SHA1} -delete ${VERSION} target/dist/
 
 workflows:
