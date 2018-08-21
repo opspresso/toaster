@@ -20,27 +20,26 @@ jobs:
   publish:
     docker:
       - image: opspresso/awscli
-    working_directory: /tmp/workspace
     steps:
       - attach_workspace:
-          at: target
+          at: workspace
       - run:
           name: "Publish"
           command: |
-            aws s3 sync target/ s3://toast.sh/ --acl public-read
-            aws s3 sync target/ s3://www.toast.sh/ --acl public-read
+            aws s3 sync workspace/target/ s3://toast.sh/ --acl public-read
+            aws s3 sync workspace/target/ s3://www.toast.sh/ --acl public-read
   release:
     docker:
       - image: circleci/golang
     steps:
       - attach_workspace:
-          at: target
+          at: workspace
       - run:
           name: "Release"
           command: |
             go get github.com/tcnksm/ghr
-            VERSION=$(cat target/toaster.txt)
-            ghr -t ${GITHUB_TOKEN} -u ${CIRCLE_PROJECT_USERNAME} -r ${CIRCLE_PROJECT_REPONAME} -c ${CIRCLE_SHA1} -delete ${VERSION} target/dist/
+            VERSION=$(cat workspace/target/toaster.txt)
+            ghr -t ${GITHUB_TOKEN} -u ${CIRCLE_PROJECT_USERNAME} -r ${CIRCLE_PROJECT_REPONAME} -c ${CIRCLE_SHA1} -delete ${VERSION} workspace/target/dist/
 
 workflows:
   version: 2
