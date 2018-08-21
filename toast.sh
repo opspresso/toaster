@@ -1,5 +1,17 @@
 #!/bin/bash
 
+VERSION=4.0.0
+
+CMD=$1
+SUB=$2
+
+SHELL_DIR=$(dirname "$0")
+
+BUCKET=${AWS_DEFAULT_BUCKET:-repo.toast.sh}
+REGION=${AWS_DEFAULT_REGION:-ap-northeast-2}
+
+################################################################################
+
 print() {
     echo -e "$@"
 }
@@ -81,15 +93,6 @@ else
         export LC_ALL=C
     fi
 fi
-
-################################################################################
-
-CMD=$1
-
-SHELL_DIR=$(dirname "$0")
-
-BUCKET=${AWS_DEFAULT_BUCKET:-repo.toast.sh}
-REGION=${AWS_DEFAULT_REGION:-ap-northeast-2}
 
 ################################################################################
 
