@@ -2,10 +2,6 @@
 
 # curl -sL toast.sh/helper | bash
 
-OS_NAME="$(uname | awk '{print tolower($0)}')"
-
-ANSWER=
-
 ################################################################################
 
 TPUT=
@@ -16,14 +12,6 @@ _echo() {
         echo -e "$(tput setaf $2)$1$(tput sgr0)"
     else
         echo -e "$1"
-    fi
-}
-
-_read() {
-    if [ -z ${TPUT} ]; then
-        read -p "$(tput setaf 6)$1$(tput sgr0)" ANSWER
-    else
-        read -p "$1" ANSWER
     fi
 }
 
@@ -52,6 +40,7 @@ VERSION=$(curl -s https://api.github.com/repos/nalbam/toaster/releases/latest | 
 _result "helper package version: ${VERSION}"
 
 DIST=/tmp/helper.tar.gz
+rm -rf ${DIST}
 
 # download
 curl -sL -o ${DIST} https://github.com/nalbam/toaster/releases/download/${VERSION}/helper.tar.gz
@@ -63,12 +52,13 @@ fi
 _result "helper package downloaded."
 
 SHELL_DIR="${HOME}/helper"
-ALIAS="${HOME}/.bash_aliases"
 
 mkdir -p ${SHELL_DIR}/conf
 
 # install
 tar -zxf ${DIST} -C ${SHELL_DIR}
+
+ALIAS="${HOME}/.bash_aliases"
 
 # alias
 if [ -f ${SHELL_DIR}/alias.sh ]; then

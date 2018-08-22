@@ -93,6 +93,7 @@ fi
 mkdir -p charts/acme/templates
 
 DIST=/tmp/draft.tar.gz
+rm -rf ${DIST}
 
 # download
 curl -sL -o ${DIST} https://github.com/nalbam/toaster/releases/download/${VERSION}/draft.tar.gz

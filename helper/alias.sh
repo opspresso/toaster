@@ -28,8 +28,7 @@ alias p="reveal-md -w --port 8888 --theme https://raw.githubusercontent.com/nalb
 
 c() {
     ~/helper/cdw.sh ${1}
-    DIR=$(cat /tmp/cdw.result)
-    if [ ! -z ${DIR} ]; then
-        cd ${DIR}
+    if [ -f /tmp/cdw.result ]; then
+        cd $(cat /tmp/cdw.result)
     fi
 }
