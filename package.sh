@@ -13,32 +13,30 @@ printf "${VERSION}" > target/VERSION
 # 755
 find ./** | grep [.]sh | xargs chmod 755
 
-# build
-cp -rf helper build/
-cp -rf toast.sh build/toaster
+# target/
+cp -rf draft.sh target/draft
+cp -rf toast.sh target/toaster
+cp -rf install.sh target/install
 
-# target/dist
+# target/dist/
 cp -rf draft.sh target/dist/draft
 cp -rf toast.sh target/dist/toaster
 
-# target/dist/draft
-pushd draft/
+# target/dist/draft.tar.gz
+pushd draft
 tar -czf ../target/dist/draft.tar.gz *
 popd
 
-# target/dist/toaster
-pushd build/
-tar -czf ../target/dist/toaster.tar.gz *
+# target/dist/helper.tar.gz
+pushd helper
+tar -czf ../target/dist/helper.tar.gz *
 popd
 
-# target/helper
+# target/helper/
 cp -rf helper target/
 
-# target/web
+# target/
 cp -rf web/* target/
-
-# install.sh
-cp -rf install.sh target/install
 
 ls -al build
 ls -al target
