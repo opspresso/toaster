@@ -2,13 +2,8 @@
 
 # curl -sL toast.sh/draft | bash
 
-OS_NAME="$(uname | awk '{print tolower($0)}')"
-
-ANSWER=
-
 ################################################################################
 
-TPUT=
 command -v tput > /dev/null || TPUT=false
 
 _echo() {
