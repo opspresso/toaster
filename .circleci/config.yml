@@ -44,7 +44,7 @@ jobs:
 
 workflows:
   version: 2
-  toast:
+  apply:
     jobs:
       - build
       - publish:

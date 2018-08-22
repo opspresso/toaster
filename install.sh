@@ -38,9 +38,7 @@ rm -rf ${DIST}
 
 # download
 curl -sL -o ${DIST} https://github.com/nalbam/toaster/releases/download/${VERSION}/toaster
-
 chmod +x ${DIST}
-
 sudo mv ${DIST} /usr/local/bin/toaster
 
 # done

@@ -1,6 +1,10 @@
 #!/bin/bash
 
-THIS_VERSION=0
+# curl -sL toast.sh/install | bash
+
+OS_NAME="$(uname | awk '{print tolower($0)}')"
+
+THIS_VERSION=v0.0.16
 
 CMD=$1
 SUB=$2
@@ -98,7 +102,7 @@ _logo() {
     _echo " | |_ ___   __ _ ___| |_ ___ _ __  "
     _echo " | __/ _ \ / _' / __| __/ _ \ '__| "
     _echo " | || (_) | (_| \__ \ ||  __/ | "
-    _echo "  \__\___/ \__,_|___/\__\___|_| "
+    _echo "  \__\___/ \__,_|___/\__\___|_|  ${THIS_VERSION}"
     _bar
 }
 
@@ -107,6 +111,14 @@ _usage() {
     _echo " Usage: $0 {update|bastion|helm|draft} "
     _bar
     _error
+}
+
+_replace() {
+    if [ "${OS_NAME}" == "darwin" ]; then
+        sed -i "" -e "$1" $2
+    else
+        sed -i -e "$1" $2
+    fi
 }
 
 ################################################################################
@@ -151,7 +163,8 @@ _bastion() {
 }
 
 _version() {
-    _result ${THIS_VERSION}
+    _echo ${THIS_VERSION} 2
+    exit 0
 }
 
 _helper() {
@@ -294,21 +307,26 @@ _detect_source() {
 
     if [ -f charts/acme/Chart.yaml ]; then
         _command "sed -i -e s/name: .*/name: $NAME/ charts/acme/Chart.yaml"
-        sed -i -e "s/name: .*/name: $NAME/" charts/acme/Chart.yaml
+        # sed -i -e "s/name: .*/name: $NAME/" charts/acme/Chart.yaml
+        _replace "s/name: .*/name: $NAME/" charts/acme/Chart.yaml
 
         _command "sed -i -e s/version: .*/version: $VERSION/ charts/acme/Chart.yaml"
-        sed -i -e "s/version: .*/version: $VERSION/" charts/acme/Chart.yaml
+        # sed -i -e "s/version: .*/version: $VERSION/" charts/acme/Chart.yaml
+        _replace "s/version: .*/version: $VERSION/" charts/acme/Chart.yaml
     fi
 
     if [ -f charts/acme/values.yaml ]; then
         _command "sed -i -e s|basedomain: .*|basedomain: $BASE_DOMAIN| charts/acme/values.yaml"
-        sed -i -e "s|basedomain: .*|basedomain: $BASE_DOMAIN|" charts/acme/values.yaml
+        # sed -i -e "s|basedomain: .*|basedomain: $BASE_DOMAIN|" charts/acme/values.yaml
+        _replace "s|basedomain: .*|basedomain: $BASE_DOMAIN|" charts/acme/values.yaml
 
         _command "sed -i -e s|repository: .*|repository: $REGISTRY/$NAME| charts/acme/values.yaml"
-        sed -i -e "s|repository: .*|repository: $REGISTRY/$NAME|" charts/acme/values.yaml
+        # sed -i -e "s|repository: .*|repository: $REGISTRY/$NAME|" charts/acme/values.yaml
+        _replace "s|repository: .*|repository: $REGISTRY/$NAME|" charts/acme/values.yaml
 
         _command "sed -i -e s|tag: .*|tag: $VERSION| charts/acme/values.yaml"
-        sed -i -e "s|tag: .*|tag: $VERSION|" charts/acme/values.yaml
+        # sed -i -e "s|tag: .*|tag: $VERSION|" charts/acme/values.yaml
+        _replace "s|tag: .*|tag: $VERSION|" charts/acme/values.yaml
     fi
 
     if [ -d charts/acme ]; then
@@ -451,10 +469,12 @@ _draft_up() {
     fi
 
     _command "sed -i -e s/NAMESPACE/${NAMESPACE}/g draft.toml"
-	sed -i -e "s/NAMESPACE/${NAMESPACE}/g" draft.toml
+	# sed -i -e "s/NAMESPACE/${NAMESPACE}/g" draft.toml
+    _replace "s/NAMESPACE/${NAMESPACE}/g" draft.toml
 
     _command "sed -i -e s/NAME/${NAME}-${NAMESPACE}/g draft.toml"
-	sed -i -e "s/NAME/${NAME}-${NAMESPACE}/g" draft.toml
+	# sed -i -e "s/NAME/${NAME}-${NAMESPACE}/g" draft.toml
+    _replace "s/NAME/${NAME}-${NAMESPACE}/g" draft.toml
 
     _command "draft up -e ${NAMESPACE}"
 	draft up -e ${NAMESPACE}
@@ -480,10 +500,12 @@ _chart_replace() {
 
     if [ "${REPLACE_TYPE}" == "yaml" ]; then
         _command "sed -i -e s|${REPLACE_KEY}: .*|${REPLACE_KEY}: ${REPLACE_VAL}| ${REPLACE_FILE}"
-        sed -i -e "s|${REPLACE_KEY}: .*|${REPLACE_KEY}: ${REPLACE_VAL}|" ${REPLACE_FILE}
+        # sed -i -e "s|${REPLACE_KEY}: .*|${REPLACE_KEY}: ${REPLACE_VAL}|" ${REPLACE_FILE}
+        _replace "s|${REPLACE_KEY}: .*|${REPLACE_KEY}: ${REPLACE_VAL}|" ${REPLACE_FILE}
     else
         _command "sed -i -e s|${REPLACE_KEY} = .*|${REPLACE_KEY} = ${REPLACE_VAL}| ${REPLACE_FILE}"
-        sed -i -e "s|${REPLACE_KEY} = .*|${REPLACE_KEY} = \"${REPLACE_VAL}\"|" ${REPLACE_FILE}
+        # sed -i -e "s|${REPLACE_KEY} = .*|${REPLACE_KEY} = \"${REPLACE_VAL}\"|" ${REPLACE_FILE}
+        _replace "s|${REPLACE_KEY} = .*|${REPLACE_KEY} = \"${REPLACE_VAL}\"|" ${REPLACE_FILE}
     fi
 }
 
@@ -616,7 +638,8 @@ _maven_mirror() {
     if [ -f ${HOME}/settings.xml ] && [ ! -z ${NEXUS} ]; then
         PUBLIC="http://${NEXUS}/repository/maven-public/"
         MIRROR="<mirror><id>mirror</id><url>${PUBLIC}</url><mirrorOf>*</mirrorOf></mirror>"
-        sed -i "s|<!-- ### configured mirrors ### -->|${MIRROR}|" ${HOME}/settings.xml
+        # sed -i "s|<!-- ### configured mirrors ### -->|${MIRROR}|" ${HOME}/settings.xml
+        _replace "s|<!-- ### configured mirrors ### -->|${MIRROR}|" ${HOME}/settings.xml
     fi
 }
 
