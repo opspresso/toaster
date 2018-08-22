@@ -1,5 +1,9 @@
 #!/bin/bash
 
+rm -rf target
+mkdir -p target/dist
+mkdir -p target/helper
+
 # OS_NAME
 OS_NAME="$(uname | awk '{print tolower($0)}')"
 
@@ -14,10 +18,6 @@ printf "${VERSION}" > target/VERSION
 
 # 755
 find ./** | grep [.]sh | xargs chmod 755
-
-rm -rf target
-mkdir -p target/dist
-mkdir -p target/helper
 
 # target/
 cp -rf install.sh target/install
