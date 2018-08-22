@@ -31,12 +31,6 @@ error() {
 }
 
 usage() {
-    if [ -r ${SHELL_DIR}/conf/ver.now ]; then
-        VER="$(cat ${SHELL_DIR}/conf/ver.now)"
-    else
-        VER="v3"
-    fi
-
     LS=$(ls -m ${HOME_DIR})
 
     #figlet env
@@ -44,7 +38,7 @@ usage() {
     echo "   ___ _ ____   __ "
     echo "  / _ \ '_ \ \ / / "
     echo " |  __/ | | \ V / "
-    echo "  \___|_| |_|\_/  (${VER}) "
+    echo "  \___|_| |_|\_/ "
     echo "================================================================================"
     echo " Usage: env.sh {NAME} {REGION} {OUTPUT}"
     echo "  NAME  : ${LS}"

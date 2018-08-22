@@ -51,12 +51,6 @@ VERSION=$(curl -s https://api.github.com/repos/nalbam/toaster/releases/latest | 
 
 _result "helper package version: ${VERSION}"
 
-_read "Do you really want to apply? (YES/[no]) : "
-
-if [ "${ANSWER}" != "YES" ]; then
-    exit 0
-fi
-
 DIST=/tmp/helper.tar.gz
 
 # download
@@ -77,8 +71,8 @@ mkdir -p ${SHELL_DIR}/conf
 tar -zxf ${DIST} -C ${SHELL_DIR}
 
 # alias
-if [ -f ${SHELL_DIR}/helper/alias.sh ]; then
-    cp -rf ${SHELL_DIR}/helper/alias.sh ${ALIAS}
+if [ -f ${SHELL_DIR}/alias.sh ]; then
+    cp -rf ${SHELL_DIR}/alias.sh ${ALIAS}
     chmod 644 ${ALIAS}
 fi
 

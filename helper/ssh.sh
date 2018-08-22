@@ -31,12 +31,6 @@ error() {
 }
 
 usage() {
-    if [ -r ${SHELL_DIR}/conf/ver.now ]; then
-        VER="$(cat ${SHELL_DIR}/conf/ver.now)"
-    else
-        VER="v3"
-    fi
-
     LS=$(ls -m ${HOME_DIR})
 
     #figlet ssh
@@ -45,7 +39,7 @@ usage() {
     echo "  ___ ___| |__ "
     echo " / __/ __| '_ \ "
     echo " \__ \__ \ | | | "
-    echo " |___/___/_| |_|  (${VER}) "
+    echo " |___/___/_| |_| "
     echo "================================================================================"
     echo " Usage: ssh.sh {PEM} {HOST} {USER}"
     echo "  NAME: ${LS}"

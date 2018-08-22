@@ -42,19 +42,13 @@ error() {
 }
 
 usage() {
-    if [ -r ${SHELL_DIR}/conf/ver.now ]; then
-        VER="$(cat ${SHELL_DIR}/conf/ver.now)"
-    else
-        VER="v3"
-    fi
-
     #figlet nsh
     echo "================================================================================"
     echo "            _ "
     echo "  _ __  ___| |__ "
     echo " | '_ \/ __| '_ \ "
     echo " | | | \__ \ | | | "
-    echo " |_| |_|___/_| |_|  (${VER}) "
+    echo " |_| |_|___/_| |_| "
     echo "================================================================================"
     echo " Usage: nsh.sh {name} {clone|remove|branch|tag|diff|commit|pull|push|pp}"
     echo " [${NOW_DIR}]"
