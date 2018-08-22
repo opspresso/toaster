@@ -125,28 +125,28 @@ _replace() {
 
 _toast() {
     case ${CMD} in
-        update)
+        u|update)
             _update
             ;;
-        bastion)
+        t|bastion)
             _bastion
             ;;
-        helper)
+        h|helper)
             _helper
             ;;
-        scan)
+        s|scan)
             _scan
             ;;
-        build)
+        b|build)
             _build
             ;;
-        helm)
+        h|helm)
             _helm
             ;;
-        draft)
+        d|draft)
             _draft
             ;;
-        version)
+        v|version)
             _version
             ;;
         *)
@@ -156,10 +156,12 @@ _toast() {
 
 _update() {
     curl -sL toast.sh/install | bash
+    exit 0
 }
 
 _bastion() {
     curl -sL toast.sh/helper/bastion.sh | bash
+    exit 0
 }
 
 _version() {

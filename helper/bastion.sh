@@ -11,17 +11,31 @@ echo " | |_) | (_| \__ \ |_| | (_) | | | | "
 echo " |_.__/ \__,_|___/\__|_|\___/|_| |_| "
 echo "================================================================================"
 
-title() {
-    echo -e "$(tput setaf 3)$@$(tput sgr0)"
+command -v tput > /dev/null || TPUT=false
+
+_echo() {
+    if [ -z ${TPUT} ] && [ ! -z $2 ]; then
+        echo -e "$(tput setaf $2)$1$(tput sgr0)"
+    else
+        echo -e "$1"
+    fi
 }
 
-success() {
-    echo -e "$(tput setaf 2)$@$(tput sgr0)"
+_result() {
+    _echo "# $@" 4
+}
+
+_command() {
+    _echo "$ $@" 3
+}
+
+_success() {
+    _echo "+ $@" 2
     exit 0
 }
 
-error() {
-    echo -e "$(tput setaf 1)$@$(tput sgr0)"
+_error() {
+    _echo "- $@" 1
     exit 1
 }
 
@@ -53,7 +67,7 @@ echo "${OS_FULL}"
 echo "${DATE}"
 
 if [ "${OS_TYPE}" == "" ]; then
-    error "Not supported OS. [${OS_NAME}]"
+    _error "Not supported OS. [${OS_NAME}]"
 fi
 
 if [ "${OS_TYPE}" == "brew" ]; then
@@ -88,7 +102,7 @@ fi
 
 # update
 echo "================================================================================"
-title "# update..."
+_result "update..."
 
 if [ "${OS_TYPE}" == "apt" ]; then
     sudo apt update && sudo apt upgrade -y
@@ -112,7 +126,7 @@ fi
 
 # aws-cli
 echo "================================================================================"
-title "# install aws-cli..."
+_result "install aws-cli..."
 
 if [ "${OS_TYPE}" == "brew" ]; then
     command -v aws > /dev/null || brew install awscli
@@ -129,7 +143,7 @@ fi
 
 # kubectl
 echo "================================================================================"
-title "# install kubectl..."
+_result "install kubectl..."
 
 if [ "${OS_TYPE}" == "brew" ]; then
     command -v kubectl > /dev/null || brew install kubernetes-cli
@@ -137,7 +151,7 @@ else
     VERSION=$(curl -s https://storage.googleapis.com/kubernetes-release/release/stable.txt)
 
     if [ "${KUBECTL}" != "${VERSION}" ]; then
-        title " ${KUBECTL} >> ${VERSION}"
+        _result " ${KUBECTL} >> ${VERSION}"
 
         curl -LO https://storage.googleapis.com/kubernetes-release/release/${VERSION}/bin/${OS_NAME}/amd64/kubectl
         chmod +x kubectl && sudo mv kubectl /usr/local/bin/kubectl
@@ -150,7 +164,7 @@ kubectl version --client --short
 
 # kops
 echo "================================================================================"
-title "# install kops..."
+_result "install kops..."
 
 if [ "${OS_TYPE}" == "brew" ]; then
     command -v kops > /dev/null || brew install kops
@@ -158,7 +172,7 @@ else
     VERSION=$(curl -s https://api.github.com/repos/kubernetes/kops/releases/latest | jq -r '.tag_name')
 
     if [ "${KOPS}" != "${VERSION}" ]; then
-        title " ${KOPS} >> ${VERSION}"
+        _result " ${KOPS} >> ${VERSION}"
 
         curl -LO https://github.com/kubernetes/kops/releases/download/${VERSION}/kops-${OS_NAME}-amd64
         chmod +x kops-${OS_NAME}-amd64 && sudo mv kops-${OS_NAME}-amd64 /usr/local/bin/kops
@@ -171,7 +185,7 @@ kops version
 
 # helm
 echo "================================================================================"
-title "# install helm..."
+_result "install helm..."
 
 if [ "${OS_TYPE}" == "brew" ]; then
     command -v helm > /dev/null || brew install kubernetes-helm
@@ -179,7 +193,7 @@ else
     VERSION=$(curl -s https://api.github.com/repos/helm/helm/releases/latest | jq -r '.tag_name')
 
     if [ "${HELM}" != "${VERSION}" ]; then
-        title " ${HELM} >> ${VERSION}"
+        _result " ${HELM} >> ${VERSION}"
 
         curl -L https://storage.googleapis.com/kubernetes-helm/helm-${VERSION}-${OS_NAME}-amd64.tar.gz | tar xz
         sudo mv ${OS_NAME}-amd64/helm /usr/local/bin/helm && rm -rf ${OS_NAME}-amd64
@@ -192,7 +206,7 @@ helm version --client --short
 
 # draft
 echo "================================================================================"
-title "# install draft..."
+_result "install draft..."
 
 #if [ "${OS_TYPE}" == "brew" ]; then
 #    command -v draft > /dev/null || brew install draft
@@ -200,7 +214,7 @@ title "# install draft..."
     VERSION=$(curl -s https://api.github.com/repos/Azure/draft/releases/latest | jq -r '.tag_name')
 
     if [ "${DRAFT}" != "${VERSION}" ]; then
-        title " ${DRAFT} >> ${VERSION}"
+        _result " ${DRAFT} >> ${VERSION}"
 
         curl -L https://azuredraft.blob.core.windows.net/draft/draft-${VERSION}-${OS_NAME}-amd64.tar.gz | tar xz
         sudo mv ${OS_NAME}-amd64/draft /usr/local/bin/draft && rm -rf ${OS_NAME}-amd64
@@ -213,7 +227,7 @@ draft version --short
 
 # skaffold
 echo "================================================================================"
-title "# install skaffold..."
+_result "install skaffold..."
 
 #if [ "${OS_TYPE}" == "brew" ]; then
 #    command -v skaffold > /dev/null || brew install skaffold
@@ -221,7 +235,7 @@ title "# install skaffold..."
     VERSION=$(curl -s https://api.github.com/repos/GoogleContainerTools/skaffold/releases/latest | jq -r '.tag_name')
 
     if [ "${SKAFFOLD}" != "${VERSION}" ]; then
-        title " ${SKAFFOLD} >> ${VERSION}"
+        _result " ${SKAFFOLD} >> ${VERSION}"
 
         curl -LO https://storage.googleapis.com/skaffold/releases/${VERSION}/skaffold-${OS_NAME}-amd64
         chmod +x skaffold-${OS_NAME}-amd64 && sudo mv skaffold-${OS_NAME}-amd64 /usr/local/bin/skaffold
@@ -234,7 +248,7 @@ skaffold version
 
 # istioctl
 echo "================================================================================"
-title "# install istioctl..."
+_result "install istioctl..."
 
 # if [ "${OS_TYPE}" == "brew" ]; then
 #     command -v istioctl > /dev/null || brew install istioctl
@@ -242,7 +256,7 @@ title "# install istioctl..."
     VERSION=$(curl -s https://api.github.com/repos/istio/istio/releases/latest | jq -r '.tag_name')
 
     if [ "${ISTIOCTL}" != "${VERSION}" ]; then
-        title " ${ISTIOCTL} >> ${VERSION}"
+        _result " ${ISTIOCTL} >> ${VERSION}"
 
         if [ "${OS_NAME}" == "darwin" ]; then
             ISTIO_OS="osx"
@@ -260,7 +274,7 @@ istioctl version --short
 
 # jenkins-x
 echo "================================================================================"
-title "# install jenkins-x..."
+_result "install jenkins-x..."
 
 echo "Temporary skipped."
 
@@ -270,7 +284,7 @@ echo "Temporary skipped."
 #    VERSION=$(curl -s https://api.github.com/repos/jenkins-x/jx/releases/latest | jq -r '.tag_name')
 #
 #    if [ "${JENKINS_X}" != "${VERSION}" ]; then
-#        title " ${JENKINS_X} >> ${VERSION}"
+#        _result " ${JENKINS_X} >> ${VERSION}"
 #
 #        curl -L https://github.com/jenkins-x/jx/releases/download/${VERSION}/jx-${OS_NAME}-amd64.tar.gz | tar xz
 #        sudo mv jx /usr/local/bin/jx
@@ -283,7 +297,7 @@ echo "Temporary skipped."
 
 # terraform
 echo "================================================================================"
-title "# install terraform..."
+_result "install terraform..."
 
 if [ "${OS_TYPE}" == "brew" ]; then
     command -v terraform > /dev/null || brew install terraform
@@ -291,7 +305,7 @@ else
     VERSION=$(curl -s https://api.github.com/repos/hashicorp/terraform/releases/latest | jq -r '.tag_name' | cut -c 2-)
 
     if [ "${TERRAFORM}" != "${VERSION}" ]; then
-        title " ${TERRAFORM} >> ${VERSION}"
+        _result " ${TERRAFORM} >> ${VERSION}"
 
         curl -LO https://releases.hashicorp.com/terraform/${VERSION}/terraform_${VERSION}_${OS_NAME}_amd64.zip
         unzip terraform_${VERSION}_${OS_NAME}_amd64.zip && rm -rf terraform_${VERSION}_${OS_NAME}_amd64.zip
@@ -305,7 +319,7 @@ terraform version
 
 # nodejs
 echo "================================================================================"
-title "# install nodejs..."
+_result "install nodejs..."
 
 VERSION=10
 
@@ -328,12 +342,12 @@ echo "npm $(npm -v)"
 
 # java
 echo "================================================================================"
-title "# install java..."
+_result "install java..."
 
 VERSION=1.8.0
 
 if [ "${JAVA}" != "${VERSION}" ] || [ "$(command -v java)" == "" ]; then
-    title " ${JAVA} >> ${VERSION}"
+    _result " ${JAVA} >> ${VERSION}"
 
     if [ "${OS_TYPE}" == "apt" ]; then
         sudo apt install -y openjdk-8-jdk
@@ -351,12 +365,12 @@ java -version
 
 # maven
 echo "================================================================================"
-title "# install maven..."
+_result "install maven..."
 
 VERSION=3.5.4
 
 if [ "${MAVEN}" != "${VERSION}" ] || [ "$(command -v mvn)" == "" ]; then
-    title " ${MAVEN} >> ${VERSION}"
+    _result " ${MAVEN} >> ${VERSION}"
 
     curl -L http://apache.tt.co.kr/maven/maven-3/${VERSION}/binaries/apache-maven-${VERSION}-bin.tar.gz | tar xz
     sudo mv -f apache-maven-${VERSION} /usr/local/
@@ -369,12 +383,12 @@ mvn -version
 
 # heptio
 echo "================================================================================"
-title "# install heptio..."
+_result "install heptio..."
 
 VERSION=1.10.3
 
 if [ "${HEPTIO}" != "${VERSION}" ]; then
-    title " ${HEPTIO} >> ${VERSION}"
+    _result " ${HEPTIO} >> ${VERSION}"
 
     curl -LO https://amazon-eks.s3-us-west-2.amazonaws.com/${VERSION}/2018-06-05/bin/${OS_NAME}/amd64/heptio-authenticator-aws
     chmod +x heptio-authenticator-aws && sudo mv heptio-authenticator-aws /usr/local/bin/heptio-authenticator-aws
@@ -385,7 +399,7 @@ fi
 echo "${VERSION}"
 
 echo "================================================================================"
-title "# clean all..."
+_result "clean all..."
 
 if [ "${OS_TYPE}" == "apt" ]; then
     sudo apt clean all
@@ -413,4 +427,4 @@ echo "JAVA=\"${JAVA}\"" >> ${CONFIG}
 echo "MAVEN=\"${MAVEN}\"" >> ${CONFIG}
 echo "HEPTIO=\"${HEPTIO}\"" >> ${CONFIG}
 
-success "# Done."
+_success "done."
