@@ -199,10 +199,10 @@ _detect_domain() {
         BASE_DOMAIN=${JENKINS:$(expr index ${JENKINS} \.)}
     fi
 
-    CHARTMUSEUM=$(_domain_find chartmuseum ${BASE_DOMAIN})
-    REGISTRY=$(_domain_find docker-registry ${BASE_DOMAIN})
-    SONARQUBE=$(_domain_find sonarqube ${BASE_DOMAIN})
-    NEXUS=$(_domain_find sonatype-nexus ${BASE_DOMAIN})
+    CHARTMUSEUM=$(_domain_find chartmuseum)
+    REGISTRY=$(_domain_find docker-registry)
+    SONARQUBE=$(_domain_find sonarqube)
+    NEXUS=$(_domain_find sonatype-nexus)
 
     _maven_mirror
 }
@@ -441,7 +441,6 @@ _config_save() {
 
 _domain_find() {
     TARGET_NAME=${1}
-    BASE_DOMAIN=${2}
 
     # DOMAIN=$(kubectl get ing ${TARGET_NAME} -n ${NAMESPACE} -o json | jq -r '.spec.rules[0].host')
     DOMAIN=$(kubectl get ing -n ${NAMESPACE} -o wide | grep ${TARGET_NAME} | head -1 | awk '{print $2}' | cut -d',' -f1 | xargs)
