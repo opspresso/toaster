@@ -353,12 +353,12 @@ java -version
 echo "================================================================================"
 title "# install maven..."
 
-VERSION=3.5.3
+VERSION=3.5.4
 
 if [ "${MAVEN}" != "${VERSION}" ] || [ "$(command -v mvn)" == "" ]; then
     title " ${MAVEN} >> ${VERSION}"
 
-    curl -L https://www.apache.org/dist/maven/maven-3/${VERSION}/binaries/apache-maven-${VERSION}-bin.tar.gz | tar xz
+    curl -L http://apache.tt.co.kr/maven/maven-3/${VERSION}/binaries/apache-maven-${VERSION}-bin.tar.gz | tar xz
     sudo mv -f apache-maven-${VERSION} /usr/local/
     sudo ln -sf /usr/local/apache-maven-${VERSION}/bin/mvn /usr/local/bin/mvn
 
