@@ -15,12 +15,12 @@ find ./** | grep [.]sh | xargs chmod 755
 
 # target/
 cp -rf draft.sh target/draft
-cp -rf toast.sh target/toaster
+cp -rf helper.sh target/helper
+cp -rf toaster.sh target/toaster
 cp -rf install.sh target/install
 
 # target/dist/
-cp -rf draft.sh target/dist/draft
-cp -rf toast.sh target/dist/toaster
+cp -rf toaster.sh target/dist/toaster
 
 # target/dist/draft.tar.gz
 pushd draft
@@ -31,6 +31,9 @@ popd
 pushd helper
 tar -czf ../target/dist/helper.tar.gz *
 popd
+
+# target/draft/
+cp -rf draft target/
 
 # target/helper/
 cp -rf helper target/

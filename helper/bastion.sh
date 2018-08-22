@@ -2,15 +2,13 @@
 
 # curl -sL toast.sh/helper/bastion.sh | bash
 
-VER=$(curl -sL toast.sh/toaster.txt)
-
 #figlet bastion
 echo "================================================================================"
 echo "  _               _   _              "
 echo " | |__   __ _ ___| |_(_) ___  _ __   "
 echo " | '_ \ / _' / __| __| |/ _ \| '_ \  "
 echo " | |_) | (_| \__ \ |_| | (_) | | | | "
-echo " |_.__/ \__,_|___/\__|_|\___/|_| |_|  (${VER}) "
+echo " |_.__/ \__,_|___/\__|_|\___/|_| |_| "
 echo "================================================================================"
 
 title() {
@@ -62,9 +60,6 @@ if [ "${OS_TYPE}" == "brew" ]; then
     # brew for mac
     command -v brew > /dev/null || ruby -e "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install)"
 else
-    # localtime
-    sudo ln -sf "/usr/share/zoneinfo/Asia/Seoul" "/etc/localtime"
-
     # for ubuntu
     if [ "${OS_TYPE}" == "apt" ]; then
         export LC_ALL=C

@@ -94,14 +94,14 @@ mkdir -p charts/acme/templates
 
 DIST=/tmp/draft.tar.gz
 
-_result "draft package downloaded."
-
 # download
 curl -sL -o ${DIST} https://github.com/nalbam/toaster/releases/download/${VERSION}/draft.tar.gz
 
 if [ ! -f ${DIST} ]; then
     _error "Can not download. [${REPO}]"
 fi
+
+_result "draft package downloaded."
 
 # untar here
 tar -zxf ${DIST}

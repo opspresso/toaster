@@ -1,18 +1,15 @@
 #!/bin/bash
 
-alias e="~/toaster/helper/env.sh"
-alias n="~/toaster/helper/nsh.sh"
-alias s="~/toaster/helper/ssh.sh"
+alias e="~/helper/env.sh"
+alias n="~/helper/nsh.sh"
+alias s="~/helper/ssh.sh"
 
-alias v="~/toaster/helper/vscode.sh"
-alias v.="~/toaster/helper/vscode.sh ."
+alias v="~/helper/vscode.sh"
+alias v.="v ."
 
-alias t="~/toaster/toast"
+alias t="toaster"
 alias tu="t update"
 alias tb="t bastion"
-
-alias st="/Applications/Sublime\ Text.app/Contents/SharedSupport/bin/subl"
-alias vs="/Applications/Visual\ Studio\ Code.app/Contents/Resources/app/bin/code"
 
 alias tf="terraform"
 alias tfp="tf init && tf plan"
@@ -30,7 +27,7 @@ alias vgd="vg destroy"
 alias p="reveal-md -w --port 8888 --theme https://raw.githubusercontent.com/nalbam/docs/master/.theme/black.css"
 
 c() {
-    ~/toaster/helper/cdw.sh ${1}
+    ~/helper/cdw.sh ${1}
     DIR=$(cat /tmp/cdw.result)
     if [ ! -z ${DIR} ]; then
         cd ${DIR}
