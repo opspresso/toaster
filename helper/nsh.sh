@@ -19,7 +19,7 @@ MY_ID=""
 GIT_URL=""
 GIT_PWD=""
 
-SHELL_DIR=${HOME}/toaster
+SHELL_DIR=${HOME}/helper
 
 ################################################################################
 

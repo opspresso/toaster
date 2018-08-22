@@ -8,7 +8,7 @@ ANSWER=
 
 HOME_DIR=
 
-SHELL_DIR=${HOME}/toaster
+SHELL_DIR=${HOME}/helper
 
 ################################################################################
 

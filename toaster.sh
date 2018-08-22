@@ -9,11 +9,9 @@ THIS_VERSION=v0.0.16
 CMD=$1
 SUB=$2
 
-CONFIG=${HOME}/.toaster
-
 NAME=
-BRANCH=
-VERSION=
+BRANCH=master
+VERSION=0.0.0
 NAMESPACE=
 CLUSTER=
 
@@ -23,6 +21,8 @@ REGISTRY=
 CHARTMUSEUM=
 SONARQUBE=
 NEXUS=
+
+CONFIG=${HOME}/.toaster
 
 touch ${CONFIG} && . ${CONFIG}
 
@@ -108,7 +108,7 @@ _logo() {
 
 _usage() {
     _logo
-    _echo " Usage: $0 {update|bastion|helm|draft} "
+    _echo " Usage: $0 {update|bastion|scan|build|helm|draft} "
     _bar
     _error
 }
@@ -134,17 +134,17 @@ _toast() {
         helper)
             _helper
             ;;
-        detect)
-            _detect
+        scan)
+            _scan
             ;;
         build)
             _build
             ;;
-        draft)
-            _draft
-            ;;
         helm)
             _helm
+            ;;
+        draft)
+            _draft
             ;;
         version)
             _version
@@ -212,19 +212,22 @@ _helper() {
     find ${HELPER_DIR}/** | grep [.]sh | xargs chmod 755
 }
 
-_detect() {
+_scan() {
     case ${SUB} in
         domain)
-            _detect_domain
+            _scan_domain
+            _config_save_all
             ;;
         source)
-            _detect_source
+            _scan_source
+            _config_save_all
+            ;;
+        clean)
+            _config_remove
             ;;
         *)
             _usage
     esac
-
-    _config_save_all
 }
 
 _build() {
@@ -234,22 +237,6 @@ _build() {
             ;;
         image)
             _build_image
-            ;;
-        *)
-            _usage
-    esac
-}
-
-_draft() {
-    case ${SUB} in
-        init)
-            _draft_init
-            ;;
-        pack)
-            _draft_pack
-            ;;
-        up)
-            _draft_up
             ;;
         *)
             _usage
@@ -272,7 +259,23 @@ _helm() {
     esac
 }
 
-_detect_domain() {
+_draft() {
+    case ${SUB} in
+        init)
+            _draft_init
+            ;;
+        pack)
+            _draft_pack
+            ;;
+        up)
+            _draft_up
+            ;;
+        *)
+            _usage
+    esac
+}
+
+_scan_domain() {
     JENKINS=$(_domain_find jenkins)
 
     if [ ! -z ${JENKINS} ]; then
@@ -287,12 +290,12 @@ _detect_domain() {
     _maven_mirror
 }
 
-_detect_source() {
+_scan_source() {
     _version_build
 
     SOURCE_ROOT="."
-    [ ! -z ${SOURCE_LANG} ] || _language_detect pom.xml java
-    [ ! -z ${SOURCE_LANG} ] || _language_detect package.json nodejs
+    [ ! -z ${SOURCE_LANG} ] || _language_scan pom.xml java
+    [ ! -z ${SOURCE_LANG} ] || _language_scan package.json nodejs
     [ ! -z ${SOURCE_LANG} ] || SOURCE_LANG="-"
 
     if [ -z ${NAME} ]; then
@@ -385,6 +388,77 @@ _build_image() {
 
     _command "docker push $REGISTRY/$NAME:$VERSION"
     docker push $REGISTRY/$NAME:$VERSION
+}
+
+_helm_init() {
+    _command "helm version"
+	helm version
+
+    _command "helm init --client-only"
+	helm init --client-only
+
+    if [ ! -z ${CHARTMUSEUM} ]; then
+        _command "helm repo add chartmuseum https://${CHARTMUSEUM}"
+        helm repo add chartmuseum https://${CHARTMUSEUM}
+    fi
+
+    _command "helm repo list"
+	helm repo list
+
+    _command "helm repo update"
+	helm repo update
+
+    COUNT=$(helm plugin list | grep 'Push chart package' | wc -l | xargs)
+
+    if [ "x${COUNT}" == "x0" ]; then
+        _command "helm plugin install https://github.com/chartmuseum/helm-push"
+    	helm plugin install https://github.com/chartmuseum/helm-push
+    fi
+
+    _command "helm plugin list"
+	helm plugin list
+}
+
+_helm_deploy() {
+    _helm_init
+
+    if [ -z ${NAME} ]; then
+        _error "NAME is empty."
+    fi
+    if [ -z ${NAMESPACE} ]; then
+        _error "NAMESPACE is empty."
+    fi
+    if [ -z ${VERSION} ]; then
+        _error "VERSION is empty."
+    fi
+
+    _command "helm upgrade --install $NAME-$NAMESPACE --version $VERSION --namespace $NAMESPACE"
+    helm upgrade --install $NAME-$NAMESPACE chartmuseum/$NAME \
+                --version $VERSION --namespace $NAMESPACE --devel \
+                --set fullnameOverride=$NAME-$NAMESPACE
+
+    _command "helm history $NAME-$NAMESPACE"
+    helm history $NAME-$NAMESPACE --max 5
+}
+
+_helm_remove() {
+    _helm_init
+
+    if [ -z ${NAME} ]; then
+        _error "NAME is empty."
+    fi
+    if [ -z ${NAMESPACE} ]; then
+        _error "NAMESPACE is empty."
+    fi
+
+    _command "helm search $NAME"
+    helm search $NAME
+
+    _command "helm history $NAME-$NAMESPACE"
+    helm history $NAME-$NAMESPACE
+
+    _command "helm delete --purge $NAME-$NAMESPACE"
+    helm delete --purge $NAME-$NAMESPACE --max 5
 }
 
 _draft_init() {
@@ -509,77 +583,6 @@ _chart_replace() {
     fi
 }
 
-_helm_init() {
-    _command "helm version"
-	helm version
-
-    _command "helm init --client-only"
-	helm init --client-only
-
-    if [ ! -z ${CHARTMUSEUM} ]; then
-        _command "helm repo add chartmuseum https://${CHARTMUSEUM}"
-        helm repo add chartmuseum https://${CHARTMUSEUM}
-    fi
-
-    _command "helm repo list"
-	helm repo list
-
-    _command "helm repo update"
-	helm repo update
-
-    COUNT=$(helm plugin list | grep 'Push chart package' | wc -l | xargs)
-
-    if [ "x${COUNT}" == "x0" ]; then
-        _command "helm plugin install https://github.com/chartmuseum/helm-push"
-    	helm plugin install https://github.com/chartmuseum/helm-push
-    fi
-
-    _command "helm plugin list"
-	helm plugin list
-}
-
-_helm_deploy() {
-    _helm_init
-
-    if [ -z ${NAME} ]; then
-        _error "NAME is empty."
-    fi
-    if [ -z ${NAMESPACE} ]; then
-        _error "NAMESPACE is empty."
-    fi
-    if [ -z ${VERSION} ]; then
-        _error "VERSION is empty."
-    fi
-
-    _command "helm upgrade --install $NAME-$NAMESPACE --version $VERSION --namespace $NAMESPACE"
-    helm upgrade --install $NAME-$NAMESPACE chartmuseum/$NAME \
-                --version $VERSION --namespace $NAMESPACE --devel \
-                --set fullnameOverride=$NAME-$NAMESPACE
-
-    _command "helm history $NAME-$NAMESPACE"
-    helm history $NAME-$NAMESPACE --max 5
-}
-
-_helm_remove() {
-    _helm_init
-
-    if [ -z ${NAME} ]; then
-        _error "NAME is empty."
-    fi
-    if [ -z ${NAMESPACE} ]; then
-        _error "NAMESPACE is empty."
-    fi
-
-    _command "helm search $NAME"
-    helm search $NAME
-
-    _command "helm history $NAME-$NAMESPACE"
-    helm history $NAME-$NAMESPACE
-
-    _command "helm delete --purge $NAME-$NAMESPACE"
-    helm delete --purge $NAME-$NAMESPACE --max 5
-}
-
 _config_save_all() {
     echo "# toaster" > ${CONFIG}
 
@@ -603,10 +606,15 @@ _config_save() {
     CONFIG_VALUE=$2
 
     echo "${CONFIG_NAME}=${CONFIG_VALUE}" >> ${CONFIG}
-
     printf "${CONFIG_VALUE}" > ${HOME}/${CONFIG_NAME}
 
     _result "${CONFIG_NAME}: ${CONFIG_VALUE}"
+}
+
+_config_remove() {
+    rm -rf ${CONFIG}
+    rm -rf ${HOME}/NAME BRANCH ${HOME}/VERSION ${HOME}/NAMESPACE ${HOME}/CLUSTER ${HOME}/SOURCE_LANG ${HOME}/SOURCE_ROOT
+    rm -rf ${HOME}/BASE_DOMAIN ${HOME}/JENKINS ${HOME}/REGISTRY ${HOME}/CHARTMUSEUM ${HOME}/SONARQUBE ${HOME}/NEXUS
 }
 
 _domain_find() {
@@ -670,7 +678,7 @@ _version_build() {
     fi
 }
 
-_language_detect() {
+_language_scan() {
     TARGET_FILE=${1}
     TARGET_LANG=${2}
 
