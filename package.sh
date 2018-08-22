@@ -10,8 +10,6 @@ VERSION=$(echo ${VERSION:-v0.0.0} | perl -pe 's/^(([v\d]+\.)*)(\d+)(.*)$/$1.($3+
 echo "VERSION=${VERSION}"
 printf "${VERSION}" > target/VERSION
 
-sed -i -e "s/TOASTER=.*/TOASTER=${VERSION}/g" toast.sh
-
 # 755
 find ./** | grep [.]sh | xargs chmod 755
 

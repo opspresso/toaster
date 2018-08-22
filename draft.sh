@@ -2,40 +2,74 @@
 
 # curl -sL toast.sh/draft | bash
 
+OS_NAME="$(uname | awk '{print tolower($0)}')"
+
 ANSWER=
 
 ################################################################################
 
-_print() {
-    TPUT=
-    command -v tput > /dev/null || TPUT=true
-    if [ -z ${TPUT} ]; then
+TPUT=
+command -v tput > /dev/null || TPUT=false
+
+_echo() {
+    if [ -z ${TPUT} ] && [ ! -z $2 ]; then
         echo -e "$(tput setaf $2)$1$(tput sgr0)"
     else
         echo -e "$1"
     fi
 }
 
+_read() {
+    if [ -z ${TPUT} ]; then
+        read -p "$(tput setaf 6)$1$(tput sgr0)" ANSWER
+    else
+        read -p "$1" ANSWER
+    fi
+}
+
 _result() {
-    _print "# $@" 4
+    _echo "# $@" 4
 }
 
 _command() {
-    _print "$ $@" 3
+    _echo "$ $@" 3
 }
 
 _success() {
-    _print "+ $@" 2
+    _echo "+ $@" 2
     exit 0
 }
 
 _error() {
-    _print "- $@" 1
+    _echo "- $@" 1
     exit 1
 }
 
-_question() {
-    read -p "$(tput setaf 6)$@$(tput sgr0)" ANSWER
+_replace() {
+    REPLACE_FILE=$1
+    REPLACE_KEY=$2
+    DEFAULT_VAL=$3
+    REPLACE_TYPE=$4
+
+    if [ "${DEFAULT_VAL}" == "" ]; then
+        _read "${REPLACE_KEY} : "
+    else
+        _read "${REPLACE_KEY} [${DEFAULT_VAL}] : "
+    fi
+
+    if [ -z ${ANSWER} ]; then
+        REPLACE_VAL=${DEFAULT_VAL}
+    else
+        REPLACE_VAL=${ANSWER}
+    fi
+
+    if [ "${REPLACE_TYPE}" == "yaml" ]; then
+        _command "sed -i -e s|${REPLACE_KEY}: .*|${REPLACE_KEY}: ${REPLACE_VAL}| ${REPLACE_FILE}"
+        sed -i -e "s|${REPLACE_KEY}: .*|${REPLACE_KEY}: ${REPLACE_VAL}|" ${REPLACE_FILE}
+    else
+        _command "sed -i -e s|${REPLACE_KEY} = .*|${REPLACE_KEY} = ${REPLACE_VAL}| ${REPLACE_FILE}"
+        sed -i -e "s|${REPLACE_KEY} = .*|${REPLACE_KEY} = \"${REPLACE_VAL}\"|" ${REPLACE_FILE}
+    fi
 }
 
 ################################################################################
@@ -44,8 +78,12 @@ if [ ! -f Dockerfile ]; then
     _error "File not found. [Dockerfile]"
 fi
 
+VERSION=$(curl -s https://api.github.com/repos/nalbam/toaster/releases/latest | grep tag_name | cut -d'"' -f4)
+
+_result "draft package version: ${VERSION}"
+
 if [ -f draft.toml ]; then
-    _question "Are you sure? (YES/[no]) : "
+    _read "Do you really want to apply? (YES/[no]) : "
 
     if [ "${ANSWER}" != "YES" ]; then
         exit 0
@@ -56,9 +94,7 @@ mkdir -p charts/acme/templates
 
 DIST=/tmp/draft.tar.gz
 
-VERSION=$(curl -s https://api.github.com/repos/nalbam/toaster/releases/latest | grep tag_name | cut -d'"' -f4)
-
-_command "download ${VERSION}"
+_result "draft package downloaded."
 
 # download
 curl -sL -o ${DIST} https://github.com/nalbam/toaster/releases/download/${VERSION}/draft.tar.gz
@@ -67,52 +103,29 @@ if [ ! -f ${DIST} ]; then
     _error "Can not download. [${REPO}]"
 fi
 
-# untar
+# untar here
 tar -zxf ${DIST}
 
 mv -f dockerignore .dockerignore
 mv -f draftignore .draftignore
 
-# IMAGE_NAME
+# Jenkinsfile IMAGE_NAME
 DEFAULT=$(basename "$PWD")
-_question "IMAGE_NAME [${DEFAULT}] : "
+_replace "Jenkinsfile" "IMAGE_NAME" "${DEFAULT}"
 
-if [ -z ${ANSWER} ]; then
-    IMAGE_NAME=${DEFAULT}
-else
-    IMAGE_NAME=${ANSWER}
-fi
-
-_command "sed -i -e s|IMAGE_NAME = .*|IMAGE_NAME = ${IMAGE_NAME}| Jenkinsfile"
-sed -i -e "s|IMAGE_NAME = .*|IMAGE_NAME = \"${IMAGE_NAME}\"|" Jenkinsfile
-
-# REPOSITORY_URL
 if [ -d .git ]; then
+    # Jenkinsfile REPOSITORY_URL
     DEFAULT=$(git remote -v | head -1 | awk '{print $2}')
-    _question "REPOSITORY_URL [${DEFAULT}] : "
+    _replace "Jenkinsfile" "REPOSITORY_URL" "${DEFAULT}"
 
-    if [ -z ${ANSWER} ]; then
-        REPOSITORY_URL=${DEFAULT}
-    else
-        REPOSITORY_URL=${ANSWER}
-    fi
-
-    _command "sed -i -e s|REPOSITORY_URL = .*|REPOSITORY_URL = ${REPOSITORY_URL}| Jenkinsfile"
-    sed -i -e "s|REPOSITORY_URL = .*|REPOSITORY_URL = \"${REPOSITORY_URL}\"|" Jenkinsfile
+    # Jenkinsfile REPOSITORY_SECRET
+    DEFAULT=
+    _replace "Jenkinsfile" "REPOSITORY_SECRET" "${DEFAULT}"
 fi
 
-# internalPort
-DEFAULT=80
-_question "internalPort [${DEFAULT}] : "
-
-if [ -z ${ANSWER} ]; then
-    internalPort=${DEFAULT}
-else
-    internalPort=${ANSWER}
-fi
-
-_command "sed -i -e s|internalPort: .*|internalPort: $internalPort| charts/acme/values.yaml"
-sed -i -e "s|internalPort: .*|internalPort: $internalPort|" charts/acme/values.yaml
+# values.yaml internalPort
+DEFAULT=8080
+_replace "charts/acme/values.yaml" "internalPort" "${DEFAULT}" "yaml"
 
 # done
 _success "done."

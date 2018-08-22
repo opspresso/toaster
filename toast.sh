@@ -1,7 +1,5 @@
 #!/bin/bash
 
-TOASTER=4.0.0
-
 CMD=$1
 SUB=$2
 
@@ -52,51 +50,52 @@ done
 
 ################################################################################
 
-_print() {
-    TPUT=
-    command -v tput > /dev/null || TPUT=true
-    if [ -z ${TPUT} ]; then
+TPUT=
+command -v tput > /dev/null || TPUT=false
+
+_bar() {
+    _echo "================================================================================"
+}
+
+_echo() {
+    if [ -z ${TPUT} ] && [ ! -z $2 ]; then
         echo -e "$(tput setaf $2)$1$(tput sgr0)"
     else
         echo -e "$1"
     fi
 }
 
-_bar() {
-    _print "================================================================================"
-}
-
 _result() {
-    _print "# $@" 4
+    _echo "# $@" 4
 }
 
 _command() {
-    _print "$ $@" 3
+    _echo "$ $@" 3
 }
 
 _success() {
-    _print "+ $@" 2
+    _echo "+ $@" 2
     exit 0
 }
 
 _error() {
-    _print "- $@" 1
+    _echo "- $@" 1
     exit 1
 }
 
 _logo() {
     #figlet toaster
     _bar
-    _print " | |_ ___   __ _ ___| |_ ___ _ __  "
-    _print " | __/ _ \ / _' / __| __/ _ \ '__| "
-    _print " | || (_) | (_| \__ \ ||  __/ | "
-    _print "  \__\___/ \__,_|___/\__\___|_|  (${TOASTER})"
+    _echo " | |_ ___   __ _ ___| |_ ___ _ __  "
+    _echo " | __/ _ \ / _' / __| __/ _ \ '__| "
+    _echo " | || (_) | (_| \__ \ ||  __/ | "
+    _echo "  \__\___/ \__,_|___/\__\___|_| "
     _bar
 }
 
 _usage() {
     _logo
-    _print " Usage: $0 {update|bastion|helm|draft} "
+    _echo " Usage: $0 {update|bastion|helm|draft} "
     _bar
     _error
 }

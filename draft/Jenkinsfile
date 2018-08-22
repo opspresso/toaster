@@ -1,6 +1,6 @@
+def IMAGE_NAME = "sample"
 def REPOSITORY_URL = "https://github.com/nalbam/sample"
 def REPOSITORY_SECRET = ""
-def IMAGE_NAME = "sample"
 def SLACK_TOKEN = ""
 
 def label = "worker-${UUID.randomUUID().toString()}"
