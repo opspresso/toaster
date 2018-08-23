@@ -3,21 +3,21 @@
 SHELL_DIR=${HOME}/helper
 
 APP=$(echo "$1" | sed -e "s/\///g")
-CMD="$2"
-MSG="$3"
-TAG="$4"
-ALL="$*"
+CMD=$2
+MSG=$3
+TAG=$4
+ALL=$*
 
-PROJECT=""
-BRANCH=""
+PROJECT=
+BRANCH=
 
 NOW_DIR=$(pwd)
 
-PROVIDER=""
-MY_ID=""
+PROVIDER=
+MY_ID=
 
-GIT_URL=""
-GIT_PWD=""
+GIT_URL=
+GIT_PWD=
 
 ################################################################################
 
@@ -124,13 +124,13 @@ prepare() {
     DETECT=false
 
     for V in ${LIST}; do
-        if [ "${PROVIDER}" == "" ]; then
+        if [ -z ${PROVIDER} ]; then
             GIT_PWD="${GIT_PWD}/${V}"
         fi
         if [ "${DETECT}" == "true" ]; then
-            if [ "${PROVIDER}" == "" ]; then
+            if [ -z ${PROVIDER} ]; then
                 PROVIDER="${V}"
-            elif [ "${MY_ID}" == "" ]; then
+            elif [ -z ${MY_ID} ]; then
                 MY_ID="${V}"
             fi
         elif [ "${V}" == "src" ]; then
@@ -140,7 +140,7 @@ prepare() {
 
     # git@github.com:
     # ssh://git@8.8.8.8:443/
-    if [ "${PROVIDER}" != "" ]; then
+    if [ ! -z ${PROVIDER} ]; then
         if [ "${PROVIDER}" == "github.com" ]; then
             GIT_URL="git@${PROVIDER}:"
         elif [ "${PROVIDER}" == "gitlab.com" ]; then
@@ -161,7 +161,7 @@ prepare() {
     fi
 }
 
-get_cmd() {
+cmd() {
     if [ -z ${CMD} ]; then
         usage
     fi
@@ -201,7 +201,7 @@ ch_now_dir() {
 }
 
 ch_app_dir() {
-    if [ ! -d "${NOW_DIR}/${PROJECT}" ]; then
+    if [ ! -d ${NOW_DIR}/${PROJECT} ]; then
         _error "Not set project."
     fi
 
@@ -210,7 +210,7 @@ ch_app_dir() {
     # selected branch
     BRANCH=$(git branch | grep \* | cut -d' ' -f2)
 
-    if [ "${BRANCH}" == "" ]; then
+    if [ -z ${BRANCH} ]; then
         BRANCH="master"
     fi
 
@@ -232,6 +232,7 @@ git_clone() {
     ch_app_dir
 
     # https://github.com/awslabs/git-secrets
+
     _command "git secrets --install"
     git secrets --install
 
@@ -246,8 +247,8 @@ git_remote() {
     _command "git remote"
     git remote
 
-    if [ "${MSG}" == "" ]; then
-        return
+    if [ -z ${MSG} ]; then
+        _error
     fi
 
     REMOTES="/tmp/${APP}-remote"
@@ -270,8 +271,8 @@ git_branch() {
     _command "git branch -a"
     git branch -a
 
-    if [ "${MSG}" == "" ]; then
-        return
+    if [ -z ${MSG} ]; then
+        _error
     fi
     if [ "${MSG}" == "${BRANCH}" ]; then
         _error "Already on '${BRANCH}'."
@@ -283,7 +284,7 @@ git_branch() {
 
     while read VAR; do
         ARR=(${VAR})
-        if [ "${ARR[1]}" == "" ]; then
+        if [ -z ${ARR[1]} ]; then
             if [ "${ARR[0]}" == "${MSG}" ]; then
                 HAS="true"
             fi
@@ -317,6 +318,10 @@ git_diff() {
 git_commit() {
     shift && shift
     MSG=$*
+
+    if [ -z ${MSG} ]; then
+        _error
+    fi
 
     _command "git add --all"
     git add --all
@@ -366,6 +371,6 @@ git_tag() {
 
 prepare
 
-get_cmd
+cmd
 
 nsh
