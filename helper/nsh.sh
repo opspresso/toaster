@@ -316,7 +316,7 @@ git_diff() {
 }
 
 git_commit() {
-    shift && shift
+    shift 2
     MSG=$*
 
     if [ -z ${MSG} ]; then

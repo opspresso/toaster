@@ -399,11 +399,11 @@ _build_image() {
 }
 
 _helm_init() {
-    _command "helm version"
-	helm version
-
     _command "helm init --client-only"
 	helm init --client-only
+
+    _command "helm version"
+	helm version
 
     if [ ! -z ${CHARTMUSEUM} ]; then
         _command "helm repo add chartmuseum https://${CHARTMUSEUM}"
