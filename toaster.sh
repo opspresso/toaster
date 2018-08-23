@@ -531,6 +531,10 @@ _draft_pack() {
         _chart_replace "Jenkinsfile" "REPOSITORY_SECRET" "${DEFAULT}"
     fi
 
+    # Jenkinsfile SLACK_TOKEN
+    DEFAULT=
+    _chart_replace "Jenkinsfile" "SLACK_TOKEN" "${DEFAULT}"
+
     # values.yaml internalPort
     DEFAULT=8080
     _chart_replace "charts/acme/values.yaml" "internalPort" "${DEFAULT}" "yaml"
