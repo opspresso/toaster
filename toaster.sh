@@ -4,7 +4,7 @@
 
 OS_NAME="$(uname | awk '{print tolower($0)}')"
 
-THIS_VERSION=v0.0.16
+THIS_VERSION=v0.0.0
 
 CMD=$1
 SUB=$2
@@ -155,6 +155,12 @@ _toast() {
 }
 
 _update() {
+    VERSION=$(curl -s https://api.github.com/repos/nalbam/toaster/releases/latest | grep tag_name | cut -d'"' -f4)
+
+    if [ "${VERSION}" == "${THIS_VERSION}" ]; then
+        _success "Latest version already installed. [${THIS_VERSION}]"
+    fi
+
     curl -sL toast.sh/install | bash
     exit 0
 }
