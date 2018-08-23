@@ -116,7 +116,6 @@ connect() {
     fi
 
     _command "ssh -i ${HOME_DIR}/${_PEM} ${_USER}@${_HOST}"
-
     ssh -i ${HOME_DIR}/${_PEM} ${_USER}@${_HOST}
 }
 

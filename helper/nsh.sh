@@ -222,22 +222,28 @@ rm_app_dir() {
 }
 
 git_clone() {
-    git clone "${GIT_URL}${MY_ID}/${APP}.git" "${PROJECT}"
+    _command "git clone ${GIT_URL}${MY_ID}/${APP}.git ${PROJECT}"
+    git clone ${GIT_URL}${MY_ID}/${APP}.git ${PROJECT}
 
-    if [ ! -d "${NOW_DIR}/${PROJECT}" ]; then
+    if [ ! -d ${NOW_DIR}/${PROJECT} ]; then
         _error "Not set project."
     fi
 
     ch_app_dir
 
     # https://github.com/awslabs/git-secrets
+    _command "git secrets --install"
     git secrets --install
+
+    _command "git secrets --register-aws"
     git secrets --register-aws
 
+    _command "git branch -v"
     git branch -v
 }
 
 git_remote() {
+    _command "git remote"
     git remote
 
     if [ "${MSG}" == "" ]; then
@@ -253,11 +259,15 @@ git_remote() {
         fi
     done < ${REMOTES}
 
-    git remote add --track master ${MSG} "${GIT_URL}${MSG}/${APP}.git"
+    _command "git remote add --track master ${MSG} ${GIT_URL}${MSG}/${APP}.git"
+    git remote add --track master ${MSG} ${GIT_URL}${MSG}/${APP}.git
+
+    _command "git remote"
     git remote
 }
 
 git_branch() {
+    _command "git branch -a"
     git branch -a
 
     if [ "${MSG}" == "" ]; then
@@ -285,15 +295,22 @@ git_branch() {
     done < ${BRANCHES}
 
     if [ "${HAS}" != "true" ]; then
+        _command "git branch ${MSG} ${TAG}"
         git branch ${MSG} ${TAG}
     fi
 
+    _command "git checkout ${MSG}"
     git checkout ${MSG}
+
+    _command "git branch -v"
     git branch -v
 }
 
 git_diff() {
+    _command "git branch -v"
     git branch -v
+
+    _command "git diff"
     git diff
 }
 
@@ -301,33 +318,47 @@ git_commit() {
     shift && shift
     MSG=$*
 
+    _command "git add --all"
     git add --all
-    git commit -m "${MSG}"
+
+    _command "git commit -m ${MSG}"
+    git commit -m ${MSG}
 }
 
 git_pull() {
+    _command "git branch -v"
     git branch -v
 
     REMOTES="/tmp/${APP}-remote"
     git remote > ${REMOTES}
 
+    _command "git pull origin ${BRANCH}"
     git pull origin ${BRANCH}
 
     while read REMOTE; do
         if [ "${REMOTE}" != "origin" ]; then
+            _command "git pull ${REMOTE} ${BRANCH}"
             git pull ${REMOTE} ${BRANCH}
         fi
     done < ${REMOTES}
 }
 
 git_push() {
+    _command "git branch -v"
     git branch -v
+
+    _command "git push origin ${BRANCH}"
     git push origin ${BRANCH}
 }
 
 git_tag() {
+    _command "git branch -v"
     git branch -v
+
+    _command "git pull"
     git pull
+
+    _command "git tag"
     git tag
 }
 
