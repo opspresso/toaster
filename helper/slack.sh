@@ -12,7 +12,7 @@ usage() {
     echo " Usage: slack.sh [args] {message} "
     echo " "
     echo " Basic Arguments: "
-    echo "   webhook_url      Send your JSON payloads to this URL."
+    echo "   webhook_url|url  Send your JSON payloads to this URL."
     echo "   channel          Channel, private group, or IM channel to send message to."
     echo "   username         Set your bot's user name."
     echo "   icon_emoji       Emoji to use as the icon for this message."

@@ -1,32 +1,46 @@
 #!/bin/bash
 
-DIR=
-
-ANSWER=$1
-
-HOME_DIR=
+OS_NAME="$(uname | awk '{print tolower($0)}')"
 
 SHELL_DIR=${HOME}/toaster
 
-OS_NAME="$(uname | awk '{print tolower($0)}')"
+HOME_DIR=
 
 ################################################################################
 
-question() {
-    read -p "$(tput setaf 6)$@$(tput sgr0)" ANSWER
+command -v tput > /dev/null || TPUT=false
+
+_echo() {
+    if [ -z ${TPUT} ] && [ ! -z $2 ]; then
+        echo -e "$(tput setaf $2)$1$(tput sgr0)"
+    else
+        echo -e "$1"
+    fi
 }
 
-title() {
-    echo -e "$(tput setaf 3)$@$(tput sgr0)"
+_read() {
+    if [ -z ${TPUT} ]; then
+        read -p "$(tput setaf 6)$1$(tput sgr0)" ANSWER
+    else
+        read -p "$1" ANSWER
+    fi
 }
 
-success() {
-    echo -e "$(tput setaf 2)$@$(tput sgr0)"
+_result() {
+    _echo "# $@" 4
+}
+
+_command() {
+    _echo "$ $@" 3
+}
+
+_success() {
+    _echo "+ $@" 2
     exit 0
 }
 
-error() {
-    echo -e "$(tput setaf 1)$@$(tput sgr0)"
+_error() {
+    _echo "- $@" 1
     exit 1
 }
 
@@ -60,60 +74,64 @@ directory() {
         DEFAULT="$(pwd)/work/src"
         popd
 
-        question "Please input base directory. [${DEFAULT}]: "
+        _read "Please input base directory. [${DEFAULT}]: "
         HOME_DIR=${ANSWER:-${DEFAULT}}
     fi
 
     mkdir -p ${HOME_DIR}
 
     if [ ! -d "${HOME_DIR}" ]; then
-        error "[${HOME_DIR}] is not directory."
+        _error "[${HOME_DIR}] is not directory."
     fi
 
     echo "HOME_DIR=${HOME_DIR}" > "${CONFIG}"
 }
 
 dir() {
-    TEMP=/tmp/cdr.tmp
+    TEMP=/tmp/cdw.tmp
 
     find ${HOME_DIR} -maxdepth 2 -type d -exec ls -d "{}" \; > ${TEMP}
 
-    if [ -z "${ANSWER}" ]; then
-        echo "================================================================================"
+    COUNT=$(wc -l ${TEMP})
 
-        IDX=0
-        while read VAL; do
-            IDX=$(( ${IDX} + 1 ))
-            printf "%3s %s\n" "$IDX" "$VAL";
-        done < ${TEMP}
-
-        echo "================================================================================"
+    if [ "x${COUNT}" == "x0" ]; then
+        _error "[${HOME_DIR}] is empty."
     fi
+
+    echo "================================================================================"
+
+    IDX=0
+    while read VAL; do
+        IDX=$(( ${IDX} + 1 ))
+        printf "%3s %s\n" "$IDX" "$VAL";
+    done < ${TEMP}
+
+    echo "================================================================================"
 }
 
 vscode() {
-    if [ -z "${ANSWER}" ]; then
-        question
+    _read "Choose directory [1-${IDX}]: "
+
+    if [ -z ${ANSWER} ]; then
+        _error
+    fi
+    TEST='^[0-9]+$'
+    if ! [[ ${ANSWER} =~ ${TEST} ]]; then
+        _error "[${ANSWER}] is not a number."
     fi
 
-    if [ -z "${ANSWER}" ]; then
-        error
-    fi
+    DIR=$(sed -n ${ANSWER}p ${TEMP})
 
-    if [ "${ANSWER}" == "." ]; then
-        DIR="."
-    else
-        DIR=$(sed -n ${ANSWER}p ${TEMP})
-    fi
-
-    if [ -z "${DIR}" ] || [ ! -d ${DIR} ]; then
-        error
+    if [ -z ${DIR} ] || [ ! -d ${DIR} ]; then
+        _error
     fi
 
     if [ "${OS_NAME}" == "linux" ]; then
-        bash /usr/bin/code ${DIR}
+        /usr/bin/code ${DIR}
     elif [ "${OS_NAME}" == "darwin" ]; then
-        bash /Applications/Visual\ Studio\ Code.app/Contents/Resources/app/bin/code ${DIR}
+        /Applications/Visual\ Studio\ Code.app/Contents/Resources/app/bin/code ${DIR}
+    else
+        _error
     fi
 }
 

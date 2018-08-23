@@ -1,5 +1,7 @@
 #!/bin/bash
 
+SHELL_DIR=${HOME}/helper
+
 APP=$(echo "$1" | sed -e "s/\///g")
 CMD="$2"
 MSG="$3"
@@ -9,8 +11,6 @@ ALL="$*"
 PROJECT=""
 BRANCH=""
 
-ANSWER=
-
 NOW_DIR=$(pwd)
 
 PROVIDER=""
@@ -19,25 +19,41 @@ MY_ID=""
 GIT_URL=""
 GIT_PWD=""
 
-SHELL_DIR=${HOME}/helper
-
 ################################################################################
 
-question() {
-    read -p "$(tput setaf 6)$@$(tput sgr0)" ANSWER
+command -v tput > /dev/null || TPUT=false
+
+_echo() {
+    if [ -z ${TPUT} ] && [ ! -z $2 ]; then
+        echo -e "$(tput setaf $2)$1$(tput sgr0)"
+    else
+        echo -e "$1"
+    fi
 }
 
-title() {
-    echo -e "$(tput setaf 3)$@$(tput sgr0)"
+_read() {
+    if [ -z ${TPUT} ]; then
+        read -p "$(tput setaf 6)$1$(tput sgr0)" ANSWER
+    else
+        read -p "$1" ANSWER
+    fi
 }
 
-success() {
-    echo -e "$(tput setaf 2)$@$(tput sgr0)"
+_result() {
+    _echo "# $@" 4
+}
+
+_command() {
+    _echo "$ $@" 3
+}
+
+_success() {
+    _echo "+ $@" 2
     exit 0
 }
 
-error() {
-    echo -e "$(tput setaf 1)$@$(tput sgr0)"
+_error() {
+    _echo "- $@" 1
     exit 1
 }
 
@@ -61,7 +77,7 @@ usage() {
 ################################################################################
 
 nsh() {
-    case "${CMD}" in
+    case ${CMD} in
         cl|clone)
             git_clone
             ;;
@@ -133,11 +149,11 @@ prepare() {
             if [ -f ${GIT_PWD}/.git_url ]; then
                 GIT_URL=$(cat ${GIT_PWD}/.git_url)
             else
-                question "Please input git url. (ex: ssh://git@8.8.8.8:443/): "
+                _read "Please input git url. (ex: ssh://git@8.8.8.8:443/): "
 
                 GIT_URL=${ANSWER}
 
-                if [ ! -z "${GIT_URL}" ]; then
+                if [ ! -z ${GIT_URL} ]; then
                     echo "${GIT_URL}" > ${GIT_PWD}/.git_url
                 fi
             fi
@@ -146,34 +162,34 @@ prepare() {
 }
 
 get_cmd() {
-    if [ "${CMD}" == "" ]; then
+    if [ -z ${CMD} ]; then
         usage
     fi
 
-    case "${CMD}" in
+    case ${CMD} in
         cl|clone)
-            if [ "${MSG}" == "" ]; then
-                PROJECT="${APP}"
+            if [ -z ${MSG} ]; then
+                PROJECT=${APP}
             else
-                PROJECT="${MSG}"
+                PROJECT=${MSG}
             fi
             ;;
         *)
-            PROJECT="${APP}"
+            PROJECT=${APP}
             ;;
     esac
 
-    case "${CMD}" in
+    case ${CMD} in
         cl|clone)
-            if [ -d "${NOW_DIR}/${PROJECT}" ]; then
-                error "Source directory already exists."
+            if [ -d ${NOW_DIR}/${PROJECT} ]; then
+                _error "Source directory already exists."
             fi
             ch_now_dir
             rm_app_dir
             ;;
         *)
-            if [ ! -d "${NOW_DIR}/${PROJECT}" ]; then
-                error "Source directory doesn't exists."
+            if [ ! -d ${NOW_DIR}/${PROJECT} ]; then
+                _error "Source directory doesn't exists."
             fi
             ch_app_dir
         ;;
@@ -181,15 +197,15 @@ get_cmd() {
 }
 
 ch_now_dir() {
-    cd "${NOW_DIR}"
+    cd ${NOW_DIR}
 }
 
 ch_app_dir() {
     if [ ! -d "${NOW_DIR}/${PROJECT}" ]; then
-        error "Not set project."
+        _error "Not set project."
     fi
 
-    cd "${NOW_DIR}/${PROJECT}"
+    cd ${NOW_DIR}/${PROJECT}
 
     # selected branch
     BRANCH=$(git branch | grep \* | cut -d' ' -f2)
@@ -198,18 +214,18 @@ ch_app_dir() {
         BRANCH="master"
     fi
 
-    echo "# ${BRANCH}"
+    _result "${BRANCH}"
 }
 
 rm_app_dir() {
-    rm -rf "${NOW_DIR}/${PROJECT}"
+    rm -rf ${NOW_DIR}/${PROJECT}
 }
 
 git_clone() {
     git clone "${GIT_URL}${MY_ID}/${APP}.git" "${PROJECT}"
 
     if [ ! -d "${NOW_DIR}/${PROJECT}" ]; then
-        error "Not set project."
+        _error "Not set project."
     fi
 
     ch_app_dir
@@ -233,7 +249,7 @@ git_remote() {
 
     while read VAR; do
         if [ "${VAR}" == "${MSG}" ]; then
-            error "Remote '${MSG}' already exists."
+            _error "Remote '${MSG}' already exists."
         fi
     done < ${REMOTES}
 
@@ -248,7 +264,7 @@ git_branch() {
         return
     fi
     if [ "${MSG}" == "${BRANCH}" ]; then
-        error "Already on '${BRANCH}'."
+        _error "Already on '${BRANCH}'."
     fi
 
     HAS="false"

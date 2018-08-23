@@ -1,32 +1,48 @@
 #!/bin/bash
 
-NAME=$1
-REGION=$2
-OUTPUT=$3
-
-ANSWER=
+SHELL_DIR=${HOME}/helper
 
 HOME_DIR=
 
-SHELL_DIR=${HOME}/helper
+NAME=$1
+REGION=${2:-ap-northeast-2}
+OUTPUT=${3:-json}
 
 ################################################################################
 
-question() {
-    read -p "$(tput setaf 6)$@$(tput sgr0)" ANSWER
+command -v tput > /dev/null || TPUT=false
+
+_echo() {
+    if [ -z ${TPUT} ] && [ ! -z $2 ]; then
+        echo -e "$(tput setaf $2)$1$(tput sgr0)"
+    else
+        echo -e "$1"
+    fi
 }
 
-title() {
-    echo -e "$(tput setaf 3)$@$(tput sgr0)"
+_read() {
+    if [ -z ${TPUT} ]; then
+        read -p "$(tput setaf 6)$1$(tput sgr0)" ANSWER
+    else
+        read -p "$1" ANSWER
+    fi
 }
 
-success() {
-    echo -e "$(tput setaf 2)$@$(tput sgr0)"
+_result() {
+    _echo "# $@" 4
+}
+
+_command() {
+    _echo "$ $@" 3
+}
+
+_success() {
+    _echo "+ $@" 2
     exit 0
 }
 
-error() {
-    echo -e "$(tput setaf 1)$@$(tput sgr0)"
+_error() {
+    _echo "- $@" 1
     exit 1
 }
 
@@ -54,8 +70,6 @@ usage() {
 ################################################################################
 
 prepare() {
-    mkdir -p ~/.aws
-
     mkdir -p ${SHELL_DIR}/conf
 
     CONFIG=${SHELL_DIR}/conf/$(basename $0)
@@ -66,18 +80,16 @@ prepare() {
 
 directory() {
     if [ -z "${HOME_DIR}" ] || [ ! -d "${HOME_DIR}" ]; then
-        USER=${USER:=$(whoami)}
-
         pushd ~
         DEFAULT="$(pwd)/work/src/github.com/${USER}/keys/credentials"
         popd
 
-        question "Please input credentials directory. [${DEFAULT}]: "
+        _read "Please input credentials directory. [${DEFAULT}]: "
         HOME_DIR=${ANSWER:-${DEFAULT}}
     fi
 
     if [ -z "${HOME_DIR}" ] || [ ! -d "${HOME_DIR}" ]; then
-        error "[${HOME_DIR}] is not directory."
+        _error "[${HOME_DIR}] is not directory."
     fi
 
     echo "HOME_DIR=${HOME_DIR}" > "${CONFIG}"
@@ -91,15 +103,12 @@ deploy() {
         usage
     fi
 
-    REGION=${REGION:-ap-northeast-2}
-    OUTPUT=${OUTPUT:-json}
-
     aws configure set default.region ${REGION}
     aws configure set default.output ${OUTPUT}
 
     cp -f ${HOME_DIR}/${NAME} ~/.aws/credentials
 
-    success "=> ${NAME} ${REGION} ${OUTPUT}"
+    _success "${NAME} ${REGION} ${OUTPUT}"
 }
 
 ################################################################################

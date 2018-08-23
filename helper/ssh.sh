@@ -1,32 +1,48 @@
 #!/bin/bash
 
-PEM=$1
-HOST=$2
-USER=$3
-
-ANSWER=
+SHELL_DIR=${HOME}/helper
 
 HOME_DIR=
 
-SHELL_DIR=${HOME}/helper
+_PEM=${1:-$USER}
+_HOST=${2}
+_USER=${3:-ec2-user}
 
 ################################################################################
 
-question() {
-    read -p "$(tput setaf 6)$@$(tput sgr0)" ANSWER
+command -v tput > /dev/null || TPUT=false
+
+_echo() {
+    if [ -z ${TPUT} ] && [ ! -z $2 ]; then
+        echo -e "$(tput setaf $2)$1$(tput sgr0)"
+    else
+        echo -e "$1"
+    fi
 }
 
-title() {
-    echo -e "$(tput setaf 3)$@$(tput sgr0)"
+_read() {
+    if [ -z ${TPUT} ]; then
+        read -p "$(tput setaf 6)$1$(tput sgr0)" ANSWER
+    else
+        read -p "$1" ANSWER
+    fi
 }
 
-success() {
-    echo -e "$(tput setaf 2)$@$(tput sgr0)"
+_result() {
+    _echo "# $@" 4
+}
+
+_command() {
+    _echo "$ $@" 3
+}
+
+_success() {
+    _echo "+ $@" 2
     exit 0
 }
 
-error() {
-    echo -e "$(tput setaf 1)$@$(tput sgr0)"
+_error() {
+    _echo "- $@" 1
     exit 1
 }
 
@@ -65,18 +81,16 @@ prepare() {
 
 directory() {
     if [ -z "${HOME_DIR}" ] || [ ! -d "${HOME_DIR}" ]; then
-        USER=${USER:=$(whoami)}
-
         pushd ~
         DEFAULT="$(pwd)/work/src/github.com/${USER}/keys/pem"
         popd
 
-        question "Please input pem directory. [${DEFAULT}]: "
+        _read "Please input pem directory. [${DEFAULT}]: "
         HOME_DIR=${ANSWER:-${DEFAULT}}
     fi
 
     if [ -z "${HOME_DIR}" ] || [ ! -d "${HOME_DIR}" ]; then
-        error "[${HOME_DIR}] is not directory."
+        _error "[${HOME_DIR}] is not directory."
     fi
 
     chmod 600 ${HOME_DIR}/*.pem
@@ -90,25 +104,20 @@ directory() {
 }
 
 connect() {
-    if [ "${PEM}" == "" ]; then
-        PEM="nalbam"
-    fi
-    if [ ! -f "${HOME_DIR}/${PEM}" ]; then
-        PEM="${PEM}.pem"
-    fi
-    if [ ! -f "${HOME_DIR}/${PEM}" ]; then
-        usage
+    if [ ! -f ${HOME_DIR}/${_PEM} ]; then
+        _PEM="${_PEM}.pem"
+        if [ ! -f ${HOME_DIR}/${_PEM} ]; then
+            usage
+        fi
     fi
 
-    if [ "${HOST}" == "" ]; then
-        error "Please input hostname or ip."
+    if [ -z ${_HOST} ]; then
+        _error "Please input hostname or ip."
     fi
 
-    if [ "${USER}" == "" ]; then
-        USER="ec2-user"
-    fi
+    _command "ssh -i ${HOME_DIR}/${_PEM} ${_USER}@${_HOST}"
 
-    ssh -i ${HOME_DIR}/${PEM} ${USER}@${HOST}
+    ssh -i ${HOME_DIR}/${_PEM} ${_USER}@${_HOST}
 }
 
 ################################################################################
