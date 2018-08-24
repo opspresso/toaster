@@ -234,7 +234,9 @@ _scan() {
             _config_remove
             ;;
         *)
-            _usage
+            _scan_domain
+            _scan_source
+            _config_save_all
     esac
 }
 
@@ -256,14 +258,14 @@ _helm() {
         init)
             _helm_init
             ;;
-        deploy)
-            _helm_deploy
+        install)
+            _helm_install
             ;;
-        remove)
-            _helm_remove
+        delete)
+            _helm_delete
             ;;
         *)
-            _usage
+            _helm_init
     esac
 }
 
@@ -279,7 +281,7 @@ _draft() {
             _draft_up
             ;;
         *)
-            _usage
+            _draft_init
     esac
 }
 
@@ -312,31 +314,25 @@ _scan_source() {
     if [ -z ${VERSION} ]; then
         _error "VERSION is empty."
     fi
-    # if [ -z ${REGISTRY} ]; then
-    #     _error "REGISTRY is empty."
-    # fi
 
     if [ -f charts/acme/Chart.yaml ]; then
         _command "sed -i -e s/name: .*/name: $NAME/ charts/acme/Chart.yaml"
-        # sed -i -e "s/name: .*/name: $NAME/" charts/acme/Chart.yaml
         _replace "s/name: .*/name: $NAME/" charts/acme/Chart.yaml
 
         _command "sed -i -e s/version: .*/version: $VERSION/ charts/acme/Chart.yaml"
-        # sed -i -e "s/version: .*/version: $VERSION/" charts/acme/Chart.yaml
         _replace "s/version: .*/version: $VERSION/" charts/acme/Chart.yaml
     fi
 
     if [ -f charts/acme/values.yaml ]; then
         _command "sed -i -e s|basedomain: .*|basedomain: $BASE_DOMAIN| charts/acme/values.yaml"
-        # sed -i -e "s|basedomain: .*|basedomain: $BASE_DOMAIN|" charts/acme/values.yaml
         _replace "s|basedomain: .*|basedomain: $BASE_DOMAIN|" charts/acme/values.yaml
 
-        _command "sed -i -e s|repository: .*|repository: $REGISTRY/$NAME| charts/acme/values.yaml"
-        # sed -i -e "s|repository: .*|repository: $REGISTRY/$NAME|" charts/acme/values.yaml
-        _replace "s|repository: .*|repository: $REGISTRY/$NAME|" charts/acme/values.yaml
+        if [ ! -z ${REGISTRY} ]; then
+            _command "sed -i -e s|repository: .*|repository: $REGISTRY/$NAME| charts/acme/values.yaml"
+            _replace "s|repository: .*|repository: $REGISTRY/$NAME|" charts/acme/values.yaml
+        fi
 
         _command "sed -i -e s|tag: .*|tag: $VERSION| charts/acme/values.yaml"
-        # sed -i -e "s|tag: .*|tag: $VERSION|" charts/acme/values.yaml
         _replace "s|tag: .*|tag: $VERSION|" charts/acme/values.yaml
     fi
 
@@ -424,10 +420,10 @@ _helm_init() {
     fi
 
     _command "helm plugin list"
-	helm plugin list
+    helm plugin list
 }
 
-_helm_deploy() {
+_helm_install() {
     _helm_init
 
     if [ -z ${NAME} ]; then
@@ -449,7 +445,7 @@ _helm_deploy() {
     helm history $NAME-$NAMESPACE --max 5
 }
 
-_helm_remove() {
+_helm_delete() {
     _helm_init
 
     if [ -z ${NAME} ]; then
@@ -471,10 +467,10 @@ _helm_remove() {
 
 _draft_init() {
     _command "draft version"
-	draft version
+    draft version
 
     _command "draft init"
-	draft init
+    draft init
 
     if [ ! -z ${REGISTRY} ]; then
         _command "draft config set registry ${REGISTRY}"
@@ -555,11 +551,9 @@ _draft_up() {
     fi
 
     _command "sed -i -e s/NAMESPACE/${NAMESPACE}/g draft.toml"
-	# sed -i -e "s/NAMESPACE/${NAMESPACE}/g" draft.toml
     _replace "s/NAMESPACE/${NAMESPACE}/g" draft.toml
 
     _command "sed -i -e s/NAME/${NAME}-${NAMESPACE}/g draft.toml"
-	# sed -i -e "s/NAME/${NAME}-${NAMESPACE}/g" draft.toml
     _replace "s/NAME/${NAME}-${NAMESPACE}/g" draft.toml
 
     _command "draft up -e ${NAMESPACE}"
@@ -586,11 +580,9 @@ _chart_replace() {
 
     if [ "${REPLACE_TYPE}" == "yaml" ]; then
         _command "sed -i -e s|${REPLACE_KEY}: .*|${REPLACE_KEY}: ${REPLACE_VAL}| ${REPLACE_FILE}"
-        # sed -i -e "s|${REPLACE_KEY}: .*|${REPLACE_KEY}: ${REPLACE_VAL}|" ${REPLACE_FILE}
         _replace "s|${REPLACE_KEY}: .*|${REPLACE_KEY}: ${REPLACE_VAL}|" ${REPLACE_FILE}
     else
         _command "sed -i -e s|${REPLACE_KEY} = .*|${REPLACE_KEY} = ${REPLACE_VAL}| ${REPLACE_FILE}"
-        # sed -i -e "s|${REPLACE_KEY} = .*|${REPLACE_KEY} = \"${REPLACE_VAL}\"|" ${REPLACE_FILE}
         _replace "s|${REPLACE_KEY} = .*|${REPLACE_KEY} = \"${REPLACE_VAL}\"|" ${REPLACE_FILE}
     fi
 }
@@ -632,7 +624,6 @@ _config_remove() {
 _domain_find() {
     TARGET_NAME=${1}
 
-    # DOMAIN=$(kubectl get ing ${TARGET_NAME} -n ${NAMESPACE} -o json | jq -r '.spec.rules[0].host')
     DOMAIN=$(kubectl get ing -n ${NAMESPACE} -o wide | grep ${TARGET_NAME} | head -1 | awk '{print $2}' | cut -d',' -f1 | xargs)
 
     if [ ! -z ${DOMAIN} ] && [ ! -z ${BASE_DOMAIN} ]; then
@@ -658,7 +649,6 @@ _maven_mirror() {
     if [ -f ${HOME}/settings.xml ] && [ ! -z ${NEXUS} ]; then
         PUBLIC="http://${NEXUS}/repository/maven-public/"
         MIRROR="<mirror><id>mirror</id><url>${PUBLIC}</url><mirrorOf>*</mirrorOf></mirror>"
-        # sed -i "s|<!-- ### configured mirrors ### -->|${MIRROR}|" ${HOME}/settings.xml
         _replace "s|<!-- ### configured mirrors ### -->|${MIRROR}|" ${HOME}/settings.xml
     fi
 }
