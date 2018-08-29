@@ -81,7 +81,7 @@ prepare() {
 directory() {
     if [ -z "${HOME_DIR}" ] || [ ! -d "${HOME_DIR}" ]; then
         pushd ~
-        DEFAULT="$(pwd)/work/src/github.com/${USER}/keys/credentials"
+        DEFAULT="$(pwd)/work/src/github.com/${USER:-$(whoami)}/keys/credentials"
         popd
 
         _read "Please input credentials directory. [${DEFAULT}]: "

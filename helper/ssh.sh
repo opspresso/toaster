@@ -82,7 +82,7 @@ prepare() {
 directory() {
     if [ -z "${HOME_DIR}" ] || [ ! -d "${HOME_DIR}" ]; then
         pushd ~
-        DEFAULT="$(pwd)/work/src/github.com/${USER}/keys/pem"
+        DEFAULT="$(pwd)/work/src/github.com/${USER:-$(whoami)}/keys/pem"
         popd
 
         _read "Please input pem directory. [${DEFAULT}]: "

@@ -138,6 +138,8 @@ vscode() {
         /usr/bin/code ${DIR}
     elif [ "${OS_NAME}" == "darwin" ]; then
         /Applications/Visual\ Studio\ Code.app/Contents/Resources/app/bin/code ${DIR}
+    elif [ "${OS_NAME}" == "mingw64_nt-10.0" ]; then
+        /c/Users/${USER:-$(whoami)}/AppData/Local/Programs/Microsoft\ VS\ Code/Code.exe ${DIR}
     else
         _error
     fi
