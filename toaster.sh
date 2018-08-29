@@ -191,6 +191,7 @@ _helper() {
     _result "helper package downloaded."
 
     HELPER_DIR="${HOME}/helper"
+    mkdir -p ${HELPER_DIR}
 
     BASH_ALIAS="${HOME}/.bash_aliases"
 
