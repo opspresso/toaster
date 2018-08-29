@@ -6,6 +6,8 @@ SHELL_DIR=${HOME}/toaster
 
 HOME_DIR=
 
+DIR=$1
+
 ################################################################################
 
 command -v tput > /dev/null || TPUT=false
@@ -88,6 +90,10 @@ directory() {
 }
 
 dir() {
+    if [ ! -z ${DIR} ]; then
+        return
+    fi
+
     TEMP=/tmp/cdw.tmp
 
     find ${HOME_DIR} -maxdepth 2 -type d -exec ls -d "{}" \; > ${TEMP}
@@ -110,17 +116,19 @@ dir() {
 }
 
 vscode() {
-    _read "Choose directory [1-${IDX}]: "
+    if [ -z ${DIR} ]; then
+        _read "Choose directory [1-${IDX}]: "
 
-    if [ -z ${ANSWER} ]; then
-        _error
-    fi
-    TEST='^[0-9]+$'
-    if ! [[ ${ANSWER} =~ ${TEST} ]]; then
-        _error "[${ANSWER}] is not a number."
-    fi
+        if [ -z ${ANSWER} ]; then
+            _error
+        fi
+        TEST='^[0-9]+$'
+        if ! [[ ${ANSWER} =~ ${TEST} ]]; then
+            _error "[${ANSWER}] is not a number."
+        fi
 
-    DIR=$(sed -n ${ANSWER}p ${TEMP})
+        DIR=$(sed -n ${ANSWER}p ${TEMP})
+    fi
 
     if [ -z ${DIR} ] || [ ! -d ${DIR} ]; then
         _error

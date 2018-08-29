@@ -4,9 +4,9 @@ SHELL_DIR=${HOME}/helper
 
 HOME_DIR=
 
-NAME=$1
-REGION=${2:-ap-northeast-2}
-OUTPUT=${3:-json}
+_NAME=$1
+_REGION=${2:-ap-northeast-2}
+_OUTPUT=${3:-json}
 
 ################################################################################
 
@@ -96,19 +96,19 @@ directory() {
 }
 
 deploy() {
-    if [ -z "${NAME}" ]; then
+    if [ -z "${_NAME}" ]; then
         usage
     fi
-    if [ ! -f "${HOME_DIR}/${NAME}" ]; then
+    if [ ! -f "${HOME_DIR}/${_NAME}" ]; then
         usage
     fi
 
-    aws configure set default.region ${REGION}
-    aws configure set default.output ${OUTPUT}
+    aws configure set default.region ${_REGION}
+    aws configure set default.output ${_OUTPUT}
 
-    cp -f ${HOME_DIR}/${NAME} ~/.aws/credentials
+    cp -f ${HOME_DIR}/${_NAME} ~/.aws/credentials
 
-    _success "${NAME} ${REGION} ${OUTPUT}"
+    _success "${_NAME} ${_REGION} ${_OUTPUT}"
 }
 
 ################################################################################
