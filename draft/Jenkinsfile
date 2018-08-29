@@ -1,11 +1,10 @@
-@Library('github.com/opspresso/pipeline@master')
-def pipeline = new com.opspresso.Pipeline()
-
 def IMAGE_NAME = "sample"
 def REPOSITORY_URL = "https://github.com/nalbam/sample"
 def REPOSITORY_SECRET = ""
 def SLACK_TOKEN = ""
 
+@Library('github.com/opspresso/pipeline@master')
+def pipeline = new com.opspresso.Pipeline()
 def label = "worker-${UUID.randomUUID().toString()}"
 def VERSION = ""
 def SOURCE_LANG = ""
@@ -53,7 +52,7 @@ podTemplate(label: label, containers: [
           try {
             sh """
               cd $SOURCE_ROOT
-              mvn package
+              mvn package -s /home/jenkins/.m2/settings.xml
             """
             build_success(IMAGE_NAME, VERSION, RUN_DISPLAY_URL)
           } catch (e) {
