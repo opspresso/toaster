@@ -43,10 +43,10 @@ curl -sL -o ${DIST} https://github.com/nalbam/toaster/releases/download/${VERSIO
 chmod +x ${DIST}
 
 if [ "${OS_NAME}" == "mingw64_nt-10.0" ]; then
-    mkdir ~/bin
-    sudo mv ${DIST} ~/bin/toaster
+    mkdir -p ~/bin
+    mv -f ${DIST} ~/bin/toaster
 else
-    sudo mv ${DIST} /usr/local/bin/toaster
+    sudo mv -f ${DIST} /usr/local/bin/toaster
 fi
 
 # done
