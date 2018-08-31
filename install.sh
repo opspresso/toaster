@@ -42,8 +42,13 @@ rm -rf ${DIST}
 curl -sL -o ${DIST} https://github.com/nalbam/toaster/releases/download/${VERSION}/toaster
 chmod +x ${DIST}
 
-mkdir -p ~/.local/bin
-mv -f ${DIST} ~/.local/bin/toaster
+if [ -d ~/.local/bin ]; then
+    mv -f ${DIST} ~/.local/bin/toaster
+elif [ -d ~/bin ]; then
+    mv -f ${DIST} ~/bin/toaster
+else
+    mv -f ${DIST} /usr/local/bin/toaster
+fi
 
 # done
 _success "done."
