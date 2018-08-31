@@ -22,13 +22,3 @@ hpa:
   min: 2
   max: 30
   cpu: 50
-env:
-envFrom:
-configmap:
-  enabled: false
-  data:
-    PROFILE: development
-secret:
-  enabled: false
-  data:
-    PASSWORD: cGFzc3dvcmQ=
