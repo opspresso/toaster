@@ -42,12 +42,8 @@ rm -rf ${DIST}
 curl -sL -o ${DIST} https://github.com/nalbam/toaster/releases/download/${VERSION}/toaster
 chmod +x ${DIST}
 
-if [ "${OS_NAME}" == "mingw64_nt-10.0" ]; then
-    mkdir -p ~/bin
-    mv -f ${DIST} ~/bin/toaster
-else
-    sudo mv -f ${DIST} /usr/local/bin/toaster
-fi
+mkdir -p ~/bin
+mv -f ${DIST} ~/bin/toaster
 
 # done
 _success "done."
