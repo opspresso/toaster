@@ -19,6 +19,6 @@ ingress:
   basedomain: opspresso.com
 hpa:
   enabled: true
-  min: 2
-  max: 30
+  min: 1
+  max: 5
   cpu: 50
