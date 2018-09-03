@@ -49,7 +49,7 @@ podTemplate(label: label, containers: [
           throw e
         }
 
-        pipeline.scan()
+        pipeline.scan(IMAGE_NAME, BRANCH_NAME)
 
         VERSION = pipeline.version
         SOURCE_LANG = pipeline.source_lang
@@ -116,13 +116,13 @@ podTemplate(label: label, containers: [
       }
       stage("Deploy DEV") {
         container("builder") {
-          pipeline.helm_install(IMAGE_NAME, VERSION, "dev", CLUSTER, BASE_DOMAIN)
+          pipeline.helm_install(IMAGE_NAME, VERSION, "dev", BASE_DOMAIN, CLUSTER)
           success(SLACK_TOKEN, "Deploy DEV", IMAGE_NAME, VERSION, "dev", BASE_DOMAIN)
         }
       }
       stage("Proceed STAGE") {
         container("builder") {
-          confirm(SLACK_TOKEN, "Deploy STAGE", IMAGE_NAME, VERSION, "stage")
+          proceed(SLACK_TOKEN, "Deploy STAGE", IMAGE_NAME, VERSION, "stage")
           timeout(time: 60, unit: "MINUTES") {
             input(message: "$IMAGE_NAME $VERSION to stage")
           }
@@ -130,7 +130,7 @@ podTemplate(label: label, containers: [
       }
       stage("Deploy STAGE") {
         container("builder") {
-          pipeline.helm_install(IMAGE_NAME, VERSION, "stage", CLUSTER, BASE_DOMAIN)
+          pipeline.helm_install(IMAGE_NAME, VERSION, "stage", BASE_DOMAIN, CLUSTER)
           deploy_success(SLACK_TOKEN, "Deploy STAGE", IMAGE_NAME, VERSION, "stage", BASE_DOMAIN)
         }
       }
