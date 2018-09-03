@@ -275,17 +275,26 @@ _draft_pack() {
 
     # Jenkinsfile IMAGE_NAME
     DEFAULT=$(basename "$PWD")
-    _chart_replace "Jenkinsfile" "IMAGE_NAME" "${DEFAULT}"
+    _chart_replace "Jenkinsfile" "def IMAGE_NAME" "${DEFAULT}"
 
+    DEFAULT=
+
+    # Jenkinsfile REPOSITORY_URL
     if [ -d .git ]; then
-        # Jenkinsfile REPOSITORY_URL
         DEFAULT=$(git remote -v | head -1 | awk '{print $2}')
-        _chart_replace "Jenkinsfile" "REPOSITORY_URL" "${DEFAULT}"
-
-        # Jenkinsfile REPOSITORY_SECRET
-        DEFAULT=
-        _chart_replace "Jenkinsfile" "REPOSITORY_SECRET" "${DEFAULT}"
     fi
+    _chart_replace "Jenkinsfile" "def REPOSITORY_URL" "${DEFAULT}"
+
+    DEFAULT=
+
+    # Jenkinsfile REPOSITORY_SECRET
+    _chart_replace "Jenkinsfile" "def REPOSITORY_SECRET" "${DEFAULT}"
+
+    # Jenkinsfile CLUSTER
+    _chart_replace "Jenkinsfile" "def CLUSTER" "${DEFAULT}"
+
+    # Jenkinsfile BASE_DOMAIN
+    _chart_replace "Jenkinsfile" "def BASE_DOMAIN" "${DEFAULT}"
 
     # values.yaml internalPort
     DEFAULT=8080
