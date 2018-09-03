@@ -23,7 +23,11 @@ hpa:
   max: 5
   cpu: 50
 env:
-  # DATA: data
+  # - name: GREETING
+  #   value: "Hello from the environment"
+envFrom:
+  # - configMapRef:
+  #   name: sample-config-map
 configmap:
   enabled: false
   # data:
