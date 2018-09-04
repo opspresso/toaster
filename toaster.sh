@@ -108,7 +108,7 @@ _logo() {
 
 _usage() {
     _logo
-    _echo " Usage: $0 {update|bastion|scan|build|helm|draft} "
+    _echo " Usage: $0 {update|bastion|helper|draft|version} "
     _bar
     _error
 }
@@ -128,7 +128,7 @@ _toast() {
         u|update)
             _update
             ;;
-        t|bastion)
+        b|bastion)
             _bastion
             ;;
         h|helper)
@@ -136,6 +136,9 @@ _toast() {
             ;;
         d|draft)
             _draft
+            ;;
+        v|version)
+            _version
             ;;
         *)
             _usage
