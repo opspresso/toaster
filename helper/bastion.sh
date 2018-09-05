@@ -134,7 +134,7 @@ else
     pip install --upgrade --user awscli
 fi
 
-aws --version
+aws --version | xargs
 
 if [ ! -f ~/.aws/config ]; then
     # aws region
@@ -160,7 +160,7 @@ else
     fi
 fi
 
-kubectl version --client --short
+kubectl version --client --short | xargs
 
 # kops
 echo "================================================================================"
@@ -181,7 +181,7 @@ else
     fi
 fi
 
-kops version
+kops version | xargs
 
 # helm
 echo "================================================================================"
@@ -202,7 +202,7 @@ else
     fi
 fi
 
-helm version --client --short
+helm version --client --short | xargs
 
 # draft
 echo "================================================================================"
@@ -223,28 +223,28 @@ _result "install draft..."
     fi
 #fi
 
-draft version --short
+draft version --short | xargs
 
-# skaffold
-echo "================================================================================"
-_result "install skaffold..."
+# # skaffold
+# echo "================================================================================"
+# _result "install skaffold..."
 
-#if [ "${OS_TYPE}" == "brew" ]; then
-#    command -v skaffold > /dev/null || brew install skaffold
-#else
-    VERSION=$(curl -s https://api.github.com/repos/GoogleContainerTools/skaffold/releases/latest | jq -r '.tag_name')
+# #if [ "${OS_TYPE}" == "brew" ]; then
+# #    command -v skaffold > /dev/null || brew install skaffold
+# #else
+#     VERSION=$(curl -s https://api.github.com/repos/GoogleContainerTools/skaffold/releases/latest | jq -r '.tag_name')
 
-    if [ "${SKAFFOLD}" != "${VERSION}" ]; then
-        _result " ${SKAFFOLD} >> ${VERSION}"
+#     if [ "${SKAFFOLD}" != "${VERSION}" ]; then
+#         _result " ${SKAFFOLD} >> ${VERSION}"
 
-        curl -LO https://storage.googleapis.com/skaffold/releases/${VERSION}/skaffold-${OS_NAME}-amd64
-        chmod +x skaffold-${OS_NAME}-amd64 && sudo mv skaffold-${OS_NAME}-amd64 /usr/local/bin/skaffold
+#         curl -LO https://storage.googleapis.com/skaffold/releases/${VERSION}/skaffold-${OS_NAME}-amd64
+#         chmod +x skaffold-${OS_NAME}-amd64 && sudo mv skaffold-${OS_NAME}-amd64 /usr/local/bin/skaffold
 
-        SKAFFOLD="${VERSION}"
-    fi
-#fi
+#         SKAFFOLD="${VERSION}"
+#     fi
+# #fi
 
-skaffold version
+# skaffold version | xargs
 
 # istioctl
 echo "================================================================================"
@@ -270,30 +270,28 @@ _result "install istioctl..."
     fi
 # fi
 
-istioctl version --short
+istioctl version | grep "Version" | xargs
 
-# jenkins-x
-echo "================================================================================"
-_result "install jenkins-x..."
+# # jenkins-x
+# echo "================================================================================"
+# _result "install jenkins-x..."
 
-echo "Temporary skipped."
-
-#if [ "${OS_TYPE}" == "brew" ]; then
+# if [ "${OS_TYPE}" == "brew" ]; then
 #    command -v jx > /dev/null || brew install jx
-#else
+# else
 #    VERSION=$(curl -s https://api.github.com/repos/jenkins-x/jx/releases/latest | jq -r '.tag_name')
-#
+
 #    if [ "${JENKINS_X}" != "${VERSION}" ]; then
 #        _result " ${JENKINS_X} >> ${VERSION}"
-#
+
 #        curl -L https://github.com/jenkins-x/jx/releases/download/${VERSION}/jx-${OS_NAME}-amd64.tar.gz | tar xz
 #        sudo mv jx /usr/local/bin/jx
-#
+
 #        JENKINS_X="${VERSION}"
 #    fi
-#fi
+# fi
 
-#jx --version
+# jx --version | xargs
 
 # terraform
 echo "================================================================================"
@@ -315,7 +313,7 @@ else
     fi
 fi
 
-terraform version
+terraform version | xargs
 
 # nodejs
 echo "================================================================================"
@@ -337,8 +335,8 @@ if [ "${NODE}" != "${VERSION}" ] || [ "$(command -v node)" == "" ]; then
     NODE="${VERSION}"
 fi
 
-echo "node $(node -v)"
-echo "npm $(npm -v)"
+echo "node $(node -v | xargs)"
+echo "npm $(npm -v | xargs)"
 
 # java
 echo "================================================================================"
@@ -379,7 +377,7 @@ if [ "${MAVEN}" != "${VERSION}" ] || [ "$(command -v mvn)" == "" ]; then
     MAVEN="${VERSION}"
 fi
 
-mvn -version
+mvn -version | grep "Apache Maven" | xargs
 
 # heptio
 echo "================================================================================"
