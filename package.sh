@@ -5,7 +5,7 @@ mkdir -p target/dist
 mkdir -p target/helper
 
 USERNAME=${1:-nalbam}
-REPONAME=${1:-toaster}
+REPONAME=${2:-toaster}
 
 # OS_NAME
 OS_NAME="$(uname | awk '{print tolower($0)}')"
