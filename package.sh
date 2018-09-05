@@ -4,13 +4,16 @@ rm -rf target
 mkdir -p target/dist
 mkdir -p target/helper
 
+USERNAME=${1:-nalbam}
+REPONAME=${1:-toaster}
+
 # OS_NAME
 OS_NAME="$(uname | awk '{print tolower($0)}')"
 
 echo "OS_NAME=${OS_NAME}"
 
 # VERSION
-VERSION=$(curl -s https://api.github.com/repos/nalbam/toaster/releases/latest | grep tag_name | cut -d'"' -f4)
+VERSION=$(curl -s https://api.github.com/repos/${USERNAME}/${REPONAME}/releases/latest | grep tag_name | cut -d'"' -f4)
 VERSION=$(echo ${VERSION:-v0.0.0} | perl -pe 's/^(([v\d]+\.)*)(\d+)(.*)$/$1.($3+1).$4/e')
 
 echo "VERSION=${VERSION}"
