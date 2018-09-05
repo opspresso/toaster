@@ -160,7 +160,7 @@ else
     fi
 fi
 
-kubectl version --client --short | xargs
+kubectl version --client --short | xargs | awk '{print $3}'
 
 # kops
 echo "================================================================================"
@@ -181,7 +181,7 @@ else
     fi
 fi
 
-kops version | xargs
+kops version | xargs | awk '{print $2}'
 
 # helm
 echo "================================================================================"
@@ -202,7 +202,7 @@ else
     fi
 fi
 
-helm version --client --short | xargs
+helm version --client --short | xargs | awk '{print $2}'
 
 # draft
 echo "================================================================================"
@@ -270,7 +270,7 @@ _result "install istioctl..."
     fi
 # fi
 
-istioctl version | grep "Version" | xargs
+istioctl version | grep "Version" | xargs | awk '{print $2}'
 
 # # jenkins-x
 # echo "================================================================================"
@@ -313,7 +313,7 @@ else
     fi
 fi
 
-terraform version | xargs
+terraform version | xargs | awk '{print $2}'
 
 # nodejs
 echo "================================================================================"
@@ -335,8 +335,7 @@ if [ "${NODE}" != "${VERSION}" ] || [ "$(command -v node)" == "" ]; then
     NODE="${VERSION}"
 fi
 
-echo "node $(node -v | xargs)"
-echo "npm $(npm -v | xargs)"
+node -v | xargs
 
 # java
 echo "================================================================================"
@@ -359,7 +358,7 @@ if [ "${JAVA}" != "${VERSION}" ] || [ "$(command -v java)" == "" ]; then
     JAVA="${VERSION}"
 fi
 
-java -version
+java -version 2>&1 | grep version | cut -d'"' -f2
 
 # maven
 echo "================================================================================"
@@ -377,7 +376,7 @@ if [ "${MAVEN}" != "${VERSION}" ] || [ "$(command -v mvn)" == "" ]; then
     MAVEN="${VERSION}"
 fi
 
-mvn -version | grep "Apache Maven" | xargs
+mvn -version | grep "Apache Maven" | xargs | awk '{print $3}'
 
 # heptio
 echo "================================================================================"
