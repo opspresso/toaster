@@ -112,7 +112,7 @@ connect() {
     fi
 
     if [ -z ${_HOST} ]; then
-        _error "Please input hostname or ip."
+        usage
     fi
 
     _command "ssh -i ${HOME_DIR}/${_PEM} ${_USER}@${_HOST}"
