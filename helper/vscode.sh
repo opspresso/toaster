@@ -2,7 +2,7 @@
 
 OS_NAME="$(uname | awk '{print tolower($0)}')"
 
-SHELL_DIR=${HOME}/toaster
+SHELL_DIR=${HOME}/helper
 
 HOME_DIR=
 
