@@ -27,4 +27,8 @@ env:
   #   value: "Hello from the environment"
 envFrom:
   # - configMapRef:
-  #   name: sample-config-map
+  #   name: sample-configmap
+configmap:
+  enabled: false
+secret:
+  enabled: false
