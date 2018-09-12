@@ -13,7 +13,7 @@ echo "OS_NAME=${OS_NAME}"
 VERSION=$(curl -s https://api.github.com/repos/nalbam/toaster/releases/latest | grep tag_name | cut -d'"' -f4)
 VERSION=$(echo ${VERSION:-v0.0.0} | perl -pe 's/^(([v\d]+\.)*)(\d+)(.*)$/$1.($3+1).$4/e')
 
-if [ "x$(echo ${VERSION} | cut -d'.' -f2)" == "x0" ]; then
+if [ "x$(echo ${VERSION} | cut -d'.' -f2)" == "x1" ]; then
     VERSION="v0.2.0"
 fi
 
