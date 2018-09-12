@@ -308,7 +308,7 @@ _draft_pack() {
     fi
     SELECTED=$(sed -n ${ANSWER}p ${LIST})
 
-    _result "SELECTED: ${SELECTED}"
+    _result "${SELECTED}"
 
     mkdir -p charts/acme/templates
 
