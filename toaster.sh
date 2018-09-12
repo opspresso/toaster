@@ -272,7 +272,7 @@ _draft_pack() {
     fi
 
     DIST=/tmp/toaster-draft-${THIS_VERSION}
-    LIST=/tmp/toaster-draft-${THIS_VERSION}-ls
+    LIST=/tmp/toaster-draft-ls
 
     if [ ! -d ${DIST} ]; then
         mkdir -p ${DIST}
