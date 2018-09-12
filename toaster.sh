@@ -263,11 +263,13 @@ _draft_init() {
 _draft_pack() {
     _result "draft package version: ${THIS_VERSION}"
 
-    # _read "Do you really want to apply? (YES/[no]) : "
+    echo
+    _read "Do you really want to apply? (YES/[no]) : "
+    echo
 
-    # if [ "${ANSWER}" != "YES" ]; then
-    #     exit 0
-    # fi
+    if [ "${ANSWER}" != "YES" ]; then
+        exit 0
+    fi
 
     DIST=/tmp/toaster-draft-${THIS_VERSION}
     LIST=/tmp/toaster-draft-${THIS_VERSION}-ls
@@ -275,16 +277,15 @@ _draft_pack() {
     if [ ! -d ${DIST} ]; then
         mkdir -p ${DIST}
 
-        pushd ${DIST}
-
         # download
+        pushd ${DIST}
         curl -sL https://github.com/nalbam/toaster/releases/download/${THIS_VERSION}/draft.tar.gz | tar xz
-
         popd
-    fi
 
-    _result "draft package downloaded."
-    echo
+        echo
+        _result "draft package downloaded."
+        echo
+    fi
 
     # find all
     ls ${DIST} > ${LIST}
@@ -294,9 +295,10 @@ _draft_pack() {
         IDX=$(( ${IDX} + 1 ))
         printf "%3s %s\n" "$IDX" "$VAL";
     done < ${LIST}
-    echo
 
+    echo
     _read "Please select a project type. (1-5) : "
+    echo
 
     SELECTED=
     if [ -z ${ANSWER} ]; then
@@ -344,6 +346,7 @@ _draft_pack() {
     BASE_DOMAIN="${REPLACE_VAL}"
 
     _config_save
+    echo
 }
 
 _draft_up() {
@@ -375,6 +378,8 @@ _chart_replace() {
     REPLACE_KEY=$2
     DEFAULT_VAL=$3
     REPLACE_TYPE=$4
+
+    echo
 
     if [ "${DEFAULT_VAL}" == "" ]; then
         _read "${REPLACE_KEY} : "
