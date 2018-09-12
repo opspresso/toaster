@@ -323,7 +323,7 @@ _draft_pack() {
     cp -rf ${DIST}/${SELECTED}/draft.toml draft.toml
 
     # Jenkinsfile IMAGE_NAME
-    DEFAULT=$(basename "$PWD")
+    DEFAULT=$(basename $(pwd))
     _chart_replace "Jenkinsfile" "def IMAGE_NAME" "${DEFAULT}"
 
     # Jenkinsfile REPOSITORY_URL
@@ -356,21 +356,40 @@ _draft_up() {
         _error "Not found draft.toml"
     fi
 
-    if [ -z ${NAME} ]; then
-        _error "NAME is empty."
-    fi
-    if [ -z ${NAMESPACE} ]; then
-        _error "NAMESPACE is empty."
-    fi
+    # draft.toml NAMESPACE
+    DEFAULT="local"
+    _draft_replace "draft.toml" "NAMESPACE" "${DEFAULT}"
+    NAMESPACE="${REPLACE_VAL}"
 
-    _command "sed -i -e s/NAMESPACE/${NAMESPACE}/g draft.toml"
-    _replace "s/NAMESPACE/${NAMESPACE}/g" draft.toml
-
-    _command "sed -i -e s/NAME/${NAME}-${NAMESPACE}/g draft.toml"
-    _replace "s/NAME/${NAME}-${NAMESPACE}/g" draft.toml
+    # draft.toml NAME
+    DEFAULT="$(basename $(pwd))-${NAMESPACE}"
+    _draft_replace "draft.toml" "NAME" "${DEFAULT}"
 
     _command "draft up -e ${NAMESPACE}"
 	draft up -e ${NAMESPACE}
+}
+
+_draft_replace() {
+    REPLACE_FILE=$1
+    REPLACE_KEY=$2
+    DEFAULT_VAL=$3
+
+    echo
+
+    if [ "${DEFAULT_VAL}" == "" ]; then
+        _read "${REPLACE_KEY} : "
+    else
+        _read "${REPLACE_KEY} [${DEFAULT_VAL}] : "
+    fi
+
+    if [ -z ${ANSWER} ]; then
+        REPLACE_VAL=${DEFAULT_VAL}
+    else
+        REPLACE_VAL=${ANSWER}
+    fi
+
+    _command "sed -i -e s|${REPLACE_KEY}: .*|${REPLACE_KEY}: ${REPLACE_VAL}| ${REPLACE_FILE}"
+    _replace "s|${REPLACE_KEY}: .*|${REPLACE_KEY}: ${REPLACE_VAL}|" ${REPLACE_FILE}
 }
 
 _chart_replace() {
