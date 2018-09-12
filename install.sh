@@ -29,11 +29,20 @@ _success() {
     exit 0
 }
 
+_error() {
+    _echo "- $@" 1
+    exit 1
+}
+
 ################################################################################
 
 VERSION=$(curl -s https://api.github.com/repos/nalbam/toaster/releases/latest | grep tag_name | cut -d'"' -f4)
 
 _result "toaster version: ${VERSION}"
+
+if [ -z ${VERSION} ]; then
+    _error
+fi
 
 DIST=/tmp/toaster
 rm -rf ${DIST}
