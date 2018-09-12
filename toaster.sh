@@ -10,8 +10,9 @@ CMD=$1
 SUB=$2
 
 NAME=
-BRANCH=master
 VERSION=0.0.0
+SECRET=
+
 NAMESPACE=
 CLUSTER=
 
@@ -46,6 +47,10 @@ for v in "$@"; do
         ;;
     --cluster=*)
         CLUSTER="${v#*=}"
+        shift
+        ;;
+    --this=*)
+        THIS_VERSION="${v#*=}"
         shift
         ;;
     *)
@@ -167,6 +172,19 @@ _version() {
     exit 0
 }
 
+_config_save() {
+    echo "# toaster config" > ${CONFIG}
+    echo "SECRET=${SECRET}" >> ${CONFIG}
+    echo "NAMESPACE=${NAMESPACE}" >> ${CONFIG}
+    echo "CLUSTER=${CLUSTER}" >> ${CONFIG}
+    echo "BASE_DOMAIN=${BASE_DOMAIN}" >> ${CONFIG}
+    echo "JENKINS=${JENKINS}" >> ${CONFIG}
+    echo "REGISTRY=${REGISTRY}" >> ${CONFIG}
+    echo "CHARTMUSEUM=${CHARTMUSEUM}" >> ${CONFIG}
+    echo "SONARQUBE=${SONARQUBE}" >> ${CONFIG}
+    echo "NEXUS=${NEXUS}" >> ${CONFIG}
+}
+
 _helper() {
     _result "helper package version: ${THIS_VERSION}"
 
@@ -243,66 +261,89 @@ _draft_init() {
 }
 
 _draft_pack() {
-    if [ ! -f Dockerfile ]; then
-        _error "File not found. [Dockerfile]"
-    fi
-
-    if [ -f draft.toml ]; then
-        _read "Do you really want to apply? (YES/[no]) : "
-
-        if [ "${ANSWER}" != "YES" ]; then
-            exit 0
-        fi
-    fi
-
     _result "draft package version: ${THIS_VERSION}"
 
-    mkdir -p charts/acme/templates
+    # _read "Do you really want to apply? (YES/[no]) : "
 
-    DIST=/tmp/draft.tar.gz
-    rm -rf ${DIST}
+    # if [ "${ANSWER}" != "YES" ]; then
+    #     exit 0
+    # fi
 
-    # download
-    curl -sL -o ${DIST} https://github.com/nalbam/toaster/releases/download/${THIS_VERSION}/draft.tar.gz
+    DIST=/tmp/toaster-draft-${THIS_VERSION}
+    LIST=/tmp/toaster-draft-${THIS_VERSION}-ls
 
-    if [ ! -f ${DIST} ]; then
-        _error "Can not download."
+    if [ ! -d ${DIST} ]; then
+        mkdir -p ${DIST}
+
+        pushd ${DIST}
+
+        # download
+        curl -sL https://github.com/nalbam/toaster/releases/download/${THIS_VERSION}/draft.tar.gz | tar xz
+
+        popd
     fi
 
     _result "draft package downloaded."
+    echo
 
-    # untar here
-    tar -zxf ${DIST}
+    # find all
+    ls ${DIST} > ${LIST}
 
-    mv -f dockerignore .dockerignore
-    mv -f draftignore .draftignore
+    IDX=0
+    while read VAL; do
+        IDX=$(( ${IDX} + 1 ))
+        printf "%3s %s\n" "$IDX" "$VAL";
+    done < ${LIST}
+    echo
+
+    _read "Please select a project type. (1-5) : "
+
+    SELECTED=
+    if [ -z ${ANSWER} ]; then
+        _error
+    fi
+    TEST='^[0-9]+$'
+    if ! [[ ${ANSWER} =~ ${TEST} ]]; then
+        _error
+    fi
+    SELECTED=$(sed -n ${ANSWER}p ${LIST})
+
+    _result "SELECTED: ${SELECTED}"
+
+    mkdir -p charts/acme/templates
+
+    # copy
+    cp -rf ${DIST}/${SELECTED}/charts/* charts/
+    cp -rf ${DIST}/${SELECTED}/dockerignore .dockerignore
+    cp -rf ${DIST}/${SELECTED}/draftignore .draftignore
+    cp -rf ${DIST}/${SELECTED}/Dockerfile Dockerfile
+    cp -rf ${DIST}/${SELECTED}/Jenkinsfile Jenkinsfile
+    cp -rf ${DIST}/${SELECTED}/draft.toml draft.toml
 
     # Jenkinsfile IMAGE_NAME
     DEFAULT=$(basename "$PWD")
     _chart_replace "Jenkinsfile" "def IMAGE_NAME" "${DEFAULT}"
 
-    DEFAULT=
-
     # Jenkinsfile REPOSITORY_URL
+    DEFAULT=
     if [ -d .git ]; then
         DEFAULT=$(git remote -v | head -1 | awk '{print $2}')
     fi
     _chart_replace "Jenkinsfile" "def REPOSITORY_URL" "${DEFAULT}"
 
-    DEFAULT=
-
     # Jenkinsfile REPOSITORY_SECRET
-    _chart_replace "Jenkinsfile" "def REPOSITORY_SECRET" "${DEFAULT}"
+    _chart_replace "Jenkinsfile" "def REPOSITORY_SECRET" "${SECRET}"
+    SECRET="${REPLACE_VAL}"
 
     # Jenkinsfile CLUSTER
-    _chart_replace "Jenkinsfile" "def CLUSTER" "${DEFAULT}"
+    _chart_replace "Jenkinsfile" "def CLUSTER" "${CLUSTER}"
+    CLUSTER="${REPLACE_VAL}"
 
     # Jenkinsfile BASE_DOMAIN
-    _chart_replace "Jenkinsfile" "def BASE_DOMAIN" "${DEFAULT}"
+    _chart_replace "Jenkinsfile" "def BASE_DOMAIN" "${BASE_DOMAIN}"
+    BASE_DOMAIN="${REPLACE_VAL}"
 
-    # values.yaml internalPort
-    DEFAULT=8080
-    _chart_replace "charts/acme/values.yaml" "internalPort" "${DEFAULT}" "yaml"
+    _config_save
 }
 
 _draft_up() {
