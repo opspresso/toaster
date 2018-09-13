@@ -267,10 +267,10 @@ _draft_init() {
     _command "draft init"
     draft init
 
-    if [ ! -z ${REGISTRY} ]; then
-        _command "draft config set registry ${REGISTRY}"
-        draft config set registry ${REGISTRY}
-    fi
+    # if [ ! -z ${REGISTRY} ]; then
+    #     _command "draft config set registry ${REGISTRY}"
+    #     draft config set registry ${REGISTRY}
+    # fi
 }
 
 _draft_pack() {
@@ -343,11 +343,11 @@ _draft_pack() {
     # draft.toml NAME
     _replace "s|NAME|${IMAGE_NAME}|" draft.toml
 
-    # charts/acme/templates/Chart.yaml
-    _replace "s|name: .*|name: ${IMAGE_NAME}|" charts/acme/templates/Chart.yaml
+    # charts/acme/Chart.yaml
+    _replace "s|name: .*|name: ${IMAGE_NAME}|" charts/acme/Chart.yaml
 
-    # charts/acme/templates/values.yaml
-    _replace "s|repository: .*|repository: ${IMAGE_NAME}|" charts/acme/templates/values.yaml
+    # charts/acme/values.yaml
+    _replace "s|repository: .*|repository: ${IMAGE_NAME}|" charts/acme/values.yaml
 
     # charts name
     mv charts/acme charts/${IMAGE_NAME}
@@ -383,6 +383,32 @@ _draft_up() {
         _error "Not found draft.toml"
     fi
 
+    NAMESPACE="default"
+
+    NAME="$(cat draft.toml | grep "name =" | cut -d'"' -f2 | xargs)"
+
+    COUNT=$(helm ls nginx-ingress | wc -l)
+    if [ "x${COUNT}" == "x0" ]; then
+        helm upgrade --install docker-registry stable/docker-registry --namespace ${NAMESPACE}
+    fi
+    COUNT=$(helm ls docker-registry | wc -l)
+    if [ "x${COUNT}" == "x0" ]; then
+        helm upgrade --install docker-registry stable/docker-registry --namespace ${NAMESPACE}
+    fi
+
+    REGISTRY="docker-registry.127.0.0.1.nip.io"
+
+    if [ ! -z ${REGISTRY} ]; then
+        # registry
+        _command "draft config set registry ${REGISTRY}"
+        draft config set registry ${REGISTRY}
+
+        # charts/acme/values.yaml
+        _replace "s|repository: .*|repository: ${REGISTRY}/${NAME}|" charts/${NAME}/values.yaml
+
+        _config_save
+    fi
+
     # # draft.toml NAMESPACE
     # DEFAULT="default"
     # _chart_replace "draft.toml" "NAMESPACE" "${DEFAULT}"
@@ -393,14 +419,26 @@ _draft_up() {
 
     _command "draft up -e ${NAMESPACE}"
 	draft up -e ${NAMESPACE}
+
+    _command "helm ls"
+    helm ls
+
+    _command "kubectl get pod,svc,ing -n ${NAMESPACE}"
+    kubectl get pod,svc,ing -n ${NAMESPACE}
 }
 
 _draft_down() {
     _draft_init
 
+    _command "helm ls --all"
     helm ls --all
 
+    _read "Enter chart name : "
 
+    if [ ! -z ${ANSWER} ]; then
+        _command "helm delete --purge ${ANSWER}"
+        helm delete --purge ${ANSWER}
+    fi
 }
 
 _chart_replace() {
