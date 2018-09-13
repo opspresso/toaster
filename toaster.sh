@@ -12,6 +12,7 @@ SUB=$2
 NAME=
 VERSION=0.0.0
 SECRET=
+PACKAGE=
 
 NAMESPACE=
 CLUSTER=
@@ -33,12 +34,16 @@ for v in "$@"; do
         NAME="${v#*=}"
         shift
         ;;
-    --branch=*)
-        BRANCH="${v#*=}"
-        shift
-        ;;
     --version=*)
         VERSION="${v#*=}"
+        shift
+        ;;
+    --secret=*)
+        SECRET="${v#*=}"
+        shift
+        ;;
+    --package=*)
+        PACKAGE="${v#*=}"
         shift
         ;;
     --namespace=*)
@@ -154,6 +159,10 @@ _toast() {
 _update() {
     VERSION=$(curl -s https://api.github.com/repos/nalbam/toaster/releases/latest | grep tag_name | cut -d'"' -f4)
 
+    if [ -z ${VERSION} ]; then
+        _error
+    fi
+
     if [ "${VERSION}" == "${THIS_VERSION}" ]; then
         _success "Latest version already installed. [${THIS_VERSION}]"
     fi
@@ -236,13 +245,13 @@ _draft() {
         init)
             _draft_init
             ;;
-        create|pack)
+        c|create|pack)
             _draft_create
             ;;
-        up)
+        u|up)
             _draft_up
             ;;
-        delete|rm)
+        d|delete|rm)
             _draft_delete
             ;;
         *)
@@ -383,9 +392,9 @@ _draft_up() {
         _error "Not found draft.toml"
     fi
 
-    NAMESPACE="default"
-
     NAME="$(cat draft.toml | grep "name =" | cut -d'"' -f2 | xargs)"
+
+    NAMESPACE="default"
 
     COUNT=$(helm ls nginx-ingress | wc -l)
     if [ "x${COUNT}" == "x0" ]; then
