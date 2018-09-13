@@ -284,14 +284,14 @@ _draft_init() {
     COUNT=$(helm ls nginx-ingress | wc -l | xargs)
     if [ "x${COUNT}" == "x0" ]; then
         _command "helm upgrade --install nginx-ingress stable/nginx-ingress"
-        helm upgrade --install nginx-ingress stable/nginx-ingress --namespace kube-system
+        helm upgrade --install nginx-ingress stable/nginx-ingress --namespace kube-public
     fi
 
     # docker-registry
     COUNT=$(helm ls docker-registry | wc -l | xargs)
     if [ "x${COUNT}" == "x0" ]; then
         _command "helm upgrade --install docker-registry stable/docker-registry"
-        helm upgrade --install docker-registry stable/docker-registry --namespace kube-system
+        helm upgrade --install docker-registry stable/docker-registry --namespace kube-public
     fi
 
     REGISTRY="docker-registry.127.0.0.1.nip.io"
