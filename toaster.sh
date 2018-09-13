@@ -283,15 +283,19 @@ _draft_init() {
     # nginx-ingress
     COUNT=$(helm ls nginx-ingress | wc -l | xargs)
     if [ "x${COUNT}" == "x0" ]; then
+        curl -sL https://raw.githubusercontent.com/nalbam/toaster/master/charts/nginx-ingress.yaml > /tmp/nginx-ingress.yaml
+
         _command "helm upgrade --install nginx-ingress stable/nginx-ingress"
-        helm upgrade --install nginx-ingress stable/nginx-ingress --namespace kube-public
+        helm upgrade --install nginx-ingress stable/nginx-ingress --namespace kube-public -f /tmp/nginx-ingress.yaml
     fi
 
     # docker-registry
     COUNT=$(helm ls docker-registry | wc -l | xargs)
     if [ "x${COUNT}" == "x0" ]; then
+        curl -sL https://raw.githubusercontent.com/nalbam/toaster/master/charts/docker-registry.yaml > /tmp/docker-registry.yaml
+
         _command "helm upgrade --install docker-registry stable/docker-registry"
-        helm upgrade --install docker-registry stable/docker-registry --namespace kube-public
+        helm upgrade --install docker-registry stable/docker-registry --namespace kube-public -f docker-registry.yaml
     fi
 
     REGISTRY="docker-registry.127.0.0.1.nip.io"
