@@ -247,7 +247,17 @@ _draft() {
     esac
 }
 
+_helm_init() {
+    _command "helm version"
+    helm version
+
+    _command "helm init"
+    helm init
+}
+
 _draft_init() {
+    _helm_init
+
     _command "draft version"
     draft version
 
@@ -359,7 +369,6 @@ _draft_up() {
     # draft.toml NAMESPACE
     DEFAULT="local"
     _draft_replace "draft.toml" "NAMESPACE" "${DEFAULT}"
-    NAMESPACE="${REPLACE_VAL}"
 
     # draft.toml NAME
     DEFAULT="$(basename $(pwd))-${NAMESPACE}"
