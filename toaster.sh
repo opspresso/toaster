@@ -388,8 +388,8 @@ _draft_replace() {
         REPLACE_VAL=${ANSWER}
     fi
 
-    _command "sed -i -e s|${REPLACE_KEY}: .*|${REPLACE_KEY}: ${REPLACE_VAL}| ${REPLACE_FILE}"
-    _replace "s|${REPLACE_KEY}: .*|${REPLACE_KEY}: ${REPLACE_VAL}|" ${REPLACE_FILE}
+    _command "sed -i -e s|${REPLACE_KEY}|${REPLACE_VAL}| ${REPLACE_FILE}"
+    _replace "s|${REPLACE_KEY}|${REPLACE_VAL}|" ${REPLACE_FILE}
 }
 
 _chart_replace() {
