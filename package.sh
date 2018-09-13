@@ -5,6 +5,7 @@ echo
 
 rm -rf target
 mkdir -p target/dist
+mkdir -p target/charts
 mkdir -p target/helper
 
 # OS_NAME
@@ -62,6 +63,9 @@ pushd helper
 tar -czf ../target/dist/helper.tar.gz *
 popd
 echo
+
+# target/charts/
+cp -rf charts/* target/charts/
 
 # target/helper/
 cp -rf helper/* target/helper/
