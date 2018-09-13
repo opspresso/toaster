@@ -236,14 +236,14 @@ _draft() {
         init)
             _draft_init
             ;;
-        pack)
-            _draft_pack
+        create|pack)
+            _draft_create
             ;;
         up)
             _draft_up
             ;;
-        down|rm)
-            _draft_down
+        delete|rm)
+            _draft_delete
             ;;
         *)
             _draft_init
@@ -273,7 +273,7 @@ _draft_init() {
     # fi
 }
 
-_draft_pack() {
+_draft_create() {
     _result "draft package version: ${THIS_VERSION}"
 
     echo
@@ -427,8 +427,8 @@ _draft_up() {
     kubectl get pod,svc,ing -n ${NAMESPACE}
 }
 
-_draft_down() {
-    _draft_init
+_draft_delete() {
+    # _draft_init
 
     _command "helm ls --all"
     helm ls --all
