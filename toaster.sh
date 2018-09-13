@@ -322,7 +322,7 @@ _draft_pack() {
 
     _result "${SELECTED}"
 
-    mkdir -p charts/acme/templates
+    rm -rf charts
 
     # copy
     cp -rf ${DIST}/${SELECTED}/charts/* charts/
@@ -335,6 +335,12 @@ _draft_pack() {
     # Jenkinsfile IMAGE_NAME
     DEFAULT=$(basename $(pwd))
     _chart_replace "Jenkinsfile" "def IMAGE_NAME" "${DEFAULT}"
+    IMAGE_NAME="${REPLACE_VAL}"
+
+    # draft.toml NAME
+    _replace "s|NAME|${IMAGE_NAME}|" draft.toml
+
+    mv charts/acme charts/${IMAGE_NAME}
 
     # Jenkinsfile REPOSITORY_URL
     DEFAULT=
@@ -342,6 +348,7 @@ _draft_pack() {
         DEFAULT=$(git remote -v | head -1 | awk '{print $2}')
     fi
     _chart_replace "Jenkinsfile" "def REPOSITORY_URL" "${DEFAULT}"
+    REPOSITORY_URL="${REPLACE_VAL}"
 
     # Jenkinsfile REPOSITORY_SECRET
     _chart_replace "Jenkinsfile" "def REPOSITORY_SECRET" "${SECRET}"
@@ -366,39 +373,16 @@ _draft_up() {
         _error "Not found draft.toml"
     fi
 
-    # draft.toml NAMESPACE
-    DEFAULT="default"
-    _draft_replace "draft.toml" "NAMESPACE" "${DEFAULT}"
+    # # draft.toml NAMESPACE
+    # DEFAULT="default"
+    # _chart_replace "draft.toml" "NAMESPACE" "${DEFAULT}"
 
-    # draft.toml NAME
-    DEFAULT="$(basename $(pwd))"
-    _draft_replace "draft.toml" "NAME" "${DEFAULT}"
+    # # draft.toml NAME
+    # DEFAULT="$(basename $(pwd))"
+    # _chart_replace "draft.toml" "NAME" "${DEFAULT}"
 
     _command "draft up -e ${NAMESPACE}"
 	draft up -e ${NAMESPACE}
-}
-
-_draft_replace() {
-    REPLACE_FILE=$1
-    REPLACE_KEY=$2
-    DEFAULT_VAL=$3
-
-    echo
-
-    if [ "${DEFAULT_VAL}" == "" ]; then
-        _read "${REPLACE_KEY} : "
-    else
-        _read "${REPLACE_KEY} [${DEFAULT_VAL}] : "
-    fi
-
-    if [ -z ${ANSWER} ]; then
-        REPLACE_VAL=${DEFAULT_VAL}
-    else
-        REPLACE_VAL=${ANSWER}
-    fi
-
-    _command "sed -i -e s|${REPLACE_KEY}|${REPLACE_VAL}| ${REPLACE_FILE}"
-    _replace "s|${REPLACE_KEY}|${REPLACE_VAL}|" ${REPLACE_FILE}
 }
 
 _chart_replace() {
