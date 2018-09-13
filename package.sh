@@ -13,11 +13,22 @@ OS_NAME="$(uname | awk '{print tolower($0)}')"
 echo "OS_NAME=${OS_NAME}"
 
 # VERSION
-VERSION=$(curl -s https://api.github.com/repos/nalbam/toaster/releases/latest | grep tag_name | cut -d'"' -f4)
+VERSION=$(curl -s https://api.github.com/repos/nalbam/toaster/releases/latest | grep tag_name | cut -d'"' -f4 | xargs)
 
 if [ -z ${VERSION} ]; then
-    VERSION=$(cat VERSION | xargs)
+    VERSION=$(cat ./VERSION | xargs)
 else
+    MAJOR=$(echo ./VERSION | cut -d'.' -f1 | xargs)
+    MINOR=$(echo ./VERSION | cut -d'.' -f2 | xargs)
+
+    LATEST_MAJOR=$(echo ${VERSION} | cut -d'.' -f1 | xargs)
+    LATEST_MINOR=$(echo ${VERSION} | cut -d'.' -f2 | xargs)
+
+    if [ "${MAJOR}" != "${LATEST_MAJOR}" ] || [ "${MINOR}" != "${LATEST_MINOR}" ]; then
+        VERSION=$(cat ./VERSION | xargs)
+    fi
+
+    # add
     VERSION=$(echo ${VERSION} | perl -pe 's/^(([v\d]+\.)*)(\d+)(.*)$/$1.($3+1).$4/e')
 fi
 
