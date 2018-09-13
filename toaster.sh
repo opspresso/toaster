@@ -280,13 +280,15 @@ _draft_init() {
     _command "draft version"
     draft version
 
+    NAMESPACE="kube-public"
+
     # nginx-ingress
     COUNT=$(helm ls nginx-ingress | wc -l | xargs)
     if [ "x${COUNT}" == "x0" ]; then
         curl -sL https://raw.githubusercontent.com/nalbam/toaster/master/charts/nginx-ingress.yaml > /tmp/nginx-ingress.yaml
 
         _command "helm upgrade --install nginx-ingress stable/nginx-ingress"
-        helm upgrade --install nginx-ingress stable/nginx-ingress --namespace kube-public -f /tmp/nginx-ingress.yaml
+        helm upgrade --install nginx-ingress stable/nginx-ingress --namespace ${NAMESPACE} -f /tmp/nginx-ingress.yaml
     fi
 
     # docker-registry
@@ -295,14 +297,22 @@ _draft_init() {
         curl -sL https://raw.githubusercontent.com/nalbam/toaster/master/charts/docker-registry.yaml > /tmp/docker-registry.yaml
 
         _command "helm upgrade --install docker-registry stable/docker-registry"
-        helm upgrade --install docker-registry stable/docker-registry --namespace kube-public -f docker-registry.yaml
+        helm upgrade --install docker-registry stable/docker-registry --namespace ${NAMESPACE} -f /tmp/docker-registry.yaml
     fi
 
-    REGISTRY="docker-registry.127.0.0.1.nip.io"
+    REGISTRY=
+    # REGISTRY="docker-registry.127.0.0.1.nip.io"
+
+    draft config set disable-push-warning 1
 
     # registry
-    _command "draft config set registry ${REGISTRY}"
-    draft config set registry ${REGISTRY}
+    if [ -z ${REGISTRY} ]; then
+        _command "draft config unset registry"
+        draft config unset registry
+    else
+        _command "draft config set registry ${REGISTRY}"
+        draft config set registry ${REGISTRY}
+    fi
 
     _config_save
 }
@@ -418,10 +428,14 @@ _draft_up() {
 
     NAME="$(cat draft.toml | grep "name =" | cut -d'"' -f2 | xargs)"
 
-    NAMESPACE="default"
+    NAMESPACE="development"
 
     # charts/acme/values.yaml
-    _replace "s|repository: .*|repository: ${REGISTRY}/${NAME}|" charts/${NAME}/values.yaml
+    if [ -z ${REGISTRY} ]; then
+        _replace "s|repository: .*|repository: ${NAME}|" charts/${NAME}/values.yaml
+    else
+        _replace "s|repository: .*|repository: ${REGISTRY}/${NAME}|" charts/${NAME}/values.yaml
+    fi
 
     _command "draft up -e ${NAMESPACE}"
 	draft up -e ${NAMESPACE}
