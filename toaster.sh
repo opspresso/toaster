@@ -242,6 +242,9 @@ _draft() {
         up)
             _draft_up
             ;;
+        down|rm)
+            _draft_down
+            ;;
         *)
             _draft_init
     esac
@@ -383,6 +386,14 @@ _draft_up() {
 
     _command "draft up -e ${NAMESPACE}"
 	draft up -e ${NAMESPACE}
+}
+
+_draft_down() {
+    _draft_init
+
+    helm ls --all
+
+
 }
 
 _chart_replace() {
