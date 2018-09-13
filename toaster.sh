@@ -367,11 +367,11 @@ _draft_up() {
     fi
 
     # draft.toml NAMESPACE
-    DEFAULT="local"
+    DEFAULT="default"
     _draft_replace "draft.toml" "NAMESPACE" "${DEFAULT}"
 
     # draft.toml NAME
-    DEFAULT="$(basename $(pwd))-${NAMESPACE}"
+    DEFAULT="$(basename $(pwd))"
     _draft_replace "draft.toml" "NAME" "${DEFAULT}"
 
     _command "draft up -e ${NAMESPACE}"
