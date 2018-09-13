@@ -11,6 +11,7 @@ SUB=$2
 
 NAME=
 VERSION=0.0.0
+
 SECRET=
 PACKAGE=
 
@@ -184,6 +185,7 @@ _version() {
 _config_save() {
     echo "# toaster config" > ${CONFIG}
     echo "SECRET=${SECRET}" >> ${CONFIG}
+    echo "PACKAGE=${PACKAGE}" >> ${CONFIG}
     echo "NAMESPACE=${NAMESPACE}" >> ${CONFIG}
     echo "CLUSTER=${CLUSTER}" >> ${CONFIG}
     echo "BASE_DOMAIN=${BASE_DOMAIN}" >> ${CONFIG}
@@ -260,26 +262,45 @@ _draft() {
 }
 
 _helm_init() {
-    _command "helm version"
-    helm version
-
     _command "helm init"
     helm init
+
+    # TODO wait tiller
+
+    _command "helm version"
+    helm version
 }
 
 _draft_init() {
     _helm_init
 
-    _command "draft version"
-    draft version
-
     _command "draft init"
     draft init
 
-    # if [ ! -z ${REGISTRY} ]; then
-    #     _command "draft config set registry ${REGISTRY}"
-    #     draft config set registry ${REGISTRY}
-    # fi
+    _command "draft version"
+    draft version
+
+    # nginx-ingress
+    COUNT=$(helm ls nginx-ingress | wc -l | xargs)
+    if [ "x${COUNT}" == "x0" ]; then
+        _command "helm upgrade --install nginx-ingress stable/nginx-ingress"
+        helm upgrade --install nginx-ingress stable/nginx-ingress --namespace kube-system
+    fi
+
+    # docker-registry
+    COUNT=$(helm ls docker-registry | wc -l | xargs)
+    if [ "x${COUNT}" == "x0" ]; then
+        _command "helm upgrade --install docker-registry stable/docker-registry"
+        helm upgrade --install docker-registry stable/docker-registry --namespace kube-system
+    fi
+
+    REGISTRY="docker-registry.127.0.0.1.nip.io"
+
+    # registry
+    _command "draft config set registry ${REGISTRY}"
+    draft config set registry ${REGISTRY}
+
+    _config_save
 }
 
 _draft_create() {
@@ -382,7 +403,6 @@ _draft_create() {
     BASE_DOMAIN="${REPLACE_VAL}"
 
     _config_save
-    echo
 }
 
 _draft_up() {
@@ -396,35 +416,8 @@ _draft_up() {
 
     NAMESPACE="default"
 
-    COUNT=$(helm ls nginx-ingress | wc -l)
-    if [ "x${COUNT}" == "x0" ]; then
-        helm upgrade --install docker-registry stable/docker-registry --namespace ${NAMESPACE}
-    fi
-    COUNT=$(helm ls docker-registry | wc -l)
-    if [ "x${COUNT}" == "x0" ]; then
-        helm upgrade --install docker-registry stable/docker-registry --namespace ${NAMESPACE}
-    fi
-
-    REGISTRY="docker-registry.127.0.0.1.nip.io"
-
-    if [ ! -z ${REGISTRY} ]; then
-        # registry
-        _command "draft config set registry ${REGISTRY}"
-        draft config set registry ${REGISTRY}
-
-        # charts/acme/values.yaml
-        _replace "s|repository: .*|repository: ${REGISTRY}/${NAME}|" charts/${NAME}/values.yaml
-
-        _config_save
-    fi
-
-    # # draft.toml NAMESPACE
-    # DEFAULT="default"
-    # _chart_replace "draft.toml" "NAMESPACE" "${DEFAULT}"
-
-    # # draft.toml NAME
-    # DEFAULT="$(basename $(pwd))"
-    # _chart_replace "draft.toml" "NAME" "${DEFAULT}"
+    # charts/acme/values.yaml
+    _replace "s|repository: .*|repository: ${REGISTRY}/${NAME}|" charts/${NAME}/values.yaml
 
     _command "draft up -e ${NAMESPACE}"
 	draft up -e ${NAMESPACE}
