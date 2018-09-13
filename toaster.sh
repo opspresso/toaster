@@ -328,7 +328,7 @@ _draft_pack() {
     rm -rf charts
 
     # copy
-    cp -rf ${DIST}/${SELECTED}/charts/* charts/
+    cp -rf ${DIST}/${SELECTED}/charts charts
     cp -rf ${DIST}/${SELECTED}/dockerignore .dockerignore
     cp -rf ${DIST}/${SELECTED}/draftignore .draftignore
     cp -rf ${DIST}/${SELECTED}/Dockerfile Dockerfile
@@ -343,6 +343,13 @@ _draft_pack() {
     # draft.toml NAME
     _replace "s|NAME|${IMAGE_NAME}|" draft.toml
 
+    # charts/acme/templates/Chart.yaml
+    _replace "s|name: .*|name: ${IMAGE_NAME}|" charts/acme/templates/Chart.yaml
+
+    # charts/acme/templates/values.yaml
+    _replace "s|repository: .*|repository: ${IMAGE_NAME}|" charts/acme/templates/values.yaml
+
+    # charts name
     mv charts/acme charts/${IMAGE_NAME}
 
     # Jenkinsfile REPOSITORY_URL
