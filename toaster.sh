@@ -300,11 +300,9 @@ _draft_init() {
         helm upgrade --install docker-registry stable/docker-registry --namespace ${NAMESPACE} -f /tmp/docker-registry.yaml
     fi
 
-    # curl -sL docker-registry.127.0.0.1.nip.io/v2/_catalog
-    # curl -sL docker-registry/v2/_catalog
-
     REGISTRY=
-    REGISTRY="docker-registry.127.0.0.1.nip.io"
+    REGISTRY="docker-registry.127.0.0.1.nip.io:30500"
+    # curl -sL docker-registry.127.0.0.1.nip.io:30500/v2/_catalog
 
     draft config set disable-push-warning 1
 
