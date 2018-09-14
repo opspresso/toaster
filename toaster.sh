@@ -11,7 +11,9 @@ SUB=$2
 
 NAME=
 VERSION=0.0.0
+
 SECRET=
+PACKAGE=
 
 NAMESPACE=
 CLUSTER=
@@ -33,12 +35,16 @@ for v in "$@"; do
         NAME="${v#*=}"
         shift
         ;;
-    --branch=*)
-        BRANCH="${v#*=}"
-        shift
-        ;;
     --version=*)
         VERSION="${v#*=}"
+        shift
+        ;;
+    --secret=*)
+        SECRET="${v#*=}"
+        shift
+        ;;
+    --package=*)
+        PACKAGE="${v#*=}"
         shift
         ;;
     --namespace=*)
@@ -154,6 +160,10 @@ _toast() {
 _update() {
     VERSION=$(curl -s https://api.github.com/repos/nalbam/toaster/releases/latest | grep tag_name | cut -d'"' -f4)
 
+    if [ -z ${VERSION} ]; then
+        _error
+    fi
+
     if [ "${VERSION}" == "${THIS_VERSION}" ]; then
         _success "Latest version already installed. [${THIS_VERSION}]"
     fi
@@ -175,6 +185,7 @@ _version() {
 _config_save() {
     echo "# toaster config" > ${CONFIG}
     echo "SECRET=${SECRET}" >> ${CONFIG}
+    echo "PACKAGE=${PACKAGE}" >> ${CONFIG}
     echo "NAMESPACE=${NAMESPACE}" >> ${CONFIG}
     echo "CLUSTER=${CLUSTER}" >> ${CONFIG}
     echo "BASE_DOMAIN=${BASE_DOMAIN}" >> ${CONFIG}
@@ -236,31 +247,78 @@ _draft() {
         init)
             _draft_init
             ;;
-        pack)
-            _draft_pack
+        c|create|pack)
+            _draft_create
             ;;
-        up)
+        u|up)
             _draft_up
+            ;;
+        d|delete|rm)
+            _draft_delete
             ;;
         *)
             _draft_init
     esac
 }
 
+_helm_init() {
+    _command "helm init"
+    helm init
+
+    # TODO wait tiller
+
+    _command "helm version"
+    helm version
+}
+
 _draft_init() {
-    _command "draft version"
-    draft version
+    _helm_init
 
     _command "draft init"
     draft init
 
-    if [ ! -z ${REGISTRY} ]; then
+    _command "draft version"
+    draft version
+
+    NAMESPACE="kube-public"
+
+    # nginx-ingress
+    COUNT=$(helm ls nginx-ingress | wc -l | xargs)
+    if [ "x${COUNT}" == "x0" ]; then
+        curl -sL https://raw.githubusercontent.com/nalbam/toaster/master/charts/nginx-ingress.yaml > /tmp/nginx-ingress.yaml
+
+        _command "helm upgrade --install nginx-ingress stable/nginx-ingress"
+        helm upgrade --install nginx-ingress stable/nginx-ingress --namespace ${NAMESPACE} -f /tmp/nginx-ingress.yaml
+    fi
+
+    # docker-registry
+    COUNT=$(helm ls docker-registry | wc -l | xargs)
+    if [ "x${COUNT}" == "x0" ]; then
+        curl -sL https://raw.githubusercontent.com/nalbam/toaster/master/charts/docker-registry.yaml > /tmp/docker-registry.yaml
+
+        _command "helm upgrade --install docker-registry stable/docker-registry"
+        helm upgrade --install docker-registry stable/docker-registry --namespace ${NAMESPACE} -f /tmp/docker-registry.yaml
+    fi
+
+    REGISTRY=
+    REGISTRY="docker-registry.127.0.0.1.nip.io:30500"
+    # curl -sL docker-registry.127.0.0.1.nip.io:30500/v2/_catalog
+
+    draft config set disable-push-warning 1
+
+    # registry
+    if [ -z ${REGISTRY} ]; then
+        _command "draft config unset registry"
+        draft config unset registry
+    else
         _command "draft config set registry ${REGISTRY}"
         draft config set registry ${REGISTRY}
     fi
+
+    _config_save
 }
 
-_draft_pack() {
+_draft_create() {
     _result "draft package version: ${THIS_VERSION}"
 
     echo
@@ -312,10 +370,10 @@ _draft_pack() {
 
     _result "${SELECTED}"
 
-    mkdir -p charts/acme/templates
+    rm -rf charts
 
     # copy
-    cp -rf ${DIST}/${SELECTED}/charts/* charts/
+    cp -rf ${DIST}/${SELECTED}/charts charts
     cp -rf ${DIST}/${SELECTED}/dockerignore .dockerignore
     cp -rf ${DIST}/${SELECTED}/draftignore .draftignore
     cp -rf ${DIST}/${SELECTED}/Dockerfile Dockerfile
@@ -325,6 +383,19 @@ _draft_pack() {
     # Jenkinsfile IMAGE_NAME
     DEFAULT=$(basename $(pwd))
     _chart_replace "Jenkinsfile" "def IMAGE_NAME" "${DEFAULT}"
+    IMAGE_NAME="${REPLACE_VAL}"
+
+    # draft.toml NAME
+    _replace "s|NAME|${IMAGE_NAME}|" draft.toml
+
+    # charts/acme/Chart.yaml
+    _replace "s|name: .*|name: ${IMAGE_NAME}|" charts/acme/Chart.yaml
+
+    # charts/acme/values.yaml
+    _replace "s|repository: .*|repository: ${IMAGE_NAME}|" charts/acme/values.yaml
+
+    # charts name
+    mv charts/acme charts/${IMAGE_NAME}
 
     # Jenkinsfile REPOSITORY_URL
     DEFAULT=
@@ -332,6 +403,7 @@ _draft_pack() {
         DEFAULT=$(git remote -v | head -1 | awk '{print $2}')
     fi
     _chart_replace "Jenkinsfile" "def REPOSITORY_URL" "${DEFAULT}"
+    REPOSITORY_URL="${REPLACE_VAL}"
 
     # Jenkinsfile REPOSITORY_SECRET
     _chart_replace "Jenkinsfile" "def REPOSITORY_SECRET" "${SECRET}"
@@ -346,7 +418,6 @@ _draft_pack() {
     BASE_DOMAIN="${REPLACE_VAL}"
 
     _config_save
-    echo
 }
 
 _draft_up() {
@@ -356,40 +427,39 @@ _draft_up() {
         _error "Not found draft.toml"
     fi
 
-    # draft.toml NAMESPACE
-    DEFAULT="local"
-    _draft_replace "draft.toml" "NAMESPACE" "${DEFAULT}"
-    NAMESPACE="${REPLACE_VAL}"
+    NAME="$(cat draft.toml | grep "name =" | cut -d'"' -f2 | xargs)"
 
-    # draft.toml NAME
-    DEFAULT="$(basename $(pwd))-${NAMESPACE}"
-    _draft_replace "draft.toml" "NAME" "${DEFAULT}"
+    NAMESPACE="development"
+
+    # charts/acme/values.yaml
+    if [ -z ${REGISTRY} ]; then
+        _replace "s|repository: .*|repository: ${NAME}|" charts/${NAME}/values.yaml
+    else
+        _replace "s|repository: .*|repository: ${REGISTRY}/${NAME}|" charts/${NAME}/values.yaml
+    fi
 
     _command "draft up -e ${NAMESPACE}"
 	draft up -e ${NAMESPACE}
+
+    _command "helm ls"
+    helm ls
+
+    _command "kubectl get pod,svc,ing -n ${NAMESPACE}"
+    kubectl get pod,svc,ing -n ${NAMESPACE}
 }
 
-_draft_replace() {
-    REPLACE_FILE=$1
-    REPLACE_KEY=$2
-    DEFAULT_VAL=$3
+_draft_delete() {
+    # _draft_init
 
-    echo
+    _command "helm ls --all"
+    helm ls --all
 
-    if [ "${DEFAULT_VAL}" == "" ]; then
-        _read "${REPLACE_KEY} : "
-    else
-        _read "${REPLACE_KEY} [${DEFAULT_VAL}] : "
+    _read "Enter chart name : "
+
+    if [ ! -z ${ANSWER} ]; then
+        _command "helm delete --purge ${ANSWER}"
+        helm delete --purge ${ANSWER}
     fi
-
-    if [ -z ${ANSWER} ]; then
-        REPLACE_VAL=${DEFAULT_VAL}
-    else
-        REPLACE_VAL=${ANSWER}
-    fi
-
-    _command "sed -i -e s|${REPLACE_KEY}: .*|${REPLACE_KEY}: ${REPLACE_VAL}| ${REPLACE_FILE}"
-    _replace "s|${REPLACE_KEY}: .*|${REPLACE_KEY}: ${REPLACE_VAL}|" ${REPLACE_FILE}
 }
 
 _chart_replace() {

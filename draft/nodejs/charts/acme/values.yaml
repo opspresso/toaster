@@ -16,7 +16,7 @@ resources:
     memory: 256Mi
 ingress:
   enabled: true
-  basedomain: opspresso.com
+  basedomain: 127.0.0.1.nip.io
 hpa:
   enabled: true
   min: 1

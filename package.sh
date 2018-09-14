@@ -1,7 +1,11 @@
 #!/bin/bash
 
+curl -s https://api.github.com/rate_limit
+echo
+
 rm -rf target
 mkdir -p target/dist
+mkdir -p target/charts
 mkdir -p target/helper
 
 # OS_NAME
@@ -10,11 +14,23 @@ OS_NAME="$(uname | awk '{print tolower($0)}')"
 echo "OS_NAME=${OS_NAME}"
 
 # VERSION
-VERSION=$(curl -s https://api.github.com/repos/nalbam/toaster/releases/latest | grep tag_name | cut -d'"' -f4)
-VERSION=$(echo ${VERSION:-v0.0.0} | perl -pe 's/^(([v\d]+\.)*)(\d+)(.*)$/$1.($3+1).$4/e')
+VERSION=$(curl -s https://api.github.com/repos/nalbam/toaster/releases/latest | grep tag_name | cut -d'"' -f4 | xargs)
 
-if [ "x$(echo ${VERSION} | cut -d'.' -f2)" == "x1" ]; then
-    VERSION="v0.2.0"
+if [ -z ${VERSION} ]; then
+    VERSION=$(cat ./VERSION | xargs)
+else
+    MAJOR=$(echo ./VERSION | cut -d'.' -f1 | xargs)
+    MINOR=$(echo ./VERSION | cut -d'.' -f2 | xargs)
+
+    LATEST_MAJOR=$(echo ${VERSION} | cut -d'.' -f1 | xargs)
+    LATEST_MINOR=$(echo ${VERSION} | cut -d'.' -f2 | xargs)
+
+    if [ "${MAJOR}" != "${LATEST_MAJOR}" ] || [ "${MINOR}" != "${LATEST_MINOR}" ]; then
+        VERSION=$(cat ./VERSION | xargs)
+    fi
+
+    # add
+    VERSION=$(echo ${VERSION} | perl -pe 's/^(([v\d]+\.)*)(\d+)(.*)$/$1.($3+1).$4/e')
 fi
 
 printf "${VERSION}" > target/VERSION
@@ -47,6 +63,9 @@ pushd helper
 tar -czf ../target/dist/helper.tar.gz *
 popd
 echo
+
+# target/charts/
+cp -rf charts/* target/charts/
 
 # target/helper/
 cp -rf helper/* target/helper/

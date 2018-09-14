@@ -92,7 +92,7 @@ directory() {
 dir() {
     TEMP=/tmp/cdw.tmp
 
-    find ${HOME_DIR} -maxdepth 2 -type d -exec ls -d "{}" \; > ${TEMP}
+    find ${HOME_DIR} -maxdepth 2 -type d -exec ls -d "{}" \; | sort > ${TEMP}
 
     COUNT=$(wc -l ${TEMP})
 
