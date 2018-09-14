@@ -22,11 +22,11 @@ VERSION=$(curl -s https://api.github.com/repos/${USERNAME}/${REPONAME}/releases/
 if [ -z ${VERSION} ]; then
     VERSION=$(cat ./VERSION | xargs)
 else
-    MAJOR=$(echo ./VERSION | cut -d'.' -f1 | xargs)
-    MINOR=$(echo ./VERSION | cut -d'.' -f2 | xargs)
+    MAJOR=$(cat ./VERSION | xargs | cut -d'.' -f1)
+    MINOR=$(cat ./VERSION | xargs | cut -d'.' -f2)
 
-    LATEST_MAJOR=$(echo ${VERSION} | cut -d'.' -f1 | xargs)
-    LATEST_MINOR=$(echo ${VERSION} | cut -d'.' -f2 | xargs)
+    LATEST_MAJOR=$(echo ${VERSION} | cut -d'.' -f1)
+    LATEST_MINOR=$(echo ${VERSION} | cut -d'.' -f2)
 
     if [ "${MAJOR}" != "${LATEST_MAJOR}" ] || [ "${MINOR}" != "${LATEST_MINOR}" ]; then
         VERSION=$(cat ./VERSION | xargs)
