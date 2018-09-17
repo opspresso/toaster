@@ -98,7 +98,7 @@ dir() {
 
     find ${HOME_DIR} -maxdepth 2 -type d -exec ls -d "{}" \; | sort > ${TEMP}
 
-    COUNT=$(wc -l ${TEMP})
+    COUNT=$(wc -l ${TEMP} | xargs)
 
     if [ "x${COUNT}" == "x0" ]; then
         _error "[${HOME_DIR}] is empty."

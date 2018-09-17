@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# curl -sL toast.sh/helper/bastion.sh | bash
+# curl -sL toast.sh/bastion | bash
 
 #figlet bastion
 echo "================================================================================"
@@ -319,20 +319,22 @@ terraform version | xargs | awk '{print $2}'
 echo "================================================================================"
 _result "install nodejs..."
 
-VERSION=10
+if [ "${OS_TYPE}" == "brew" ]; then
+    command -v node > /dev/null || brew install node
+else
+    VERSION=10
 
-if [ "${NODE}" != "${VERSION}" ] || [ "$(command -v node)" == "" ]; then
-    if [ "${OS_TYPE}" == "apt" ]; then
-        curl -sL https://deb.nodesource.com/setup_10.x | sudo -E bash -
-        sudo apt install -y nodejs
-    elif [ "${OS_TYPE}" == "yum" ]; then
-        curl -sL https://rpm.nodesource.com/setup_10.x | sudo bash -
-        sudo yum install -y nodejs
-    elif [ "${OS_TYPE}" == "brew" ]; then
-        brew install node
+    if [ "${NODE}" != "${VERSION}" ] || [ "$(command -v node)" == "" ]; then
+        if [ "${OS_TYPE}" == "apt" ]; then
+            curl -sL https://deb.nodesource.com/setup_10.x | sudo -E bash -
+            sudo apt install -y nodejs
+        elif [ "${OS_TYPE}" == "yum" ]; then
+            curl -sL https://rpm.nodesource.com/setup_10.x | sudo bash -
+            sudo yum install -y nodejs
+        fi
+
+        NODE="${VERSION}"
     fi
-
-    NODE="${VERSION}"
 fi
 
 node -v | xargs
@@ -341,21 +343,23 @@ node -v | xargs
 echo "================================================================================"
 _result "install java..."
 
-VERSION=1.8.0
+if [ "${OS_TYPE}" == "brew" ]; then
+    command -v java > /dev/null || brew cask install java
+else
+    VERSION=1.8.0
 
-if [ "${JAVA}" != "${VERSION}" ] || [ "$(command -v java)" == "" ]; then
-    _result " ${JAVA} >> ${VERSION}"
+    if [ "${JAVA}" != "${VERSION}" ] || [ "$(command -v java)" == "" ]; then
+        _result " ${JAVA} >> ${VERSION}"
 
-    if [ "${OS_TYPE}" == "apt" ]; then
-        sudo apt install -y openjdk-8-jdk
-    elif [ "${OS_TYPE}" == "yum" ]; then
-        sudo yum remove -y java-1.7.0-openjdk
-        sudo yum install -y java-1.8.0-openjdk java-1.8.0-openjdk-devel
-    elif [ "${OS_TYPE}" == "brew" ]; then
-        brew cask install java
+        if [ "${OS_TYPE}" == "apt" ]; then
+            sudo apt install -y openjdk-8-jdk
+        elif [ "${OS_TYPE}" == "yum" ]; then
+            sudo yum remove -y java-1.7.0-openjdk
+            sudo yum install -y java-1.8.0-openjdk java-1.8.0-openjdk-devel
+        fi
+
+        JAVA="${VERSION}"
     fi
-
-    JAVA="${VERSION}"
 fi
 
 java -version 2>&1 | grep version | cut -d'"' -f2
@@ -364,16 +368,20 @@ java -version 2>&1 | grep version | cut -d'"' -f2
 echo "================================================================================"
 _result "install maven..."
 
-VERSION=3.5.4
+if [ "${OS_TYPE}" == "brew" ]; then
+    command -v mvn > /dev/null || brew install maven
+else
+    VERSION=3.5.4
 
-if [ "${MAVEN}" != "${VERSION}" ] || [ "$(command -v mvn)" == "" ]; then
-    _result " ${MAVEN} >> ${VERSION}"
+    if [ "${MAVEN}" != "${VERSION}" ] || [ "$(command -v mvn)" == "" ]; then
+        _result " ${MAVEN} >> ${VERSION}"
 
-    curl -L http://apache.tt.co.kr/maven/maven-3/${VERSION}/binaries/apache-maven-${VERSION}-bin.tar.gz | tar xz
-    sudo mv -f apache-maven-${VERSION} /usr/local/
-    sudo ln -sf /usr/local/apache-maven-${VERSION}/bin/mvn /usr/local/bin/mvn
+        curl -L http://apache.tt.co.kr/maven/maven-3/${VERSION}/binaries/apache-maven-${VERSION}-bin.tar.gz | tar xz
+        sudo mv -f apache-maven-${VERSION} /usr/local/
+        sudo ln -sf /usr/local/apache-maven-${VERSION}/bin/mvn /usr/local/bin/mvn
 
-    MAVEN="${VERSION}"
+        MAVEN="${VERSION}"
+    fi
 fi
 
 mvn -version | grep "Apache Maven" | xargs | awk '{print $3}'

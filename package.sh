@@ -44,6 +44,7 @@ echo
 find ./** | grep [.]sh | xargs chmod 755
 
 # target/
+cp -rf bastion.sh target/bastion
 cp -rf install.sh target/install
 cp -rf toaster.sh target/dist/toaster
 
