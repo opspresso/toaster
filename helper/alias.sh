@@ -12,6 +12,8 @@ alias tu="t update"
 alias tb="t bastion"
 alias th="t helper"
 
+alias vc="valve"
+
 alias tf="terraform"
 alias tfp="tf init && tf plan"
 alias tfa="tf init && tf apply -auto-approve"
