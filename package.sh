@@ -1,24 +1,20 @@
 #!/bin/bash
 
-curl -s https://api.github.com/rate_limit
-echo
+# curl -s https://api.github.com/rate_limit
+# echo
 
 USERNAME=${1:-nalbam}
 REPONAME=${2:-toaster}
 
-rm -rf target
-mkdir -p target/dist
-mkdir -p target/charts
-mkdir -p target/helper
-
-# OS_NAME
+# uname
 OS_NAME="$(uname | awk '{print tolower($0)}')"
-
 echo "OS_NAME=${OS_NAME}"
+echo
 
-# VERSION
+# previous versions
 VERSION=$(curl -s https://api.github.com/repos/${USERNAME}/${REPONAME}/releases/latest | grep tag_name | cut -d'"' -f4 | xargs)
 
+# release version
 if [ -z ${VERSION} ]; then
     VERSION=$(cat ./VERSION | xargs)
 else
@@ -37,9 +33,13 @@ else
 fi
 
 printf "${VERSION}" > target/VERSION
-
 echo "VERSION=${VERSION}"
 echo
+
+rm -rf target
+mkdir -p target/dist
+mkdir -p target/charts
+mkdir -p target/helper
 
 # 755
 find ./** | grep [.]sh | xargs chmod 755
