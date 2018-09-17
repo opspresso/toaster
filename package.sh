@@ -6,6 +6,11 @@
 USERNAME=${1:-nalbam}
 REPONAME=${2:-toaster}
 
+rm -rf target
+mkdir -p target/dist
+mkdir -p target/charts
+mkdir -p target/helper
+
 # uname
 OS_NAME="$(uname | awk '{print tolower($0)}')"
 echo "OS_NAME=${OS_NAME}"
@@ -35,11 +40,6 @@ fi
 printf "${VERSION}" > target/VERSION
 echo "VERSION=${VERSION}"
 echo
-
-rm -rf target
-mkdir -p target/dist
-mkdir -p target/charts
-mkdir -p target/helper
 
 # 755
 find ./** | grep [.]sh | xargs chmod 755
