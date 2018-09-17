@@ -8,7 +8,6 @@ REPONAME=${2:-toaster}
 
 rm -rf target
 mkdir -p target/dist
-mkdir -p target/charts
 mkdir -p target/helper
 
 # uname
@@ -55,20 +54,11 @@ elif [ "${OS_NAME}" == "darwin" ]; then
     sed -i "" -e "s/THIS_VERSION=.*/THIS_VERSION=${VERSION}/" target/dist/toaster
 fi
 
-# target/dist/draft.tar.gz
-pushd draft
-tar -czf ../target/dist/draft.tar.gz *
-popd
-echo
-
 # target/dist/helper.tar.gz
 pushd helper
 tar -czf ../target/dist/helper.tar.gz *
 popd
 echo
-
-# target/charts/
-cp -rf charts/* target/charts/
 
 # target/helper/
 cp -rf helper/* target/helper/
