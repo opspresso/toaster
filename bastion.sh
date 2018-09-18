@@ -2,15 +2,6 @@
 
 # curl -sL toast.sh/bastion | bash
 
-#figlet bastion
-echo "================================================================================"
-echo "  _               _   _ "
-echo " | |__   __ _ ___| |_(_) ___  _ __ "
-echo " | '_ \ / _' / __| __| |/ _ \| '_ \ "
-echo " | |_) | (_| \__ \ |_| | (_) | | | | "
-echo " |_.__/ \__,_|___/\__|_|\___/|_| |_| "
-echo "================================================================================"
-
 command -v tput > /dev/null || TPUT=false
 
 _echo() {
@@ -86,9 +77,8 @@ KUBECTL=
 KOPS=
 HELM=
 DRAFT=
-SKAFFOLD=
 ISTIOCTL=
-JENKINS_X=
+JENKINSX=
 TERRAFORM=
 NODE=
 JAVA=
@@ -96,9 +86,8 @@ MAVEN=
 HEPTIO=
 
 CONFIG=~/.bastion
-if [ -f ${CONFIG} ]; then
-  . ${CONFIG}
-fi
+
+touch ${CONFIG} && . ${CONFIG}
 
 # update
 echo "================================================================================"
@@ -225,27 +214,6 @@ _result "install draft..."
 
 draft version --short | xargs
 
-# # skaffold
-# echo "================================================================================"
-# _result "install skaffold..."
-
-# #if [ "${OS_TYPE}" == "brew" ]; then
-# #    command -v skaffold > /dev/null || brew install skaffold
-# #else
-#     VERSION=$(curl -s https://api.github.com/repos/GoogleContainerTools/skaffold/releases/latest | jq -r '.tag_name')
-
-#     if [ "${SKAFFOLD}" != "${VERSION}" ]; then
-#         _result " ${SKAFFOLD} >> ${VERSION}"
-
-#         curl -LO https://storage.googleapis.com/skaffold/releases/${VERSION}/skaffold-${OS_NAME}-amd64
-#         chmod +x skaffold-${OS_NAME}-amd64 && sudo mv skaffold-${OS_NAME}-amd64 /usr/local/bin/skaffold
-
-#         SKAFFOLD="${VERSION}"
-#     fi
-# #fi
-
-# skaffold version | xargs
-
 # istioctl
 echo "================================================================================"
 _result "install istioctl..."
@@ -272,26 +240,26 @@ _result "install istioctl..."
 
 istioctl version | grep "Version" | xargs | awk '{print $2}'
 
-# # jenkins-x
-# echo "================================================================================"
-# _result "install jenkins-x..."
+# jenkins-x
+echo "================================================================================"
+_result "install jenkins-x..."
 
-# if [ "${OS_TYPE}" == "brew" ]; then
-#    command -v jx > /dev/null || brew install jx
-# else
-#    VERSION=$(curl -s https://api.github.com/repos/jenkins-x/jx/releases/latest | jq -r '.tag_name')
+if [ "${OS_TYPE}" == "brew" ]; then
+   command -v jx > /dev/null || brew install jx
+else
+   VERSION=$(curl -s https://api.github.com/repos/jenkins-x/jx/releases/latest | jq -r '.tag_name')
 
-#    if [ "${JENKINS_X}" != "${VERSION}" ]; then
-#        _result " ${JENKINS_X} >> ${VERSION}"
+   if [ "${JENKINSX}" != "${VERSION}" ]; then
+       _result " ${JENKINSX} >> ${VERSION}"
 
-#        curl -L https://github.com/jenkins-x/jx/releases/download/${VERSION}/jx-${OS_NAME}-amd64.tar.gz | tar xz
-#        sudo mv jx /usr/local/bin/jx
+       curl -L https://github.com/jenkins-x/jx/releases/download/${VERSION}/jx-${OS_NAME}-amd64.tar.gz | tar xz
+       sudo mv jx /usr/local/bin/jx
 
-#        JENKINS_X="${VERSION}"
-#    fi
-# fi
+       JENKINSX="${VERSION}"
+   fi
+fi
 
-# jx --version | xargs
+jx --version | xargs
 
 # terraform
 echo "================================================================================"
@@ -423,9 +391,8 @@ echo "KUBECTL=\"${KUBECTL}\"" >> ${CONFIG}
 echo "KOPS=\"${KOPS}\"" >> ${CONFIG}
 echo "HELM=\"${HELM}\"" >> ${CONFIG}
 echo "DRAFT=\"${DRAFT}\"" >> ${CONFIG}
-echo "SKAFFOLD=\"${SKAFFOLD}\"" >> ${CONFIG}
 echo "ISTIOCTL=\"${ISTIOCTL}\"" >> ${CONFIG}
-echo "JENKINS_X=\"${JENKINS_X}\"" >> ${CONFIG}
+echo "JENKINSX=\"${JENKINSX}\"" >> ${CONFIG}
 echo "TERRAFORM=\"${TERRAFORM}\"" >> ${CONFIG}
 echo "NODE=\"${NODE}\"" >> ${CONFIG}
 echo "JAVA=\"${JAVA}\"" >> ${CONFIG}
