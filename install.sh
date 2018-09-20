@@ -51,13 +51,25 @@ rm -rf ${DIST}
 curl -sL -o ${DIST} https://github.com/nalbam/toaster/releases/download/${VERSION}/toaster
 chmod +x ${DIST}
 
-if [ -d ~/.local/bin ]; then
-    mv -f ${DIST} ~/.local/bin/toaster
-elif [ -d ~/bin ]; then
-    mv -f ${DIST} ~/bin/toaster
+if [ ! -z $HOME ]; then
+    $HAS_PATH=$(echo "$PATH" | grep "$HOME/bin")
+    if [ -z ${HAS_PATH} ]; then
+        echo "PATH=$HOME/bin:$PATH" >> $HOME/.bash_profile
+    fi
+
+    mkdir -p $HOME/bin
+    mv -f ${DIST} $HOME/bin/valve
 else
-    mv -f ${DIST} /usr/local/bin/toaster
+    mv -f ${DIST} /usr/local/bin/valve
 fi
+
+# if [ -d ~/bin ]; then
+#     mv -f ${DIST} ~/bin/valve
+# elif [ -d ~/.local/bin ]; then
+#     mv -f ${DIST} ~/.local/bin/valve
+# else
+#     mv -f ${DIST} /usr/local/bin/valve
+# fi
 
 # done
 _success "done."
