@@ -59,7 +59,7 @@ if [ ! -z $HOME ]; then
         echo "PATH=$HOME/.local/bin:$PATH" >> $HOME/.bash_profile
     fi
 
-    mkdir -p $HOME/bin
+    mkdir -p $HOME/.local/bin
     mv -f ${DIST} $HOME/.local/bin/${NAME}
 else
     mv -f ${DIST} /usr/local/bin/${NAME}
