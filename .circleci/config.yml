@@ -41,6 +41,18 @@ jobs:
             VERSION=$(cat workspace/target/VERSION)
             go get github.com/tcnksm/ghr
             ghr -t ${GITHUB_TOKEN} -u ${CIRCLE_PROJECT_USERNAME} -r ${CIRCLE_PROJECT_REPONAME} -c ${CIRCLE_SHA1} -delete ${VERSION} workspace/target/dist/
+  slack:
+    docker:
+      - image: opspresso/awscli
+    steps:
+      - attach_workspace:
+          at: workspace
+      - run:
+          name: Notification
+          command: |
+            VERSION=$(cat workspace/target/VERSION)
+            ./helper/slack.sh --token="${SLACK_TOKEN}" \
+                --color="good" --title="${CIRCLE_PROJECT_REPONAME} updated" --emoji=":construction_worker:" "\`${VERSION}\`"
 
 workflows:
   version: 2
@@ -53,3 +65,6 @@ workflows:
       - release:
           requires:
             - package
+      - slack:
+          requires:
+            - release
