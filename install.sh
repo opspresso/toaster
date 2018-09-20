@@ -52,23 +52,23 @@ curl -sL -o ${DIST} https://github.com/nalbam/toaster/releases/download/${VERSIO
 chmod +x ${DIST}
 
 if [ ! -z $HOME ]; then
-    $HAS_PATH=$(echo "$PATH" | grep "$HOME/bin")
-    if [ -z ${HAS_PATH} ]; then
+    COUNT=$(echo "$PATH" | grep "$HOME/bin" | wc -l | xargs)
+    if [ "x${COUNT}" == "x0" ]; then
         echo "PATH=$HOME/bin:$PATH" >> $HOME/.bash_profile
     fi
 
     mkdir -p $HOME/bin
-    mv -f ${DIST} $HOME/bin/valve
+    mv -f ${DIST} $HOME/bin/toaster
 else
-    mv -f ${DIST} /usr/local/bin/valve
+    mv -f ${DIST} /usr/local/bin/toaster
 fi
 
 # if [ -d ~/bin ]; then
-#     mv -f ${DIST} ~/bin/valve
+#     mv -f ${DIST} ~/bin/toaster
 # elif [ -d ~/.local/bin ]; then
-#     mv -f ${DIST} ~/.local/bin/valve
+#     mv -f ${DIST} ~/.local/bin/toaster
 # else
-#     mv -f ${DIST} /usr/local/bin/valve
+#     mv -f ${DIST} /usr/local/bin/toaster
 # fi
 
 # done
