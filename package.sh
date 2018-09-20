@@ -67,9 +67,3 @@ cp -rf helper/* target/helper/
 
 # target/
 cp -rf web/* target/
-
-# slack
-if [ ! -z ${SLACK_TOKEN} ]; then
-    ./helper/slack.sh --token="${SLACK_TOKEN}" \
-        --color="good" --title="${REPONAME} updated" --emoji=":construction_worker:" "\`${VERSION}\`"
-fi
