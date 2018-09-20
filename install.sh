@@ -1,11 +1,5 @@
 #!/bin/bash
 
-# curl -sL toast.sh/install | bash
-
-OS_NAME="$(uname | awk '{print tolower($0)}')"
-
-################################################################################
-
 command -v tput > /dev/null || TPUT=false
 
 _echo() {
@@ -40,12 +34,13 @@ NAME="toaster"
 
 VERSION=$(curl -s https://api.github.com/repos/nalbam/toaster/releases/latest | grep tag_name | cut -d'"' -f4)
 
-_result "toaster version: ${VERSION}"
+_result "version: ${VERSION}"
 
 if [ -z ${VERSION} ]; then
     _error
 fi
 
+# dist
 DIST=/tmp/${NAME}-${VERSION}
 rm -rf ${DIST}
 
@@ -53,6 +48,7 @@ rm -rf ${DIST}
 curl -sL -o ${DIST} https://github.com/nalbam/toaster/releases/download/${VERSION}/toaster
 chmod +x ${DIST}
 
+# copy
 if [ ! -z $HOME ]; then
     COUNT=$(echo "$PATH" | grep "$HOME/.local/bin" | wc -l | xargs)
     if [ "x${COUNT}" == "x0" ]; then
@@ -64,14 +60,6 @@ if [ ! -z $HOME ]; then
 else
     mv -f ${DIST} /usr/local/bin/${NAME}
 fi
-
-# if [ -d ~/bin ]; then
-#     mv -f ${DIST} ~/bin/${NAME}
-# elif [ -d ~/.local/bin ]; then
-#     mv -f ${DIST} ~/.local/bin/${NAME}
-# else
-#     mv -f ${DIST} /usr/local/bin/${NAME}
-# fi
 
 # done
 _success "done."
