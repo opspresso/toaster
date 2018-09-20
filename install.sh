@@ -53,7 +53,7 @@ if [ ! -z $HOME ]; then
     COUNT=$(echo "$PATH" | grep "$HOME/.local/bin" | wc -l | xargs)
     if [ "x${COUNT}" == "x0" ]; then
         echo "PATH=$HOME/.local/bin:\$PATH" >> $HOME/.bash_profile
-        export PATH=$HOME/.local/bin:$PATH
+        . $HOME/.bash_profile
     fi
 
     mkdir -p $HOME/.local/bin
