@@ -52,6 +52,7 @@ chmod +x ${DIST}
 if [ ! -z $HOME ]; then
     COUNT=$(echo "$PATH" | grep "$HOME/.local/bin" | wc -l | xargs)
     if [ "x${COUNT}" == "x0" ]; then
+        export PATH=$HOME/.local/bin:$PATH
         echo "PATH=$HOME/.local/bin:\$PATH" >> $HOME/.bash_profile
         . $HOME/.bash_profile
     fi
