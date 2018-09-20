@@ -7,3 +7,9 @@
 ```bash
 curl -sL toast.sh/install | bash
 ```
+
+## usage
+
+```bash
+toaster helper
+```
