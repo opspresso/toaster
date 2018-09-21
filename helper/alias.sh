@@ -4,7 +4,7 @@ alias e="~/helper/env.sh"
 alias n="~/helper/nsh.sh"
 alias s="~/helper/ssh.sh"
 
-alias v="~/helper/vscode.sh"
+alias v="~/helper/code.sh"
 alias v.="v ."
 
 alias t="toaster"

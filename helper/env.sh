@@ -67,6 +67,34 @@ usage() {
     exit 1
 }
 
+_select_one() {
+    echo
+
+    IDX=0
+    while read VAL; do
+        IDX=$(( ${IDX} + 1 ))
+        printf "%3s. %s\n" "$IDX" "$VAL";
+    done < ${LIST}
+
+    CNT=$(cat ${LIST} | wc -l | xargs)
+
+    echo
+    _read "Please select one. (1-${CNT}) : "
+
+    SELECTED=
+    if [ -z ${ANSWER} ]; then
+        _error
+    fi
+    TEST='^[0-9]+$'
+    if ! [[ ${ANSWER} =~ ${TEST} ]]; then
+        _error
+    fi
+    SELECTED=$(sed -n ${ANSWER}p ${LIST})
+    if [ -z ${SELECTED} ]; then
+        _error
+    fi
+}
+
 ################################################################################
 
 prepare() {
@@ -96,6 +124,18 @@ directory() {
 }
 
 deploy() {
+    LIST=/tmp/toaster-env-ls
+
+    if [ -z ${_NAME} ]; then
+        ls ${HOME_DIR} > ${LIST}
+
+        _select_one
+
+        _result "${SELECTED}"
+
+        _NAME="${SELECTED}"
+    fi
+
     if [ -z "${_NAME}" ]; then
         usage
     fi

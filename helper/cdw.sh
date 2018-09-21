@@ -105,7 +105,7 @@ dir() {
     IDX=0
     while read VAL; do
         IDX=$(( ${IDX} + 1 ))
-        printf "%3s %s\n" "$IDX" "$VAL";
+        printf "%3s. %s\n" "$IDX" "$VAL";
     done < ${TEMP}
 
     echo "================================================================================"
