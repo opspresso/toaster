@@ -9,8 +9,8 @@ alias v.="v ."
 
 alias t="toaster"
 alias tu="t update"
-alias tb="t bastion"
 alias th="t helper"
+alias tt="t tools"
 
 alias vc="valve"
 

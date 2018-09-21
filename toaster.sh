@@ -76,11 +76,11 @@ _toast() {
         u|update)
             _update
             ;;
-        b|bastion)
-            _bastion
-            ;;
         h|helper)
             _helper
+            ;;
+        t|tools)
+            _tools
             ;;
         v|version)
             _version
@@ -95,8 +95,8 @@ _update() {
     exit 0
 }
 
-_bastion() {
-    curl -sL toast.sh/bastion | bash
+_tools() {
+    curl -sL toast.sh/tools | bash
     exit 0
 }
 
