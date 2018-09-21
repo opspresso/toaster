@@ -101,8 +101,7 @@ _tools() {
 }
 
 _version() {
-    _echo ${THIS_VERSION} 2
-    exit 0
+    _success ${THIS_VERSION}
 }
 
 _helper() {

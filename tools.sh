@@ -389,6 +389,7 @@ fi
 
 guard version 2>&1 | grep 'Version ' | xargs | awk '{print $3}'
 
+# clean
 echo "================================================================================"
 _result "clean all..."
 
@@ -416,5 +417,6 @@ echo "NODE=\"${NODE}\"" >> ${CONFIG}
 echo "JAVA=\"${JAVA}\"" >> ${CONFIG}
 echo "MAVEN=\"${MAVEN}\"" >> ${CONFIG}
 echo "HEPTIO=\"${HEPTIO}\"" >> ${CONFIG}
+echo "GUARD=\"${GUARD}\"" >> ${CONFIG}
 
 _success "done."
