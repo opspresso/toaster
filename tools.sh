@@ -241,26 +241,26 @@ _result "install istioctl..."
 
 istioctl version | grep "Version" | xargs | awk '{print $2}'
 
-# jenkins-x
-echo "================================================================================"
-_result "install jenkins-x..."
+# # jenkins-x
+# echo "================================================================================"
+# _result "install jenkins-x..."
 
-if [ "${OS_TYPE}" == "brew" ]; then
-   command -v jx > /dev/null || brew install jx
-else
-   VERSION=$(curl -s https://api.github.com/repos/jenkins-x/jx/releases/latest | jq -r '.tag_name')
+# if [ "${OS_TYPE}" == "brew" ]; then
+#    command -v jx > /dev/null || brew install jx
+# else
+#    VERSION=$(curl -s https://api.github.com/repos/jenkins-x/jx/releases/latest | jq -r '.tag_name')
 
-   if [ "${JENKINSX}" != "${VERSION}" ]; then
-       _result " ${JENKINSX} >> ${VERSION}"
+#    if [ "${JENKINSX}" != "${VERSION}" ]; then
+#        _result " ${JENKINSX} >> ${VERSION}"
 
-       curl -L https://github.com/jenkins-x/jx/releases/download/${VERSION}/jx-${OS_NAME}-amd64.tar.gz | tar xz
-       sudo mv jx /usr/local/bin/jx
+#        curl -L https://github.com/jenkins-x/jx/releases/download/${VERSION}/jx-${OS_NAME}-amd64.tar.gz | tar xz
+#        sudo mv jx /usr/local/bin/jx
 
-       JENKINSX="${VERSION}"
-   fi
-fi
+#        JENKINSX="${VERSION}"
+#    fi
+# fi
 
-jx --version | xargs
+# jx --version | xargs
 
 # terraform
 echo "================================================================================"
