@@ -2,7 +2,7 @@
 
 OS_NAME="$(uname | awk '{print tolower($0)}')"
 
-SHELL_DIR=${HOME}/.helper
+SHELL_DIR="${HOME}/.helper"
 mkdir -p ${SHELL_DIR}
 
 HOME_DIR=
@@ -72,7 +72,7 @@ prepare() {
 }
 
 directory() {
-    if [ -z "${HOME_DIR}" ] || [ ! -d "${HOME_DIR}" ]; then
+    if [ -z ${HOME_DIR} ] || [ ! -d ${HOME_DIR} ]; then
         pushd ~
         DEFAULT="$(pwd)/work/src"
         popd
@@ -81,9 +81,13 @@ directory() {
         HOME_DIR=${ANSWER:-${DEFAULT}}
     fi
 
+    if [ -z ${HOME_DIR} ]; then
+        _error "[${HOME_DIR}] is not directory."
+    fi
+
     mkdir -p ${HOME_DIR}
 
-    if [ ! -d "${HOME_DIR}" ]; then
+    if [ ! -d ${HOME_DIR} ]; then
         _error "[${HOME_DIR}] is not directory."
     fi
 
