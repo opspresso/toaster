@@ -1,10 +1,10 @@
 #!/bin/bash
 
-alias e="~/helper/env.sh"
-alias n="~/helper/nsh.sh"
-alias s="~/helper/ssh.sh"
+alias e="~/.helper/env.sh"
+alias n="~/.helper/nsh.sh"
+alias s="~/.helper/ssh.sh"
 
-alias v="~/helper/code.sh"
+alias v="~/.helper/code.sh"
 alias v.="v ."
 
 alias t="toaster"
@@ -30,7 +30,7 @@ alias vgd="vg destroy"
 alias p="reveal-md -w --port 8888 --theme https://raw.githubusercontent.com/nalbam/docs/master/.theme/black.css"
 
 c() {
-    ~/helper/cdw.sh ${1}
+    ~/.helper/cdw.sh ${1}
     if [ -f /tmp/cdw.result ]; then
         cd $(cat /tmp/cdw.result)
     fi

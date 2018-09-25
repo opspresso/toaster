@@ -1,6 +1,7 @@
 #!/bin/bash
 
-SHELL_DIR=${HOME}/helper
+SHELL_DIR=${HOME}/.helper
+mkdir -p ${HELPER_DIR}
 
 HOME_DIR=
 

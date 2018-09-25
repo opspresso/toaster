@@ -2,7 +2,8 @@
 
 OS_NAME="$(uname | awk '{print tolower($0)}')"
 
-SHELL_DIR=${HOME}/helper
+SHELL_DIR=${HOME}/.helper
+mkdir -p ${HELPER_DIR}
 
 HOME_DIR=
 

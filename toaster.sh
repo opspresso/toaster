@@ -119,13 +119,17 @@ _helper() {
 
     _result "helper package downloaded."
 
-    HELPER_DIR="${HOME}/helper"
+    HELPER_DIR="${HOME}/.helper"
     mkdir -p ${HELPER_DIR}
 
-    BASH_ALIAS="${HOME}/.bash_aliases"
+    if [ -d ${HOME}/helper ]; then
+        mv ${HOME}/helper ${HELPER_DIR}
+    fi
 
     # install
     tar -zxf ${DIST} -C ${HELPER_DIR}
+
+    BASH_ALIAS="${HOME}/.bash_aliases"
 
     # alias
     if [ -f ${HELPER_DIR}/alias.sh ]; then
