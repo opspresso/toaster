@@ -2,10 +2,13 @@
 
 OS_NAME="$(uname | awk '{print tolower($0)}')"
 
-SHELL_DIR="${HOME}/.helper"
-mkdir -p ${SHELL_DIR}
-
 HOME_DIR=
+
+CONFIG_DIR="${HOME}/.helper/conf"
+mkdir -p ${CONFIG_DIR}
+
+CONFIG="${CONFIG_DIR}/$(basename $0)"
+touch ${CONFIG} && . ${CONFIG}
 
 DIR=$1
 
@@ -56,22 +59,44 @@ usage() {
     echo " | (_| (_) | (_| |  __/ "
     echo "  \___\___/ \__,_|\___| "
     echo "================================================================================"
+    echo "  PATH  : ${HOME_DIR}"
+    echo "================================================================================"
 
     exit 1
 }
 
-################################################################################
+_select_one() {
+    echo
 
-prepare() {
-    mkdir -p ${SHELL_DIR}/conf
+    IDX=0
+    while read VAL; do
+        IDX=$(( ${IDX} + 1 ))
+        printf "%3s. %s\n" "$IDX" "$VAL";
+    done < ${LIST}
 
-    CONFIG=${SHELL_DIR}/conf/$(basename $0)
-    if [ -f ${CONFIG} ]; then
-        . ${CONFIG}
+    CNT=$(cat ${LIST} | wc -l | xargs)
+
+    echo
+    _read "Please select one. (1-${CNT}) : "
+    echo
+
+    SELECTED=
+    if [ -z ${ANSWER} ]; then
+        _error
+    fi
+    TEST='^[0-9]+$'
+    if ! [[ ${ANSWER} =~ ${TEST} ]]; then
+        _error
+    fi
+    SELECTED=$(sed -n ${ANSWER}p ${LIST})
+    if [ -z ${SELECTED} ]; then
+        _error
     fi
 }
 
-directory() {
+################################################################################
+
+home_dir() {
     if [ -z ${HOME_DIR} ] || [ ! -d ${HOME_DIR} ]; then
         pushd ~
         DEFAULT="$(pwd)/work/src"
@@ -91,54 +116,28 @@ directory() {
         _error "[${HOME_DIR}] is not directory."
     fi
 
-    echo "HOME_DIR=${HOME_DIR}" > "${CONFIG}"
+    echo "HOME_DIR=${HOME_DIR}" > ${CONFIG}
 }
 
 dir() {
-    if [ ! -z ${DIR} ]; then
-        return
-    fi
+    LIST=/tmp/cdw.tmp
 
-    TEMP=/tmp/cdw.tmp
+    find ${HOME_DIR} -maxdepth 2 -type d -exec ls -d "{}" \; | sort > ${LIST}
 
-    find ${HOME_DIR} -maxdepth 2 -type d -exec ls -d "{}" \; | sort > ${TEMP}
+    _select_one
 
-    COUNT=$(wc -l ${TEMP} | xargs)
-
-    if [ "x${COUNT}" == "x0" ]; then
-        _error "[${HOME_DIR}] is empty."
-    fi
-
-    echo "================================================================================"
-
-    IDX=0
-    while read VAL; do
-        IDX=$(( ${IDX} + 1 ))
-        printf "%3s. %s\n" "$IDX" "$VAL";
-    done < ${TEMP}
-
-    echo "================================================================================"
-}
-
-vscode() {
-    if [ -z ${DIR} ]; then
-        _read "Choose directory [1-${IDX}]: "
-
-        if [ -z ${ANSWER} ]; then
-            _error
-        fi
-        TEST='^[0-9]+$'
-        if ! [[ ${ANSWER} =~ ${TEST} ]]; then
-            _error "[${ANSWER}] is not a number."
-        fi
-
-        DIR=$(sed -n ${ANSWER}p ${TEMP})
-    fi
-
-    if [ -z ${DIR} ] || [ ! -d ${DIR} ]; then
+    if [ -z ${SELECTED} ] || [ ! -d ${SELECTED} ]; then
         _error
     fi
 
+    DIR="${SELECTED}"
+
+    printf "${DIR}" > /tmp/cdw.result
+
+    _result "${DIR}"
+}
+
+code() {
     if [ "${OS_NAME}" == "linux" ]; then
         /usr/bin/code ${DIR}
     elif [ "${OS_NAME}" == "darwin" ]; then
@@ -152,10 +151,8 @@ vscode() {
 
 ################################################################################
 
-prepare
-
-directory
+home_dir
 
 dir
 
-vscode
+code

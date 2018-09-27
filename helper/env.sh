@@ -1,9 +1,14 @@
 #!/bin/bash
 
-SHELL_DIR="${HOME}/.helper"
-mkdir -p ${SHELL_DIR}
+OS_NAME="$(uname | awk '{print tolower($0)}')"
 
 HOME_DIR=
+
+CONFIG_DIR="${HOME}/.helper/conf"
+mkdir -p ${CONFIG_DIR}
+
+CONFIG="${CONFIG_DIR}/$(basename $0)"
+touch ${CONFIG} && . ${CONFIG}
 
 _NAME=$1
 _REGION=${2:-ap-northeast-2}
@@ -81,6 +86,7 @@ _select_one() {
 
     echo
     _read "Please select one. (1-${CNT}) : "
+    echo
 
     SELECTED=
     if [ -z ${ANSWER} ]; then
@@ -98,19 +104,10 @@ _select_one() {
 
 ################################################################################
 
-prepare() {
-    mkdir -p ${SHELL_DIR}/conf
-
-    CONFIG=${SHELL_DIR}/conf/$(basename $0)
-    if [ -f ${CONFIG} ]; then
-        . ${CONFIG}
-    fi
-}
-
-directory() {
+home_dir() {
     if [ -z ${HOME_DIR} ] || [ ! -d ${HOME_DIR} ]; then
         pushd ~
-        DEFAULT="$(pwd)/work/src/github.com/${USER:-$(whoami)}/keys/credentials"
+        DEFAULT="$(pwd)/work/src/github.com/${USER:-nalbam}/keys/credentials"
         popd
 
         _read "Please input credentials directory. [${DEFAULT}]: "
@@ -121,11 +118,11 @@ directory() {
         _error "[${HOME_DIR}] is not directory."
     fi
 
-    echo "HOME_DIR=${HOME_DIR}" > "${CONFIG}"
+    echo "HOME_DIR=${HOME_DIR}" > ${CONFIG}
 }
 
 deploy() {
-    LIST=/tmp/toaster-env-ls
+    LIST=/tmp/toaster-helper-env-ls
 
     if [ -z ${_NAME} ]; then
         ls ${HOME_DIR} > ${LIST}
@@ -162,8 +159,6 @@ deploy() {
 
 ################################################################################
 
-prepare
-
-directory
+home_dir
 
 deploy

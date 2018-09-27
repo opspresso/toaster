@@ -1,8 +1,5 @@
 #!/bin/bash
 
-SHELL_DIR="${HOME}/.helper"
-mkdir -p ${SHELL_DIR}
-
 APP=$(echo "$1" | sed -e "s/\///g")
 CMD=$2
 MSG=$3

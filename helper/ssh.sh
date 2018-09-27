@@ -1,9 +1,14 @@
 #!/bin/bash
 
-SHELL_DIR="${HOME}/.helper"
-mkdir -p ${SHELL_DIR}
+OS_NAME="$(uname | awk '{print tolower($0)}')"
 
 HOME_DIR=
+
+CONFIG_DIR="${HOME}/.helper/conf"
+mkdir -p ${CONFIG_DIR}
+
+CONFIG="${CONFIG_DIR}/$(basename $0)"
+touch ${CONFIG} && . ${CONFIG}
 
 _PEM=${1:-$USER}
 _HOST=${2}
@@ -71,19 +76,10 @@ usage() {
 
 ################################################################################
 
-prepare() {
-    mkdir -p ${SHELL_DIR}/conf
-
-    CONFIG=${SHELL_DIR}/conf/$(basename $0)
-    if [ -f ${CONFIG} ]; then
-        . ${CONFIG}
-    fi
-}
-
-directory() {
+home_dir() {
     if [ -z ${HOME_DIR} ] || [ ! -d ${HOME_DIR} ]; then
         pushd ~
-        DEFAULT="$(pwd)/work/src/github.com/${USER:-$(whoami)}/keys/pem"
+        DEFAULT="$(pwd)/work/src/github.com/${USER:-nalbam}/keys/pem"
         popd
 
         _read "Please input pem directory. [${DEFAULT}]: "
@@ -94,9 +90,9 @@ directory() {
         _error "[${HOME_DIR}] is not directory."
     fi
 
-    chmod 600 ${HOME_DIR}/*.pem
+    echo "HOME_DIR=${HOME_DIR}" > ${CONFIG}
 
-    echo "HOME_DIR=${HOME_DIR}" > "${CONFIG}"
+    chmod 600 ${HOME_DIR}/*.pem
 
     echo "Host * " > ~/.ssh/config
     echo "    StrictHostKeyChecking no " >> ~/.ssh/config
@@ -122,8 +118,6 @@ connect() {
 
 ################################################################################
 
-prepare
-
-directory
+home_dir
 
 connect
