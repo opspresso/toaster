@@ -120,6 +120,10 @@ home_dir() {
 }
 
 dir() {
+    if [ ! -z ${DIR} ]; then
+        return
+    fi
+
     LIST=/tmp/cdw.tmp
 
     find ${HOME_DIR} -maxdepth 2 -type d -exec ls -d "{}" \; | sort > ${LIST}
