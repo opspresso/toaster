@@ -54,21 +54,21 @@ elif [ "${OS_NAME}" == "darwin" ]; then
     OS_TYPE="brew"
 fi
 
-echo "${OS_FULL}"
-echo "${DATE}"
+_result "${OS_FULL}"
+_result "${DATE}"
 
 if [ "${OS_TYPE}" == "" ]; then
     _error "Not supported OS. [${OS_NAME}]"
 fi
 
+# brew for mac
 if [ "${OS_TYPE}" == "brew" ]; then
-    # brew for mac
     command -v brew > /dev/null || ruby -e "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install)"
-else
-    # for ubuntu
-    if [ "${OS_TYPE}" == "apt" ]; then
-        export LC_ALL=C
-    fi
+fi
+
+# for ubuntu
+if [ "${OS_TYPE}" == "apt" ]; then
+    export LC_ALL=C
 fi
 
 # version
@@ -87,7 +87,6 @@ HEPTIO=
 GUARD=
 
 CONFIG=~/.tools
-
 touch ${CONFIG} && . ${CONFIG}
 
 # update
@@ -98,14 +97,12 @@ if [ "${OS_TYPE}" == "apt" ]; then
     sudo apt update && sudo apt upgrade -y
     command -v jq > /dev/null || sudo apt install -y jq
     command -v git > /dev/null || sudo apt install -y git
-    command -v apachectl > /dev/null || sudo apt install -y apache2
     command -v docker > /dev/null || sudo apt install -y docker
     command -v pip > /dev/null || sudo apt install -y python-pip
 elif [ "${OS_TYPE}" == "yum" ]; then
     sudo yum update -y
     command -v jq > /dev/null || sudo yum install -y jq
     command -v git > /dev/null || sudo yum install -y git
-    command -v httpd > /dev/null || sudo yum install -y httpd
     command -v docker > /dev/null || sudo yum install -y docker
     command -v pip > /dev/null || sudo yum install -y python-pip
 elif [ "${OS_TYPE}" == "brew" ]; then
