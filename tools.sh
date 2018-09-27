@@ -2,6 +2,26 @@
 
 # curl -sL toast.sh/tools | bash
 
+# version
+DATE=
+KUBECTL=
+KOPS=
+HELM=
+DRAFT=
+ISTIOCTL=
+JENKINSX=
+TERRAFORM=
+NODE=
+JAVA=
+MAVEN=
+HEPTIO=
+GUARD=
+
+CONFIG=~/.tools
+touch ${CONFIG} && . ${CONFIG}
+
+################################################################################
+
 command -v tput > /dev/null || TPUT=false
 
 _echo() {
@@ -71,24 +91,6 @@ if [ "${OS_TYPE}" == "apt" ]; then
     export LC_ALL=C
 fi
 
-# version
-DATE=
-KUBECTL=
-KOPS=
-HELM=
-DRAFT=
-ISTIOCTL=
-JENKINSX=
-TERRAFORM=
-NODE=
-JAVA=
-MAVEN=
-HEPTIO=
-GUARD=
-
-CONFIG=~/.tools
-touch ${CONFIG} && . ${CONFIG}
-
 # update
 echo "================================================================================"
 _result "update..."
@@ -137,7 +139,7 @@ if [ "${OS_TYPE}" == "brew" ]; then
 else
     VERSION=$(curl -s https://storage.googleapis.com/kubernetes-release/release/stable.txt)
 
-    if [ "${KUBECTL}" != "${VERSION}" ]; then
+    if [ "${KUBECTL}" != "${VERSION}" ] || [ "$(command -v kubectl)" == "" ]; then
         _result " ${KUBECTL} >> ${VERSION}"
 
         curl -LO https://storage.googleapis.com/kubernetes-release/release/${VERSION}/bin/${OS_NAME}/amd64/kubectl
@@ -158,7 +160,7 @@ if [ "${OS_TYPE}" == "brew" ]; then
 else
     VERSION=$(curl -s https://api.github.com/repos/kubernetes/kops/releases/latest | jq -r '.tag_name')
 
-    if [ "${KOPS}" != "${VERSION}" ]; then
+    if [ "${KOPS}" != "${VERSION}" ] || [ "$(command -v kops)" == "" ]; then
         _result " ${KOPS} >> ${VERSION}"
 
         curl -LO https://github.com/kubernetes/kops/releases/download/${VERSION}/kops-${OS_NAME}-amd64
@@ -179,7 +181,7 @@ if [ "${OS_TYPE}" == "brew" ]; then
 else
     VERSION=$(curl -s https://api.github.com/repos/helm/helm/releases/latest | jq -r '.tag_name')
 
-    if [ "${HELM}" != "${VERSION}" ]; then
+    if [ "${HELM}" != "${VERSION}" ] || [ "$(command -v helm)" == "" ]; then
         _result " ${HELM} >> ${VERSION}"
 
         curl -L https://storage.googleapis.com/kubernetes-helm/helm-${VERSION}-${OS_NAME}-amd64.tar.gz | tar xz
@@ -200,7 +202,7 @@ _result "install draft..."
 #else
     VERSION=$(curl -s https://api.github.com/repos/Azure/draft/releases/latest | jq -r '.tag_name')
 
-    if [ "${DRAFT}" != "${VERSION}" ]; then
+    if [ "${DRAFT}" != "${VERSION}" ] || [ "$(command -v draft)" == "" ]; then
         _result " ${DRAFT} >> ${VERSION}"
 
         curl -L https://azuredraft.blob.core.windows.net/draft/draft-${VERSION}-${OS_NAME}-amd64.tar.gz | tar xz
@@ -221,7 +223,7 @@ _result "install istioctl..."
 # else
     VERSION=$(curl -s https://api.github.com/repos/istio/istio/releases/latest | jq -r '.tag_name')
 
-    if [ "${ISTIOCTL}" != "${VERSION}" ]; then
+    if [ "${ISTIOCTL}" != "${VERSION}" ] || [ "$(command -v istioctl)" == "" ]; then
         _result " ${ISTIOCTL} >> ${VERSION}"
 
         if [ "${OS_NAME}" == "darwin" ]; then
@@ -268,7 +270,7 @@ if [ "${OS_TYPE}" == "brew" ]; then
 else
     VERSION=$(curl -s https://api.github.com/repos/hashicorp/terraform/releases/latest | jq -r '.tag_name' | cut -c 2-)
 
-    if [ "${TERRAFORM}" != "${VERSION}" ]; then
+    if [ "${TERRAFORM}" != "${VERSION}" ] || [ "$(command -v terraform)" == "" ]; then
         _result " ${TERRAFORM} >> ${VERSION}"
 
         curl -LO https://releases.hashicorp.com/terraform/${VERSION}/terraform_${VERSION}_${OS_NAME}_amd64.zip
@@ -358,7 +360,7 @@ _result "install heptio..."
 
 VERSION=1.10.3
 
-if [ "${HEPTIO}" != "${VERSION}" ]; then
+if [ "${HEPTIO}" != "${VERSION}" ] || [ "$(command -v heptio-authenticator-aws)" == "" ]; then
     _result " ${HEPTIO} >> ${VERSION}"
 
     curl -LO https://amazon-eks.s3-us-west-2.amazonaws.com/${VERSION}/2018-06-05/bin/${OS_NAME}/amd64/heptio-authenticator-aws
@@ -376,7 +378,7 @@ _result "install guard..."
 # VERSION=$(curl -s https://api.github.com/repos/appscode/guard/releases/latest | jq -r '.tag_name')
 VERSION=0.1.4
 
-if [ "${GUARD}" != "${VERSION}" ]; then
+if [ "${GUARD}" != "${VERSION}" ] || [ "$(command -v guard)" == "" ]; then
     _result " ${GUARD} >> ${VERSION}"
 
     curl -LO https://github.com/appscode/guard/releases/download/${VERSION}/guard-${OS_NAME}-amd64
