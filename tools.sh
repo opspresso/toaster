@@ -401,19 +401,21 @@ fi
 
 echo "================================================================================"
 
-echo "# bastion" > ${CONFIG}
-echo "DATE=\"${DATE}\"" >> ${CONFIG}
-echo "KUBECTL=\"${KUBECTL}\"" >> ${CONFIG}
-echo "KOPS=\"${KOPS}\"" >> ${CONFIG}
-echo "HELM=\"${HELM}\"" >> ${CONFIG}
-echo "DRAFT=\"${DRAFT}\"" >> ${CONFIG}
-echo "ISTIOCTL=\"${ISTIOCTL}\"" >> ${CONFIG}
-echo "JENKINSX=\"${JENKINSX}\"" >> ${CONFIG}
-echo "TERRAFORM=\"${TERRAFORM}\"" >> ${CONFIG}
-echo "NODE=\"${NODE}\"" >> ${CONFIG}
-echo "JAVA=\"${JAVA}\"" >> ${CONFIG}
-echo "MAVEN=\"${MAVEN}\"" >> ${CONFIG}
-echo "HEPTIO=\"${HEPTIO}\"" >> ${CONFIG}
-echo "GUARD=\"${GUARD}\"" >> ${CONFIG}
+cat << EOF > ${CONFIG}
+# version
+DATE="${DATE}"
+KUBECTL="${KUBECTL}"
+KOPS="${KOPS}"
+HELM="${HELM}"
+DRAFT="${DRAFT}"
+ISTIOCTL="${ISTIOCTL}"
+JENKINSX="${JENKINSX}"
+TERRAFORM="${TERRAFORM}"
+NODE="${NODE}"
+JAVA="${JAVA}"
+MAVEN="${MAVEN}"
+HEPTIO="${HEPTIO}"
+GUARD="${GUARD}"
+EOF
 
 _success "done."
