@@ -144,6 +144,14 @@ deploy() {
         usage
     fi
 
+    command -v aws > /dev/null || AWSCLI=false
+
+    if [ ! -z ${AWSCLI} ]; then
+        _error "Please install awscli."
+    fi
+
+    mkdir -p ~/.aws
+
     aws configure set default.region ${_REGION}
     aws configure set default.output ${_OUTPUT}
 
