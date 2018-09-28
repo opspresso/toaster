@@ -46,8 +46,11 @@ find ./** | grep [.]sh | xargs chmod 755
 
 # target/
 cp -rf install.sh target/install
-cp -rf toaster.sh target/dist/toaster
+cp -rf slack.sh target/slack
 cp -rf tools.sh target/tools
+
+# target/dist/
+cp -rf toaster.sh target/dist/toaster
 
 # version
 if [ "${OS_NAME}" == "linux" ]; then
