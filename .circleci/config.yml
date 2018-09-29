@@ -40,7 +40,8 @@ jobs:
           command: |
             VERSION=$(cat workspace/target/VERSION)
             go get github.com/tcnksm/ghr
-            ghr -t ${GITHUB_TOKEN} -u ${CIRCLE_PROJECT_USERNAME} -r ${CIRCLE_PROJECT_REPONAME} -c ${CIRCLE_SHA1} -delete ${VERSION} workspace/target/dist/
+            ghr -t ${GITHUB_TOKEN} -u ${CIRCLE_PROJECT_USERNAME} -r ${CIRCLE_PROJECT_REPONAME} \
+                -c ${CIRCLE_SHA1} -delete ${VERSION} workspace/target/dist/
   slack:
     docker:
       - image: circleci/python

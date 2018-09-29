@@ -237,8 +237,8 @@ git_clone() {
     _command "git secrets --register-aws"
     git secrets --register-aws
 
-    _command "git branch -v"
-    git branch -v
+    _command "git branch -v --no-pager"
+    git branch -v --no-pager
 }
 
 git_remote() {
@@ -301,13 +301,13 @@ git_branch() {
     _command "git checkout ${MSG}"
     git checkout ${MSG}
 
-    _command "git branch -v"
-    git branch -v
+    _command "git branch -v --no-pager"
+    git branch -v --no-pager
 }
 
 git_diff() {
-    _command "git branch -v"
-    git branch -v
+    _command "git branch -v --no-pager"
+    git branch -v --no-pager
 
     _command "git diff"
     git diff
@@ -329,37 +329,37 @@ git_commit() {
 }
 
 git_pull() {
-    _command "git branch -v"
-    git branch -v
+    _command "git branch -v --no-pager"
+    git branch -v --no-pager
 
     REMOTES="/tmp/${APP}-remote"
     git remote > ${REMOTES}
 
     _command "git pull origin ${BRANCH}"
-    git pull --no-edit origin ${BRANCH}
+    git pull origin ${BRANCH}
 
     while read REMOTE; do
         if [ "${REMOTE}" != "origin" ]; then
             _command "git pull ${REMOTE} ${BRANCH}"
-            git pull --no-edit ${REMOTE} ${BRANCH}
+            git pull ${REMOTE} ${BRANCH}
         fi
     done < ${REMOTES}
 }
 
 git_push() {
-    _command "git branch -v"
-    git branch -v
+    _command "git branch -v --no-pager"
+    git branch -v --no-pager
 
     _command "git push origin ${BRANCH}"
-    git push --no-edit origin ${BRANCH}
+    git push origin ${BRANCH}
 }
 
 git_tag() {
-    _command "git branch -v"
-    git branch -v
+    _command "git branch -v --no-pager"
+    git branch -v --no-pager
 
     _command "git pull"
-    git pull --no-edit
+    git pull
 
     _command "git tag"
     git tag
