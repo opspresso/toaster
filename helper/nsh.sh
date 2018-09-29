@@ -336,12 +336,12 @@ git_pull() {
     git remote > ${REMOTES}
 
     _command "git pull origin ${BRANCH}"
-    git pull origin ${BRANCH}
+    git pull -e origin ${BRANCH}
 
     while read REMOTE; do
         if [ "${REMOTE}" != "origin" ]; then
             _command "git pull ${REMOTE} ${BRANCH}"
-            git pull ${REMOTE} ${BRANCH}
+            git pull -e ${REMOTE} ${BRANCH}
         fi
     done < ${REMOTES}
 }
@@ -350,16 +350,16 @@ git_push() {
     _command "git branch -v"
     git branch -v
 
-    _command "git push -e origin ${BRANCH}"
-    git push origin ${BRANCH}
+    _command "git push origin ${BRANCH}"
+    git push -e origin ${BRANCH}
 }
 
 git_tag() {
     _command "git branch -v"
     git branch -v
 
-    _command "git pull -e"
-    git pull
+    _command "git pull"
+    git pull -e
 
     _command "git tag"
     git tag
