@@ -350,7 +350,7 @@ git_push() {
     _command "git branch -v"
     git branch -v
 
-    _command "git push origin ${BRANCH}"
+    _command "git push -e origin ${BRANCH}"
     git push origin ${BRANCH}
 }
 
@@ -358,7 +358,7 @@ git_tag() {
     _command "git branch -v"
     git branch -v
 
-    _command "git pull"
+    _command "git pull -e"
     git pull
 
     _command "git tag"
