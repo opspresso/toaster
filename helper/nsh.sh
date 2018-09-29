@@ -57,14 +57,13 @@ _error() {
 
 usage() {
     #figlet nsh
-    echo
     echo "            _ "
     echo "  _ __  ___| |__ "
     echo " | '_ \/ __| '_ \ "
     echo " | | | \__ \ | | | "
     echo " |_| |_|___/_| |_| "
     echo
-    echo " Usage: nsh.sh {name} {cl|b|t|d|c|pl|ph|pp|rm}"
+    echo "Usage: nsh.sh {name} {cl|b|t|d|c|pl|ph|pp|rm}"
     echo " [${NOW_DIR}]"
     echo " [${PROVIDER}][${GIT_URL}][${MY_ID}][${APP}]"
     echo

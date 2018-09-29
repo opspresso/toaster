@@ -56,18 +56,17 @@ usage() {
     LS=$(ls -m ${HOME_DIR})
 
     #figlet env
-    echo
     echo "   ___ _ ____   __ "
     echo "  / _ \ '_ \ \ / / "
     echo " |  __/ | | \ V / "
     echo "  \___|_| |_|\_/ "
     echo
-    echo " Usage: env.sh {NAME} {REGION} {OUTPUT}"
-    echo "  NAME  : ${LS}"
-    echo "  REGION: ap-northeast-2"
-    echo "  OUTPUT: json"
+    echo "Usage: env.sh {NAME} {REGION} {OUTPUT}"
+    echo " NAME  : ${LS}"
+    echo " REGION: ap-northeast-2"
+    echo " OUTPUT: json"
     echo
-    echo "  PATH  : ${HOME_DIR}"
+    echo "PATH: ${HOME_DIR}"
     echo
 
     exit 1

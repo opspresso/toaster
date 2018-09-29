@@ -56,19 +56,18 @@ usage() {
     LS=$(ls -m ${HOME_DIR})
 
     #figlet ssh
-    echo
     echo "          _ "
     echo "  ___ ___| |__ "
     echo " / __/ __| '_ \ "
     echo " \__ \__ \ | | | "
     echo " |___/___/_| |_| "
     echo
-    echo " Usage: ssh.sh {PEM} {HOST} {USER}"
-    echo "  NAME: ${LS}"
-    echo "  HOST: hostname"
-    echo "  USER: ec2-user"
+    echo "Usage: $0 {PEM} {HOST} {USER}"
+    echo " NAME: ${LS}"
+    echo " HOST: hostname"
+    echo " USER: ec2-user"
     echo
-    echo "  PATH: ${HOME_DIR}"
+    echo "PATH: ${HOME_DIR}"
     echo
 
     exit 1

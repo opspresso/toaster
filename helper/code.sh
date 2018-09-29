@@ -52,14 +52,13 @@ _error() {
 
 usage() {
     #figlet code
-    echo
     echo "                _ "
     echo "   ___ ___   __| | ___ "
     echo "  / __/ _ \ / _' |/ _ \ "
     echo " | (_| (_) | (_| |  __/ "
     echo "  \___\___/ \__,_|\___| "
     echo
-    echo "  PATH  : ${HOME_DIR}"
+    echo "PATH: ${HOME_DIR}"
     echo
 
     exit 1

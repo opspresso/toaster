@@ -52,14 +52,13 @@ _error() {
 
 usage() {
     #figlet cdw
-    echo
     echo "          _ "
     echo "   ___ __| |_      __ "
     echo "  / __/ _' \ \ /\ / / "
     echo " | (_| (_| |\ V  V / "
     echo "  \___\__,_| \_/\_/ "
     echo
-    echo "  PATH  : ${HOME_DIR}"
+    echo "PATH: ${HOME_DIR}"
     echo
 
     exit 1
