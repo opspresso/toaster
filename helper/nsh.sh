@@ -237,8 +237,8 @@ git_clone() {
     _command "git secrets --register-aws"
     git secrets --register-aws
 
-    _command "git branch -v --no-pager"
-    git branch -v --no-pager
+    _command "git branch -v"
+    git branch -v
 }
 
 git_remote() {
@@ -301,13 +301,13 @@ git_branch() {
     _command "git checkout ${MSG}"
     git checkout ${MSG}
 
-    _command "git branch -v --no-pager"
-    git branch -v --no-pager
+    _command "git branch -v"
+    git branch -v
 }
 
 git_diff() {
-    _command "git branch -v --no-pager"
-    git branch -v --no-pager
+    _command "git branch -v"
+    git branch -v
 
     _command "git diff"
     git diff
@@ -329,8 +329,8 @@ git_commit() {
 }
 
 git_pull() {
-    _command "git branch -v --no-pager"
-    git branch -v --no-pager
+    _command "git branch -v"
+    git branch -v
 
     REMOTES="/tmp/${APP}-remote"
     git remote > ${REMOTES}
@@ -347,16 +347,16 @@ git_pull() {
 }
 
 git_push() {
-    _command "git branch -v --no-pager"
-    git branch -v --no-pager
+    _command "git branch -v"
+    git branch -v
 
     _command "git push origin ${BRANCH}"
     git push origin ${BRANCH}
 }
 
 git_tag() {
-    _command "git branch -v --no-pager"
-    git branch -v --no-pager
+    _command "git branch -v"
+    git branch -v
 
     _command "git pull"
     git pull
