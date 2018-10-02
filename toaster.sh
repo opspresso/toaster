@@ -91,7 +91,7 @@ _toast() {
 }
 
 _update() {
-    _result "version: ${THIS_VERSION}"
+    _echo "# version: ${THIS_VERSION}" 3
     curl -sL toast.sh/install | bash
     exit 0
 }
