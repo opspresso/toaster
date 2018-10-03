@@ -53,8 +53,8 @@ jobs:
           command: |
             VERSION=$(cat workspace/target/VERSION)
             workspace/target/slack --token="${SLACK_TOKEN}" \
-                --color="good" --title="${CIRCLE_PROJECT_REPONAME} updated" \
-                --emoji=":construction_worker:" "\`${VERSION}\`"
+                --emoji=":construction_worker:" --username="toaster" \
+                --color="good" --title="toaster updated" "\`${VERSION}\`"
 
 workflows:
   version: 2
