@@ -5,7 +5,6 @@
 
 USERNAME=${1:-nalbam}
 REPONAME=${2:-toaster}
-SLACK_TOKEN=${3}
 
 rm -rf target
 mkdir -p target/dist
