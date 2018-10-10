@@ -33,20 +33,26 @@ _read() {
 }
 
 _result() {
+    echo
     _echo "# $@" 4
 }
 
 _command() {
+    echo
     _echo "$ $@" 3
 }
 
 _success() {
+    echo
     _echo "+ $@" 2
+    echo
     exit 0
 }
 
 _error() {
+    echo
     _echo "- $@" 1
+    echo
     exit 1
 }
 
