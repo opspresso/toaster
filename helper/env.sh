@@ -35,10 +35,12 @@ _read() {
 }
 
 _result() {
+    echo
     _echo "# $@" 4
 }
 
 _command() {
+    echo
     _echo "$ $@" 3
 }
 
@@ -89,7 +91,6 @@ _select_one() {
 
     echo
     _read "Please select one. (1-${CNT}) : "
-    echo
 
     SELECTED=
     if [ -z ${ANSWER} ]; then
