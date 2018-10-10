@@ -43,12 +43,16 @@ _command() {
 }
 
 _success() {
+    echo
     _echo "+ $@" 2
+    echo
     exit 0
 }
 
 _error() {
+    echo
     _echo "- $@" 1
+    echo
     exit 1
 }
 
