@@ -120,10 +120,6 @@ _package() {
 }
 
 _publish() {
-    if [ ! -f ${SHELL_DIR}/target/VERSION ]; then
-        exit 1
-    fi
-
     _command "aws s3 sync ${SHELL_DIR}/target/ s3://toast.sh/ --acl public-read"
     aws s3 sync ${SHELL_DIR}/target/ s3://toast.sh/ --acl public-read
 
@@ -135,10 +131,6 @@ _publish() {
 }
 
 _release() {
-    if [ ! -f ${SHELL_DIR}/target/VERSION ]; then
-        exit 1
-    fi
-
     VERSION=$(cat ${SHELL_DIR}/target/VERSION | xargs)
 
     _result "VERSION=${VERSION}"
