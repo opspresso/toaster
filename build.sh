@@ -47,7 +47,7 @@ _error() {
 _prepare() {
     # target
     mkdir -p ${SHELL_DIR}/target/dist
-    mkdir -p ${SHELL_DIR}/target/charts
+    mkdir -p ${SHELL_DIR}/target/helper
 
     # 755
     find ./** | grep [.]sh | xargs chmod 755
