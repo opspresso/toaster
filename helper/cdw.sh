@@ -12,6 +12,9 @@ touch ${CONFIG} && . ${CONFIG}
 
 DIR=$1
 
+LIST=/tmp/toaster-helper-cdw-list
+TEMP=/tmp/toaster-helper-cdw-result
+
 ################################################################################
 
 command -v tput > /dev/null || TPUT=false
@@ -100,6 +103,11 @@ _select_one() {
 
 ################################################################################
 
+prepare() {
+    rm -rf ${LIST}
+    rm -rf ${TEMP}
+}
+
 home_dir() {
     if [ -z ${HOME_DIR} ] || [ ! -d ${HOME_DIR} ]; then
         pushd ~
@@ -128,8 +136,6 @@ dir() {
         return
     fi
 
-    LIST=/tmp/cdw.tmp
-
     find ${HOME_DIR} -maxdepth 2 -type d -exec ls -d "{}" \; | sort > ${LIST}
 
     _select_one
@@ -140,12 +146,14 @@ dir() {
 
     DIR="${SELECTED}"
 
-    printf "${DIR}" > /tmp/cdw.result
+    printf "${DIR}" > ${TEMP}
 
     _success "${DIR}"
 }
 
 ################################################################################
+
+prepare
 
 home_dir
 

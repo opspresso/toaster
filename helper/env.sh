@@ -14,6 +14,8 @@ _NAME=$1
 _REGION=${2:-ap-northeast-2}
 _OUTPUT=${3:-json}
 
+LIST=/tmp/toaster-helper-env-ls
+
 ################################################################################
 
 command -v tput > /dev/null || TPUT=false
@@ -108,6 +110,10 @@ _select_one() {
 
 ################################################################################
 
+prepare() {
+    rm -rf ${LIST}
+}
+
 home_dir() {
     if [ -z ${HOME_DIR} ] || [ ! -d ${HOME_DIR} ]; then
         pushd ~
@@ -126,8 +132,6 @@ home_dir() {
 }
 
 deploy() {
-    LIST=/tmp/toaster-helper-env-ls
-
     if [ -z ${_NAME} ]; then
         ls ${HOME_DIR} > ${LIST}
 
@@ -162,6 +166,8 @@ deploy() {
 }
 
 ################################################################################
+
+prepare
 
 home_dir
 

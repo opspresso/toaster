@@ -31,7 +31,7 @@ alias p="reveal-md -w --port 8888 --theme https://raw.githubusercontent.com/nalb
 
 c() {
     ~/.helper/cdw.sh ${1}
-    if [ -f /tmp/cdw.result ]; then
-        cd $(cat /tmp/cdw.result)
+    if [ -f /tmp/toaster-helper-cdw-result ]; then
+        cd $(cat /tmp/toaster-helper-cdw-result)
     fi
 }
