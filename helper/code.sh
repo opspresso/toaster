@@ -84,20 +84,16 @@ _select_one() {
 
     echo
     _read "Please select one. (1-${CNT}) : "
-    echo
 
     SELECTED=
     if [ -z ${ANSWER} ]; then
-        _error
+        return
     fi
     TEST='^[0-9]+$'
     if ! [[ ${ANSWER} =~ ${TEST} ]]; then
-        _error
+        return
     fi
     SELECTED=$(sed -n ${ANSWER}p ${LIST})
-    if [ -z ${SELECTED} ]; then
-        _error
-    fi
 }
 
 ################################################################################
