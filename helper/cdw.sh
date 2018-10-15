@@ -5,10 +5,8 @@ OS_NAME="$(uname | awk '{print tolower($0)}')"
 HOME_DIR=
 
 CONFIG_DIR="${HOME}/.helper/conf"
-mkdir -p ${CONFIG_DIR}
 
 CONFIG="${CONFIG_DIR}/$(basename $0)"
-touch ${CONFIG} && . ${CONFIG}
 
 DIR=$1
 
@@ -104,6 +102,10 @@ _select_one() {
 ################################################################################
 
 prepare() {
+    mkdir -p ${CONFIG_DIR}
+
+    touch ${CONFIG} && . ${CONFIG}
+
     rm -rf ${LIST}
     rm -rf ${TEMP}
 }
@@ -114,6 +116,7 @@ home_dir() {
         DEFAULT="$(pwd)/work/src"
         popd
 
+        echo
         _read "Please input base directory. [${DEFAULT}]: "
         HOME_DIR=${ANSWER:-${DEFAULT}}
     fi

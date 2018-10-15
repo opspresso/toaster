@@ -5,16 +5,14 @@ OS_NAME="$(uname | awk '{print tolower($0)}')"
 HOME_DIR=
 
 CONFIG_DIR="${HOME}/.helper/conf"
-mkdir -p ${CONFIG_DIR}
 
 CONFIG="${CONFIG_DIR}/$(basename $0)"
-touch ${CONFIG} && . ${CONFIG}
 
 _NAME=$1
 _REGION=${2:-ap-northeast-2}
 _OUTPUT=${3:-json}
 
-LIST=/tmp/toaster-helper-env-ls
+LIST=/tmp/toaster-helper-env-list
 
 ################################################################################
 
@@ -111,6 +109,10 @@ _select_one() {
 ################################################################################
 
 prepare() {
+    mkdir -p ${CONFIG_DIR}
+
+    touch ${CONFIG} && . ${CONFIG}
+
     rm -rf ${LIST}
 }
 
@@ -120,6 +122,7 @@ home_dir() {
         DEFAULT="$(pwd)/work/src/github.com/${USER:-nalbam}/keys/credentials"
         popd
 
+        echo
         _read "Please input credentials directory. [${DEFAULT}]: "
         HOME_DIR=${ANSWER:-${DEFAULT}}
     fi
