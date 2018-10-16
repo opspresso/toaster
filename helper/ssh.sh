@@ -143,19 +143,21 @@ connect() {
     FROM_HISTORY=
 
     # history
-    if [ -f ${HISTORY} ]; then
-        cat ${HISTORY} | sort > ${LIST}
+    if [ -z ${_PEM} ] && [ -z ${_HOST} ] && [ -z ${_USER} ]; then
+        if [ -f ${HISTORY} ]; then
+            cat ${HISTORY} | sort > ${LIST}
 
-        _select_one
+            _select_one
 
-        if [ "${SELECTED}" != "" ]; then
-            ARR=(${SELECTED})
+            if [ "${SELECTED}" != "" ]; then
+                ARR=(${SELECTED})
 
-            _PEM=${ARR[0]}
-            _HOST=${ARR[1]}
-            _USER=${ARR[2]}
+                _PEM=${ARR[0]}
+                _HOST=${ARR[1]}
+                _USER=${ARR[2]}
 
-            FROM_HISTORY=true
+                FROM_HISTORY=true
+            fi
         fi
     fi
 
