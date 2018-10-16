@@ -144,7 +144,7 @@ connect() {
 
     # history
     if [ -f ${HISTORY} ]; then
-        cat ${HISTORY} > ${LIST}
+        cat ${HISTORY} | sort > ${LIST}
 
         _select_one
 
