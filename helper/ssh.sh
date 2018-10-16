@@ -208,7 +208,11 @@ connect() {
     fi
 
     if [ -z ${FROM_HISTORY} ]; then
-        echo "${_PEM} ${_HOST} ${_USER}" >> ${HISTORY}
+        COUNT=$(cat ${HISTORY} | grep "${_PEM} ${_HOST} ${_USER}" | wc -l | xargs)
+
+        if [ "x${COUNT}" == "x0" ]; then
+            echo "${_PEM} ${_HOST} ${_USER}" >> ${HISTORY}
+        fi
     fi
 
     _command "ssh -i ${HOME_DIR}/${_PEM} ${_USER}@${_HOST}"
