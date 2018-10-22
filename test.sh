@@ -1,33 +1,22 @@
 #!/bin/bash
 
-# filename: commandLine.sh
-# author: @theBuzzyCoder
+NAME=
+VERSION=
+NEMESPACE=
 
-showHelp() {
-# `cat << EOF` This means that cat should stop reading when EOF is detected
-cat << EOF
-Usage: `basename $0` -v <version> [-hrV]
+CHARTMUSEUM=
 
-Install Pre-requisites for EspoCRM with docker in Development mode
-
--h, -help,    --help          Display help
--v, -version, --version       Set and Download specific version of EspoCRM
--r, -rebuild, --rebuild       Rebuild php vendor directory using composer and compiled css using grunt
--V, -verbose, --verbose       Run script in verbose mode. Will print out each step of execution.
-EOF
-# EOF is found above and hence cat command stops reading. This is equivalent to echo but much neater when printing out.
-}
-
-export version=0
-export verbose=0
-export rebuild=0
+FORCE=
+DELETE=
+REMOTE=
+VERVOSE=
 
 # $@ is all command line parameters passed to the script.
 # -o is for short options like -v
 # -l is for long options with double dash like --version
 # the comma separates different long options
 # -a is for long options with single dash like -version
-options=$(getopt -l "help,version:,verbose,rebuild,dryrun" -o "hv:Vrd" -a -- "$@")
+options=$(getopt -l "name:,version:,namespace:,chartmuseum:,force,delete,remote,verbose" -o "n:v:N:C:fdrV" -a -- "$@")
 
 # set --:
 # If no arguments follow this option, then the positional parameters are unset. Otherwise, the positional parameters
@@ -36,28 +25,54 @@ eval set -- "$options"
 
 while true; do
     case $1 in
-    -h|--help)
-        showHelp
-        exit 0
+    -n|--name)
+        shift
+        export NAME=$1
         ;;
     -v|--version)
         shift
-        export version=$1
+        export VERSION=$1
+        ;;
+    -N|--namespace)
+        shift
+        export NEMESPACE=$1
+        ;;
+    -C|--chartmuseum)
+        shift
+        export CHARTMUSEUM=$1
+        ;;
+    -f|--force)
+        export FORCE=1
+        ;;
+    -d|--delete)
+        export DELETE=1
+        ;;
+    -r|--remote)
+        export REMOTE=1
         ;;
     -V|--verbose)
-        export verbose=1
+        export VERVOSE=1
         set -xv  # Set xtrace and verbose mode.
-        ;;
-    -r|--rebuild)
-        export rebuild=1
         ;;
     --)
         shift
-        break;;
+        break
+        ;;
     esac
     shift
 done
 
-echo "version=${version}"
-echo "verbose=${verbose}"
-echo "rebuild=${rebuild}"
+echo "NAME=${NAME}"
+echo "VERSION=${VERSION}"
+echo "NEMESPACE=${NEMESPACE}"
+echo "CHARTMUSEUM=${CHARTMUSEUM}"
+echo "FORCE=${FORCE}"
+echo "DELETE=${DELETE}"
+echo "REMOTE=${REMOTE}"
+echo "VERVOSE=${VERVOSE}"
+
+echo "0=${0}"
+echo "1=${1}"
+echo "2=${2}"
+echo "3=${3}"
+echo "4=${4}"
