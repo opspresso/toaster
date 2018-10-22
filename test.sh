@@ -6,14 +6,14 @@
 showHelp() {
 # `cat << EOF` This means that cat should stop reading when EOF is detected
 cat << EOF
-Usage: `basename $0` -v <espo-version> [-hrV]
+Usage: `basename $0` -v <version> [-hrV]
 
 Install Pre-requisites for EspoCRM with docker in Development mode
 
--h, -help,          --help                  Display help
--v, -espo-version,  --espo-version          Set and Download specific version of EspoCRM
--r, -rebuild,       --rebuild               Rebuild php vendor directory using composer and compiled css using grunt
--V, -verbose,       --verbose               Run script in verbose mode. Will print out each step of execution.
+-h, -help,    --help          Display help
+-v, -version, --version       Set and Download specific version of EspoCRM
+-r, -rebuild, --rebuild       Rebuild php vendor directory using composer and compiled css using grunt
+-V, -verbose, --verbose       Run script in verbose mode. Will print out each step of execution.
 EOF
 # EOF is found above and hence cat command stops reading. This is equivalent to echo but much neater when printing out.
 }
