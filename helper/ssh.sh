@@ -70,7 +70,7 @@ usage() {
     echo " \__ \__ \ | | | "
     echo " |___/___/_| |_| "
     echo
-    echo "Usage: $0 {PEM} {HOST} {USER}"
+    echo "Usage: `basename $0` {PEM} {HOST} {USER}"
     echo " NAME: ${LS}"
     echo " HOST: hostname"
     echo " USER: ec2-user"

@@ -67,7 +67,7 @@ usage() {
     echo " |  __/ | | \ V / "
     echo "  \___|_| |_|\_/ "
     echo
-    echo "Usage: env.sh {NAME} {REGION} {OUTPUT}"
+    echo "Usage: `basename $0` {NAME} {REGION} {OUTPUT}"
     echo " NAME  : ${LS}"
     echo " REGION: ap-northeast-2"
     echo " OUTPUT: json"

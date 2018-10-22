@@ -64,7 +64,7 @@ _logo() {
 
 _usage() {
     _logo
-    _echo " Usage: $0 {update|bastion|helper|draft|version} "
+    _echo " Usage: `basename $0` {update|bastion|helper|draft|version} "
     _bar
     _error
 }

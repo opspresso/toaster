@@ -63,7 +63,7 @@ usage() {
     echo " | | | \__ \ | | | "
     echo " |_| |_|___/_| |_| "
     echo
-    echo "Usage: nsh.sh {name} {cl|b|t|d|c|pl|ph|pp|rm}"
+    echo "Usage: `basename $0` {name} {cl|b|t|d|c|pl|ph|pp|rm}"
     echo " [${NOW_DIR}]"
     echo " [${PROVIDER}][${GIT_URL}][${MY_ID}][${APP}]"
     echo
