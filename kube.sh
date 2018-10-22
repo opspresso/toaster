@@ -61,7 +61,7 @@ elif [ "${OS_NAME}" == "darwin" ]; then
     OS_TYPE="brew"
 fi
 
-_result "${OS_FULL}"
+_result "${OS_NAME} [${OS_TYPE}]"
 _result "${DATE}"
 
 if [ "${OS_TYPE}" == "" ]; then
@@ -100,9 +100,7 @@ elif [ "${OS_TYPE}" == "brew" ]; then
     GETOPT=$(getopt 2>&1 | head -1 | xargs)
     if [ "${GETOPT}" == "--" ]; then
         brew install gnu-getopt
-        GETOPT=$(brew link --force gnu-getopt 2>&1 | tail -1)
-        $(${GETOPT})
-        . $(echo $GETOPT | cut -d'>' -f3)
+        brew link --force gnu-getopt
     fi
 fi
 
