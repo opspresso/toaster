@@ -145,6 +145,8 @@ connect() {
     # history
     if [ -z ${_PEM} ] && [ -z ${_HOST} ] && [ -z ${_USER} ]; then
         if [ -f ${HISTORY} ]; then
+            _result "${HISTORY}"
+
             cat ${HISTORY} | sort > ${LIST}
 
             _select_one
