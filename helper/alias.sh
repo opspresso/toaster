@@ -12,9 +12,11 @@ alias tu="t update"
 alias th="t helper"
 alias tt="t tools"
 
-alias tm="tmux"
-
 alias vc="valve"
+
+alias tm="tmux"
+alias tmb='tmux new-session -d && tmux split-window -h && tmux split-window -v && tmux select-pane -L && tmux split-window -v && tmux select-pane -U && tmux attach-session -d'
+alias tms='tmux new-session -d && tmux split-window -v && tmux split-window -v && tmux select-pane -U && tmux select-pane -U && tmux split-window -v && tmux select-pane -U && tmux attach-session -d'
 
 alias tf="terraform"
 alias tfp="tf init && tf plan"
@@ -24,12 +26,7 @@ alias tfg="tf graph"
 alias tfo="tf output"
 alias tfc="rm -rf .terraform && tf init"
 
-alias vg="vagrant"
-alias vgu="vg up"
-alias vgh="vg halt"
-alias vgd="vg destroy"
-
-alias p="reveal-md -w --port 8888 --theme https://raw.githubusercontent.com/nalbam/docs/master/.theme/black.css"
+# alias p="reveal-md -w --port 8888 --theme https://raw.githubusercontent.com/nalbam/docs/master/.theme/black.css"
 
 c() {
     ~/.helper/cdw.sh ${1}
