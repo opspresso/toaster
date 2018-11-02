@@ -12,6 +12,8 @@ alias tu="t update"
 alias th="t helper"
 alias tt="t tools"
 
+alias tm="tmux"
+
 alias vc="valve"
 
 alias tf="terraform"
