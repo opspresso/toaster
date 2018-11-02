@@ -99,18 +99,21 @@ if [ "${OS_TYPE}" == "apt" ]; then
     sudo apt update && sudo apt upgrade -y
     command -v jq > /dev/null || sudo apt install -y jq
     command -v git > /dev/null || sudo apt install -y git
+    command -v tmux > /dev/null || sudo apt install -y tmux
     command -v pip > /dev/null || sudo apt install -y python-pip
     command -v ab > /dev/null || sudo apt install -y apache2-utils
 elif [ "${OS_TYPE}" == "yum" ]; then
     sudo yum update -y
     command -v jq > /dev/null || sudo yum install -y jq
     command -v git > /dev/null || sudo yum install -y git
+    command -v tmux > /dev/null || sudo yum install -y tmux
     command -v pip > /dev/null || sudo yum install -y python-pip
     command -v ab > /dev/null || sudo yum install -y httpd-tools
 elif [ "${OS_TYPE}" == "brew" ]; then
     brew update && brew upgrade
     command -v jq > /dev/null || brew install jq
     command -v git > /dev/null || brew install git
+    command -v tmux > /dev/null || brew install tmux
     # getopt
     GETOPT=$(getopt 2>&1 | head -1 | xargs)
     if [ "${GETOPT}" == "--" ]; then
