@@ -28,6 +28,9 @@ alias tfc="rm -rf .terraform && tf init"
 
 # alias p="reveal-md -w --port 8888 --theme https://raw.githubusercontent.com/nalbam/docs/master/.theme/black.css"
 
+export GOPATH=$HOME/work
+export PATH=$PATH:$GOPATH/bin
+
 c() {
     ~/.helper/cdw.sh ${1}
     if [ -f /tmp/toaster-helper-cdw-result ]; then
