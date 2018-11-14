@@ -16,12 +16,12 @@ VERVOSE=
 # -l is for long options with double dash like --version
 # the comma separates different long options
 # -a is for long options with single dash like -version
-options=$(getopt -l "version:,namespace:,chartmuseum:,force,delete,remote,verbose" -o "v:n:c:fdrV" -a -- "$@")
+OPTIONS=$(getopt -l "version:,namespace:,chartmuseum:,force,delete,remote,verbose" -o "v:n:c:fdrV" -a -- "$@")
 
 # set --:
 # If no arguments follow this option, then the positional parameters are unset. Otherwise, the positional parameters
 # are set to the arguments, even if some of them begin with a ‘-’.
-eval set -- "$options"
+eval set -- "$OPTIONS"
 
 while true; do
     case $1 in
