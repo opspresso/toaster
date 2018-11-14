@@ -14,6 +14,9 @@ alias tt="t tools"
 
 alias vc="valve"
 
+alias kc="kubectl"
+alias hl="helm"
+
 alias tm="tmux"
 alias tmb='tmux new-session -d && tmux split-window -h && tmux split-window -v && tmux select-pane -L && tmux split-window -v && tmux select-pane -U && tmux attach-session -d'
 alias tms='tmux new-session -d && tmux split-window -v && tmux split-window -v && tmux select-pane -U && tmux select-pane -U && tmux split-window -v && tmux select-pane -U && tmux attach-session -d'
