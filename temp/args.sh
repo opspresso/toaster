@@ -16,7 +16,7 @@ VERVOSE=
 # -l is for long options with double dash like --version
 # the comma separates different long options
 # -a is for long options with single dash like -version
-options=$(getopt -l "name:,version:,namespace:,chartmuseum:,force,delete,remote,verbose" -o "n:v:N:C:fdrV" -a -- "$@")
+options=$(getopt -l "version:,namespace:,chartmuseum:,force,delete,remote,verbose" -o "v:n:c:fdrV" -a -- "$@")
 
 # set --:
 # If no arguments follow this option, then the positional parameters are unset. Otherwise, the positional parameters
@@ -25,19 +25,15 @@ eval set -- "$options"
 
 while true; do
     case $1 in
-    -n|--name)
-        shift
-        export NAME=$1
-        ;;
     -v|--version)
         shift
         export VERSION=$1
         ;;
-    -N|--namespace)
+    -n|--namespace)
         shift
         export NEMESPACE=$1
         ;;
-    -C|--chartmuseum)
+    -c|--chartmuseum)
         shift
         export CHARTMUSEUM=$1
         ;;
@@ -62,7 +58,7 @@ while true; do
     shift
 done
 
-echo "NAME=${NAME}"
+echo "NAME=${1}"
 echo "VERSION=${VERSION}"
 echo "NEMESPACE=${NEMESPACE}"
 echo "CHARTMUSEUM=${CHARTMUSEUM}"
