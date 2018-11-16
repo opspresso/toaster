@@ -13,6 +13,3 @@ curl -sL toast.sh/install | bash
 ```bash
 toaster helper
 ```
-
-수정 1
-22222
