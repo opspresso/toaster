@@ -117,6 +117,7 @@ elif [ "${OS_TYPE}" == "brew" ]; then
     command -v git > /dev/null || brew install git
     command -v tmux > /dev/null || brew install tmux
     command -v direnv > /dev/null || brew install direnv
+    command -v md5sum > /dev/null || brew install md5sha1sum
     # getopt
     GETOPT=$(getopt 2>&1 | head -1 | xargs)
     if [ "${GETOPT}" == "--" ]; then
