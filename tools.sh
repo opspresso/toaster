@@ -367,17 +367,34 @@ fi
 
 mvn -version | grep "Apache Maven" | xargs | awk '{print $3}'
 
-# heptio
+# heptio-authenticator-aws
+# echo "================================================================================"
+# _result "install heptio-authenticator-aws..."
+
+# VERSION=1.10.3
+
+# if [ "${HEPTIO}" != "${VERSION}" ] || [ "$(command -v heptio-authenticator-aws)" == "" ]; then
+#     _result " ${HEPTIO} >> ${VERSION}"
+
+#     curl -LO https://amazon-eks.s3-us-west-2.amazonaws.com/${VERSION}/2018-06-05/bin/${OS_NAME}/amd64/heptio-authenticator-aws
+#     chmod +x heptio-authenticator-aws && sudo mv heptio-authenticator-aws /usr/local/bin/heptio-authenticator-aws
+
+#     HEPTIO="${VERSION}"
+# fi
+
+# echo "${VERSION}"
+
+# aws-iam-authenticator
 echo "================================================================================"
-_result "install heptio..."
+_result "install aws-iam-authenticator..."
 
-VERSION=1.10.3
+VERSION=0.3.0
 
-if [ "${HEPTIO}" != "${VERSION}" ] || [ "$(command -v heptio-authenticator-aws)" == "" ]; then
+if [ "${HEPTIO}" != "${VERSION}" ] || [ "$(command -v aws-iam-authenticator)" == "" ]; then
     _result " ${HEPTIO} >> ${VERSION}"
 
-    curl -LO https://amazon-eks.s3-us-west-2.amazonaws.com/${VERSION}/2018-06-05/bin/${OS_NAME}/amd64/heptio-authenticator-aws
-    chmod +x heptio-authenticator-aws && sudo mv heptio-authenticator-aws /usr/local/bin/heptio-authenticator-aws
+    curl -LO https://github.com/kubernetes-sigs/aws-iam-authenticator/releases/download/v${VERSION}/heptio-authenticator-aws_${VERSION}_${OS_NAME}_amd64
+    chmod +x heptio-authenticator-aws_${VERSION}_${OS_NAME}_amd64 && sudo mv heptio-authenticator-aws_${VERSION}_${OS_NAME}_amd64 /usr/local/bin/aws-iam-authenticator
 
     HEPTIO="${VERSION}"
 fi
