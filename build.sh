@@ -209,7 +209,7 @@ _slack() {
     ${SHELL_DIR}/target/slack --token="${SLACK_TOKEN}" --channel="tools" \
         --emoji=":construction_worker:" --username="toaster" \
         --footer="${FOOTER}" --footer_icon="https://assets-cdn.github.com/favicon.ico" \
-        --color="good" --title="${REPONAME} updated" "\`${VERSION}\`"
+        --color="good" --title="${TITLE}" "\`${VERSION}\`"
 }
 
 _prepare
