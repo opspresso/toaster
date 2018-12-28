@@ -58,8 +58,12 @@ _get_version() {
     # latest versions
     VERSION=$(curl -s https://api.github.com/repos/${USERNAME}/${REPONAME}/releases/latest | grep tag_name | cut -d'"' -f4 | xargs)
 
+    if [ -z ${VERSION} ]; then
+        VERSION=$(curl -sL toast.sh/VERSION | xargs)
+    fi
+
     if [ ! -f ${SHELL_DIR}/VERSION ]; then
-        echo "v0.0.0" > ${SHELL_DIR}/VERSION
+        printf "v0.0.0" > ${SHELL_DIR}/VERSION
     fi
 
     if [ -z ${VERSION} ]; then
