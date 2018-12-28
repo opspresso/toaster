@@ -9,8 +9,7 @@ CMD=${1:-${CIRCLE_JOB}}
 USERNAME=${CIRCLE_PROJECT_USERNAME:-nalbam}
 REPONAME=${CIRCLE_PROJECT_REPONAME:-toaster}
 
-BUILD_NUM=${CIRCLE_BUILD_NUM}
-PR_NUMBER=${CIRCLE_PR_NUMBER}
+PR_URL=${CIRCLE_PULL_REQUEST}
 
 ################################################################################
 
@@ -88,11 +87,11 @@ _gen_version() {
     fi
 
     # version
-    if [ "${PR_NUMBER}" == "" ]; then
+    if [ "${PR_URL}" == "" ]; then
         VERSION=$(echo ${VERSION} | perl -pe 's/^(([v\d]+\.)*)(\d+)(.*)$/$1.($3+1).$4/e')
         printf "${VERSION}" > ${SHELL_DIR}/target/VERSION
     else
-        VERSION="${VERSION}-${PR_NUMBER}"
+        VERSION="${VERSION}-$(echo $PR_URL | cut -d'/' -f7)"
         printf "${VERSION}" > ${SHELL_DIR}/target/VERSION
     fi
 }
@@ -105,12 +104,6 @@ _package() {
 
     # target/dist/
     cp -rf ${SHELL_DIR}/toaster.sh ${SHELL_DIR}/target/dist/toaster
-
-    env
-    _result "CIRCLE_BUILD_NUM=${CIRCLE_BUILD_NUM}"
-    _result "CIRCLE_PR_NUMBER=${CIRCLE_PR_NUMBER}"
-    _result "CIRCLE_WORKFLOW_ID=${CIRCLE_WORKFLOW_ID}"
-    _result "CIRCLE_PULL_REQUEST=${CIRCLE_PULL_REQUEST}"
 
     # version
     _gen_version
@@ -150,7 +143,7 @@ _cf_reset() {
 }
 
 _publish() {
-    if [ "${PR_NUMBER}" == "" ]; then
+    if [ "${PR_URL}" == "" ]; then
         return
     fi
 
@@ -163,7 +156,7 @@ _publish() {
 }
 
 _release() {
-    if [ "${PR_NUMBER}" == "" ]; then
+    if [ "${PR_URL}" == "" ]; then
         GHR_PARAM="-delete"
     else
         GHR_PARAM="-prerelease"
