@@ -136,7 +136,6 @@ _package() {
     pushd ${SHELL_DIR}/helper
     tar -czf ../target/dist/helper.tar.gz *
     popd
-    echo
 
     # target/helper/
     cp -rf ${SHELL_DIR}/helper/* ${SHELL_DIR}/target/helper/
