@@ -30,9 +30,18 @@ _error() {
 
 ################################################################################
 
-NAME="toaster"
+USERNAME="nalbam"
+REPONAME="toaster"
 
-VERSION=$(curl -s https://api.github.com/repos/nalbam/toaster/releases/latest | grep tag_name | cut -d'"' -f4)
+VERSION=${1}
+
+if [ -z ${VERSION} ]; then
+    VERSION=$(curl -s https://api.github.com/repos/${USERNAME}/${REPONAME}/releases/latest | grep tag_name | cut -d'"' -f4)
+
+    if [ -z ${VERSION} ]; then
+        VERSION=$(curl -sL toast.sh/VERSION | xargs)
+    fi
+fi
 
 _result "version: ${VERSION}"
 
@@ -41,11 +50,11 @@ if [ -z ${VERSION} ]; then
 fi
 
 # dist
-DIST=/tmp/${NAME}-${VERSION}
+DIST=/tmp/${REPONAME}-${VERSION}
 rm -rf ${DIST}
 
 # download
-curl -sL -o ${DIST} https://github.com/nalbam/toaster/releases/download/${VERSION}/toaster
+curl -sL -o ${DIST} https://github.com/${USERNAME}/${REPONAME}/releases/download/${VERSION}/toaster
 chmod +x ${DIST}
 
 # copy
@@ -63,7 +72,7 @@ if [ ! -z $HOME ]; then
 fi
 
 mkdir -p ${COPY_PATH}
-mv -f ${DIST} ${COPY_PATH}/${NAME}
+mv -f ${DIST} ${COPY_PATH}/${REPONAME}
 
 # done
 _success "done."

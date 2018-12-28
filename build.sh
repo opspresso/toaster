@@ -181,7 +181,7 @@ _release() {
 
 _slack() {
     if [ -f ${SHELL_DIR}/target/PR ]; then
-        FOOTER="<$(echo ${SHELL_DIR}/target/PR | xargs)|${USERNAME}/${REPONAME}/pull-request>"
+        FOOTER="<$(cat ${SHELL_DIR}/target/PR | xargs)|${USERNAME}/${REPONAME}/pull-request>"
     else
         FOOTER="<https://github.com/${USERNAME}/${REPONAME}|${USERNAME}/${REPONAME}>"
     fi
