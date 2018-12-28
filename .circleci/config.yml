@@ -69,15 +69,16 @@ workflows:
   apply:
     jobs:
       - package
+      - approval:
+          type: approval
+          requires:
+            - package
       - publish:
           requires:
-            - package
-      - prerelease:
-          requires:
-            - package
+            - approval
       - release:
           requires:
-            - package
+            - approval
       - slack:
           requires:
             - release
