@@ -8,6 +8,7 @@ CMD=${1:-${CIRCLE_JOB}}
 
 USERNAME=${CIRCLE_PROJECT_USERNAME:-nalbam}
 REPONAME=${CIRCLE_PROJECT_REPONAME:-toaster}
+PR=${CIRCLE_PR_NUMBER}
 
 ################################################################################
 
@@ -81,6 +82,7 @@ _gen_version() {
     fi
 
     # add build version
+    DRAFT="${VERSION}-${PR}"
     VERSION=$(echo ${VERSION} | perl -pe 's/^(([v\d]+\.)*)(\d+)(.*)$/$1.($3+1).$4/e')
 
     printf "${VERSION}" > ${SHELL_DIR}/target/VERSION
@@ -140,6 +142,23 @@ _publish() {
     _cf_reset "repo.toast.sh"
 }
 
+_draft() {
+    DRAFT=$(cat ${SHELL_DIR}/target/DRAFT | xargs)
+
+    _result "DRAFT=${DRAFT}"
+
+    _command "go get github.com/tcnksm/ghr"
+    go get github.com/tcnksm/ghr
+
+    _command "ghr ${DRAFT} ${SHELL_DIR}/target/dist/"
+    ghr -t ${GITHUB_TOKEN} \
+        -u ${USERNAME} \
+        -r ${REPONAME} \
+        -c ${CIRCLE_SHA1} \
+        -draft \
+        ${DRAFT} ${SHELL_DIR}/target/dist/
+}
+
 _release() {
     VERSION=$(cat ${SHELL_DIR}/target/VERSION | xargs)
 
@@ -178,6 +197,9 @@ case ${CMD} in
         ;;
     publish)
         _publish
+        ;;
+    draft)
+        _draft
         ;;
     release)
         _release
