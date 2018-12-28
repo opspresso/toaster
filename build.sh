@@ -194,6 +194,12 @@ _release() {
 }
 
 _slack() {
+    if [ -f ${SHELL_DIR}/target/PRE ]; then
+        TITLE="${REPONAME} pull requested"
+    else
+        TITLE="${REPONAME} updated"
+    fi
+
     VERSION=$(cat ${SHELL_DIR}/target/VERSION | xargs)
 
     _result "VERSION=${VERSION}"
@@ -203,7 +209,7 @@ _slack() {
     ${SHELL_DIR}/target/slack --token="${SLACK_TOKEN}" --channel="tools" \
         --emoji=":construction_worker:" --username="toaster" \
         --footer="${FOOTER}" --footer_icon="https://assets-cdn.github.com/favicon.ico" \
-        --color="good" --title="${REPONAME} updated" "\`${VERSION}\`"
+        --color="good" --title="${TITLE}" "\`${VERSION}\`"
 }
 
 _prepare
