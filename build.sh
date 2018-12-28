@@ -159,7 +159,7 @@ _release() {
     if [ "${PR_URL}" == "" ]; then
         GHR_PARAM="-delete"
     else
-        GHR_PARAM="-prerelease"
+        GHR_PARAM="-delete -prerelease"
     fi
 
     VERSION=$(cat ${SHELL_DIR}/target/VERSION | xargs)
