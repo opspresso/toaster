@@ -54,7 +54,7 @@ _prepare() {
 }
 
 _get_version() {
-    # previous versions
+    # latest versions
     VERSION=$(curl -s https://api.github.com/repos/${USERNAME}/${REPONAME}/releases/latest | grep tag_name | cut -d'"' -f4 | xargs)
 
     if [ ! -f ${SHELL_DIR}/VERSION ]; then
