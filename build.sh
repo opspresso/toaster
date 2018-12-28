@@ -86,7 +86,7 @@ _gen_version() {
     fi
 
     # draft version
-    DRAFT="${VERSION}-${PR}"
+    DRAFT="${VERSION}-pr${PR}"
     printf "${DRAFT}" > ${SHELL_DIR}/target/DRAFT
 
     # release version
