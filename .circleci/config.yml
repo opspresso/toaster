@@ -7,9 +7,10 @@ jobs:
     docker:
       - image: circleci/python
     working_directory: /tmp/works
-    branches:
-      only:
-        - master
+    filters:
+      branches:
+        only:
+          - master
     steps:
       - checkout
       - run:
