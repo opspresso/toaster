@@ -9,6 +9,7 @@ CMD=${1:-${CIRCLE_JOB}}
 USERNAME=${CIRCLE_PROJECT_USERNAME:-nalbam}
 REPONAME=${CIRCLE_PROJECT_REPONAME:-toaster}
 
+PR_NUM=${CIRCLE_PR_NUMBER}
 PR_URL=${CIRCLE_PULL_REQUEST}
 
 ################################################################################
@@ -85,6 +86,9 @@ _gen_version() {
     if [ "${MAJOR}" != "${LATEST_MAJOR}" ] || [ "${MINOR}" != "${LATEST_MINOR}" ]; then
         VERSION=$(cat ${SHELL_DIR}/VERSION | xargs)
     fi
+
+    _result "PR_NUM=${PR_NUM}"
+    _result "PR_URL=${PR_URL}"
 
     # version
     if [ "${PR_URL}" == "" ]; then
