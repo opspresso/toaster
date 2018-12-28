@@ -83,7 +83,7 @@ _gen_version() {
     # add build version
     VERSION=$(echo ${VERSION} | perl -pe 's/^(([v\d]+\.)*)(\d+)(.*)$/$1.($3+1).$4/e')
 
-    echo "${VERSION}" > ${SHELL_DIR}/target/VERSION
+    printf "${VERSION}" > ${SHELL_DIR}/target/VERSION
 }
 
 _package() {
@@ -119,15 +119,25 @@ _package() {
     cp -rf ${SHELL_DIR}/web/* ${SHELL_DIR}/target/
 }
 
+_s3_sync() {
+    _command "aws s3 sync ${1} s3://${2}/ --acl public-read"
+    aws s3 sync ${1} s3://${2}/ --acl public-read
+}
+
+_cf_reset() {
+    CFID=$(aws cloudfront list-distributions --query "DistributionList.Items[].{Id:Id, DomainName: DomainName, OriginDomainName: Origins.Items[0].DomainName}[?contains(OriginDomainName, '${1}')] | [0]" | jq -r '.Id')
+    if [ "${CFID}" != "" ]; then
+        aws cloudfront create-invalidation --distribution-id ${CFID} --paths "/*"
+    fi
+}
+
 _publish() {
-    _command "aws s3 sync ${SHELL_DIR}/target/ s3://toast.sh/ --acl public-read"
-    aws s3 sync ${SHELL_DIR}/target/ s3://toast.sh/ --acl public-read
+    _s3_sync "${SHELL_DIR}/target/" "toast.sh"
+    _s3_sync "${SHELL_DIR}/target/" "www.toast.sh"
+    _s3_sync "${SHELL_DIR}/target/" "repo.toast.sh"
 
-    _command "aws s3 sync ${SHELL_DIR}/target/ s3://www.toast.sh/ --acl public-read"
-    aws s3 sync ${SHELL_DIR}/target/ s3://www.toast.sh/ --acl public-read
-
-    _command "aws s3 sync ${SHELL_DIR}/target/ s3://repo.toast.sh/ --acl public-read"
-    aws s3 sync ${SHELL_DIR}/target/ s3://repo.toast.sh/ --acl public-read
+    _cf_reset "www.toast.sh"
+    _cf_reset "repo.toast.sh"
 }
 
 _release() {
