@@ -30,17 +30,6 @@ jobs:
           command: |
             chmod 755 ./works/build.sh
             ./works/build.sh publish
-  prerelease:
-    docker:
-      - image: circleci/golang
-    steps:
-      - attach_workspace:
-          at: works
-      - run:
-          name: Release
-          command: |
-            chmod 755 ./works/build.sh
-            ./works/build.sh prerelease
   release:
     docker:
       - image: circleci/golang
@@ -69,10 +58,11 @@ workflows:
   apply:
     jobs:
       - package
+      # - approval:
+      #     type: approval
+      #     requires:
+      #       - package
       - publish:
-          requires:
-            - package
-      - prerelease:
           requires:
             - package
       - release:

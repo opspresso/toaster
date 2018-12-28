@@ -9,8 +9,7 @@ CMD=${1:-${CIRCLE_JOB}}
 USERNAME=${CIRCLE_PROJECT_USERNAME:-nalbam}
 REPONAME=${CIRCLE_PROJECT_REPONAME:-toaster}
 
-BUILD_NUM=${CIRCLE_BUILD_NUM}
-PR_NUMBER=${CIRCLE_PR_NUMBER}
+PR_URL=${CIRCLE_PULL_REQUEST}
 
 ################################################################################
 
@@ -87,13 +86,15 @@ _gen_version() {
         VERSION=$(cat ${SHELL_DIR}/VERSION | xargs)
     fi
 
-    # draft version
-    DRAFT="${VERSION}-${PR_NUMBER}-${BUILD_NUM}"
-    printf "${DRAFT}" > ${SHELL_DIR}/target/DRAFT
-
-    # release version
-    VERSION=$(echo ${VERSION} | perl -pe 's/^(([v\d]+\.)*)(\d+)(.*)$/$1.($3+1).$4/e')
-    printf "${VERSION}" > ${SHELL_DIR}/target/VERSION
+    # version
+    if [ "${PR_URL}" == "" ]; then
+        VERSION=$(echo ${VERSION} | perl -pe 's/^(([v\d]+\.)*)(\d+)(.*)$/$1.($3+1).$4/e')
+        printf "${VERSION}" > ${SHELL_DIR}/target/VERSION
+    else
+        VERSION="${VERSION}-$(echo $PR_URL | cut -d'/' -f7)"
+        printf "${VERSION}" > ${SHELL_DIR}/target/VERSION
+        printf "${PR_URL}" > ${SHELL_DIR}/target/PR
+    fi
 }
 
 _package() {
@@ -107,9 +108,10 @@ _package() {
 
     # version
     _gen_version
-    echo
 
-    # replace version
+    _result "VERSION=${VERSION}"
+
+    # replace
     if [ "${OS_NAME}" == "linux" ]; then
         sed -i -e "s/THIS_VERSION=.*/THIS_VERSION=${VERSION}/" ${SHELL_DIR}/target/dist/toaster
     elif [ "${OS_NAME}" == "darwin" ]; then
@@ -142,6 +144,10 @@ _cf_reset() {
 }
 
 _publish() {
+    if [ -f ${SHELL_DIR}/target/PR ]; then
+        return
+    fi
+
     _s3_sync "${SHELL_DIR}/target/" "toast.sh"
     _s3_sync "${SHELL_DIR}/target/" "www.toast.sh"
     _s3_sync "${SHELL_DIR}/target/" "repo.toast.sh"
@@ -150,28 +156,13 @@ _publish() {
     _cf_reset "repo.toast.sh"
 }
 
-_prerelease() {
-    if [ "${PR_NUMBER}" == "" ]; then
-        return
+_release() {
+    if [ -f ${SHELL_DIR}/target/PR ]; then
+        GHR_PARAM="-delete -prerelease"
+    else
+        GHR_PARAM="-delete"
     fi
 
-    DRAFT=$(cat ${SHELL_DIR}/target/DRAFT | xargs)
-
-    _result "DRAFT=${DRAFT}"
-
-    _command "go get github.com/tcnksm/ghr"
-    go get github.com/tcnksm/ghr
-
-    _command "ghr ${DRAFT} ${SHELL_DIR}/target/dist/"
-    ghr -t ${GITHUB_TOKEN} \
-        -u ${USERNAME} \
-        -r ${REPONAME} \
-        -c ${CIRCLE_SHA1} \
-        -prerelease \
-        ${DRAFT} ${SHELL_DIR}/target/dist/
-}
-
-_release() {
     VERSION=$(cat ${SHELL_DIR}/target/VERSION | xargs)
 
     _result "VERSION=${VERSION}"
@@ -184,16 +175,20 @@ _release() {
         -u ${USERNAME} \
         -r ${REPONAME} \
         -c ${CIRCLE_SHA1} \
-        -delete \
+        ${GHR_PARAM} \
         ${VERSION} ${SHELL_DIR}/target/dist/
 }
 
 _slack() {
+    if [ -f ${SHELL_DIR}/target/PR ]; then
+        FOOTER="<$(cat ${SHELL_DIR}/target/PR | xargs)|${USERNAME}/${REPONAME}/pull-request>"
+    else
+        FOOTER="<https://github.com/${USERNAME}/${REPONAME}|${USERNAME}/${REPONAME}>"
+    fi
+
     VERSION=$(cat ${SHELL_DIR}/target/VERSION | xargs)
 
     _result "VERSION=${VERSION}"
-
-    FOOTER="<https://github.com/${USERNAME}/${REPONAME}|${USERNAME}/${REPONAME}>"
 
     ${SHELL_DIR}/target/slack --token="${SLACK_TOKEN}" --channel="tools" \
         --emoji=":construction_worker:" --username="toaster" \
@@ -209,9 +204,6 @@ case ${CMD} in
         ;;
     publish)
         _publish
-        ;;
-    prerelease)
-        _prerelease
         ;;
     release)
         _release
