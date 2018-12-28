@@ -148,7 +148,7 @@ _publish() {
     _cf_reset "repo.toast.sh"
 }
 
-_draft() {
+_prerelease() {
     DRAFT=$(cat ${SHELL_DIR}/target/DRAFT | xargs)
 
     _result "DRAFT=${DRAFT}"
@@ -161,7 +161,7 @@ _draft() {
         -u ${USERNAME} \
         -r ${REPONAME} \
         -c ${CIRCLE_SHA1} \
-        -draft \
+        -prerelease \
         ${DRAFT} ${SHELL_DIR}/target/dist/
 }
 
@@ -204,8 +204,8 @@ case ${CMD} in
     publish)
         _publish
         ;;
-    draft)
-        _draft
+    prerelease)
+        _prerelease
         ;;
     release)
         _release

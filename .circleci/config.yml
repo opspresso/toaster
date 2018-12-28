@@ -30,7 +30,7 @@ jobs:
           command: |
             chmod 755 ./works/build.sh
             ./works/build.sh publish
-  draft:
+  prerelease:
     docker:
       - image: circleci/golang
     steps:
@@ -40,7 +40,7 @@ jobs:
           name: Release
           command: |
             chmod 755 ./works/build.sh
-            ./works/build.sh draft
+            ./works/build.sh prerelease
   release:
     docker:
       - image: circleci/golang
@@ -72,7 +72,7 @@ workflows:
       - publish:
           requires:
             - package
-      - draft:
+      - prerelease:
           requires:
             - package
       - release:
