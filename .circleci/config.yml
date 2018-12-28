@@ -62,12 +62,12 @@ workflows:
       #     type: approval
       #     requires:
       #       - package
-      # - publish:
-      #     requires:
-      #       - package
-      # - release:
-      #     requires:
-      #       - package
-      # - slack:
-      #     requires:
-      #       - release
+      - publish:
+          requires:
+            - package
+      - release:
+          requires:
+            - package
+      - slack:
+          requires:
+            - release
