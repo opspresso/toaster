@@ -8,7 +8,9 @@ CMD=${1:-${CIRCLE_JOB}}
 
 USERNAME=${CIRCLE_PROJECT_USERNAME:-nalbam}
 REPONAME=${CIRCLE_PROJECT_REPONAME:-toaster}
-PR=${CIRCLE_PR_NUMBER}
+
+BUILD_NUM=${CIRCLE_BUILD_NUM}
+PR_NUMBER=${CIRCLE_PR_NUMBER}
 
 ################################################################################
 
@@ -86,7 +88,7 @@ _gen_version() {
     fi
 
     # draft version
-    DRAFT="${VERSION}-pr${PR}"
+    DRAFT="${VERSION}-${PR_NUMBER}-${BUILD_NUM}"
     printf "${DRAFT}" > ${SHELL_DIR}/target/DRAFT
 
     # release version
@@ -149,6 +151,10 @@ _publish() {
 }
 
 _prerelease() {
+    if [ "${PR_NUMBER}" == "" ]; then
+        return
+    fi
+
     DRAFT=$(cat ${SHELL_DIR}/target/DRAFT | xargs)
 
     _result "DRAFT=${DRAFT}"
