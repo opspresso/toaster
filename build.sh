@@ -87,13 +87,14 @@ _gen_version() {
         VERSION=$(cat ${SHELL_DIR}/VERSION | xargs)
     fi
 
-    # draft version
-    DRAFT="${VERSION}-${PR_NUMBER}-${BUILD_NUM}"
-    printf "${DRAFT}" > ${SHELL_DIR}/target/DRAFT
-
-    # release version
-    VERSION=$(echo ${VERSION} | perl -pe 's/^(([v\d]+\.)*)(\d+)(.*)$/$1.($3+1).$4/e')
-    printf "${VERSION}" > ${SHELL_DIR}/target/VERSION
+    # version
+    if [ "${PR_NUMBER}" == "" ]; then
+        VERSION=$(echo ${VERSION} | perl -pe 's/^(([v\d]+\.)*)(\d+)(.*)$/$1.($3+1).$4/e')
+        printf "${VERSION}" > ${SHELL_DIR}/target/VERSION
+    else
+        VERSION="${VERSION}-${PR_NUMBER}-${BUILD_NUM}"
+        printf "${VERSION}" > ${SHELL_DIR}/target/VERSION
+    fi
 }
 
 _package() {
@@ -142,6 +143,10 @@ _cf_reset() {
 }
 
 _publish() {
+    if [ "${PR_NUMBER}" == "" ]; then
+        return
+    fi
+
     _s3_sync "${SHELL_DIR}/target/" "toast.sh"
     _s3_sync "${SHELL_DIR}/target/" "www.toast.sh"
     _s3_sync "${SHELL_DIR}/target/" "repo.toast.sh"
@@ -150,28 +155,13 @@ _publish() {
     _cf_reset "repo.toast.sh"
 }
 
-_prerelease() {
+_release() {
     if [ "${PR_NUMBER}" == "" ]; then
-        return
+        GHR_PARAM="-delete"
+    else
+        GHR_PARAM="-prerelease"
     fi
 
-    DRAFT=$(cat ${SHELL_DIR}/target/DRAFT | xargs)
-
-    _result "DRAFT=${DRAFT}"
-
-    _command "go get github.com/tcnksm/ghr"
-    go get github.com/tcnksm/ghr
-
-    _command "ghr ${DRAFT} ${SHELL_DIR}/target/dist/"
-    ghr -t ${GITHUB_TOKEN} \
-        -u ${USERNAME} \
-        -r ${REPONAME} \
-        -c ${CIRCLE_SHA1} \
-        -prerelease \
-        ${DRAFT} ${SHELL_DIR}/target/dist/
-}
-
-_release() {
     VERSION=$(cat ${SHELL_DIR}/target/VERSION | xargs)
 
     _result "VERSION=${VERSION}"
@@ -184,7 +174,7 @@ _release() {
         -u ${USERNAME} \
         -r ${REPONAME} \
         -c ${CIRCLE_SHA1} \
-        -delete \
+        ${GHR_PARAM} \
         ${VERSION} ${SHELL_DIR}/target/dist/
 }
 
@@ -209,9 +199,6 @@ case ${CMD} in
         ;;
     publish)
         _publish
-        ;;
-    prerelease)
-        _prerelease
         ;;
     release)
         _release
