@@ -194,6 +194,12 @@ _release() {
 }
 
 _slack() {
+    if [ -f ${SHELL_DIR}/target/PRE ]; then
+        TITLE="${REPONAME} pull requested"
+    else
+        TITLE="${REPONAME} updated"
+    fi
+
     VERSION=$(cat ${SHELL_DIR}/target/VERSION | xargs)
 
     _result "VERSION=${VERSION}"
