@@ -92,13 +92,22 @@ _gen_version() {
     _result "PR_URL=${PR_URL}"
 
     # version
-    if [ "${PR_URL}" == "" ]; then
+    if [ "${CIRCLE_BRANCH}" == "master" ]; then
         VERSION=$(echo ${VERSION} | perl -pe 's/^(([v\d]+\.)*)(\d+)(.*)$/$1.($3+1).$4/e')
         printf "${VERSION}" > ${SHELL_DIR}/target/VERSION
     else
-        VERSION="${VERSION}-$(echo $PR_URL | cut -d'/' -f7)"
+        if [ "${PR_NUM}" == "" ]; then
+            if [ "${PR_URL}" != "" ]; then
+                PR_NUM=$(echo $PR_URL | cut -d'/' -f7)
+            else
+                PR_NUM=${CIRCLE_BUILD_NUM}
+            fi
+        fi
+
+        printf "${PR_NUM}" > ${SHELL_DIR}/target/PRE
+
+        VERSION="${VERSION}-${PR_NUM}"
         printf "${VERSION}" > ${SHELL_DIR}/target/VERSION
-        printf "${PR_URL}" > ${SHELL_DIR}/target/PR
     fi
 }
 
@@ -149,7 +158,7 @@ _cf_reset() {
 }
 
 _publish() {
-    if [ -f ${SHELL_DIR}/target/PR ]; then
+    if [ -f ${SHELL_DIR}/target/PRE ]; then
         return
     fi
 
@@ -162,7 +171,7 @@ _publish() {
 }
 
 _release() {
-    if [ -f ${SHELL_DIR}/target/PR ]; then
+    if [ -f ${SHELL_DIR}/target/PRE ]; then
         GHR_PARAM="-delete -prerelease"
     else
         GHR_PARAM="-delete"
@@ -185,15 +194,11 @@ _release() {
 }
 
 _slack() {
-    if [ -f ${SHELL_DIR}/target/PR ]; then
-        FOOTER="<$(cat ${SHELL_DIR}/target/PR | xargs)|${USERNAME}/${REPONAME}/pull-request>"
-    else
-        FOOTER="<https://github.com/${USERNAME}/${REPONAME}|${USERNAME}/${REPONAME}>"
-    fi
-
     VERSION=$(cat ${SHELL_DIR}/target/VERSION | xargs)
 
     _result "VERSION=${VERSION}"
+
+    FOOTER="<https://github.com/${USERNAME}/${REPONAME}/releases/tag/${VERSION}|${USERNAME}/${REPONAME}>"
 
     ${SHELL_DIR}/target/slack --token="${SLACK_TOKEN}" --channel="tools" \
         --emoji=":construction_worker:" --username="toaster" \
