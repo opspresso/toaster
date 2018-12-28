@@ -106,6 +106,7 @@ _package() {
     # target/dist/
     cp -rf ${SHELL_DIR}/toaster.sh ${SHELL_DIR}/target/dist/toaster
 
+    env
     _result "CIRCLE_BUILD_NUM=${CIRCLE_BUILD_NUM}"
     _result "CIRCLE_PR_NUMBER=${CIRCLE_PR_NUMBER}"
     _result "CIRCLE_WORKFLOW_ID=${CIRCLE_WORKFLOW_ID}"
