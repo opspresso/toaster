@@ -92,7 +92,7 @@ _gen_version() {
         VERSION=$(echo ${VERSION} | perl -pe 's/^(([v\d]+\.)*)(\d+)(.*)$/$1.($3+1).$4/e')
         printf "${VERSION}" > ${SHELL_DIR}/target/VERSION
     else
-        VERSION="${VERSION}-${PR_NUMBER}-${BUILD_NUM}"
+        VERSION="${VERSION}-${PR_NUMBER}"
         printf "${VERSION}" > ${SHELL_DIR}/target/VERSION
     fi
 }
@@ -106,11 +106,15 @@ _package() {
     # target/dist/
     cp -rf ${SHELL_DIR}/toaster.sh ${SHELL_DIR}/target/dist/toaster
 
+    _result "BUILD_NUM=${BUILD_NUM}"
+    _result "PR_NUMBER=${PR_NUMBER}"
+
     # version
     _gen_version
-    echo
 
-    # replace version
+    _result "VERSION=${VERSION}"
+
+    # replace
     if [ "${OS_NAME}" == "linux" ]; then
         sed -i -e "s/THIS_VERSION=.*/THIS_VERSION=${VERSION}/" ${SHELL_DIR}/target/dist/toaster
     elif [ "${OS_NAME}" == "darwin" ]; then
