@@ -85,10 +85,12 @@ _gen_version() {
         VERSION=$(cat ${SHELL_DIR}/VERSION | xargs)
     fi
 
-    # add build version
+    # draft version
     DRAFT="${VERSION}-${PR}"
-    VERSION=$(echo ${VERSION} | perl -pe 's/^(([v\d]+\.)*)(\d+)(.*)$/$1.($3+1).$4/e')
+    printf "${DRAFT}" > ${SHELL_DIR}/target/DRAFT
 
+    # release version
+    VERSION=$(echo ${VERSION} | perl -pe 's/^(([v\d]+\.)*)(\d+)(.*)$/$1.($3+1).$4/e')
     printf "${VERSION}" > ${SHELL_DIR}/target/VERSION
 }
 
