@@ -33,6 +33,8 @@ _error() {
 USERNAME="nalbam"
 REPONAME="toaster"
 
+NAME="toaster"
+
 VERSION=${1}
 
 if [ -z ${VERSION} ]; then
@@ -50,11 +52,11 @@ if [ -z ${VERSION} ]; then
 fi
 
 # dist
-DIST=/tmp/${REPONAME}-${VERSION}
+DIST=/tmp/${NAME}-${VERSION}
 rm -rf ${DIST}
 
 # download
-curl -sL -o ${DIST} https://github.com/${USERNAME}/${REPONAME}/releases/download/${VERSION}/toaster
+curl -sL -o ${DIST} https://github.com/${USERNAME}/${REPONAME}/releases/download/${VERSION}/${NAME}
 chmod +x ${DIST}
 
 # copy
@@ -72,7 +74,7 @@ if [ ! -z $HOME ]; then
 fi
 
 mkdir -p ${COPY_PATH}
-mv -f ${DIST} ${COPY_PATH}/${REPONAME}
+mv -f ${DIST} ${COPY_PATH}/${NAME}
 
 # done
 _success "done."

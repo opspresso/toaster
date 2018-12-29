@@ -90,14 +90,14 @@ _toast() {
     esac
 }
 
-_update() {
-    _echo "# version: ${THIS_VERSION}" 3
-    curl -sL toast.sh/install | bash -s ${SUB}
+_tools() {
+    curl -sL toast.sh/tools | bash
     exit 0
 }
 
-_tools() {
-    curl -sL toast.sh/tools | bash
+_update() {
+    _echo "# version: ${THIS_VERSION}" 3
+    curl -sL toast.sh/install | bash -s ${SUB}
     exit 0
 }
 
