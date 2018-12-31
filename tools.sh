@@ -204,7 +204,7 @@ else
     fi
 fi
 
-helm version --client --short | xargs | awk '{print $2}'
+helm version --client --short | xargs | awk '{print $2}' | cut -d'+' -f1
 
 # draft
 echo "================================================================================"
@@ -225,7 +225,7 @@ _result "install draft..."
     fi
 #fi
 
-draft version --short | xargs
+draft version --short | xargs | cut -d'+' -f1
 
 # istioctl
 echo "================================================================================"
