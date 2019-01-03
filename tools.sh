@@ -23,6 +23,9 @@ curl -sL ${REPO}/helm | bash
 # draft
 curl -sL ${REPO}/draft | bash
 
+# terraform
+curl -sL ${REPO}/terraform | bash
+
 # guard
 curl -sL ${REPO}/guard | bash -s "0.1.2"
 
