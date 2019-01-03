@@ -164,12 +164,11 @@ _publish() {
         return
     fi
 
-    _s3_sync "${SHELL_DIR}/target/" "toast.sh"
     _s3_sync "${SHELL_DIR}/target/" "www.toast.sh"
-    _s3_sync "${SHELL_DIR}/target/" "repo.toast.sh"
+    # _s3_sync "${SHELL_DIR}/target/" "repo.toast.sh"
 
     _cf_reset "www.toast.sh"
-    _cf_reset "repo.toast.sh"
+    # _cf_reset "repo.toast.sh"
 }
 
 _release() {
