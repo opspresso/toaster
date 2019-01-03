@@ -2,7 +2,7 @@
 
 # curl -sL toast.sh/tools | bash
 
-REPO="toast.sh/tools"
+REPO="opspresso.com/tools"
 
 # update
 curl -sL ${REPO}/base | bash
