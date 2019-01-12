@@ -16,10 +16,11 @@ LIST=/tmp/toaster-helper-env-list
 
 ################################################################################
 
-command -v tput > /dev/null || TPUT=false
+command -v fzf > /dev/null && FZF=true
+command -v tput > /dev/null && TPUT=true
 
 _echo() {
-    if [ -z ${TPUT} ] && [ ! -z $2 ]; then
+    if [ -n ${TPUT} ] && [ -n $2 ]; then
         echo -e "$(tput setaf $2)$1$(tput sgr0)"
     else
         echo -e "$1"
@@ -27,7 +28,7 @@ _echo() {
 }
 
 _read() {
-    if [ -z ${TPUT} ]; then
+    if [ -n ${TPUT} ]; then
         read -p "$(tput setaf 6)$1$(tput sgr0)" ANSWER
     else
         read -p "$1" ANSWER
@@ -58,6 +59,37 @@ _error() {
     exit 1
 }
 
+_select_one() {
+    if [ -n ${FZF} ]; then
+        SELECTED=$(cat ${LIST} | fzf --reverse --height 10)
+    else
+        echo
+
+        IDX=0
+        while read VAL; do
+            IDX=$(( ${IDX} + 1 ))
+            printf "%3s. %s\n" "${IDX}" "${VAL}"
+        done < ${LIST}
+
+        CNT=$(cat ${LIST} | wc -l | xargs)
+
+        echo
+        _read "Please select one. (1-${CNT}) : "
+
+        SELECTED=
+        if [ -z ${ANSWER} ]; then
+            return
+        fi
+        TEST='^[0-9]+$'
+        if ! [[ ${ANSWER} =~ ${TEST} ]]; then
+            return
+        fi
+        SELECTED=$(sed -n ${ANSWER}p ${LIST})
+    fi
+}
+
+################################################################################
+
 usage() {
     LS=$(ls -m ${HOME_DIR})
 
@@ -78,33 +110,6 @@ usage() {
     exit 1
 }
 
-_select_one() {
-    echo
-
-    IDX=0
-    while read VAL; do
-        IDX=$(( ${IDX} + 1 ))
-        printf "%3s. %s\n" "${IDX}" "${VAL}"
-    done < ${LIST}
-
-    CNT=$(cat ${LIST} | wc -l | xargs)
-
-    echo
-    _read "Please select one. (1-${CNT}) : "
-
-    SELECTED=
-    if [ -z ${ANSWER} ]; then
-        return
-    fi
-    TEST='^[0-9]+$'
-    if ! [[ ${ANSWER} =~ ${TEST} ]]; then
-        return
-    fi
-    SELECTED=$(sed -n ${ANSWER}p ${LIST})
-}
-
-################################################################################
-
 prepare() {
     mkdir -p ${CONFIG_DIR}
 
@@ -115,9 +120,7 @@ prepare() {
 
 home_dir() {
     if [ -z ${HOME_DIR} ] || [ ! -d ${HOME_DIR} ]; then
-        pushd ~
-        DEFAULT="$(pwd)/work/src/github.com/${USER:-nalbam}/keys/credentials"
-        popd
+        DEFAULT="${HOME}/work/src/github.com/${USER}/keys/credentials"
 
         echo
         _read "Please input credentials directory. [${DEFAULT}]: "
