@@ -146,10 +146,10 @@ deploy() {
     fi
 
     if [ -z "${_NAME}" ]; then
-        usage
+        _error
     fi
     if [ ! -f "${HOME_DIR}/${_NAME}" ]; then
-        usage
+        _error
     fi
 
     command -v aws > /dev/null || AWSCLI=false

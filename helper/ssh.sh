@@ -179,7 +179,7 @@ connect() {
         _PEM="${SELECTED}"
     fi
     if [ -z ${_PEM} ]; then
-        usage
+        _error
     fi
 
     # host
@@ -190,7 +190,7 @@ connect() {
         _HOST="${ANSWER}"
     fi
     if [ -z ${_HOST} ]; then
-        usage
+        _error
     fi
 
     # user
@@ -201,14 +201,14 @@ connect() {
         _USER="${ANSWER:-ec2-user}"
     fi
     if [ -z ${_USER} ]; then
-        usage
+        _error
     fi
 
     if [ ! -f ${HOME_DIR}/${_PEM} ]; then
         if [ -f ${HOME_DIR}/${_PEM}.pem ]; then
             _PEM="${_PEM}.pem"
         else
-            usage
+            _error
         fi
     fi
 

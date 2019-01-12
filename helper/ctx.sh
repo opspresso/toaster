@@ -114,7 +114,7 @@ deploy() {
     fi
 
     if [ -z "${_NAME}" ]; then
-        usage
+        _error
     fi
 
     kubectl config use-context ${_NAME}
