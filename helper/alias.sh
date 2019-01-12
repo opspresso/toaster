@@ -3,6 +3,7 @@
 alias e="~/.helper/env.sh"
 alias n="~/.helper/nsh.sh"
 alias s="~/.helper/ssh.sh"
+alias x="~/.helper/ctx.sh"
 
 alias v="~/.helper/code.sh"
 alias v.="v ."
