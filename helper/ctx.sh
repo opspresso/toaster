@@ -53,7 +53,7 @@ _error() {
 
 _select_one() {
     if [ -n ${FZF} ]; then
-        SELECTED=$(cat ${LIST} | fzf --reverse --height 10)
+        SELECTED=$(cat ${LIST} | fzf --reverse --no-mouse --height=10 --bind=left:page-up,right:page-down)
     else
         echo
 
@@ -97,9 +97,7 @@ usage() {
 }
 
 prepare() {
-    # mkdir -p ${CONFIG_DIR}
-
-    # touch ${CONFIG} && . ${CONFIG}
+    # kubectl config use-context $(kubectl config view -o json | jq '.contexts[].name' -r | fzf --reverse --height 10)
 
     rm -rf ${LIST}
 }

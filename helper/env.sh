@@ -61,7 +61,7 @@ _error() {
 
 _select_one() {
     if [ -n ${FZF} ]; then
-        SELECTED=$(cat ${LIST} | fzf --reverse --height 10)
+        SELECTED=$(cat ${LIST} | fzf --reverse --no-mouse --height=10 --bind=left:page-up,right:page-down)
     else
         echo
 
