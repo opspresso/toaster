@@ -154,8 +154,6 @@ deploy() {
 
         _select_one
 
-        _result "${SELECTED}"
-
         _NAME="${SELECTED}"
     fi
 

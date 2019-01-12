@@ -165,7 +165,7 @@ dir() {
 
     printf "${DIR}" > ${TEMP}
 
-    _result "${DIR}"
+    _success "${DIR}"
 }
 
 code() {
