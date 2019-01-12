@@ -106,7 +106,7 @@ prepare() {
 
 deploy() {
     if [ -z ${_NAME} ]; then
-        echo "$(kubectl config view -o json | jq '.clusters[].name' -r)" > ${LIST}
+        echo "$(kubectl config view -o json | jq '.contexts[].name' -r)" > ${LIST}
 
         _select_one
 
