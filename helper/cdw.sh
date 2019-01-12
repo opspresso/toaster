@@ -153,7 +153,7 @@ dir() {
         return
     fi
 
-    find ${HOME_DIR} -maxdepth 2 -type d -exec ls -d "{}" \; | sort > ${LIST}
+    find ${HOME_DIR} -maxdepth 2 -type d -exec ls -d "{}" \; > ${LIST}
 
     _select_one
 

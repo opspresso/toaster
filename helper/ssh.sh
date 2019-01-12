@@ -164,7 +164,7 @@ connect() {
         if [ -f ${HISTORY} ]; then
             _result "${HISTORY}"
 
-            cat ${HISTORY} | sort > ${LIST}
+            cat ${HISTORY} > ${LIST}
 
             _select_one
 
@@ -182,7 +182,7 @@ connect() {
 
     # pem
     if [ -z ${_PEM} ]; then
-        ls ${HOME_DIR} | sort > ${LIST}
+        ls ${HOME_DIR} > ${LIST}
 
         _select_one
 
