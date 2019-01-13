@@ -13,10 +13,7 @@ alias tu="t update"
 alias th="t helper"
 alias tt="t tools"
 
-alias kl="kubectl"
-alias kc="kubectx"
-alias kl="kubens"
-
+alias kc="kubectl"
 alias hl="helm"
 
 alias vc="valve"
