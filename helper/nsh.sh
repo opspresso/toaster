@@ -19,10 +19,10 @@ GIT_PWD=
 
 ################################################################################
 
-command -v tput > /dev/null || TPUT=false
+command -v tput > /dev/null && TPUT=true
 
 _echo() {
-    if [ -z ${TPUT} ] && [ ! -z $2 ]; then
+    if [ -n ${TPUT} ] && [ -n $2 ]; then
         echo -e "$(tput setaf $2)$1$(tput sgr0)"
     else
         echo -e "$1"
@@ -30,7 +30,7 @@ _echo() {
 }
 
 _read() {
-    if [ -z ${TPUT} ]; then
+    if [ -n ${TPUT} ]; then
         read -p "$(tput setaf 6)$1$(tput sgr0)" ANSWER
     else
         read -p "$1" ANSWER
