@@ -27,6 +27,7 @@ _echo() {
 }
 
 _read() {
+    echo
     if [ "${TPUT}" != "" ]; then
         read -p "$(tput setaf 6)$1$(tput sgr0)" ANSWER
     else
@@ -86,8 +87,7 @@ _select_one() {
                 CNT="1-${CNT}"
             fi
 
-            echo
-            _read "Please select one. (1-${CNT}) : "
+            _read "Please select one. (${CNT}) : "
 
             if [ -z ${ANSWER} ]; then
                 return
@@ -130,7 +130,6 @@ home_dir() {
     if [ -z ${HOME_DIR} ] || [ ! -d ${HOME_DIR} ]; then
         DEFAULT="${HOME}/work/src"
 
-        echo
         _read "Please input base directory. [${DEFAULT}]: "
         HOME_DIR=${ANSWER:-${DEFAULT}}
     fi

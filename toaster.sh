@@ -25,14 +25,6 @@ _echo() {
     fi
 }
 
-_read() {
-    if [ "${TPUT}" != "" ]; then
-        read -p "$(tput setaf 6)$1$(tput sgr0)" ANSWER
-    else
-        read -p "$1" ANSWER
-    fi
-}
-
 _result() {
     _echo "# $@" 4
 }

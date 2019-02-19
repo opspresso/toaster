@@ -30,6 +30,7 @@ _echo() {
 }
 
 _read() {
+    echo
     if [ "${TPUT}" != "" ]; then
         read -p "$(tput setaf 6)$1$(tput sgr0)" ANSWER
     else

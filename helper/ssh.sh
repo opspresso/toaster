@@ -30,6 +30,7 @@ _echo() {
 }
 
 _read() {
+    echo
     if [ "${TPUT}" != "" ]; then
         read -p "$(tput setaf 6)$1$(tput sgr0)" ANSWER
     else
@@ -89,8 +90,7 @@ _select_one() {
                 CNT="1-${CNT}"
             fi
 
-            echo
-            _read "Please select one. (1-${CNT}) : "
+            _read "Please select one. (${CNT}) : "
 
             if [ -z ${ANSWER} ]; then
                 return
@@ -137,7 +137,6 @@ home_dir() {
     if [ -z ${HOME_DIR} ] || [ ! -d ${HOME_DIR} ]; then
         DEFAULT="${HOME}/work/src/github.com/${USER}/keys/pem"
 
-        echo
         _read "Please input pem directory. [${DEFAULT}]: "
         HOME_DIR=${ANSWER:-${DEFAULT}}
     fi
@@ -198,7 +197,6 @@ connect() {
 
     # host
     if [ -z ${_HOST} ]; then
-        echo
         _read "Please input ssh host. []: "
 
         _HOST="${ANSWER}"
@@ -209,7 +207,6 @@ connect() {
 
     # user
     if [ -z ${_USER} ]; then
-        echo
         _read "Please input ssh user. [ec2-user]: "
 
         _USER="${ANSWER:-ec2-user}"
