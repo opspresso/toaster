@@ -42,10 +42,7 @@ curl -sL ${REPO}/java | bash -s "1.8.0"
 curl -sL ${REPO}/maven | bash -s "3.5.4"
 
 # aws-iam-authenticator
-curl -sL ${REPO}/aws-iam-authenticator | bash -s "0.3.0"
-
-# heptio-authenticator-aws
-curl -sL ${REPO}/heptio-authenticator-aws | bash -s "1.10.3"
+curl -sL ${REPO}/aws-iam-authenticator
 
 # clean
 curl -sL ${REPO}/clean | bash
