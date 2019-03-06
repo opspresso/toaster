@@ -283,7 +283,11 @@ _env() {
     aws configure set default.region ${_REGION}
     aws configure set default.output ${_OUTPUT}
 
-    cp -f ${ENV_DIR}/${_NAME} ~/.aws/credentials
+    # cp -f ${ENV_DIR}/${_NAME} ~/.aws/credentials
+
+    echo "[default]" > ~/.aws/credentials
+    echo "aws_access_key_id=$(sed -n 1p ${ENV_DIR}/${_NAME})" >> ~/.aws/credentials
+    echo "aws_secret_access_key=$(sed -n 2p ${ENV_DIR}/${_NAME})" >> ~/.aws/credentials
 
     _result "${_NAME}  ${_REGION}  ${_OUTPUT}"
 }
