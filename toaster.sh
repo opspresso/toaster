@@ -293,7 +293,6 @@ _env() {
     echo "aws_secret_access_key=${SECRET_KEY}" >> ~/.aws/credentials
 
     _result "${_NAME}"
-    _result "${_REGION}"
     _result "${ACCESS_KEY}"
     _result "**********${SECRET_KEY:30}"
 }
@@ -554,5 +553,3 @@ _toast() {
 }
 
 _toast
-
-_success "done."

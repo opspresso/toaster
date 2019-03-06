@@ -87,6 +87,3 @@ if [ -f ${ALIAS} ]; then
 
     . ${ALIAS}
 fi
-
-# done
-_success "done."
