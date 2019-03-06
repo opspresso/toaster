@@ -1,17 +1,24 @@
 #!/bin/bash
 
-alias e="~/.helper/env.sh"
-alias n="~/.helper/nsh.sh"
-alias s="~/.helper/ssh.sh"
-alias x="~/.helper/ctx.sh"
-
-alias v="~/.helper/code.sh"
-alias v.="v ."
-
 alias t="toaster"
 alias tu="t update"
 alias th="t helper"
 alias tt="t tools"
+
+c() {
+    toaster c ${1}
+    if [ -f /tmp/toaster-temp-result ]; then
+        cd $(cat /tmp/toaster-temp-result)
+    fi
+}
+
+alias e="toaster e"
+alias n="~/.helper/nsh.sh"
+alias s="toaster s"
+alias x="toaster x"
+
+alias v="toaster v"
+alias v.="v ."
 
 alias kc="kubectl"
 alias hl="helm"
@@ -24,8 +31,8 @@ alias tms='tmux new-session -d && tmux split-window -v && tmux split-window -v &
 
 alias tf="terraform"
 alias tfp="tf init && tf plan"
-alias tfa="tf init && tf apply -auto-approve"
-alias tfd="tf init && tf destroy -auto-approve"
+alias tfa="tf init && tf apply"
+alias tfd="tf init && tf destroy"
 alias tff="tf fmt"
 alias tfg="tf graph"
 alias tfo="tf output"
@@ -35,10 +42,3 @@ alias tfc="rm -rf .terraform && tf init"
 
 export GOPATH=$HOME/work
 export PATH=$PATH:$GOPATH/bin
-
-c() {
-    ~/.helper/cdw.sh ${1}
-    if [ -f /tmp/toaster-helper-cdw-result ]; then
-        cd $(cat /tmp/toaster-helper-cdw-result)
-    fi
-}
