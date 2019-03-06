@@ -11,5 +11,8 @@ curl -sL toast.sh/install | bash
 ## usage
 
 ```bash
-toaster helper
+toaster c
+toaster e
+toaster s
+toaster v
 ```
