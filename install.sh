@@ -71,21 +71,23 @@ mkdir -p ${COPY_PATH}
 mv -f ${DIST} ${COPY_PATH}/toaster
 
 # alias
-BASH_ALIAS="${HOME}/.bash_aliases"
+mkdir -p ${HOME}/.toaster
+ALIAS="${HOME}/.toaster/aliases"
 
-curl -sL -o ${BASH_ALIAS} https://github.com/${USERNAME}/${REPONAME}/releases/download/${VERSION}/alias
+curl -sL -o ${ALIAS} https://github.com/${USERNAME}/${REPONAME}/releases/download/${VERSION}/alias
 
-if [ -f ${BASH_ALIAS} ]; then
+if [ -f ${ALIAS} ]; then
     touch ~/.bashrc
-    HAS_ALIAS="$(cat ${HOME}/.bashrc | grep bash_aliases | wc -l | xargs)"
+    HAS_ALIAS="$(cat ${HOME}/.bashrc | grep toaster_aliases | wc -l | xargs)"
 
     if [ "x${HAS_ALIAS}" == "x0" ]; then
-        echo "if [ -f ~/.bash_aliases ]; then" >> ${HOME}/.bashrc
-        echo "  . ~/.bash_aliases" >> ${HOME}/.bashrc
+        echo "# toaster_aliases" >> ${HOME}/.bashrc
+        echo "if [ -f ~/.toaster/aliases ]; then" >> ${HOME}/.bashrc
+        echo "  . ~/.toaster/aliases" >> ${HOME}/.bashrc
         echo "fi" >> ${HOME}/.bashrc
     fi
 
-    . ${BASH_ALIAS}
+    . ${ALIAS}
 fi
 
 # done
