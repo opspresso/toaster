@@ -285,11 +285,17 @@ _env() {
 
     # cp -f ${ENV_DIR}/${_NAME} ~/.aws/credentials
 
-    echo "[default]" > ~/.aws/credentials
-    echo "aws_access_key_id=$(sed -n 1p ${ENV_DIR}/${_NAME})" >> ~/.aws/credentials
-    echo "aws_secret_access_key=$(sed -n 2p ${ENV_DIR}/${_NAME})" >> ~/.aws/credentials
+    ACCESS_KEY="$(sed -n 1p ${ENV_DIR}/${_NAME})"
+    SECRET_KEY="$(sed -n 2p ${ENV_DIR}/${_NAME})"
 
-    _result "${_NAME}  ${_REGION}  ${_OUTPUT}"
+    echo "[default]" > ~/.aws/credentials
+    echo "aws_access_key_id=${ACCESS_KEY}" >> ~/.aws/credentials
+    echo "aws_secret_access_key=${SECRET_KEY}" >> ~/.aws/credentials
+
+    _result "${_NAME}"
+    _result "${_REGION}"
+    _result "${ACCESS_KEY}"
+    _result "**********${SECRET_KEY:30}"
 }
 
 _ssh() {
