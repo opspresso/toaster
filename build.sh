@@ -50,7 +50,6 @@ _error() {
 _prepare() {
     # target
     mkdir -p ${SHELL_DIR}/target/dist
-    mkdir -p ${SHELL_DIR}/target/helper
 
     # 755
     find ./** | grep [.]sh | xargs chmod 755
@@ -119,6 +118,7 @@ _package() {
 
     # target/dist/
     cp -rf ${SHELL_DIR}/toaster.sh ${SHELL_DIR}/target/dist/toaster
+    cp -rf ${SHELL_DIR}/alias.sh   ${SHELL_DIR}/target/dist/alias
 
     # version
     _gen_version
@@ -131,14 +131,6 @@ _package() {
     elif [ "${OS_NAME}" == "darwin" ]; then
         sed -i "" -e "s/THIS_VERSION=.*/THIS_VERSION=${VERSION}/" ${SHELL_DIR}/target/dist/toaster
     fi
-
-    # target/dist/helper.tar.gz
-    pushd ${SHELL_DIR}/helper
-    tar -czf ../target/dist/helper.tar.gz *
-    popd
-
-    # target/helper/
-    cp -rf ${SHELL_DIR}/helper/* ${SHELL_DIR}/target/helper/
 
     # target/
     cp -rf ${SHELL_DIR}/web/* ${SHELL_DIR}/target/

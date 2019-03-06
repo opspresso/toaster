@@ -209,7 +209,7 @@ _cdw() {
 
     printf "${SELECTED}" > ${TEMP}
 
-    _result "${SELECTED}"
+    _command "cd ${SELECTED}"
 }
 
 _git() {
@@ -278,7 +278,7 @@ _env() {
 
     cp -f ${ENV_DIR}/${_NAME} ~/.aws/credentials
 
-    _result "${_NAME} ${_REGION} ${_OUTPUT}"
+    _result "${_NAME}  ${_REGION}  ${_OUTPUT}"
 }
 
 _ssh() {
@@ -486,4 +486,4 @@ _toast() {
 
 _toast
 
-_success
+_success "done."
