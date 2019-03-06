@@ -553,3 +553,5 @@ _toast() {
 }
 
 _toast
+
+_success
