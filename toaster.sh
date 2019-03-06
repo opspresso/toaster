@@ -8,7 +8,6 @@ CMD=$1
 PARAM1=$2
 PARAM2=$3
 PARAM3=$4
-ALL=$*
 
 CONFIG_DIR="${HOME}/.toaster"
 
@@ -25,10 +24,6 @@ TEMP=/tmp/toaster-temp-result
 
 command -v fzf > /dev/null && FZF=true
 command -v tput > /dev/null && TPUT=true
-
-_bar() {
-    _echo "================================================================================"
-}
 
 _echo() {
     if [ "${TPUT}" != "" ] && [ "$2" != "" ]; then
@@ -229,11 +224,6 @@ _cdw() {
     _command "cd ${SELECTED}"
 }
 
-_git() {
-    _src_dir
-
-}
-
 _code() {
     _src_dir
 
@@ -306,13 +296,14 @@ _ssh() {
     _USER=${PARAM3}
 
     HISTORY="${CONFIG_DIR}/ssh-history"
+    touch ${HISTORY}
 
     # history
     if [ -z ${_USER} ]; then
         if [ -f ${HISTORY} ]; then
             _result "${HISTORY}"
 
-            cat ${HISTORY} > ${LIST}
+            cat ${HISTORY} | sort > ${LIST}
 
             _select_one
 
@@ -411,6 +402,96 @@ _update() {
 _tools() {
     curl -sL toast.sh/tools | bash
     exit 0
+}
+
+_git() {
+    CMD=$PARAM1
+    MSG=$PARAM2
+    TAG=$PARAM3
+    ALL=$*
+
+    _git_prepare
+
+    case ${CMD} in
+        cl|clone)
+            git_clone
+            ;;
+        r|remote)
+            git_remote
+            ;;
+        b|branch)
+            git_branch
+            ;;
+        t|tag)
+            git_tag
+            ;;
+        d|diff)
+            git_diff
+            ;;
+        c|commit)
+            git_pull
+            git_commit ${ALL}
+            git_push
+            ;;
+        p|pp)
+            git_pull
+            git_push
+            ;;
+        pl|pull)
+            git_pull
+            ;;
+        ph|push)
+            git_push
+            ;;
+        rm|remove)
+            git_rm
+            ;;
+        *)
+            git_usage
+            ;;
+    esac
+}
+
+_git_prepare() {
+    LIST=$(echo ${NOW_DIR} | tr "/" " ")
+    DETECT=false
+
+    for V in ${LIST}; do
+        if [ -z ${PROVIDER} ]; then
+            GIT_PWD="${GIT_PWD}/${V}"
+        fi
+        if [ "${DETECT}" == "true" ]; then
+            if [ -z ${PROVIDER} ]; then
+                PROVIDER="${V}"
+            elif [ -z ${MY_ID} ]; then
+                MY_ID="${V}"
+            fi
+        elif [ "${V}" == "src" ]; then
+            DETECT=true
+        fi
+    done
+
+    # git@github.com:
+    # ssh://git@8.8.8.8:443/
+    if [ ! -z ${PROVIDER} ]; then
+        if [ "${PROVIDER}" == "github.com" ]; then
+            GIT_URL="git@${PROVIDER}:"
+        elif [ "${PROVIDER}" == "gitlab.com" ]; then
+            GIT_URL="git@${PROVIDER}:"
+        else
+            if [ -f ${GIT_PWD}/.git_url ]; then
+                GIT_URL=$(cat ${GIT_PWD}/.git_url)
+            else
+                _read "Please input git url. (ex: ssh://git@8.8.8.8:443/): "
+
+                GIT_URL=${ANSWER}
+
+                if [ ! -z ${GIT_URL} ]; then
+                    echo "${GIT_URL}" > ${GIT_PWD}/.git_url
+                fi
+            fi
+        fi
+    fi
 }
 
 _toast() {
