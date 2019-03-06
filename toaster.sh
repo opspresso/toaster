@@ -10,6 +10,7 @@ CMD=$1
 PARAM1=$2
 PARAM2=$3
 PARAM3=$4
+ALL=$*
 
 CONFIG_DIR="${HOME}/.toaster"
 
@@ -40,7 +41,6 @@ _echo() {
 }
 
 _read() {
-    echo
     if [ "${TPUT}" != "" ]; then
         read -p "$(tput setaf 6)$1$(tput sgr0)" ANSWER
     else
@@ -49,26 +49,20 @@ _read() {
 }
 
 _result() {
-    echo
     _echo "# $@" 4
 }
 
 _command() {
-    echo
     _echo "$ $@" 3
 }
 
 _success() {
-    echo
     _echo "+ $@" 2
-    echo
     exit 0
 }
 
 _error() {
-    echo
     _echo "- $@" 1
-    echo
     exit 1
 }
 
@@ -88,8 +82,6 @@ _select_one() {
         if [ "${FZF}" != "" ]; then
             SELECTED=$(cat ${LIST} | fzf --reverse --no-mouse --height=10 --bind=left:page-up,right:page-down)
         else
-            echo
-
             IDX=0
             while read VAL; do
                 IDX=$(( ${IDX} + 1 ))
