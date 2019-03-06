@@ -337,11 +337,14 @@ _ssh() {
 
     # host
     if [ -z ${_HOST} ]; then
-        aws ec2 describe-instances --query "Reservations[*].Instances[*].PublicIpAddress" --output=text > ${LIST}
+        aws ec2 describe-instances \
+            --filters "Name=tag:Type,Values=bastion" \
+            --query "Reservations[].Instances[].{Name:Tags[?Key=='Name'] | [0].Value, Ip:PublicIpAddress}" \
+            --output=text > ${LIST}
 
         _select_one
 
-        _HOST="${SELECTED}"
+        _HOST="$(echo ${SELECTED} | awk '{print $1}')"
 
         if [ -z ${_HOST} ]; then
             _read "Please input ssh host. []: "
