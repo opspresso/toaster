@@ -189,11 +189,17 @@ _pem_dir() {
     fi
 }
 
-_save_conf() {
-    echo "# toaster conf" > ${CONFIG}
+_save() {
+    echo "# toaster" > ${CONFIG}
     echo "SRC_DIR=${SRC_DIR}" >> ${CONFIG}
     echo "ENV_DIR=${ENV_DIR}" >> ${CONFIG}
     echo "PEM_DIR=${PEM_DIR}" >> ${CONFIG}
+}
+
+_reset() {
+    SRC_DIR=
+    ENV_DIR=
+    PEM_DIR=
 }
 
 _cdw() {
@@ -387,58 +393,8 @@ _ctx() {
 
 _update() {
     _echo "# version: ${THIS_VERSION}" 3
-    curl -sL toast.sh/install | bash -s ${SUB}
+    curl -sL toast.sh/install | bash -s ${PARAM1}
     exit 0
-}
-
-_helper() {
-    _result "helper package version: ${THIS_VERSION}"
-
-    DIST=/tmp/helper.tar.gz
-    rm -rf ${DIST}
-
-    # download
-    curl -sL -o ${DIST} https://github.com/nalbam/toaster/releases/download/${THIS_VERSION}/helper.tar.gz
-
-    if [ ! -f ${DIST} ]; then
-        _error "Can not download."
-    fi
-
-    _result "helper package downloaded."
-
-    HELPER_DIR="${HOME}/.helper"
-    mkdir -p ${HELPER_DIR}
-
-    if [ -d ${HOME}/helper ]; then
-        mv ${HOME}/helper ${HELPER_DIR}
-    fi
-
-    # install
-    tar -zxf ${DIST} -C ${HELPER_DIR}
-
-    BASH_ALIAS="${HOME}/.bash_aliases"
-
-    # alias
-    if [ -f ${HELPER_DIR}/alias.sh ]; then
-        cp -rf ${HELPER_DIR}/alias.sh ${BASH_ALIAS}
-        chmod 644 ${BASH_ALIAS}
-    fi
-
-    if [ -f ${BASH_ALIAS} ]; then
-        touch ~/.bashrc
-        HAS_ALIAS="$(cat ${HOME}/.bashrc | grep bash_aliases | wc -l | xargs)"
-
-        if [ "x${HAS_ALIAS}" == "x0" ]; then
-            echo "if [ -f ~/.bash_aliases ]; then" >> ${HOME}/.bashrc
-            echo "  . ~/.bash_aliases" >> ${HOME}/.bashrc
-            echo "fi" >> ${HOME}/.bashrc
-        fi
-
-        . ${BASH_ALIAS}
-    fi
-
-    # chmod 755
-    find ${HELPER_DIR}/** | grep [.]sh | xargs chmod 755
 }
 
 _tools() {
@@ -468,11 +424,11 @@ _toast() {
         v|code)
             _code
             ;;
+        r|reset)
+            _reset
+            ;;
         u|update)
             _update
-            ;;
-        h|helper)
-            _helper
             ;;
         t|tools)
             _tools
@@ -481,7 +437,7 @@ _toast() {
             _usage
     esac
 
-    _save_conf
+    _save
 }
 
 _toast

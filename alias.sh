@@ -6,18 +6,18 @@ alias th="t helper"
 alias tt="t tools"
 
 c() {
-    toaster c ${1}
+    toaster cdw ${1}
     if [ -f /tmp/toaster-temp-result ]; then
         cd $(cat /tmp/toaster-temp-result)
     fi
 }
 
-alias e="toaster e"
-alias n="~/.helper/nsh.sh"
-alias s="toaster s"
-alias x="toaster x"
+alias e="toaster env"
+alias n="~/.helper/nsh.sh" # "toaster git"
+alias s="toaster ssh"
+alias x="toaster ctx"
 
-alias v="toaster v"
+alias v="toaster code"
 alias v.="v ."
 
 alias kc="kubectl"
