@@ -1,7 +1,5 @@
 #!/bin/bash
 
-# curl -sL toast.sh/install | bash
-
 OS_NAME="$(uname | awk '{print tolower($0)}')"
 
 THIS_VERSION=v0.0.0
@@ -41,29 +39,51 @@ _echo() {
 }
 
 _read() {
-    if [ "${TPUT}" != "" ]; then
-        read -p "$(tput setaf 6)$1$(tput sgr0)" ANSWER
+    echo
+    if [ "${2}" == "" ]; then
+        if [ "${TPUT}" != "" ]; then
+            read -p "$(tput setaf 6)$1$(tput sgr0)" ANSWER
+        else
+            read -p "$1" ANSWER
+        fi
     else
-        read -p "$1" ANSWER
+        if [ "${TPUT}" != "" ]; then
+            read -s -p "$(tput setaf 6)$1$(tput sgr0)" ANSWER
+        else
+            read -s -p "$1" ANSWER
+        fi
+        echo
     fi
 }
 
 _result() {
+    echo
     _echo "# $@" 4
 }
 
 _command() {
+    echo
     _echo "$ $@" 3
 }
 
 _success() {
+    echo
     _echo "+ $@" 2
     exit 0
 }
 
 _error() {
+    echo
     _echo "- $@" 1
     exit 1
+}
+
+_replace() {
+    if [ "${OS_NAME}" == "darwin" ]; then
+        sed -i "" -e "$1" $2
+    else
+        sed -i -e "$1" $2
+    fi
 }
 
 _select_one() {
@@ -82,6 +102,8 @@ _select_one() {
         if [ "${FZF}" != "" ]; then
             SELECTED=$(cat ${LIST} | fzf --reverse --no-mouse --height=10 --bind=left:page-up,right:page-down)
         else
+            echo
+
             IDX=0
             while read VAL; do
                 IDX=$(( ${IDX} + 1 ))
@@ -108,22 +130,19 @@ _select_one() {
 
 ################################################################################
 
-_logo() {
-    #figlet toaster
-    _bar
-    _echo "  _                  _             "
-    _echo " | |_ ___   __ _ ___| |_ ___ _ __  "
-    _echo " | __/ _ \ / _' / __| __/ _ \ '__| "
-    _echo " | || (_) | (_| \__ \ ||  __/ |    "
-    _echo "  \__\___/ \__,_|___/\__\___|_|    ${THIS_VERSION} "
-    _bar
-}
-
 _usage() {
-    _logo
-    _echo " Usage: `basename $0` {update|helper|tools|version} "
-    _bar
-    _error
+    #figlet toaster
+cat <<EOF
+================================================================================
+  _                  _
+ | |_ ___   __ _ ___| |_ ___ _ __
+ | __/ _ \ / _' / __| __/ _ \ '__|
+ | || (_) | (_| \__ \ ||  __/ |
+  \__\___/ \__,_|___/\__\___|_|    ${THIS_VERSION}
+================================================================================
+ Usage: `basename $0` {update|helper|tools|version}
+================================================================================
+EOF
 }
 
 _prepare() {
