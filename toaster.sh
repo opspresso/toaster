@@ -345,9 +345,9 @@ _ssh() {
 
         if [ -z ${_HOST} ]; then
             _read "Please input ssh host. []: "
-        fi
 
-        _HOST="${ANSWER}"
+            _HOST="${ANSWER}"
+        fi
     fi
     if [ -z ${_HOST} ]; then
         _error
