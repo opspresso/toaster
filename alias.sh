@@ -13,7 +13,7 @@ c() {
 }
 
 alias e="toaster env"
-alias n="~/.helper/nsh.sh" # "toaster git"
+alias n="toaster git"
 alias s="toaster ssh"
 alias x="toaster ctx"
 
