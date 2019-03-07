@@ -20,10 +20,9 @@ alias x="toaster ctx"
 alias v="toaster code"
 alias v.="v ."
 
-alias ku="kubectl"
-alias he="helm"
-
-alias va="valve"
+alias kc="kubectl"
+alias hc="helm"
+alias vc="valve"
 
 alias tm="tmux"
 alias tmb='tmux new-session -d && tmux split-window -h && tmux split-window -v && tmux select-pane -L && tmux split-window -v && tmux select-pane -U && tmux attach-session -d'
