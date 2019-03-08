@@ -506,6 +506,8 @@ _git_prepare() {
             GIT_URL="git@${PROVIDER}:"
         elif [ "${PROVIDER}" == "gitlab.com" ]; then
             GIT_URL="git@${PROVIDER}:"
+        elif [ "${PROVIDER}" == "keybase" ]; then
+            GIT_URL="${PROVIDER}://"
         else
             if [ -f ${GIT_PWD}/.git_url ]; then
                 GIT_URL=$(cat ${GIT_PWD}/.git_url)
