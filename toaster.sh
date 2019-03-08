@@ -9,6 +9,7 @@ PARAM1=$2
 PARAM2=$3
 PARAM3=$4
 PARAM4=$5
+PARAMS=$*
 
 CONFIG_DIR="${HOME}/.toaster"
 
@@ -446,7 +447,7 @@ _git() {
             ;;
         c|commit)
             git_pull
-            git_commit ${ALL}
+            git_commit ${PARAMS}
             git_push
             ;;
         p|pp)
@@ -473,7 +474,6 @@ _git_prepare() {
     CMD=$PARAM2
     MSG=$PARAM3
     TAG=$PARAM4
-    ALL=$*
 
     if [ -z ${CMD} ]; then
         _error
@@ -655,7 +655,7 @@ git_commit() {
     shift 2
     MSG=$*
 
-    if [ -z ${MSG} ]; then
+    if [ "${MSG}" == "" ]; then
         _error
     fi
 
