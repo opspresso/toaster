@@ -544,9 +544,22 @@ _git_prepare() {
         cl|clone|rm|remove)
             ;;
         *)
-            cd ${NOW_DIR}/${PROJECT}
+            git_dir
             ;;
     esac
+}
+
+git_dir() {
+    cd ${NOW_DIR}/${PROJECT}
+
+    # selected branch
+    BRANCH=$(git branch | grep \* | cut -d' ' -f2)
+
+    if [ -z ${BRANCH} ]; then
+        BRANCH="master"
+    fi
+
+    _result "${BRANCH}"
 }
 
 git_clone() {
@@ -557,7 +570,7 @@ git_clone() {
         _error "Source directory doesn't exists. [${NOW_DIR}/${PROJECT}]"
     fi
 
-    cd ${NOW_DIR}/${PROJECT}
+    git_dir
 
     # https://github.com/awslabs/git-secrets
 
