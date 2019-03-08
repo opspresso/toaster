@@ -433,6 +433,9 @@ _git() {
         cl|clone)
             git_clone
             ;;
+        rm|remove)
+            git_rm
+            ;;
         r|remote)
             git_remote
             ;;
@@ -459,9 +462,6 @@ _git() {
             ;;
         ph|push)
             git_push
-            ;;
-        rm|remove)
-            git_rm
             ;;
         # *)
         #     git_usage
@@ -529,14 +529,22 @@ _git_prepare() {
                 PROJECT=${MSG}
             fi
             if [ -d ${NOW_DIR}/${PROJECT} ]; then
-                _error "Source directory already exists."
+                _error "Source directory already exists. [${NOW_DIR}/${PROJECT}]"
             fi
             ;;
         *)
             PROJECT=${APP}
             if [ ! -d ${NOW_DIR}/${PROJECT} ]; then
-                _error "Source directory doesn't exists."
+                _error "Source directory doesn't exists. [${NOW_DIR}/${PROJECT}]"
             fi
+            ;;
+    esac
+
+    case ${CMD} in
+        cl|clone|rm|remove)
+            ;;
+        *)
+            cd ${NOW_DIR}/${PROJECT}
             ;;
     esac
 }
@@ -546,10 +554,10 @@ git_clone() {
     git clone ${GIT_URL}${USERNAME}/${APP}.git ${PROJECT}
 
     if [ ! -d ${NOW_DIR}/${PROJECT} ]; then
-        _error "Not set project."
+        _error "Source directory doesn't exists. [${NOW_DIR}/${PROJECT}]"
     fi
 
-    pushd ${NOW_DIR}/${PROJECT}
+    cd ${NOW_DIR}/${PROJECT}
 
     # https://github.com/awslabs/git-secrets
 
@@ -561,13 +569,13 @@ git_clone() {
 
     _command "git branch -v"
     git branch -v
+}
 
-    popd
+git_rm() {
+    rm -rf ${NOW_DIR}/${PROJECT}
 }
 
 git_remote() {
-    pushd ${NOW_DIR}/${PROJECT}
-
     _command "git remote"
     git remote
 
@@ -589,13 +597,9 @@ git_remote() {
 
     _command "git remote"
     git remote
-
-    popd
 }
 
 git_branch() {
-    pushd ${NOW_DIR}/${PROJECT}
-
     _command "git branch -a"
     git branch -a
 
@@ -633,25 +637,17 @@ git_branch() {
 
     _command "git branch -v"
     git branch -v
-
-    popd
 }
 
 git_diff() {
-    pushd ${NOW_DIR}/${PROJECT}
-
     _command "git branch -v"
     git branch -v
 
     _command "git diff"
     git diff
-
-    popd
 }
 
 git_commit() {
-    pushd ${NOW_DIR}/${PROJECT}
-
     shift 2
     MSG=$*
 
@@ -664,13 +660,9 @@ git_commit() {
 
     _command "git commit -m ${MSG}"
     git commit -m ${MSG}
-
-    popd
 }
 
 git_pull() {
-    pushd ${NOW_DIR}/${PROJECT}
-
     _command "git branch -v"
     git branch -v
 
@@ -686,25 +678,17 @@ git_pull() {
             git pull ${REMOTE} ${BRANCH}
         fi
     done < ${REMOTES}
-
-    popd
 }
 
 git_push() {
-    pushd ${NOW_DIR}/${PROJECT}
-
     _command "git branch -v"
     git branch -v
 
     _command "git push origin ${BRANCH}"
     git push origin ${BRANCH}
-
-    popd
 }
 
 git_tag() {
-    pushd ${NOW_DIR}/${PROJECT}
-
     _command "git branch -v"
     git branch -v
 
@@ -713,8 +697,6 @@ git_tag() {
 
     _command "git tag"
     git tag
-
-    popd
 }
 
 _toast() {
