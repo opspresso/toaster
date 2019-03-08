@@ -8,6 +8,7 @@ CMD=$1
 PARAM1=$2
 PARAM2=$3
 PARAM3=$4
+PARAM4=$5
 
 CONFIG_DIR="${HOME}/.toaster"
 
@@ -135,7 +136,7 @@ cat <<EOF
  | || (_) | (_| \__ \ ||  __/ |
   \__\___/ \__,_|___/\__\___|_|    ${THIS_VERSION}
 ================================================================================
- Usage: `basename $0` {update|helper|tools|version}
+ Usage: `basename $0` {cdw|env|ctx|ssh|update|tools}
 ================================================================================
 EOF
 }
@@ -425,11 +426,6 @@ _tools() {
 }
 
 _git() {
-    CMD=$PARAM1
-    MSG=$PARAM2
-    TAG=$PARAM3
-    ALL=$*
-
     _git_prepare
 
     case ${CMD} in
@@ -466,13 +462,25 @@ _git() {
         rm|remove)
             git_rm
             ;;
-        *)
-            git_usage
-            ;;
+        # *)
+        #     git_usage
+        #     ;;
     esac
 }
 
 _git_prepare() {
+    APP=$(echo "$PARAM1" | sed -e "s/\///g")
+    CMD=$PARAM2
+    MSG=$PARAM3
+    TAG=$PARAM4
+    ALL=$*
+
+    if [ -z ${CMD} ]; then
+        _error
+    fi
+
+    NOW_DIR=$(pwd)
+
     LIST=$(echo ${NOW_DIR} | tr "/" " ")
     DETECT=false
 
@@ -484,7 +492,7 @@ _git_prepare() {
             if [ -z ${PROVIDER} ]; then
                 PROVIDER="${V}"
             elif [ -z ${MY_ID} ]; then
-                MY_ID="${V}"
+                USERNAME="${V}"
             fi
         elif [ "${V}" == "src" ]; then
             DETECT=true
@@ -492,7 +500,7 @@ _git_prepare() {
     done
 
     # git@github.com:
-    # ssh://git@8.8.8.8:443/
+    # ssh://git@8.8.8.8:88/
     if [ ! -z ${PROVIDER} ]; then
         if [ "${PROVIDER}" == "github.com" ]; then
             GIT_URL="git@${PROVIDER}:"
@@ -502,7 +510,7 @@ _git_prepare() {
             if [ -f ${GIT_PWD}/.git_url ]; then
                 GIT_URL=$(cat ${GIT_PWD}/.git_url)
             else
-                _read "Please input git url. (ex: ssh://git@8.8.8.8:443/): "
+                _read "Please input git url. (ex: ssh://git@8.8.8.8:88/): "
 
                 GIT_URL=${ANSWER}
 
@@ -512,6 +520,201 @@ _git_prepare() {
             fi
         fi
     fi
+
+    case ${CMD} in
+        cl|clone)
+            if [ -z ${MSG} ]; then
+                PROJECT=${APP}
+            else
+                PROJECT=${MSG}
+            fi
+            if [ -d ${NOW_DIR}/${PROJECT} ]; then
+                _error "Source directory already exists."
+            fi
+            ;;
+        *)
+            PROJECT=${APP}
+            if [ ! -d ${NOW_DIR}/${PROJECT} ]; then
+                _error "Source directory doesn't exists."
+            fi
+            ;;
+    esac
+}
+
+git_clone() {
+    _command "git clone ${GIT_URL}${USERNAME}/${APP}.git ${PROJECT}"
+    git clone ${GIT_URL}${USERNAME}/${APP}.git ${PROJECT}
+
+    if [ ! -d ${NOW_DIR}/${PROJECT} ]; then
+        _error "Not set project."
+    fi
+
+    pushd ${NOW_DIR}/${PROJECT}
+
+    # https://github.com/awslabs/git-secrets
+
+    _command "git secrets --install"
+    git secrets --install
+
+    _command "git secrets --register-aws"
+    git secrets --register-aws
+
+    _command "git branch -v"
+    git branch -v
+
+    popd
+}
+
+git_remote() {
+    pushd ${NOW_DIR}/${PROJECT}
+
+    _command "git remote"
+    git remote
+
+    if [ -z ${MSG} ]; then
+        _error
+    fi
+
+    REMOTES="/tmp/${APP}-remote"
+    git remote > ${REMOTES}
+
+    while read VAR; do
+        if [ "${VAR}" == "${MSG}" ]; then
+            _error "Remote '${MSG}' already exists."
+        fi
+    done < ${REMOTES}
+
+    _command "git remote add --track master ${MSG} ${GIT_URL}${MSG}/${APP}.git"
+    git remote add --track master ${MSG} ${GIT_URL}${MSG}/${APP}.git
+
+    _command "git remote"
+    git remote
+
+    popd
+}
+
+git_branch() {
+    pushd ${NOW_DIR}/${PROJECT}
+
+    _command "git branch -a"
+    git branch -a
+
+    if [ -z ${MSG} ]; then
+        _error
+    fi
+    if [ "${MSG}" == "${BRANCH}" ]; then
+        _error "Already on '${BRANCH}'."
+    fi
+
+    HAS="false"
+    BRANCHES="/tmp/${APP}-branch"
+    git branch -a > ${BRANCHES}
+
+    while read VAR; do
+        ARR=(${VAR})
+        if [ -z ${ARR[1]} ]; then
+            if [ "${ARR[0]}" == "${MSG}" ]; then
+                HAS="true"
+            fi
+        else
+            if [ "${ARR[1]}" == "${MSG}" ]; then
+                HAS="true"
+            fi
+        fi
+    done < ${BRANCHES}
+
+    if [ "${HAS}" != "true" ]; then
+        _command "git branch ${MSG} ${TAG}"
+        git branch ${MSG} ${TAG}
+    fi
+
+    _command "git checkout ${MSG}"
+    git checkout ${MSG}
+
+    _command "git branch -v"
+    git branch -v
+
+    popd
+}
+
+git_diff() {
+    pushd ${NOW_DIR}/${PROJECT}
+
+    _command "git branch -v"
+    git branch -v
+
+    _command "git diff"
+    git diff
+
+    popd
+}
+
+git_commit() {
+    pushd ${NOW_DIR}/${PROJECT}
+
+    shift 2
+    MSG=$*
+
+    if [ -z ${MSG} ]; then
+        _error
+    fi
+
+    _command "git add --all"
+    git add --all
+
+    _command "git commit -m ${MSG}"
+    git commit -m ${MSG}
+
+    popd
+}
+
+git_pull() {
+    pushd ${NOW_DIR}/${PROJECT}
+
+    _command "git branch -v"
+    git branch -v
+
+    REMOTES="/tmp/${APP}-remote"
+    git remote > ${REMOTES}
+
+    _command "git pull origin ${BRANCH}"
+    git pull origin ${BRANCH}
+
+    while read REMOTE; do
+        if [ "${REMOTE}" != "origin" ]; then
+            _command "git pull ${REMOTE} ${BRANCH}"
+            git pull ${REMOTE} ${BRANCH}
+        fi
+    done < ${REMOTES}
+
+    popd
+}
+
+git_push() {
+    pushd ${NOW_DIR}/${PROJECT}
+
+    _command "git branch -v"
+    git branch -v
+
+    _command "git push origin ${BRANCH}"
+    git push origin ${BRANCH}
+
+    popd
+}
+
+git_tag() {
+    pushd ${NOW_DIR}/${PROJECT}
+
+    _command "git branch -v"
+    git branch -v
+
+    _command "git pull"
+    git pull
+
+    _command "git tag"
+    git tag
+
+    popd
 }
 
 _toast() {
