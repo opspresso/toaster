@@ -648,7 +648,7 @@ git_diff() {
 }
 
 git_commit() {
-    shift 2
+    shift 3
     MSG=$*
 
     if [ "${MSG}" == "" ]; then
@@ -659,7 +659,7 @@ git_commit() {
     git add --all
 
     _command "git commit -m ${MSG}"
-    git commit -m ${MSG}
+    git commit -m "${MSG}"
 }
 
 git_pull() {
