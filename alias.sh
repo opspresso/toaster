@@ -2,7 +2,6 @@
 
 alias t="toaster"
 alias tu="t update"
-alias th="t helper"
 alias tt="t tools"
 
 c() {
@@ -16,9 +15,7 @@ alias e="toaster env"
 alias n="toaster git"
 alias s="toaster ssh"
 alias x="toaster ctx"
-
 alias v="toaster code"
-alias v.="v ."
 
 alias kc="kubectl"
 alias hc="helm"
