@@ -213,40 +213,52 @@ _reset() {
 _cdw() {
     _src_dir
 
-    find ${SRC_DIR} -maxdepth 2 -type d -exec ls -d "{}" \; > ${LIST}
+    _DIR=${PARAM1}
 
-    _select_one
+    if [ -z ${_DIR} ]; then
+        find ${SRC_DIR} -maxdepth 2 -type d -exec ls -d "{}" \; > ${LIST}
 
-    if [ -z ${SELECTED} ] || [ ! -d ${SELECTED} ]; then
+        _select_one
+
+        _DIR=${SELECTED}
+    fi
+
+    if [ -z ${_DIR} ] || [ ! -d ${_DIR} ]; then
         _error
     fi
 
-    printf "${SELECTED}" > ${TEMP}
+    printf "${_DIR}" > ${TEMP}
 
-    _command "cd ${SELECTED}"
+    _command "cd ${_DIR}"
 }
 
 _code() {
     _src_dir
 
-    find ${SRC_DIR} -maxdepth 2 -type d -exec ls -d "{}" \; > ${LIST}
+    _DIR=${PARAM1}
 
-    _select_one
+    if [ -z ${_DIR} ]; then
+        find ${SRC_DIR} -maxdepth 2 -type d -exec ls -d "{}" \; > ${LIST}
 
-    if [ -z ${SELECTED} ] || [ ! -d ${SELECTED} ]; then
+        _select_one
+
+        _DIR=${SELECTED}
+    fi
+
+    if [ -z ${_DIR} ] || [ ! -d ${_DIR} ]; then
         _error
     fi
 
-    printf "${SELECTED}" > ${TEMP}
+    printf "${_DIR}" > ${TEMP}
 
-    _result "${SELECTED}"
+    _result "${_DIR}"
 
     if [ "${OS_NAME}" == "linux" ]; then
-        /usr/bin/code ${SELECTED}
+        /usr/bin/code ${_DIR}
     elif [ "${OS_NAME}" == "darwin" ]; then
-        /Applications/Visual\ Studio\ Code.app/Contents/Resources/app/bin/code ${SELECTED}
+        /Applications/Visual\ Studio\ Code.app/Contents/Resources/app/bin/code ${_DIR}
     elif [ "${OS_NAME}" == "mingw64_nt-10.0" ]; then
-        /c/Users/${USER:-$(whoami)}/AppData/Local/Programs/Microsoft\ VS\ Code/Code.exe ${SELECTED}
+        /c/Users/${USER:-$(whoami)}/AppData/Local/Programs/Microsoft\ VS\ Code/Code.exe ${_DIR}
     else
         _error
     fi
