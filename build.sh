@@ -202,9 +202,9 @@ _slack() {
 
     FOOTER="<https://github.com/${USERNAME}/${REPONAME}/releases/tag/${VERSION}|${USERNAME}/${REPONAME}>"
 
-    ${SHELL_DIR}/target/slack --token="${SLACK_TOKEN}" --channel="tools" \
-        --emoji=":construction_worker:" --username="toaster" \
-        --footer="${FOOTER}" --footer_icon="https://assets-cdn.github.com/favicon.ico" \
+    curl -sL opspresso.com/tools/slack | bash -s -- \
+        --token="${SLACK_TOKEN}" --username="${REPONAME}" \
+        --footer="${FOOTER}" --footer_icon="https://repo.opspresso.com/favicon/github.png" \
         --color="good" --title="${TITLE}" "\`${VERSION}\`"
 }
 
