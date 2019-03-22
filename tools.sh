@@ -29,9 +29,6 @@ curl -sL ${REPO}/argo | bash
 # terraform
 curl -sL ${REPO}/terraform | bash
 
-# guard
-curl -sL ${REPO}/guard | bash -s "0.1.2"
-
 # nodejs
 curl -sL ${REPO}/nodejs | bash -s "10"
 
