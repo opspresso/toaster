@@ -36,6 +36,3 @@ dist/
 *.pid
 *.log
 *.tmp
-
-# config
-conf/
