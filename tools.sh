@@ -23,9 +23,6 @@ curl -sL ${REPO}/helm | bash
 # draft
 curl -sL ${REPO}/draft | bash
 
-# argo
-curl -sL ${REPO}/argo | bash
-
 # terraform
 curl -sL ${REPO}/terraform | bash
 
