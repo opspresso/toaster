@@ -662,6 +662,11 @@ git_branch() {
     _command "git checkout ${MSG}"
     git checkout ${MSG}
 
+    if [ "${HAS}" == "true" ]; then
+        _command "git pull origin ${MSG}"
+        git pull origin ${MSG}
+    fi
+
     _command "git branch -v"
     git branch -v
 }
