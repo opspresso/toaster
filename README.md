@@ -1,5 +1,7 @@
 # toaster
 
+[![GitHub release](https://img.shields.io/github/release/opspresso/toaster.svg)](https://github.com/opspresso/toaster/releases)
+
 <https://toast.sh>
 
 ## install
