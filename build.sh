@@ -47,6 +47,14 @@ _error() {
     exit 1
 }
 
+_replace() {
+    if [ "${OS_NAME}" == "darwin" ]; then
+        sed -i "" -e "$1" $2
+    else
+        sed -i -e "$1" $2
+    fi
+}
+
 _prepare() {
     # target
     mkdir -p ${SHELL_DIR}/target/dist
@@ -125,11 +133,7 @@ _package() {
     _result "VERSION=${VERSION}"
 
     # replace
-    if [ "${OS_NAME}" == "linux" ]; then
-        sed -i -e "s/THIS_VERSION=.*/THIS_VERSION=${VERSION}/" ${SHELL_DIR}/target/dist/toaster
-    elif [ "${OS_NAME}" == "darwin" ]; then
-        sed -i "" -e "s/THIS_VERSION=.*/THIS_VERSION=${VERSION}/" ${SHELL_DIR}/target/dist/toaster
-    fi
+    _replace "s/THIS_VERSION=.*/THIS_VERSION=${VERSION}/g" ${SHELL_DIR}/target/dist/toaster
 
     # target/
     cp -rf ${SHELL_DIR}/web/* ${SHELL_DIR}/target/
