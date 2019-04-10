@@ -209,11 +209,10 @@ _slack() {
 
     _result "VERSION=${VERSION}"
 
-    FOOTER="<https://github.com/${USERNAME}/${REPONAME}/releases/tag/${VERSION}|${USERNAME}/${REPONAME}>"
-
     curl -sL opspresso.com/tools/slack | bash -s -- \
-        --token="${SLACK_TOKEN}" --emoji=":construction_worker:" --username="${REPONAME}" \
-        --footer="${FOOTER}" --footer_icon="https://repo.opspresso.com/favicon/github.png" \
+        --token="${SLACK_TOKEN}" --username="${REPONAME}" \
+        --footer="<https://github.com/${USERNAME}/${REPONAME}/releases/tag/${VERSION}|${USERNAME}/${REPONAME}>" \
+        --footer_icon="https://repo.opspresso.com/favicon/github.png" \
         --color="good" --title="${TITLE}" "\`${VERSION}\`"
 }
 
