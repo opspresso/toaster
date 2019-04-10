@@ -9,6 +9,8 @@ CMD=${1:-${CIRCLE_JOB}}
 USERNAME=${CIRCLE_PROJECT_USERNAME:-opspresso}
 REPONAME=${CIRCLE_PROJECT_REPONAME:-toaster}
 
+BRANCH=${CIRCLE_BRANCH:-master}
+
 PR_NUM=${CIRCLE_PR_NUMBER}
 PR_URL=${CIRCLE_PULL_REQUEST}
 
@@ -94,12 +96,12 @@ _gen_version() {
         VERSION=$(cat ${SHELL_DIR}/VERSION | xargs)
     fi
 
-    _result "CIRCLE_BRANCH=${CIRCLE_BRANCH}"
+    _result "BRANCH=${BRANCH}"
     _result "PR_NUM=${PR_NUM}"
     _result "PR_URL=${PR_URL}"
 
     # version
-    if [ "${CIRCLE_BRANCH}" == "master" ]; then
+    if [ "${BRANCH}" == "master" ]; then
         VERSION=$(echo ${VERSION} | perl -pe 's/^(([v\d]+\.)*)(\d+)(.*)$/$1.($3+1).$4/e')
         printf "${VERSION}" > ${SHELL_DIR}/target/VERSION
     else
