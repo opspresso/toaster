@@ -314,7 +314,7 @@ _env() {
 _ssh() {
     _pem_dir
 
-    _PEM=${PARAM1}
+    _PEMS=${PARAM1}
     _HOST=${PARAM2}
     _USER=${PARAM3}
 
@@ -333,7 +333,7 @@ _ssh() {
             if [ "${SELECTED}" != "" ]; then
                 ARR=(${SELECTED})
 
-                _PEM=${ARR[0]}
+                _PEMS=${ARR[0]}
                 _HOST=${ARR[1]}
                 _USER=${ARR[2]}
 
@@ -343,7 +343,7 @@ _ssh() {
     fi
 
     # pem
-    if [ -z ${_PEM} ]; then
+    if [ -z ${_PEMS} ]; then
         ls ${PEM_DIR} > ${LIST}
 
         _select_one
@@ -352,9 +352,9 @@ _ssh() {
             _error
         fi
 
-        _PEM="${SELECTED}"
+        _PEMS="${SELECTED}"
     fi
-    if [ -z ${_PEM} ]; then
+    if [ -z ${_PEMS} ]; then
         _error
     fi
 
@@ -381,32 +381,32 @@ _ssh() {
 
     # user
     if [ -z ${_USER} ]; then
-        _read "Please input ssh user. [ec2-user]: "
-
-        _USER="${ANSWER:-ec2-user}"
+        DEFAULT="ec2-user"
+        _read "Please input ssh user. [${DEFAULT}]: "
+        _USER="${ANSWER:-${DEFAULT}}"
     fi
     if [ -z ${_USER} ]; then
         _error
     fi
 
-    if [ ! -f ${PEM_DIR}/${_PEM} ]; then
-        if [ -f ${PEM_DIR}/${_PEM}.pem ]; then
-            _PEM="${_PEM}.pem"
+    if [ ! -f ${PEM_DIR}/${_PEMS} ]; then
+        if [ -f ${PEM_DIR}/${_PEMS}.pem ]; then
+            _PEMS="${_PEMS}.pem"
         else
             _error
         fi
     fi
 
     if [ -z ${FROM_HISTORY} ]; then
-        COUNT=$(cat ${HISTORY} | grep "${_PEM} ${_HOST} ${_USER}" | wc -l | xargs)
+        COUNT=$(cat ${HISTORY} | grep "${_PEMS} ${_HOST} ${_USER}" | wc -l | xargs)
 
         if [ "x${COUNT}" == "x0" ]; then
-            echo "${_PEM} ${_HOST} ${_USER}" >> ${HISTORY}
+            echo "${_PEMS} ${_HOST} ${_USER}" >> ${HISTORY}
         fi
     fi
 
-    _command "ssh -i ${PEM_DIR}/${_PEM} ${_USER}@${_HOST}"
-    ssh -i ${PEM_DIR}/${_PEM} ${_USER}@${_HOST}
+    _command "ssh -i ${PEM_DIR}/${_PEMS} ${_USER}@${_HOST}"
+    ssh -i ${PEM_DIR}/${_PEMS} ${_USER}@${_HOST}
 }
 
 _ctx() {
@@ -425,6 +425,76 @@ _ctx() {
     fi
 
     kubectl config use-context ${_NAME}
+}
+
+_stress() {
+    _REQ=${PARAM1}
+    _CON=${PARAM2}
+    _URL=${PARAM3}
+
+    HISTORY="${CONFIG_DIR}/stress-history"
+    touch ${HISTORY}
+
+    # history
+    if [ -z ${_URL} ]; then
+        if [ -f ${HISTORY} ]; then
+            _result "${HISTORY}"
+
+            cat ${HISTORY} | sort > ${LIST}
+
+            _select_one
+
+            if [ "${SELECTED}" != "" ]; then
+                ARR=(${SELECTED})
+
+                _REQ=${ARR[0]}
+                _CON=${ARR[1]}
+                _URL=${ARR[2]}
+
+                FROM_HISTORY=true
+            fi
+        fi
+    fi
+
+    # requests
+    if [ -z ${_REQ} ]; then
+        DEFAULT="1000000"
+        _read "Please input requests. [${DEFAULT}]: "
+        _REQ="${ANSWER:-${DEFAULT}}"
+    fi
+    if [ -z ${_REQ} ]; then
+        _error
+    fi
+
+    # concurrency
+    if [ -z ${_CON} ]; then
+        DEFAULT="10"
+        _read "Please input concurrency. [${DEFAULT}]: "
+        _CON="${ANSWER:-${DEFAULT}}"
+    fi
+    if [ -z ${_CON} ]; then
+        _error
+    fi
+
+    # url
+    if [ -z ${_URL} ]; then
+        _read "Please input url.: "
+        _URL="${ANSWER}"
+    fi
+    if [ -z ${_URL} ]; then
+        _error
+    fi
+
+    if [ -z ${FROM_HISTORY} ]; then
+        COUNT=$(cat ${HISTORY} | grep "${_REQ} ${_CON} ${_URL}" | wc -l | xargs)
+
+        if [ "x${COUNT}" == "x0" ]; then
+            echo "${_REQ} ${_CON} ${_URL}" >> ${HISTORY}
+        fi
+    fi
+
+    _command "ab -n ${_REQ} -c ${_CON} ${_URL}"
+    ab -n ${_REQ} -c ${_CON} ${_URL}
 }
 
 _update() {
@@ -752,6 +822,9 @@ _toast() {
             ;;
         v|code)
             _code
+            ;;
+        b|stress)
+            _stress
             ;;
         r|reset)
             _reset
