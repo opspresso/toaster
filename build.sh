@@ -11,11 +11,12 @@ REPONAME=${CIRCLE_PROJECT_REPONAME}
 
 BRANCH=${CIRCLE_BRANCH:-master}
 
-BUCKET="www.toast.sh"
-PUBLISH_PATH="${BUCKET}"
-
 GIT_USERNAME="bot"
 GIT_USEREMAIL="bot@nalbam.com"
+
+# GITHUB_TOKEN=
+# PUBLISH_PATH=
+# SLACK_TOKEN=
 
 ################################################################################
 
@@ -139,6 +140,8 @@ _publish() {
     if [ -f ${SHELL_DIR}/target/PR ]; then
         return
     fi
+
+    BUCKET="$(echo "${PUBLISH_PATH}" | cut -d'/' -f1)"
 
     # aws s3 sync
     _command "aws s3 sync ${SHELL_DIR}/target/ s3://${PUBLISH_PATH}/ --acl public-read"
