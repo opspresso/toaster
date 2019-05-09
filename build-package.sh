@@ -59,7 +59,8 @@ _replace() {
 
 _prepare() {
     # target
-    mkdir -p ${SHELL_DIR}/target/dist
+    mkdir -p ${SHELL_DIR}/target/publish
+    mkdir -p ${SHELL_DIR}/target/release
 
     # 755
     find ./** | grep [.]sh | xargs chmod 755
@@ -73,20 +74,22 @@ _package() {
     VERSION=$(cat ${SHELL_DIR}/target/VERSION | xargs)
     _result "VERSION=${VERSION}"
 
-    # target/
-    cp -rf ${SHELL_DIR}/install.sh ${SHELL_DIR}/target/install
-    cp -rf ${SHELL_DIR}/tools.sh   ${SHELL_DIR}/target/tools
-    cp -rf ${SHELL_DIR}/build.sh   ${SHELL_DIR}/target/build
+    # release
+    cp -rf ${SHELL_DIR}/alias.sh   ${SHELL_DIR}/target/release/alias
+    cp -rf ${SHELL_DIR}/toaster.sh ${SHELL_DIR}/target/release/toaster
 
-    # target/dist/
-    cp -rf ${SHELL_DIR}/toaster.sh ${SHELL_DIR}/target/dist/toaster
-    cp -rf ${SHELL_DIR}/alias.sh   ${SHELL_DIR}/target/dist/alias
+    # publish
+    cp -rf ${SHELL_DIR}/alias.sh   ${SHELL_DIR}/target/release/alias
+    cp -rf ${SHELL_DIR}/build.sh   ${SHELL_DIR}/target/publish/build
+    cp -rf ${SHELL_DIR}/install.sh ${SHELL_DIR}/target/publish/install
+    cp -rf ${SHELL_DIR}/toaster.sh ${SHELL_DIR}/target/release/toaster
+    cp -rf ${SHELL_DIR}/tools.sh   ${SHELL_DIR}/target/publish/tools
 
-    # target/
-    cp -rf ${SHELL_DIR}/web/* ${SHELL_DIR}/target/
+    # publish web
+    cp -rf ${SHELL_DIR}/web/* ${SHELL_DIR}/target/publish/
 
     # replace
-    _replace "s/THIS_VERSION=.*/THIS_VERSION=${VERSION}/g" ${SHELL_DIR}/target/dist/toaster
+    _replace "s/THIS_VERSION=.*/THIS_VERSION=${VERSION}/g" ${SHELL_DIR}/target/release/toaster
 }
 
 ################################################################################

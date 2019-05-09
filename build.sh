@@ -63,7 +63,8 @@ _replace() {
 
 _prepare() {
     # target
-    mkdir -p ${SHELL_DIR}/target/dist
+    mkdir -p ${SHELL_DIR}/target/publish
+    mkdir -p ${SHELL_DIR}/target/release
 
     if [ -f ${SHELL_DIR}/target/circleci-stop ]; then
         _success "circleci-stop"
@@ -150,8 +151,8 @@ _publish() {
     BUCKET="$(echo "${PUBLISH_PATH}" | cut -d'/' -f1)"
 
     # aws s3 sync
-    _command "aws s3 sync ${SHELL_DIR}/target/ s3://${PUBLISH_PATH}/ --acl public-read"
-    aws s3 sync ${SHELL_DIR}/target/ s3://${PUBLISH_PATH}/ --acl public-read
+    _command "aws s3 sync ${SHELL_DIR}/target/publish/ s3://${PUBLISH_PATH}/ --acl public-read"
+    aws s3 sync ${SHELL_DIR}/target/publish/ s3://${PUBLISH_PATH}/ --acl public-read
 
     # aws cf reset
     CFID=$(aws cloudfront list-distributions --query "DistributionList.Items[].{Id:Id,Origin:Origins.Items[0].DomainName}[?contains(Origin,'${BUCKET}')] | [0]" | grep 'Id' | cut -d'"' -f4)
@@ -171,7 +172,7 @@ _release() {
     VERSION=$(cat ${SHELL_DIR}/target/VERSION | xargs)
     _result "VERSION=${VERSION}"
 
-    printf "${VERSION}" > ${SHELL_DIR}/target/dist/${VERSION}
+    printf "${VERSION}" > ${SHELL_DIR}/target/release/${VERSION}
 
     if [ -f ${SHELL_DIR}/target/PR ]; then
         GHR_PARAM="-delete -prerelease"
@@ -183,13 +184,13 @@ _release() {
     go get github.com/tcnksm/ghr
 
     # github release
-    _command "ghr ${VERSION} ${SHELL_DIR}/target/dist/"
+    _command "ghr ${VERSION} ${SHELL_DIR}/target/release/"
     ghr -t ${GITHUB_TOKEN:-EMPTY} \
         -u ${USERNAME} \
         -r ${REPONAME} \
         -c ${CIRCLE_SHA1} \
         ${GHR_PARAM} \
-        ${VERSION} ${SHELL_DIR}/target/dist/
+        ${VERSION} ${SHELL_DIR}/target/release/
 }
 
 _slack() {
