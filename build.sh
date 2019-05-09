@@ -11,7 +11,7 @@ REPONAME=${CIRCLE_PROJECT_REPONAME}
 
 BRANCH=${CIRCLE_BRANCH:-master}
 
-BUCKET="www.toast.sh"
+BUCKET="www.toast.sh/${REPONAME}"
 
 GIT_USERNAME="bot"
 GIT_USEREMAIL="bot@nalbam.com"
@@ -140,8 +140,8 @@ _publish() {
     fi
 
     # aws s3 sync
-    _command "aws s3 sync ${SHELL_DIR}/target/ s3://${BUCKET}/${REPONAME}/ --acl public-read"
-    aws s3 sync ${SHELL_DIR}/target/ s3://${BUCKET}/${REPONAME}/ --acl public-read
+    _command "aws s3 sync ${SHELL_DIR}/target/ s3://${BUCKET}/ --acl public-read"
+    aws s3 sync ${SHELL_DIR}/target/ s3://${BUCKET}/ --acl public-read
 
     # aws cf reset
     CFID=$(aws cloudfront list-distributions --query "DistributionList.Items[].{Id:Id, DomainName: DomainName, OriginDomainName: Origins.Items[0].DomainName}[?contains(OriginDomainName, '${BUCKET}')] | [0]" | jq -r '.Id')
