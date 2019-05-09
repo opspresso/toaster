@@ -30,7 +30,7 @@ jobs:
           name: Publish
           command: |
             chmod 755 ./works/build.sh
-            ./works/build.sh publish
+            ./works/build.sh publish ./works
   release:
     docker:
       - image: circleci/golang
@@ -41,7 +41,7 @@ jobs:
           name: Release
           command: |
             chmod 755 ./works/build.sh
-            ./works/build.sh release
+            ./works/build.sh release ./works
   slack:
     docker:
       - image: circleci/python
@@ -52,7 +52,7 @@ jobs:
           name: Slack
           command: |
             chmod 755 ./works/build.sh
-            ./works/build.sh slack
+            ./works/build.sh slack ./works
 
 workflows:
   version: 2
