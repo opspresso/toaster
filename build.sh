@@ -6,13 +6,15 @@ SHELL_DIR=$(dirname $0)
 
 CMD=${1:-${CIRCLE_JOB}}
 
-USERNAME=${CIRCLE_PROJECT_USERNAME:-opspresso}
-REPONAME=${CIRCLE_PROJECT_REPONAME:-toaster}
+USERNAME=${CIRCLE_PROJECT_USERNAME}
+REPONAME=${CIRCLE_PROJECT_REPONAME}
 
 BRANCH=${CIRCLE_BRANCH:-master}
 
-PR_NUM=${CIRCLE_PR_NUMBER}
-PR_URL=${CIRCLE_PULL_REQUEST}
+BUCKET="www.toast.sh"
+
+GIT_USERNAME="bot"
+GIT_USEREMAIL="bot@nalbam.com"
 
 ################################################################################
 
@@ -61,129 +63,118 @@ _prepare() {
     # target
     mkdir -p ${SHELL_DIR}/target/dist
 
-    # 755
-    find ./** | grep [.]sh | xargs chmod 755
+    if [ -f ${SHELL_DIR}/target/circleci-stop ]; then
+        _success "circleci-stop"
+    fi
 }
 
-_get_version() {
-    # latest versions
-    VERSION=$(curl -s https://api.github.com/repos/${USERNAME}/${REPONAME}/releases/latest | grep tag_name | cut -d'"' -f4 | xargs)
-
-    if [ -z ${VERSION} ]; then
-        VERSION=$(curl -sL toast.sh/VERSION | xargs)
-    fi
-
+_package() {
     if [ ! -f ${SHELL_DIR}/VERSION ]; then
-        printf "v0.0.0" > ${SHELL_DIR}/VERSION
-    fi
-
-    if [ -z ${VERSION} ]; then
-        VERSION=$(cat ${SHELL_DIR}/VERSION | xargs)
-    fi
-}
-
-_gen_version() {
-    _get_version
-
-    # release version
-    MAJOR=$(cat ${SHELL_DIR}/VERSION | xargs | cut -d'.' -f1)
-    MINOR=$(cat ${SHELL_DIR}/VERSION | xargs | cut -d'.' -f2)
-
-    LATEST_MAJOR=$(echo ${VERSION} | cut -d'.' -f1)
-    LATEST_MINOR=$(echo ${VERSION} | cut -d'.' -f2)
-
-    if [ "${MAJOR}" != "${LATEST_MAJOR}" ] || [ "${MINOR}" != "${LATEST_MINOR}" ]; then
-        VERSION=$(cat ${SHELL_DIR}/VERSION | xargs)
+        _error "not found VERSION"
     fi
 
     _result "BRANCH=${BRANCH}"
     _result "PR_NUM=${PR_NUM}"
     _result "PR_URL=${PR_URL}"
 
-    # version
+    # release version
+    MAJOR=$(cat ${SHELL_DIR}/VERSION | xargs | cut -d'.' -f1)
+    MINOR=$(cat ${SHELL_DIR}/VERSION | xargs | cut -d'.' -f2)
+
+    # latest versions
+    GITHUB="https://api.github.com/repos/${USERNAME}/${REPONAME}/releases"
+    VERSION=$(curl -s ${GITHUB} | grep "tag_name" | grep "${MAJOR}.${MINOR}." | head -1 | cut -d'"' -f4 | cut -d'-' -f1)
+
+    if [ -z ${VERSION} ]; then
+        VERSION="${MAJOR}.${MINOR}.0"
+    fi
+
+    _result "VERSION=${VERSION}"
+
+    # new version
     if [ "${BRANCH}" == "master" ]; then
         VERSION=$(echo ${VERSION} | perl -pe 's/^(([v\d]+\.)*)(\d+)(.*)$/$1.($3+1).$4/e')
         printf "${VERSION}" > ${SHELL_DIR}/target/VERSION
     else
-        if [ "${PR_NUM}" == "" ]; then
-            if [ "${PR_URL}" != "" ]; then
-                PR_NUM=$(echo $PR_URL | cut -d'/' -f7)
-            else
+        PR=$(echo "${BRANCH}" | cut -d'/' -f1)
+
+        if [ "${PR}" == "pull" ]; then
+            printf "${PR}" > ${SHELL_DIR}/target/PR
+
+            if [ "${PR_NUM}" == "" ]; then
+                PR_NUM=$(echo "${BRANCH}" | cut -d'/' -f2)
+            fi
+            if [ "${PR_NUM}" == "" ] && [ "${PR_URL}" != "" ]; then
+                PR_NUM=$(echo "${PR_URL}" | cut -d'/' -f7)
+            fi
+            if [ "${PR_NUM}" == "" ]; then
                 PR_NUM=${CIRCLE_BUILD_NUM}
             fi
+
+            if [ "${PR_NUM}" != "" ]; then
+                VERSION="${VERSION}-${PR_NUM}"
+                printf "${VERSION}" > ${SHELL_DIR}/target/VERSION
+            else
+                VERSION=
+            fi
+        else
+            VERSION=
         fi
-
-        printf "${PR_NUM}" > ${SHELL_DIR}/target/PRE
-
-        VERSION="${VERSION}-${PR_NUM}"
-        printf "${VERSION}" > ${SHELL_DIR}/target/VERSION
     fi
-}
-
-_package() {
-    # target/
-    cp -rf ${SHELL_DIR}/install.sh ${SHELL_DIR}/target/install
-    cp -rf ${SHELL_DIR}/tools.sh   ${SHELL_DIR}/target/tools
-
-    # target/dist/
-    cp -rf ${SHELL_DIR}/toaster.sh ${SHELL_DIR}/target/dist/toaster
-    cp -rf ${SHELL_DIR}/alias.sh   ${SHELL_DIR}/target/dist/alias
-
-    # version
-    _gen_version
 
     _result "VERSION=${VERSION}"
-
-    # replace
-    _replace "s/THIS_VERSION=.*/THIS_VERSION=${VERSION}/g" ${SHELL_DIR}/target/dist/toaster
-
-    # target/
-    cp -rf ${SHELL_DIR}/web/* ${SHELL_DIR}/target/
 }
 
-_s3_sync() {
-    _command "aws s3 sync ${1} s3://${2}/ --acl public-read"
-    aws s3 sync ${1} s3://${2}/ --acl public-read
-}
+_publish() {
+    if [ "${BRANCH}" != "master" ]; then
+        return
+    fi
+    if [ -z ${BUCKET} ]; then
+        return
+    fi
+    if [ ! -f ${SHELL_DIR}/target/VERSION ]; then
+        return
+    fi
+    if [ -f ${SHELL_DIR}/target/PR ]; then
+        return
+    fi
 
-_cf_reset() {
-    CFID=$(aws cloudfront list-distributions --query "DistributionList.Items[].{Id:Id, DomainName: DomainName, OriginDomainName: Origins.Items[0].DomainName}[?contains(OriginDomainName, '${1}')] | [0]" | jq -r '.Id')
+    # aws s3 sync
+    _command "aws s3 sync ${SHELL_DIR}/target/ s3://${BUCKET}/${REPONAME}/ --acl public-read"
+    aws s3 sync ${SHELL_DIR}/target/ s3://${BUCKET}/${REPONAME}/ --acl public-read
+
+    # aws cf reset
+    CFID=$(aws cloudfront list-distributions --query "DistributionList.Items[].{Id:Id, DomainName: DomainName, OriginDomainName: Origins.Items[0].DomainName}[?contains(OriginDomainName, '${BUCKET}')] | [0]" | jq -r '.Id')
     if [ "${CFID}" != "" ]; then
         aws cloudfront create-invalidation --distribution-id ${CFID} --paths "/*"
     fi
 }
 
-_publish() {
-    if [ ! -f ${SHELL_DIR}/target/VERSION ]; then
-        _error
+_release() {
+    if [ -z ${GITHUB_TOKEN} ]; then
+        return
     fi
-    if [ -f ${SHELL_DIR}/target/PRE ]; then
+    if [ ! -f ${SHELL_DIR}/target/VERSION ]; then
         return
     fi
 
-    _s3_sync "${SHELL_DIR}/target/" "www.toast.sh"
-    _cf_reset "www.toast.sh"
-}
+    VERSION=$(cat ${SHELL_DIR}/target/VERSION | xargs)
+    _result "VERSION=${VERSION}"
 
-_release() {
-    if [ ! -f ${SHELL_DIR}/target/VERSION ]; then
-        _error
-    fi
-    if [ -f ${SHELL_DIR}/target/PRE ]; then
+    printf "${VERSION}" > ${SHELL_DIR}/target/dist/${VERSION}
+
+    if [ -f ${SHELL_DIR}/target/PR ]; then
         GHR_PARAM="-delete -prerelease"
     else
         GHR_PARAM="-delete"
     fi
 
-    VERSION=$(cat ${SHELL_DIR}/target/VERSION | xargs)
-
-    _result "VERSION=${VERSION}"
-
     _command "go get github.com/tcnksm/ghr"
     go get github.com/tcnksm/ghr
 
+    # github release
     _command "ghr ${VERSION} ${SHELL_DIR}/target/dist/"
-    ghr -t ${GITHUB_TOKEN} \
+    ghr -t ${GITHUB_TOKEN:-EMPTY} \
         -u ${USERNAME} \
         -r ${REPONAME} \
         -c ${CIRCLE_SHA1} \
@@ -195,26 +186,22 @@ _slack() {
     if [ -z ${SLACK_TOKEN} ]; then
         return
     fi
-
     if [ ! -f ${SHELL_DIR}/target/VERSION ]; then
-        _error
-    fi
-    if [ -f ${SHELL_DIR}/target/PRE ]; then
-        TITLE="${REPONAME} pull requested"
-    else
-        TITLE="${REPONAME} updated"
+        return
     fi
 
     VERSION=$(cat ${SHELL_DIR}/target/VERSION | xargs)
-
     _result "VERSION=${VERSION}"
 
+    # send slack
     curl -sL opspresso.com/tools/slack | bash -s -- \
-        --token="${SLACK_TOKEN}" --username="${REPONAME}" \
+        --token="${SLACK_TOKEN}" --username="${USERNAME}" \
         --footer="<https://github.com/${USERNAME}/${REPONAME}/releases/tag/${VERSION}|${USERNAME}/${REPONAME}>" \
         --footer_icon="https://repo.opspresso.com/favicon/github.png" \
-        --color="good" --title="${TITLE}" "\`${VERSION}\`"
+        --color="good" --title="${REPONAME}" "\`${VERSION}\`"
 }
+
+################################################################################
 
 _prepare
 
@@ -232,3 +219,5 @@ case ${CMD} in
         _slack
         ;;
 esac
+
+_success
