@@ -102,11 +102,13 @@ _package() {
             printf "${PR}" > ${SHELL_DIR}/target/PR
 
             if [ "${PR_NUM}" == "" ]; then
-                if [ "${PR_URL}" != "" ]; then
-                    PR_NUM=$(echo $PR_URL | cut -d'/' -f7)
-                elif [ "${CIRCLE_BUILD_NUM}" != "" ]; then
-                    PR_NUM=${CIRCLE_BUILD_NUM}
-                fi
+                PR_NUM=$(echo "${BRANCH}" | cut -d'/' -f2)
+            fi
+            if [ "${PR_NUM}" == "" ]; then
+                PR_NUM=$(echo "$PR_URL" | cut -d'/' -f7)
+            fi
+            if [ "${PR_NUM}" == "" ]; then
+                PR_NUM=${CIRCLE_BUILD_NUM}
             fi
 
             if [ "${PR_NUM}" != "" ]; then
