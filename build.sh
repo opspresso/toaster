@@ -122,6 +122,9 @@ _package() {
 }
 
 _publish() {
+    if [ "${BRANCH}" != "master" ]; then
+        return
+    fi
     if [ -z ${BUCKET} ]; then
         return
     fi
@@ -132,9 +135,15 @@ _publish() {
         return
     fi
 
-    _s3_sync "${SHELL_DIR}/target/" "${BUCKET}/${REPONAME}"
+    # aws s3 sync
+    _command "aws s3 sync ${SHELL_DIR}/target/ s3://${BUCKET}/${REPONAME}/ --acl public-read"
+    aws s3 sync ${SHELL_DIR}/target/ s3://${BUCKET}/${REPONAME}/ --acl public-read
 
-    _cf_reset "${BUCKET}"
+    # aws cf reset
+    CFID=$(aws cloudfront list-distributions --query "DistributionList.Items[].{Id:Id, DomainName: DomainName, OriginDomainName: Origins.Items[0].DomainName}[?contains(OriginDomainName, '${BUCKET}')] | [0]" | jq -r '.Id')
+    if [ "${CFID}" != "" ]; then
+        aws cloudfront create-invalidation --distribution-id ${CFID} --paths "/*"
+    fi
 }
 
 _release() {
@@ -159,6 +168,7 @@ _release() {
     _command "go get github.com/tcnksm/ghr"
     go get github.com/tcnksm/ghr
 
+    # github release
     _command "ghr ${VERSION} ${SHELL_DIR}/target/dist/"
     ghr -t ${GITHUB_TOKEN:-EMPTY} \
         -u ${USERNAME} \
@@ -166,18 +176,6 @@ _release() {
         -c ${CIRCLE_SHA1} \
         ${GHR_PARAM} \
         ${VERSION} ${SHELL_DIR}/target/dist/
-}
-
-_s3_sync() {
-    _command "aws s3 sync ${1} s3://${2}/ --acl public-read"
-    aws s3 sync ${1} s3://${2}/ --acl public-read
-}
-
-_cf_reset() {
-    CFID=$(aws cloudfront list-distributions --query "DistributionList.Items[].{Id:Id, DomainName: DomainName, OriginDomainName: Origins.Items[0].DomainName}[?contains(OriginDomainName, '${1}')] | [0]" | jq -r '.Id')
-    if [ "${CFID}" != "" ]; then
-        aws cloudfront create-invalidation --distribution-id ${CFID} --paths "/*"
-    fi
 }
 
 _slack() {
@@ -191,6 +189,7 @@ _slack() {
     VERSION=$(cat ${SHELL_DIR}/target/VERSION | xargs)
     _result "VERSION=${VERSION}"
 
+    # send slack
     curl -sL opspresso.com/tools/slack | bash -s -- \
         --token="${SLACK_TOKEN}" --username="${USERNAME}" \
         --footer="<https://github.com/${USERNAME}/${REPONAME}/releases/tag/${VERSION}|${USERNAME}/${REPONAME}>" \
