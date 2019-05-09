@@ -63,16 +63,16 @@ _replace() {
 
 _prepare() {
     # target
-    mkdir -p ${SHELL_DIR}/target/publish
-    mkdir -p ${SHELL_DIR}/target/release
+    mkdir -p ./target/publish
+    mkdir -p ./target/release
 
-    if [ -f ${SHELL_DIR}/target/circleci-stop ]; then
+    if [ -f ./target/circleci-stop ]; then
         _success "circleci-stop"
     fi
 }
 
 _package() {
-    if [ ! -f ${SHELL_DIR}/VERSION ]; then
+    if [ ! -f ./VERSION ]; then
         _error "not found VERSION"
     fi
 
@@ -81,13 +81,13 @@ _package() {
     _result "PR_URL=${PR_URL}"
 
     # release version
-    MAJOR=$(cat ${SHELL_DIR}/VERSION | xargs | cut -d'.' -f1)
-    MINOR=$(cat ${SHELL_DIR}/VERSION | xargs | cut -d'.' -f2)
-    BUILD=$(cat ${SHELL_DIR}/VERSION | xargs | cut -d'.' -f3)
+    MAJOR=$(cat ./VERSION | xargs | cut -d'.' -f1)
+    MINOR=$(cat ./VERSION | xargs | cut -d'.' -f2)
+    BUILD=$(cat ./VERSION | xargs | cut -d'.' -f3)
 
     if [ "x${BUILD}" != "x0" ]; then
         VERSION="${MAJOR}.${MINOR}.${BUILD}"
-        printf "${VERSION}" > ${SHELL_DIR}/target/VERSION
+        printf "${VERSION}" > ./target/VERSION
     else
         # latest versions
         GITHUB="https://api.github.com/repos/${USERNAME}/${REPONAME}/releases"
@@ -102,12 +102,12 @@ _package() {
         # new version
         if [ "${BRANCH}" == "master" ]; then
             VERSION=$(echo ${VERSION} | perl -pe 's/^(([v\d]+\.)*)(\d+)(.*)$/$1.($3+1).$4/e')
-            printf "${VERSION}" > ${SHELL_DIR}/target/VERSION
+            printf "${VERSION}" > ./target/VERSION
         else
             PR=$(echo "${BRANCH}" | cut -d'/' -f1)
 
             if [ "${PR}" == "pull" ]; then
-                printf "${PR}" > ${SHELL_DIR}/target/PR
+                printf "${PR}" > ./target/PR
 
                 if [ "${PR_NUM}" == "" ]; then
                     PR_NUM=$(echo "${BRANCH}" | cut -d'/' -f2)
@@ -121,7 +121,7 @@ _package() {
 
                 if [ "${PR_NUM}" != "" ]; then
                     VERSION="${VERSION}-${PR_NUM}"
-                    printf "${VERSION}" > ${SHELL_DIR}/target/VERSION
+                    printf "${VERSION}" > ./target/VERSION
                 else
                     VERSION=
                 fi
@@ -141,18 +141,18 @@ _publish() {
     if [ -z ${PUBLISH_PATH} ]; then
         return
     fi
-    if [ ! -f ${SHELL_DIR}/target/VERSION ]; then
+    if [ ! -f ./target/VERSION ]; then
         return
     fi
-    if [ -f ${SHELL_DIR}/target/PR ]; then
+    if [ -f ./target/PR ]; then
         return
     fi
 
     BUCKET="$(echo "${PUBLISH_PATH}" | cut -d'/' -f1)"
 
     # aws s3 sync
-    _command "aws s3 sync ${SHELL_DIR}/target/publish/ s3://${PUBLISH_PATH}/ --acl public-read"
-    aws s3 sync ${SHELL_DIR}/target/publish/ s3://${PUBLISH_PATH}/ --acl public-read
+    _command "aws s3 sync ./target/publish/ s3://${PUBLISH_PATH}/ --acl public-read"
+    aws s3 sync ./target/publish/ s3://${PUBLISH_PATH}/ --acl public-read
 
     # aws cf reset
     CFID=$(aws cloudfront list-distributions --query "DistributionList.Items[].{Id:Id,Origin:Origins.Items[0].DomainName}[?contains(Origin,'${BUCKET}')] | [0]" | grep 'Id' | cut -d'"' -f4)
@@ -165,16 +165,16 @@ _release() {
     if [ -z ${GITHUB_TOKEN} ]; then
         return
     fi
-    if [ ! -f ${SHELL_DIR}/target/VERSION ]; then
+    if [ ! -f ./target/VERSION ]; then
         return
     fi
 
-    VERSION=$(cat ${SHELL_DIR}/target/VERSION | xargs)
+    VERSION=$(cat ./target/VERSION | xargs)
     _result "VERSION=${VERSION}"
 
-    printf "${VERSION}" > ${SHELL_DIR}/target/release/${VERSION}
+    printf "${VERSION}" > ./target/release/${VERSION}
 
-    if [ -f ${SHELL_DIR}/target/PR ]; then
+    if [ -f ./target/PR ]; then
         GHR_PARAM="-delete -prerelease"
     else
         GHR_PARAM="-delete"
@@ -184,24 +184,24 @@ _release() {
     go get github.com/tcnksm/ghr
 
     # github release
-    _command "ghr ${VERSION} ${SHELL_DIR}/target/release/"
+    _command "ghr ${VERSION} ./target/release/"
     ghr -t ${GITHUB_TOKEN:-EMPTY} \
         -u ${USERNAME} \
         -r ${REPONAME} \
         -c ${CIRCLE_SHA1} \
         ${GHR_PARAM} \
-        ${VERSION} ${SHELL_DIR}/target/release/
+        ${VERSION} ./target/release/
 }
 
 _slack() {
     if [ -z ${SLACK_TOKEN} ]; then
         return
     fi
-    if [ ! -f ${SHELL_DIR}/target/VERSION ]; then
+    if [ ! -f ./target/VERSION ]; then
         return
     fi
 
-    VERSION=$(cat ${SHELL_DIR}/target/VERSION | xargs)
+    VERSION=$(cat ./target/VERSION | xargs)
     _result "VERSION=${VERSION}"
 
     # send slack
