@@ -104,8 +104,8 @@ _package() {
             if [ "${PR_NUM}" == "" ]; then
                 PR_NUM=$(echo "${BRANCH}" | cut -d'/' -f2)
             fi
-            if [ "${PR_NUM}" == "" ]; then
-                PR_NUM=$(echo "$PR_URL" | cut -d'/' -f7)
+            if [ "${PR_NUM}" == "" ] && [ "${PR_URL}" != "" ]; then
+                PR_NUM=$(echo "${PR_URL}" | cut -d'/' -f7)
             fi
             if [ "${PR_NUM}" == "" ]; then
                 PR_NUM=${CIRCLE_BUILD_NUM}
@@ -114,6 +114,8 @@ _package() {
             if [ "${PR_NUM}" != "" ]; then
                 VERSION="${VERSION}-${PR_NUM}"
                 printf "${VERSION}" > ${SHELL_DIR}/target/VERSION
+            else
+                VERSION=
             fi
         else
             VERSION=
