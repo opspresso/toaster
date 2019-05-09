@@ -4,7 +4,9 @@ OS_NAME="$(uname | awk '{print tolower($0)}')"
 
 SHELL_DIR=$(dirname $0)
 
-CMD=${1:-${CIRCLE_JOB}}
+CMD=${1:-$CIRCLE_JOB}
+
+RUN_PATH=${2:-$SHELL_DIR}
 
 USERNAME=${CIRCLE_PROJECT_USERNAME:-opspresso}
 REPONAME=${CIRCLE_PROJECT_REPONAME:-toaster}
@@ -59,37 +61,37 @@ _replace() {
 
 _prepare() {
     # target
-    mkdir -p ${SHELL_DIR}/target/publish
-    mkdir -p ${SHELL_DIR}/target/release
+    mkdir -p ${RUN_PATH}/target/publish
+    mkdir -p ${RUN_PATH}/target/release
 
     # 755
     find ./** | grep [.]sh | xargs chmod 755
 }
 
 _package() {
-    if [ ! -f ${SHELL_DIR}/target/VERSION ]; then
+    if [ ! -f ${RUN_PATH}/target/VERSION ]; then
         _error
     fi
 
-    VERSION=$(cat ${SHELL_DIR}/target/VERSION | xargs)
+    VERSION=$(cat ${RUN_PATH}/target/VERSION | xargs)
     _result "VERSION=${VERSION}"
 
     # release
-    cp -rf ${SHELL_DIR}/alias.sh   ${SHELL_DIR}/target/release/alias
-    cp -rf ${SHELL_DIR}/toaster.sh ${SHELL_DIR}/target/release/toaster
+    cp -rf ${RUN_PATH}/alias.sh   ${RUN_PATH}/target/release/alias
+    cp -rf ${RUN_PATH}/toaster.sh ${RUN_PATH}/target/release/toaster
 
     # publish
-    cp -rf ${SHELL_DIR}/alias.sh   ${SHELL_DIR}/target/release/alias
-    cp -rf ${SHELL_DIR}/builder.sh ${SHELL_DIR}/target/publish/builder
-    cp -rf ${SHELL_DIR}/install.sh ${SHELL_DIR}/target/publish/install
-    cp -rf ${SHELL_DIR}/toaster.sh ${SHELL_DIR}/target/release/toaster
-    cp -rf ${SHELL_DIR}/tools.sh   ${SHELL_DIR}/target/publish/tools
+    cp -rf ${RUN_PATH}/alias.sh   ${RUN_PATH}/target/release/alias
+    cp -rf ${RUN_PATH}/builder.sh ${RUN_PATH}/target/publish/builder
+    cp -rf ${RUN_PATH}/install.sh ${RUN_PATH}/target/publish/install
+    cp -rf ${RUN_PATH}/toaster.sh ${RUN_PATH}/target/release/toaster
+    cp -rf ${RUN_PATH}/tools.sh   ${RUN_PATH}/target/publish/tools
 
     # publish web
-    cp -rf ${SHELL_DIR}/web/* ${SHELL_DIR}/target/publish/
+    cp -rf ${RUN_PATH}/web/* ${RUN_PATH}/target/publish/
 
     # replace
-    _replace "s/THIS_VERSION=.*/THIS_VERSION=${VERSION}/g" ${SHELL_DIR}/target/release/toaster
+    _replace "s/THIS_VERSION=.*/THIS_VERSION=${VERSION}/g" ${RUN_PATH}/target/release/toaster
 }
 
 ################################################################################

@@ -4,7 +4,7 @@ OS_NAME="$(uname | awk '{print tolower($0)}')"
 
 SHELL_DIR=$(dirname $0)
 
-CMD=${1:-${CIRCLE_JOB}}
+CMD=${1:-$CIRCLE_JOB}
 
 RUN_PATH=${2:-.}
 
@@ -12,9 +12,6 @@ USERNAME=${CIRCLE_PROJECT_USERNAME}
 REPONAME=${CIRCLE_PROJECT_REPONAME}
 
 BRANCH=${CIRCLE_BRANCH:-master}
-
-GIT_USERNAME="bot"
-GIT_USEREMAIL="bot@nalbam.com"
 
 # GITHUB_TOKEN=
 # PUBLISH_PATH=
