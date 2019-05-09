@@ -148,7 +148,7 @@ _publish() {
     aws s3 sync ${SHELL_DIR}/target/ s3://${PUBLISH_PATH}/ --acl public-read
 
     # aws cf reset
-    CFID=$(aws cloudfront list-distributions --query "DistributionList.Items[].{Id:Id, DomainName: DomainName, OriginDomainName: Origins.Items[0].DomainName}[?contains(OriginDomainName, '${BUCKET}')] | [0]" | jq -r '.Id')
+    CFID=$(aws cloudfront list-distributions --query "DistributionList.Items[].{Id:Id,Origin:Origins.Items[0].DomainName}[?contains(Origin,'${BUCKET}')] | [0]" | grep 'Id' | cut -d'"' -f4)
     if [ "${CFID}" != "" ]; then
         aws cloudfront create-invalidation --distribution-id ${CFID} --paths "/*"
     fi
