@@ -82,45 +82,51 @@ _package() {
     # release version
     MAJOR=$(cat ${SHELL_DIR}/VERSION | xargs | cut -d'.' -f1)
     MINOR=$(cat ${SHELL_DIR}/VERSION | xargs | cut -d'.' -f2)
+    BUILD=$(cat ${SHELL_DIR}/VERSION | xargs | cut -d'.' -f3)
 
-    # latest versions
-    GITHUB="https://api.github.com/repos/${USERNAME}/${REPONAME}/releases"
-    VERSION=$(curl -s ${GITHUB} | grep "tag_name" | grep "${MAJOR}.${MINOR}." | head -1 | cut -d'"' -f4 | cut -d'-' -f1)
-
-    if [ -z ${VERSION} ]; then
-        VERSION="${MAJOR}.${MINOR}.0"
-    fi
-
-    _result "VERSION=${VERSION}"
-
-    # new version
-    if [ "${BRANCH}" == "master" ]; then
-        VERSION=$(echo ${VERSION} | perl -pe 's/^(([v\d]+\.)*)(\d+)(.*)$/$1.($3+1).$4/e')
+    if [ "x${BUILD}" != "x0" ]; then
+        VERSION="${MAJOR}.${MINOR}.${BUILD}"
         printf "${VERSION}" > ${SHELL_DIR}/target/VERSION
     else
-        PR=$(echo "${BRANCH}" | cut -d'/' -f1)
+        # latest versions
+        GITHUB="https://api.github.com/repos/${USERNAME}/${REPONAME}/releases"
+        VERSION=$(curl -s ${GITHUB} | grep "tag_name" | grep "${MAJOR}.${MINOR}." | head -1 | cut -d'"' -f4 | cut -d'-' -f1)
 
-        if [ "${PR}" == "pull" ]; then
-            printf "${PR}" > ${SHELL_DIR}/target/PR
+        if [ -z ${VERSION} ]; then
+            VERSION="${MAJOR}.${MINOR}.0"
+        fi
 
-            if [ "${PR_NUM}" == "" ]; then
-                PR_NUM=$(echo "${BRANCH}" | cut -d'/' -f2)
-            fi
-            if [ "${PR_NUM}" == "" ] && [ "${PR_URL}" != "" ]; then
-                PR_NUM=$(echo "${PR_URL}" | cut -d'/' -f7)
-            fi
-            if [ "${PR_NUM}" == "" ]; then
-                PR_NUM=${CIRCLE_BUILD_NUM}
-            fi
+        _result "VERSION=${VERSION}"
 
-            if [ "${PR_NUM}" != "" ]; then
-                VERSION="${VERSION}-${PR_NUM}"
-                printf "${VERSION}" > ${SHELL_DIR}/target/VERSION
+        # new version
+        if [ "${BRANCH}" == "master" ]; then
+            VERSION=$(echo ${VERSION} | perl -pe 's/^(([v\d]+\.)*)(\d+)(.*)$/$1.($3+1).$4/e')
+            printf "${VERSION}" > ${SHELL_DIR}/target/VERSION
+        else
+            PR=$(echo "${BRANCH}" | cut -d'/' -f1)
+
+            if [ "${PR}" == "pull" ]; then
+                printf "${PR}" > ${SHELL_DIR}/target/PR
+
+                if [ "${PR_NUM}" == "" ]; then
+                    PR_NUM=$(echo "${BRANCH}" | cut -d'/' -f2)
+                fi
+                if [ "${PR_NUM}" == "" ] && [ "${PR_URL}" != "" ]; then
+                    PR_NUM=$(echo "${PR_URL}" | cut -d'/' -f7)
+                fi
+                if [ "${PR_NUM}" == "" ]; then
+                    PR_NUM=${CIRCLE_BUILD_NUM}
+                fi
+
+                if [ "${PR_NUM}" != "" ]; then
+                    VERSION="${VERSION}-${PR_NUM}"
+                    printf "${VERSION}" > ${SHELL_DIR}/target/VERSION
+                else
+                    VERSION=
+                fi
             else
                 VERSION=
             fi
-        else
-            VERSION=
         fi
     fi
 
