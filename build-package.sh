@@ -73,9 +73,6 @@ _package() {
     VERSION=$(cat ${SHELL_DIR}/target/VERSION | xargs)
     _result "VERSION=${VERSION}"
 
-    # replace
-    _replace "s/THIS_VERSION=.*/THIS_VERSION=${VERSION}/g" ${SHELL_DIR}/target/dist/toaster
-
     # target/
     cp -rf ${SHELL_DIR}/install.sh ${SHELL_DIR}/target/install
     cp -rf ${SHELL_DIR}/tools.sh   ${SHELL_DIR}/target/tools
@@ -87,6 +84,9 @@ _package() {
 
     # target/
     cp -rf ${SHELL_DIR}/web/* ${SHELL_DIR}/target/
+
+    # replace
+    _replace "s/THIS_VERSION=.*/THIS_VERSION=${VERSION}/g" ${SHELL_DIR}/target/dist/toaster
 }
 
 ################################################################################
