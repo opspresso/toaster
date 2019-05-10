@@ -19,6 +19,8 @@ SRC_DIR=
 ENV_DIR=
 PEM_DIR=
 
+HEIGHT=20
+
 LIST=/tmp/toaster-temp-list
 TEMP=/tmp/toaster-temp-result
 
@@ -97,7 +99,7 @@ _select_one() {
         SELECTED="$(cat ${LIST} | xargs)"
     else
         if [ "${FZF}" != "" ]; then
-            SELECTED=$(cat ${LIST} | fzf --reverse --no-mouse --height=10 --bind=left:page-up,right:page-down)
+            SELECTED=$(cat ${LIST} | fzf --reverse --no-mouse --height=${HEIGHT} --bind=left:page-up,right:page-down)
         else
             echo
 
