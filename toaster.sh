@@ -19,7 +19,7 @@ SRC_DIR=
 ENV_DIR=
 PEM_DIR=
 
-HEIGHT=20
+HEIGHT=15
 
 LIST=/tmp/toaster-temp-list
 TEMP=/tmp/toaster-temp-result
