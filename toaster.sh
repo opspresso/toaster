@@ -308,6 +308,8 @@ _env() {
     echo "aws_access_key_id=${ACCESS_KEY}" >> ~/.aws/credentials
     echo "aws_secret_access_key=${SECRET_KEY}" >> ~/.aws/credentials
 
+    chmod 600 ~/.aws/credentials
+
     _result "${_NAME}"
     _result "${ACCESS_KEY}"
     _result "**********${SECRET_KEY:30}"
@@ -406,6 +408,8 @@ _ssh() {
             echo "${_PEMS} ${_HOST} ${_USER}" >> ${HISTORY}
         fi
     fi
+
+    chmod 600 ${PEM_DIR}/${_PEMS}
 
     _command "ssh -i ${PEM_DIR}/${_PEMS} ${_USER}@${_HOST}"
     ssh -i ${PEM_DIR}/${_PEMS} ${_USER}@${_HOST}
