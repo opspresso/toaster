@@ -144,38 +144,6 @@ _package() {
     _result "VERSION=${VERSION}"
 }
 
-_docker() {
-    if [ -z ${DOCKER_PASS} ]; then
-        return
-    fi
-    if [ ! -f ${RUN_PATH}/target/VERSION ]; then
-        return
-    fi
-
-    # Dockerfile
-    if [ "${PARAM}" == "" ]; then
-        PARAM="Dockerfile"
-    fi
-    if [ ! -f ${PARAM} ]; then
-        return
-    fi
-
-    VERSION=$(cat ${RUN_PATH}/target/VERSION | xargs)
-    _result "VERSION=${VERSION}"
-
-    _command "docker login -u $DOCKER_USER"
-    docker login -u $DOCKER_USER -p $DOCKER_PASS
-
-    _command "docker build -t ${USERNAME}/${REPONAME}:${VERSION} ."
-    docker build -f ${PARAM} -t ${USERNAME}/${REPONAME}:${VERSION} .
-
-    _command "docker push ${USERNAME}/${REPONAME}:${VERSION}"
-    docker push ${USERNAME}/${REPONAME}:${VERSION}
-
-    _command "docker logout"
-    docker logout
-}
-
 _publish() {
     if [ "${BRANCH}" != "master" ]; then
         return
@@ -235,6 +203,30 @@ _release() {
         ${VERSION} ${RUN_PATH}/target/release/
 }
 
+_docker() {
+    if [ -z ${DOCKER_PASS} ]; then
+        return
+    fi
+    if [ ! -f ${RUN_PATH}/target/VERSION ]; then
+        return
+    fi
+
+    VERSION=$(cat ${RUN_PATH}/target/VERSION | xargs)
+    _result "VERSION=${VERSION}"
+
+    _command "docker login -u $DOCKER_USER"
+    docker login -u $DOCKER_USER -p $DOCKER_PASS
+
+    _command "docker build -t ${USERNAME}/${REPONAME}:${VERSION} ."
+    docker build -f ${PARAM:-Dockerfile} -t ${USERNAME}/${REPONAME}:${VERSION} .
+
+    _command "docker push ${USERNAME}/${REPONAME}:${VERSION}"
+    docker push ${USERNAME}/${REPONAME}:${VERSION}
+
+    _command "docker logout"
+    docker logout
+}
+
 _trigger() {
     if [ -z ${CIRCLE_BUILDER} ]; then
         return
@@ -290,14 +282,14 @@ case ${CMD} in
     build|package)
         _package
         ;;
-    docker)
-        _docker
-        ;;
     publish)
         _publish
         ;;
     release)
         _release
+        ;;
+    docker)
+        _docker
         ;;
     trigger)
         _trigger
