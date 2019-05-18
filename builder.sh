@@ -4,14 +4,19 @@ OS_NAME="$(uname | awk '{print tolower($0)}')"
 
 SHELL_DIR=$(dirname $0)
 
+RUN_PATH="."
+
 CMD=${1:-$CIRCLE_JOB}
 
-RUN_PATH=${2:-.}
+PARAM=${2}
 
 USERNAME=${CIRCLE_PROJECT_USERNAME}
 REPONAME=${CIRCLE_PROJECT_REPONAME}
 
 BRANCH=${CIRCLE_BRANCH:-master}
+
+DOCKER_USER=${DOCKER_USER:-$USERNAME}
+DOCKER_PASS=${DOCKER_PASS}
 
 # GITHUB_TOKEN=
 # PUBLISH_PATH=
@@ -133,6 +138,38 @@ _package() {
     _result "VERSION=${VERSION}"
 }
 
+_docker() {
+    if [ -z ${DOCKER_PASS} ]; then
+        return
+    fi
+    if [ ! -f ${RUN_PATH}/target/VERSION ]; then
+        return
+    fi
+
+    # Dockerfile
+    if [ "${PARAM}" == "" ]; then
+        PARAM="Dockerfile"
+    fi
+    if [ ! -f ${PARAM} ]; then
+        return
+    fi
+
+    VERSION=$(cat ${RUN_PATH}/target/VERSION | xargs)
+    _result "VERSION=${VERSION}"
+
+    _command "docker login -u $DOCKER_USER"
+    docker login -u $DOCKER_USER -p $DOCKER_PASS
+
+    _command "docker build -t ${USERNAME}/${REPONAME}:${VERSION} ."
+    docker build -f ${PARAM} -t ${USERNAME}/${REPONAME}:${VERSION} .
+
+    _command "docker push ${USERNAME}/${REPONAME}:${VERSION}"
+    docker push ${USERNAME}/${REPONAME}:${VERSION}
+
+    _command "docker logout"
+    docker logout
+}
+
 _publish() {
     if [ "${BRANCH}" != "master" ]; then
         return
@@ -218,6 +255,9 @@ _prepare
 case ${CMD} in
     package)
         _package
+        ;;
+    docker)
+        _docker
         ;;
     publish)
         _publish
