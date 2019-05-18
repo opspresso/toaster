@@ -4,9 +4,9 @@ OS_NAME="$(uname | awk '{print tolower($0)}')"
 
 SHELL_DIR=$(dirname $0)
 
-CMD=${1:-$CIRCLE_JOB}
+RUN_PATH=${SHELL_DIR}
 
-RUN_PATH=${2:-$SHELL_DIR}
+CMD=${1:-$CIRCLE_JOB}
 
 USERNAME=${CIRCLE_PROJECT_USERNAME:-opspresso}
 REPONAME=${CIRCLE_PROJECT_REPONAME:-toaster}
@@ -98,4 +98,10 @@ _package() {
 
 _prepare
 
-_package
+case ${CMD} in
+    package)
+        _package
+        ;;
+esac
+
+_success
