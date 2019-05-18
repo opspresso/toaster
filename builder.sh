@@ -253,7 +253,7 @@ _slack() {
 _prepare
 
 case ${CMD} in
-    package)
+    build|package)
         _package
         ;;
     docker)

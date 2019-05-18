@@ -99,7 +99,7 @@ _package() {
 _prepare
 
 case ${CMD} in
-    package)
+    build|package)
         _package
         ;;
 esac
