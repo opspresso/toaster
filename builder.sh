@@ -18,7 +18,13 @@ BRANCH=${CIRCLE_BRANCH:-master}
 DOCKER_USER=${DOCKER_USER:-$USERNAME}
 DOCKER_PASS=${DOCKER_PASS}
 
+CIRCLE_BUILDER=${CIRCLE_BUILDER}
+
+# CIRCLE_BUILDER=
+# DOCKER_USER=
+# DOCKER_PASS=
 # GITHUB_TOKEN=
+# PERSONAL_TOKEN=
 # PUBLISH_PATH=
 # SLACK_TOKEN=
 
@@ -229,6 +235,34 @@ _release() {
         ${VERSION} ${RUN_PATH}/target/release/
 }
 
+_trigger() {
+    if [ -z ${CIRCLE_BUILDER} ]; then
+        return
+    fi
+    if [ -z ${PERSONAL_TOKEN} ]; then
+        return
+    fi
+    if [ ! -f ${RUN_PATH}/target/VERSION ]; then
+        return
+    fi
+
+    VERSION=$(cat ${RUN_PATH}/target/VERSION | xargs)
+    _result "VERSION=${VERSION}"
+
+    CIRCLE_API="https://circleci.com/api/v1.1/project/github/${CIRCLE_BUILDER}"
+    CIRCLE_URL="${CIRCLE_API}?circle-token=${PERSONAL_TOKEN}"
+
+    PAYLOAD="{\"build_parameters\":{"
+    PAYLOAD="${PAYLOAD}\"TG_USERNAME\":\"${USERNAME}\","
+    PAYLOAD="${PAYLOAD}\"TG_PROJECT\":\"${REPONAME}\","
+    PAYLOAD="${PAYLOAD}\"TG_VERSION\":\"${VERSION}\""
+    PAYLOAD="${PAYLOAD}}}"
+
+    curl -X POST \
+        -H "Content-Type: application/json" \
+        -d "${PAYLOAD}" "${CIRCLE_URL}"
+}
+
 _slack() {
     if [ -z ${SLACK_TOKEN} ]; then
         return
@@ -264,6 +298,9 @@ case ${CMD} in
         ;;
     release)
         _release
+        ;;
+    trigger)
+        _trigger
         ;;
     slack)
         _slack
