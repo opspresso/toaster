@@ -433,6 +433,39 @@ _ctx() {
     kubectl config use-context ${_NAME}
 }
 
+_mtu() {
+    _MTU=${PARAM1}
+    _VAL=${PARAM2}
+
+    _command "ifconfig | grep mtu"
+    ifconfig | grep mtu
+
+    # mtu name
+    if [ -z ${_MTU} ]; then
+        DEFAULT="en0"
+        _read "Please input mtu. [${DEFAULT}]: "
+        _MTU="${ANSWER:-${DEFAULT}}"
+    fi
+    if [ -z ${_MTU} ]; then
+        _error
+    fi
+
+    # mtu value
+    if [ -z ${_VAL} ]; then
+        DEFAULT="1500"
+        _read "Please input mtu. [${DEFAULT}]: "
+        _VAL="${ANSWER:-${DEFAULT}}"
+    fi
+    if [ -z ${_VAL} ]; then
+        _error
+    fi
+
+    _command "sudo ifconfig ${_MTU} mtu ${_VAL}"
+    sudo ifconfig ${_MTU} mtu ${_VAL}
+
+    ifconfig | grep mtu | grep ${_MTU}
+}
+
 _stress() {
     _REQ=${PARAM1}
     _CON=${PARAM2}
@@ -867,6 +900,9 @@ _toast() {
             ;;
         v|code)
             _code
+            ;;
+        m|mtu)
+            _mtu
             ;;
         b|stress)
             _stress
