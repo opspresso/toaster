@@ -463,6 +463,7 @@ _mtu() {
     _command "sudo ifconfig ${_MTU} mtu ${_VAL}"
     sudo ifconfig ${_MTU} mtu ${_VAL}
 
+    _command "ifconfig | grep mtu | grep ${_MTU}"
     ifconfig | grep mtu | grep ${_MTU}
 }
 
