@@ -18,7 +18,7 @@ curl -sL ${REPO}/kops | bash
 curl -sL ${REPO}/kubectl | bash
 
 # helm
-curl -sL ${REPO}/helm | bash
+curl -sL ${REPO}/helm | bash -s "v2.13.1"
 
 # draft
 curl -sL ${REPO}/draft | bash
