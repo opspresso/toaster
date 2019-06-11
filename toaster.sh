@@ -218,7 +218,7 @@ _cdw() {
     _DIR=${PARAM1}
 
     if [ -z ${_DIR} ]; then
-        find ${SRC_DIR} -maxdepth 2 -type d -exec ls -d "{}" \; > ${LIST}
+        find ${SRC_DIR} -maxdepth 2 -type d -exec ls -d "{}" \; | sort > ${LIST}
 
         _select_one
 
@@ -240,7 +240,7 @@ _code() {
     _DIR=${PARAM1}
 
     if [ -z ${_DIR} ]; then
-        find ${SRC_DIR} -maxdepth 2 -type d -exec ls -d "{}" \; > ${LIST}
+        find ${SRC_DIR} -maxdepth 2 -type d -exec ls -d "{}" \; | sort > ${LIST}
 
         _select_one
 
