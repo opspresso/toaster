@@ -128,13 +128,9 @@ _package() {
                     PR_NUM=${CIRCLE_BUILD_NUM}
                 fi
 
-                if [ "${PR_NUM}" != "" ]; then
-                    VERSION="${VERSION}-${PR_NUM}"
-                else
-                    VERSION=
-                fi
+                VERSION="${VERSION}-${PR_NUM}"
             else
-                VERSION="${VERSION}-${PR}"
+                VERSION="${VERSION}-${CIRCLE_BUILD_NUM}"
             fi
         fi
 
