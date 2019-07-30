@@ -112,7 +112,6 @@ _package() {
         # new version
         if [ "${BRANCH}" == "master" ]; then
             VERSION=$(echo ${VERSION} | perl -pe 's/^(([v\d]+\.)*)(\d+)(.*)$/$1.($3+1).$4/e')
-            printf "${VERSION}" > ${RUN_PATH}/target/VERSION
         else
             PR=$(echo "${BRANCH}" | cut -d'/' -f1)
 
@@ -131,14 +130,15 @@ _package() {
 
                 if [ "${PR_NUM}" != "" ]; then
                     VERSION="${VERSION}-${PR_NUM}"
-                    printf "${VERSION}" > ${RUN_PATH}/target/VERSION
                 else
                     VERSION=
                 fi
             else
-                VERSION=
+                VERSION="${VERSION}-${PR}"
             fi
         fi
+
+        printf "${VERSION}" > ${RUN_PATH}/target/VERSION
     fi
 
     _result "VERSION=${VERSION}"
