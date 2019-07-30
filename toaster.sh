@@ -308,11 +308,11 @@ _env() {
     echo "aws_access_key_id=${ACCESS_KEY}" >> ~/.aws/credentials
     echo "aws_secret_access_key=${SECRET_KEY}" >> ~/.aws/credentials
 
-    chmod 600 ~/.aws/credentials
-
     _result "${_NAME}"
     _result "${ACCESS_KEY}"
     _result "**********${SECRET_KEY:30}"
+
+    chmod 600 ~/.aws/credentials
 }
 
 _ssh() {
@@ -413,6 +413,66 @@ _ssh() {
 
     _command "ssh -i ${PEM_DIR}/${_PEMS} ${_USER}@${_HOST}"
     ssh -i ${PEM_DIR}/${_PEMS} ${_USER}@${_HOST}
+}
+
+_mfa() {
+    ACCOUNT_ID=$(aws sts get-caller-identity | grep "Account" | cut -d'"' -f4)
+
+    _result "${ACCOUNT_ID}"
+
+    USERNAME=$(aws sts get-caller-identity | grep "Arn" | cut -d'"' -f 4 | cut -d'/' -f2)
+
+    _result "${USERNAME}"
+
+    if [ "${ACCOUNT_ID}" == "" ] || [ "${USERNAME}" == "" ]; then
+        _error
+    fi
+
+    _read "TOKEN_CODE : "
+    TOKEN_CODE=${ANSWER}
+
+    _aws_sts_token "${ACCOUNT_ID}" "${USERNAME}" "${TOKEN_CODE}"
+}
+
+_aws_sts_token() {
+    ACCOUNT_ID=${1}
+    USERNAME=${2}
+    TOKEN_CODE=${3}
+
+    TMP=/tmp/sts-result
+
+    if [ "${TOKEN_CODE}" == "" ]; then
+        aws sts get-session-token > ${TMP}
+    else
+        aws sts get-session-token \
+            --serial-number arn:aws:iam::${ACCOUNT_ID}:mfa/${USERNAME} \
+            --token-code ${TOKEN_CODE} > ${TMP}
+    fi
+
+    ACCESS_KEY=$(cat ${TMP} | grep AccessKeyId | cut -d'"' -f4)
+    SECRET_KEY=$(cat ${TMP} | grep SecretAccessKey | cut -d'"' -f4)
+
+    if [ "${ACCESS_KEY}" == "" ] || [ "${SECRET_KEY}" == "" ]; then
+        _error "Cannot call GetSessionToken."
+    fi
+
+    SESSION_TOKEN=$(cat ${TMP} | grep SessionToken | cut -d'"' -f4)
+
+    echo "[default]" > ~/.aws/credentials
+    echo "aws_access_key_id=${ACCESS_KEY}" >> ~/.aws/credentials
+    echo "aws_secret_access_key=${SECRET_KEY}" >> ~/.aws/credentials
+
+    _result "${USERNAME}"
+    _result "${ACCESS_KEY}"
+    _result "**********${SECRET_KEY:30}"
+
+    if [ "${SESSION_TOKEN}" != "" ]; then
+        echo "aws_session_token=${SESSION_TOKEN}" >> ~/.aws/credentials
+
+        _result "**********${SESSION_TOKEN:30}"
+    fi
+
+    chmod 600 ~/.aws/credentials
 }
 
 _ctx() {
@@ -895,6 +955,9 @@ _toast() {
             ;;
         s|ssh)
             _ssh
+            ;;
+        a|mfa)
+            _mfa
             ;;
         x|ctx)
             _ctx
