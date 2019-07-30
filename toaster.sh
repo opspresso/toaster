@@ -308,11 +308,11 @@ _env() {
     echo "aws_access_key_id=${ACCESS_KEY}" >> ~/.aws/credentials
     echo "aws_secret_access_key=${SECRET_KEY}" >> ~/.aws/credentials
 
+    chmod 600 ~/.aws/credentials
+
     _result "${_NAME}"
     _result "${ACCESS_KEY}"
     _result "**********${SECRET_KEY:30}"
-
-    chmod 600 ~/.aws/credentials
 }
 
 _ssh() {
@@ -462,17 +462,15 @@ _aws_sts_token() {
     echo "aws_access_key_id=${ACCESS_KEY}" >> ~/.aws/credentials
     echo "aws_secret_access_key=${SECRET_KEY}" >> ~/.aws/credentials
 
-    _result "${USERNAME}"
-    _result "${ACCESS_KEY}"
-    _result "**********${SECRET_KEY:30}"
-
     if [ "${SESSION_TOKEN}" != "" ]; then
         echo "aws_session_token=${SESSION_TOKEN}" >> ~/.aws/credentials
-
-        _result "**********${SESSION_TOKEN:30}"
     fi
 
     chmod 600 ~/.aws/credentials
+
+    _result "${USERNAME}"
+    _result "${ACCESS_KEY}"
+    _result "**********${SECRET_KEY:30}"
 }
 
 _ctx() {
