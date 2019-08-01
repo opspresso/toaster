@@ -130,11 +130,13 @@ _package() {
 
                 VERSION="${VERSION}-${PR_NUM}"
             else
-                VERSION="${VERSION}-${CIRCLE_BUILD_NUM}"
+                VERSION=""
             fi
         fi
 
-        printf "${VERSION}" > ${RUN_PATH}/target/VERSION
+        if [ "${VERSION}" != "" ]; then
+            printf "${VERSION}" > ${RUN_PATH}/target/VERSION
+        fi
     fi
 
     _result "VERSION=${VERSION}"
