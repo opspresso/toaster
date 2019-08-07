@@ -131,8 +131,8 @@ _package() {
                 VERSION="${VERSION}-${PR_NUM}"
             else
                 # VERSION=""
-                # VERSION="${VERSION}-${CIRCLE_BUILD_NUM}"
-                VERSION="${VERSION}-${BRANCH_HEAD}"
+                # VERSION="${VERSION}-${BRANCH_HEAD}"
+                VERSION="${VERSION}-${CIRCLE_BUILD_NUM}"
             fi
         fi
 
