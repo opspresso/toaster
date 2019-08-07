@@ -67,6 +67,10 @@ workflows:
       - publish:
           requires:
             - package
+          filters:
+            branches:
+              only:
+                - master
       - release:
           requires:
             - package
