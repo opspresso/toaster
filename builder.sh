@@ -113,10 +113,10 @@ _package() {
         if [ "${BRANCH}" == "master" ]; then
             VERSION=$(echo ${VERSION} | perl -pe 's/^(([v\d]+\.)*)(\d+)(.*)$/$1.($3+1).$4/e')
         else
-            PR=$(echo "${BRANCH}" | cut -d'/' -f1)
+            BRANCH_HEAD=$(echo "${BRANCH}" | cut -d'/' -f1)
 
-            if [ "${PR}" == "pull" ]; then
-                printf "${PR}" > ${RUN_PATH}/target/PR
+            if [ "${BRANCH_HEAD}" == "pull" ]; then
+                printf "" > ${RUN_PATH}/target/PR
 
                 if [ "${PR_NUM}" == "" ]; then
                     PR_NUM=$(echo "${BRANCH}" | cut -d'/' -f2)
@@ -130,7 +130,9 @@ _package() {
 
                 VERSION="${VERSION}-${PR_NUM}"
             else
-                VERSION=""
+                # VERSION=""
+                # VERSION="${VERSION}-${CIRCLE_BUILD_NUM}"
+                VERSION="${VERSION}-${BRANCH_HEAD}"
             fi
         fi
 
