@@ -135,13 +135,13 @@ _publish() {
     if [ "${BRANCH}" != "master" ]; then
         return
     fi
-    if [ -z ${PUBLISH_PATH} ]; then
-        return
-    fi
     if [ ! -f ${RUN_PATH}/target/VERSION ]; then
         return
     fi
     if [ -f ${RUN_PATH}/target/PR ]; then
+        return
+    fi
+    if [ -z ${PUBLISH_PATH} ]; then
         return
     fi
 
