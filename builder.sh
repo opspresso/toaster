@@ -87,8 +87,7 @@ _package() {
     fi
 
     _result "BRANCH=${BRANCH}"
-    _result "PR_NUM=${PR_NUM}"
-    _result "PR_URL=${PR_URL}"
+    _result "PR_URL=${CIRCLE_PULL_REQUEST}"
 
     # release version
     MAJOR=$(cat ${RUN_PATH}/VERSION | xargs | cut -d'.' -f1)
@@ -113,26 +112,14 @@ _package() {
         if [ "${BRANCH}" == "master" ]; then
             VERSION=$(echo ${VERSION} | perl -pe 's/^(([v\d]+\.)*)(\d+)(.*)$/$1.($3+1).$4/e')
         else
-            BRANCH_HEAD=$(echo "${BRANCH}" | cut -d'/' -f1)
+            if [ "${CIRCLE_PULL_REQUEST}" != "" ]; then
+                PR_NUM=$(echo "${CIRCLE_PULL_REQUEST}" | cut -d'/' -f7)
+            fi
 
-            if [ "${BRANCH_HEAD}" == "pull" ]; then
-                printf "" > ${RUN_PATH}/target/PR
-
-                if [ "${PR_NUM}" == "" ]; then
-                    PR_NUM=$(echo "${BRANCH}" | cut -d'/' -f2)
-                fi
-                if [ "${PR_NUM}" == "" ] && [ "${PR_URL}" != "" ]; then
-                    PR_NUM=$(echo "${PR_URL}" | cut -d'/' -f7)
-                fi
-                if [ "${PR_NUM}" == "" ]; then
-                    PR_NUM=${CIRCLE_BUILD_NUM}
-                fi
-
+            if [ "${PR_NUM}" != "" ]; then
                 VERSION="${VERSION}-${PR_NUM}"
             else
-                # VERSION=""
-                # VERSION="${VERSION}-${BRANCH_HEAD}"
-                VERSION="${VERSION}-${CIRCLE_BUILD_NUM}"
+                VERSION=""
             fi
         fi
 
