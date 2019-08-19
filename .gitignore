@@ -14,13 +14,13 @@ $RECYCLE.BIN/
 # Mac
 .DS_Store
 
-# Maven
-target/
-build/
-
 # Nodejs
 node_modules/
 package-lock.json
+
+# build
+target/
+build/
 dist/
 
 # JetBrains
