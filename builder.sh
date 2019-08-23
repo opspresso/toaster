@@ -118,6 +118,7 @@ _package() {
 
             if [ "${PR_NUM}" != "" ]; then
                 VERSION="${VERSION}-${PR_NUM}"
+                echo ${PR_NUM} > ${RUN_PATH}/target/PR
             else
                 VERSION=""
             fi
