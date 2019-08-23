@@ -27,5 +27,3 @@ Usage: toaster {cdw|env|ctx|ssh|update|tools}
 ```
 
 <!-- usage end -->
-
-bump
