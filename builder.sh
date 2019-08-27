@@ -228,7 +228,7 @@ _trigger() {
     _result "VERSION=${VERSION}"
 
     CIRCLE_API="https://circleci.com/api/v1.1/project/github/${CIRCLE_BUILDER}"
-    CIRCLE_URL="${CIRCLE_API}?circle-token=${PERSONAL_TOKEN}"
+    CIRCLE_URL="${CIRCLE_API}?circle-token=${PERSONAL_TOKEN:-$CIRCLE_TOKEN}"
 
     PAYLOAD="{\"build_parameters\":{"
     PAYLOAD="${PAYLOAD}\"TG_USERNAME\":\"${USERNAME}\","
