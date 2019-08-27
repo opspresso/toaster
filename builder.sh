@@ -217,7 +217,7 @@ _trigger() {
     if [ -z ${CIRCLE_BUILDER} ]; then
         return
     fi
-    if [ -z ${PERSONAL_TOKEN} ]; then
+    if [ -z ${PERSONAL_TOKEN:-$CIRCLE_TOKEN} ]; then
         return
     fi
     if [ ! -f ${RUN_PATH}/target/VERSION ]; then
