@@ -81,7 +81,7 @@ _prepare() {
     fi
 }
 
-_package() {
+_build() {
     if [ ! -f ${RUN_PATH}/VERSION ]; then
         _error "not found VERSION"
     fi
@@ -267,8 +267,8 @@ _slack() {
 _prepare
 
 case ${CMD} in
-    build|package)
-        _package
+    build)
+        _build
         ;;
     publish)
         _publish
