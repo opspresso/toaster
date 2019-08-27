@@ -3,7 +3,7 @@
 #
 version: 2
 jobs:
-  package:
+  build:
     docker:
       - image: circleci/python
     working_directory: ~/works
@@ -63,17 +63,17 @@ workflows:
   version: 2
   apply:
     jobs:
-      - package
+      - build
       - publish:
           requires:
-            - package
+            - build
           filters:
             branches:
               only:
                 - master
       - release:
           requires:
-            - package
+            - build
       - slack:
           requires:
             - release
