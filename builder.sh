@@ -92,10 +92,10 @@ _package() {
     # release version
     MAJOR=$(cat ${RUN_PATH}/VERSION | xargs | cut -d'.' -f1)
     MINOR=$(cat ${RUN_PATH}/VERSION | xargs | cut -d'.' -f2)
-    BUILD=$(cat ${RUN_PATH}/VERSION | xargs | cut -d'.' -f3)
+    PATCH=$(cat ${RUN_PATH}/VERSION | xargs | cut -d'.' -f3)
 
-    if [ "${BUILD}" != "x" ]; then
-        VERSION="${MAJOR}.${MINOR}.${BUILD}"
+    if [ "${PATCH}" != "x" ]; then
+        VERSION="${MAJOR}.${MINOR}.${PATCH}"
         printf "${VERSION}" > ${RUN_PATH}/target/VERSION
     else
         # latest versions
