@@ -145,6 +145,8 @@ EOF
 }
 
 _prepare() {
+    mkdir -p ~/.aws
+    mkdir -p ~/.ssh
     mkdir -p ${CONFIG_DIR}
 
     touch ${CONFIG} && . ${CONFIG}
