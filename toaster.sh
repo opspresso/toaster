@@ -113,7 +113,7 @@ _select_one() {
                 CNT="1-${CNT}"
             fi
 
-            _read "Please select one. (${CNT}) : "
+            _read "Please select one (${CNT}): "
 
             if [ -z ${ANSWER} ]; then
                 return
@@ -158,7 +158,7 @@ _src_dir() {
     if [ -z ${SRC_DIR} ] || [ ! -d ${SRC_DIR} ]; then
         DEFAULT="${HOME}/work/src"
 
-        _read "Please input source directory. [${DEFAULT}]: "
+        _read "Please input source directory [${DEFAULT}]: "
         SRC_DIR=${ANSWER:-${DEFAULT}}
     fi
 
@@ -175,7 +175,7 @@ _env_dir() {
     if [ -z ${ENV_DIR} ] || [ ! -d ${ENV_DIR} ]; then
         DEFAULT="${SRC_DIR}/github.com/${USER}/keys/env"
 
-        _read "Please input env directory. [${DEFAULT}]: "
+        _read "Please input env directory [${DEFAULT}]: "
         ENV_DIR=${ANSWER:-${DEFAULT}}
     fi
 
@@ -190,7 +190,7 @@ _pem_dir() {
     if [ -z ${PEM_DIR} ] || [ ! -d ${PEM_DIR} ]; then
         DEFAULT="${SRC_DIR}/github.com/${USER}/keys/pem"
 
-        _read "Please input pem directory. [${DEFAULT}]: "
+        _read "Please input pem directory [${DEFAULT}]: "
         PEM_DIR=${ANSWER:-${DEFAULT}}
     fi
 
@@ -374,7 +374,7 @@ _ssh() {
         _HOST="$(echo ${SELECTED} | awk '{print $1}')"
 
         if [ -z ${_HOST} ]; then
-            _read "Please input ssh host. []: "
+            _read "Please input ssh host []: "
 
             _HOST="${ANSWER}"
         fi
@@ -386,7 +386,7 @@ _ssh() {
     # user
     if [ -z ${_USER} ]; then
         DEFAULT="ec2-user"
-        _read "Please input ssh user. [${DEFAULT}]: "
+        _read "Please input ssh user [${DEFAULT}]: "
         _USER="${ANSWER:-${DEFAULT}}"
     fi
     if [ -z ${_USER} ]; then
@@ -501,7 +501,7 @@ _mtu() {
     # mtu name
     if [ -z ${_MTU} ]; then
         DEFAULT="en0"
-        _read "Please input mtu. [${DEFAULT}]: "
+        _read "Please input mtu [${DEFAULT}]: "
         _MTU="${ANSWER:-${DEFAULT}}"
     fi
     if [ -z ${_MTU} ]; then
@@ -511,7 +511,7 @@ _mtu() {
     # mtu value
     if [ -z ${_VAL} ]; then
         DEFAULT="1500"
-        _read "Please input mtu. [${DEFAULT}]: "
+        _read "Please input mtu [${DEFAULT}]: "
         _VAL="${ANSWER:-${DEFAULT}}"
     fi
     if [ -z ${_VAL} ]; then
@@ -557,7 +557,7 @@ _stress() {
     # requests
     if [ -z ${_REQ} ]; then
         DEFAULT="1000000"
-        _read "Please input requests. [${DEFAULT}]: "
+        _read "Please input requests [${DEFAULT}]: "
         _REQ="${ANSWER:-${DEFAULT}}"
     fi
     if [ -z ${_REQ} ]; then
@@ -567,7 +567,7 @@ _stress() {
     # concurrency
     if [ -z ${_CON} ]; then
         DEFAULT="10"
-        _read "Please input concurrency. [${DEFAULT}]: "
+        _read "Please input concurrency [${DEFAULT}]: "
         _CON="${ANSWER:-${DEFAULT}}"
     fi
     if [ -z ${_CON} ]; then
@@ -576,7 +576,7 @@ _stress() {
 
     # url
     if [ -z ${_URL} ]; then
-        _read "Please input url.: "
+        _read "Please input url : "
         _URL="${ANSWER}"
     fi
     if [ -z ${_URL} ]; then
@@ -728,7 +728,7 @@ _git_prepare() {
             if [ -f ${GIT_PWD}/.git_url ]; then
                 GIT_URL=$(cat ${GIT_PWD}/.git_url)
             else
-                _read "Please input git url. (ex: ssh://git@8.8.8.8:88/): "
+                _read "Please input git url (ex: ssh://git@8.8.8.8:88/): "
 
                 GIT_URL=${ANSWER}
 
