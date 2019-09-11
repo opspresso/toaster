@@ -325,6 +325,15 @@ _ssh() {
     HISTORY="${CONFIG_DIR}/ssh-history"
     touch ${HISTORY}
 
+    # config
+    if [ ! -f ~/.ssh/config ]; then
+cat <<EOF > ~/.ssh/config
+Host *
+    StrictHostKeyChecking true
+EOF
+        comod 400 ~/.ssh/config
+    fi
+
     # history
     if [ -z ${_USER} ]; then
         if [ -f ${HISTORY} ]; then
@@ -410,6 +419,9 @@ _ssh() {
     fi
 
     chmod 600 ${PEM_DIR}/${_PEMS}
+
+    grep -v "${_HOST}" .ssh/known_hosts > /tmp/known_hosts
+    cp /tmp/known_hosts .ssh/known_hosts
 
     _command "ssh -i ${PEM_DIR}/${_PEMS} ${_USER}@${_HOST}"
     ssh -i ${PEM_DIR}/${_PEMS} ${_USER}@${_HOST}
