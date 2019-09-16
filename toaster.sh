@@ -331,7 +331,7 @@ _ssh() {
     if [ ! -f ~/.ssh/config ]; then
 cat <<EOF > ~/.ssh/config
 Host *
-    StrictHostKeyChecking true
+    StrictHostKeyChecking no
 EOF
         comod 400 ~/.ssh/config
     fi
