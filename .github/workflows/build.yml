@@ -1,0 +1,47 @@
+name: Build
+
+on: 
+  push:
+    branches:
+    - master
+  pull_request:
+    branches:
+    - master
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v1
+      with:
+        fetch-depth: 1
+
+    - name: Prepare
+      run: |
+        mkdir target
+        curl -sLo target/builder.sh toast.sh/builder
+        pwd
+        ls -al
+        echo $USERNAME
+
+    - name: Build
+      run: |
+        bash ./target/builder.sh build
+
+    - name: Package
+      run: |
+        bash ./build.sh
+
+    - name: Publish
+      run: |
+        bash ./target/builder.sh publish
+
+    - name: Release
+      run: |
+        bash ./target/builder.sh release
+
+    - name: Slack
+      run: |
+        bash ./target/builder.sh slack
