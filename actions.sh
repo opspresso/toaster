@@ -9,7 +9,7 @@ RUN_PATH="."
 CMD=${1}
 
 USERNAME=${GITHUB_ACTOR}
-REPONAME=${GITHUB_REPOSITORY}
+REPONAME=$(echo "${GITHUB_REPOSITORY}" | cut -d'/' -f2)
 
 BRANCH=${GITHUB_REF}
 
@@ -128,13 +128,16 @@ _build() {
 }
 
 _publish() {
-    if [ "${BRANCH}" != "master" ]; then
+    if [ "${BRANCH}" != "refs/heads/master" ]; then
+        _result "nat match master == ${BRANCH}"
         return
     fi
     if [ ! -f ${RUN_PATH}/target/VERSION ]; then
+        _result "not found target/VERSION"
         return
     fi
     if [ -z ${PUBLISH_PATH} ]; then
+        _result "not found PUBLISH_PATH"
         return
     fi
 
@@ -153,9 +156,11 @@ _publish() {
 
 _release() {
     if [ ! -f ${RUN_PATH}/target/VERSION ]; then
+        _result "not found target/VERSION"
         return
     fi
     if [ -z ${GITHUB_TOKEN} ]; then
+        _result "not found GITHUB_TOKEN"
         return
     fi
 
@@ -185,9 +190,11 @@ _release() {
 
 _docker() {
     if [ ! -f ${RUN_PATH}/target/VERSION ]; then
+        _result "not found target/VERSION"
         return
     fi
     if [ -z ${DOCKER_USER} ] || [ -z ${DOCKER_PASS} ]; then
+        _result "not found DOCKER_USER or DOCKER_PASS"
         return
     fi
 
@@ -209,9 +216,11 @@ _docker() {
 
 _slack() {
     if [ ! -f ${RUN_PATH}/target/VERSION ]; then
+        _result "not found target/VERSION"
         return
     fi
     if [ -z ${SLACK_TOKEN} ]; then
+        _result "not found SLACK_TOKEN"
         return
     fi
 
