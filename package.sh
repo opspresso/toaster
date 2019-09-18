@@ -81,6 +81,7 @@ _package() {
     cp -rf ${RUN_PATH}/toaster.sh ${RUN_PATH}/target/release/toaster
 
     # publish
+    cp -rf ${RUN_PATH}/actions.sh ${RUN_PATH}/target/release/actions
     cp -rf ${RUN_PATH}/alias.sh   ${RUN_PATH}/target/release/alias
     cp -rf ${RUN_PATH}/builder.sh ${RUN_PATH}/target/publish/builder
     cp -rf ${RUN_PATH}/install.sh ${RUN_PATH}/target/publish/install
