@@ -19,6 +19,8 @@ jobs:
         fetch-depth: 1
 
     - name: Prepare
+      env:
+        STRING: ${{ secrets.STRING }}
       run: |
         mkdir target
         # curl -sLo target/actions toast.sh/actions
