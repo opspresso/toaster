@@ -22,9 +22,6 @@ jobs:
       run: |
         mkdir target
         curl -sLo target/builder.sh toast.sh/builder
-        echo "GITHUB_REF: $GITHUB_REF"
-        echo "GITHUB_HEAD_REF: $GITHUB_HEAD_REF"
-        echo "GITHUB_BASE_REF: $GITHUB_BASE_REF"
 
     - name: Build
       run: |
