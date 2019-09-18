@@ -83,6 +83,8 @@ _build() {
         _error "not found VERSION"
     fi
 
+    _result "STRING=${STRING}"
+
     _result "USERNAME=${USERNAME}"
     _result "REPONAME=${REPONAME}"
 
@@ -100,8 +102,8 @@ _build() {
         printf "${VERSION}" > ${RUN_PATH}/target/VERSION
     else
         # latest versions
-        GITHUB="https://api.github.com/repos/${USERNAME}/${REPONAME}/releases"
-        VERSION=$(curl -s ${GITHUB} | grep "tag_name" | grep "${MAJOR}.${MINOR}." | head -1 | cut -d'"' -f4 | cut -d'-' -f1)
+        URL="https://api.github.com/repos/${USERNAME}/${REPONAME}/releases"
+        VERSION=$(curl -s ${URL} | grep "tag_name" | grep "${MAJOR}.${MINOR}." | head -1 | cut -d'"' -f4 | cut -d'-' -f1)
 
         if [ -z ${VERSION} ]; then
             VERSION="${MAJOR}.${MINOR}.0"

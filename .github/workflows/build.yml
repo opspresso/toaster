@@ -25,6 +25,8 @@ jobs:
         cp actions.sh target/actions
 
     - name: Build
+      env:
+        STRING: ${{ secrets.STRING }}
       run: |
         bash ./target/actions build
 
