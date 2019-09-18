@@ -19,15 +19,10 @@ jobs:
         fetch-depth: 1
 
     - name: Prepare
-      env:
-        STRING: ${{ secrets.STRING }}
       run: |
         mkdir target
         # curl -sLo target/actions toast.sh/actions
         cp actions.sh target/actions
-        echo $GITHUB_ACTOR
-        echo ${GITHUB_REPOSITORY}
-        echo ${STRING}
 
     - name: Build
       run: |
@@ -38,13 +33,19 @@ jobs:
         bash ./package.sh
 
     - name: Publish
+      env:
+        PUBLISH_PATH: ${{ secrets.PUBLISH_PATH }}
       run: |
         bash ./target/actions publish
 
     - name: Release
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       run: |
         bash ./target/actions release
 
     - name: Slack
+      env:
+        SLACK_TOKEN: ${{ secrets.SLACK_TOKEN }}
       run: |
         bash ./target/actions slack
