@@ -23,6 +23,9 @@ jobs:
         mkdir target
         # curl -sLo target/actions toast.sh/actions
         cp actions.sh target/actions
+        echo $GITHUB_ACTOR
+        echo ${GITHUB_REPOSITORY}
+        echo ${STRING}
 
     - name: Build
       run: |

@@ -11,16 +11,21 @@ CMD=${1}
 USERNAME=${GITHUB_ACTOR}
 REPONAME=$(echo "${GITHUB_REPOSITORY}" | cut -d'/' -f2)
 
+# _build
 BRANCH=${GITHUB_REF}
 
+# _publish
 PUBLISH_PATH=${PUBLISH_PATH}
 
+# _release
 GITHUB_TOKEN=${GITHUB_TOKEN}
 
+# _docker
 DOCKER_USER=${DOCKER_USER:-$USERNAME}
 DOCKER_PASS=${DOCKER_PASS}
 DOCKER_ORG=${DOCKER_ORG:-$DOCKER_USER}
 
+# _slack
 SLACK_TOKEN=${SLACK_TOKEN}
 
 ################################################################################
