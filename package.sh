@@ -6,16 +6,6 @@ SHELL_DIR=$(dirname $0)
 
 RUN_PATH=${SHELL_DIR}
 
-CMD=${1:-$CIRCLE_JOB}
-
-USERNAME=${CIRCLE_PROJECT_USERNAME:-opspresso}
-REPONAME=${CIRCLE_PROJECT_REPONAME:-toaster}
-
-BRANCH=${CIRCLE_BRANCH:-master}
-
-PR_NUM=${CIRCLE_PR_NUMBER}
-PR_URL=${CIRCLE_PULL_REQUEST}
-
 ################################################################################
 
 # command -v tput > /dev/null && TPUT=true
@@ -67,6 +57,8 @@ _prepare() {
     # 755
     find ./** | grep [.]sh | xargs chmod 755
 }
+
+################################################################################
 
 _package() {
     if [ ! -f ${RUN_PATH}/target/VERSION ]; then
