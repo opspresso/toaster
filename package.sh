@@ -81,11 +81,11 @@ _package() {
     cp -rf ${RUN_PATH}/toaster.sh ${RUN_PATH}/target/release/toaster
 
     # publish
-    cp -rf ${RUN_PATH}/actions.sh ${RUN_PATH}/target/release/actions
-    cp -rf ${RUN_PATH}/alias.sh   ${RUN_PATH}/target/release/alias
+    cp -rf ${RUN_PATH}/actions.sh ${RUN_PATH}/target/publish/actions
+    cp -rf ${RUN_PATH}/alias.sh   ${RUN_PATH}/target/publish/alias
     cp -rf ${RUN_PATH}/builder.sh ${RUN_PATH}/target/publish/builder
     cp -rf ${RUN_PATH}/install.sh ${RUN_PATH}/target/publish/install
-    cp -rf ${RUN_PATH}/toaster.sh ${RUN_PATH}/target/release/toaster
+    cp -rf ${RUN_PATH}/toaster.sh ${RUN_PATH}/target/publish/toaster
     cp -rf ${RUN_PATH}/tools.sh   ${RUN_PATH}/target/publish/tools
 
     # publish web
@@ -93,16 +93,13 @@ _package() {
 
     # replace
     _replace "s/THIS_VERSION=.*/THIS_VERSION=${VERSION}/g" ${RUN_PATH}/target/release/toaster
+    _replace "s/THIS_VERSION=.*/THIS_VERSION=${VERSION}/g" ${RUN_PATH}/target/publish/toaster
 }
 
 ################################################################################
 
 _prepare
 
-case ${CMD} in
-    build|package)
-        _package
-        ;;
-esac
+_package
 
 _success
