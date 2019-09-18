@@ -6,7 +6,7 @@ REPO="opspresso.com/tools"
 
 # update
 curl -sL ${REPO}/base | bash
-[ $? == 1 ] && exit 1
+# [ $? == 1 ] && exit 1
 
 # awscli
 curl -sL ${REPO}/awscli | bash
