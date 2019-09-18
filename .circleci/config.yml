@@ -2,6 +2,7 @@
 # CircleCI 2.0
 #
 version: 2
+
 jobs:
   build:
     docker:
@@ -10,26 +11,22 @@ jobs:
     steps:
       - checkout
       - run:
-          name: Package
+          name: Prepare
           command: |
             mkdir target
             curl -sLo target/builder.sh toast.sh/builder
+      - run:
+          name: Build
+          command: |
             bash ./target/builder.sh
-      - persist_to_workspace:
-          root: ~/works
-          paths:
-            - target
-  package:
-    docker:
-      - image: opspresso/awscli
-    working_directory: ~/works
-    steps:
-      - attach_workspace:
-          at: ~/works
       - run:
           name: Package
           command: |
             bash ./package.sh
+      - persist_to_workspace:
+          root: ~/works
+          paths:
+            - target
   publish:
     docker:
       - image: opspresso/awscli
@@ -74,19 +71,16 @@ workflows:
   apply:
     jobs:
       - build
-      - package:
-          requires:
-            - build
       - publish:
           requires:
-            - package
+            - build
           filters:
             branches:
               only:
                 - master
       - release:
           requires:
-            - package
+            - build
       - slack:
           requires:
             - release
