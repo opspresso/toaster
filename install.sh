@@ -33,6 +33,20 @@ _error() {
 
 ################################################################################
 
+_prepare() {
+    mkdir -p ~/.aws
+    mkdir -p ~/.ssh
+
+    # config
+    if [ ! -f ~/.ssh/config ]; then
+cat <<EOF > ~/.ssh/config
+Host *
+    StrictHostKeyChecking no
+EOF
+    fi
+    comod 400 ~/.ssh/config
+}
+
 _version() {
     if [ -z ${VERSION} ]; then
         VERSION=$(curl -s https://api.github.com/repos/${USERNAME}/${REPONAME}/releases/latest | grep tag_name | cut -d'"' -f4)
@@ -98,6 +112,8 @@ _alias() {
 }
 
 ################################################################################
+
+_prepare
 
 _version
 
