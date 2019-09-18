@@ -83,6 +83,9 @@ _build() {
         _error "not found VERSION"
     fi
 
+    _result "USERNAME=${USERNAME}"
+    _result "REPONAME=${REPONAME}"
+
     # refs/heads/master
     # refs/pull/1/merge
     _result "BRANCH=${BRANCH}"
