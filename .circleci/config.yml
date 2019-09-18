@@ -15,11 +15,21 @@ jobs:
             mkdir target
             curl -sLo target/builder.sh toast.sh/builder
             bash ./target/builder.sh
-            bash ./build.sh
       - persist_to_workspace:
           root: ~/works
           paths:
             - target
+  package:
+    docker:
+      - image: opspresso/awscli
+    working_directory: ~/works
+    steps:
+      - attach_workspace:
+          at: ~/works
+      - run:
+          name: Package
+          command: |
+            bash ./package.sh
   publish:
     docker:
       - image: opspresso/awscli
@@ -64,16 +74,19 @@ workflows:
   apply:
     jobs:
       - build
-      - publish:
+      - package:
           requires:
             - build
+      - publish:
+          requires:
+            - package
           filters:
             branches:
               only:
                 - master
       - release:
           requires:
-            - build
+            - package
       - slack:
           requires:
             - release
