@@ -44,7 +44,7 @@ Host *
     StrictHostKeyChecking no
 EOF
     fi
-    comod 400 ~/.ssh/config
+    chmod 400 ~/.ssh/config
 }
 
 _version() {
