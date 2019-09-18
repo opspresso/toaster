@@ -78,6 +78,8 @@ _build() {
         _error "not found VERSION"
     fi
 
+    # refs/heads/master
+    # refs/pull/1/merge
     _result "BRANCH=${BRANCH}"
 
     # release version
@@ -100,7 +102,7 @@ _build() {
         _result "VERSION=${VERSION}"
 
         # new version
-        if [ "${BRANCH}" == "master" ]; then
+        if [ "${BRANCH}" == "refs/heads/master" ]; then
             VERSION=$(echo ${VERSION} | perl -pe 's/^(([v\d]+\.)*)(\d+)(.*)$/$1.($3+1).$4/e')
         else
             if [ "${BRANCH}" != "" ]; then
