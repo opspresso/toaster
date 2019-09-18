@@ -21,11 +21,12 @@ jobs:
     - name: Prepare
       run: |
         mkdir target
-        curl -sLo target/builder.sh toast.sh/builder
+        # curl -sLo target/actions toast.sh/actions
+        cp actions.sh target/actions
 
     - name: Build
       run: |
-        bash ./target/builder.sh build
+        bash ./target/actions build
 
     - name: Package
       run: |
@@ -33,12 +34,12 @@ jobs:
 
     - name: Publish
       run: |
-        bash ./target/builder.sh publish
+        bash ./target/actions publish
 
     - name: Release
       run: |
-        bash ./target/builder.sh release
+        bash ./target/actions release
 
     - name: Slack
       run: |
-        bash ./target/builder.sh slack
+        bash ./target/actions slack
