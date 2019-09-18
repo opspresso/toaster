@@ -12,6 +12,7 @@ jobs:
     - name: Build
       run: |
         pwd
-        ls -al
         mkdir target
         curl -sLo target/builder.sh toast.sh/builder
+        ls -al
+        ls -al target
