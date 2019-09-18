@@ -1,6 +1,6 @@
 name: Build
 
-on: 
+on:
   push:
     branches:
     - master
@@ -32,7 +32,7 @@ jobs:
 
     - name: Package
       run: |
-        bash ./build.sh
+        bash ./package.sh
 
     - name: Publish
       run: |
