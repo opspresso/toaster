@@ -9,18 +9,23 @@ RUN_PATH="."
 CMD=${1}
 
 USERNAME=${GITHUB_ACTOR}
-REPONAME=${GITHUB_REPOSITORY}
+REPONAME=$(echo "${GITHUB_REPOSITORY}" | cut -d'/' -f2)
 
+# _build
 BRANCH=${GITHUB_REF}
 
+# _publish
 PUBLISH_PATH=${PUBLISH_PATH}
 
+# _release
 GITHUB_TOKEN=${GITHUB_TOKEN}
 
+# _docker
 DOCKER_USER=${DOCKER_USER:-$USERNAME}
 DOCKER_PASS=${DOCKER_PASS}
 DOCKER_ORG=${DOCKER_ORG:-$DOCKER_USER}
 
+# _slack
 SLACK_TOKEN=${SLACK_TOKEN}
 
 ################################################################################
@@ -78,6 +83,13 @@ _build() {
         _error "not found VERSION"
     fi
 
+    _result "STRING=${STRING}"
+
+    _result "USERNAME=${USERNAME}"
+    _result "REPONAME=${REPONAME}"
+
+    # refs/heads/master
+    # refs/pull/1/merge
     _result "BRANCH=${BRANCH}"
 
     # release version
@@ -90,8 +102,8 @@ _build() {
         printf "${VERSION}" > ${RUN_PATH}/target/VERSION
     else
         # latest versions
-        GITHUB="https://api.github.com/repos/${USERNAME}/${REPONAME}/releases"
-        VERSION=$(curl -s ${GITHUB} | grep "tag_name" | grep "${MAJOR}.${MINOR}." | head -1 | cut -d'"' -f4 | cut -d'-' -f1)
+        URL="https://api.github.com/repos/${USERNAME}/${REPONAME}/releases"
+        VERSION=$(curl -s ${URL} | grep "tag_name" | grep "${MAJOR}.${MINOR}." | head -1 | cut -d'"' -f4 | cut -d'-' -f1)
 
         if [ -z ${VERSION} ]; then
             VERSION="${MAJOR}.${MINOR}.0"
@@ -100,7 +112,7 @@ _build() {
         _result "VERSION=${VERSION}"
 
         # new version
-        if [ "${BRANCH}" == "master" ]; then
+        if [ "${BRANCH}" == "refs/heads/master" ]; then
             VERSION=$(echo ${VERSION} | perl -pe 's/^(([v\d]+\.)*)(\d+)(.*)$/$1.($3+1).$4/e')
         else
             if [ "${BRANCH}" != "" ]; then
@@ -126,13 +138,16 @@ _build() {
 }
 
 _publish() {
-    if [ "${BRANCH}" != "master" ]; then
+    if [ "${BRANCH}" != "refs/heads/master" ]; then
+        _result "nat match master == ${BRANCH}"
         return
     fi
     if [ ! -f ${RUN_PATH}/target/VERSION ]; then
+        _result "not found target/VERSION"
         return
     fi
     if [ -z ${PUBLISH_PATH} ]; then
+        _result "not found PUBLISH_PATH"
         return
     fi
 
@@ -151,9 +166,11 @@ _publish() {
 
 _release() {
     if [ ! -f ${RUN_PATH}/target/VERSION ]; then
+        _result "not found target/VERSION"
         return
     fi
     if [ -z ${GITHUB_TOKEN} ]; then
+        _result "not found GITHUB_TOKEN"
         return
     fi
 
@@ -183,9 +200,11 @@ _release() {
 
 _docker() {
     if [ ! -f ${RUN_PATH}/target/VERSION ]; then
+        _result "not found target/VERSION"
         return
     fi
     if [ -z ${DOCKER_USER} ] || [ -z ${DOCKER_PASS} ]; then
+        _result "not found DOCKER_USER or DOCKER_PASS"
         return
     fi
 
@@ -207,9 +226,11 @@ _docker() {
 
 _slack() {
     if [ ! -f ${RUN_PATH}/target/VERSION ]; then
+        _result "not found target/VERSION"
         return
     fi
     if [ -z ${SLACK_TOKEN} ]; then
+        _result "not found SLACK_TOKEN"
         return
     fi
 
