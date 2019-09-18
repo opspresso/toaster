@@ -2,6 +2,7 @@
 # CircleCI 2.0
 #
 version: 2
+
 jobs:
   build:
     docker:
@@ -10,11 +11,17 @@ jobs:
     steps:
       - checkout
       - run:
-          name: Build
+          name: Prepare
           command: |
             mkdir target
             curl -sLo target/builder.sh toast.sh/builder
+      - run:
+          name: Build
+          command: |
             bash ./target/builder.sh
+      - run:
+          name: Package
+          command: |
             bash ./package.sh
       - persist_to_workspace:
           root: ~/works
