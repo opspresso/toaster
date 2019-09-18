@@ -100,10 +100,6 @@ _package() {
 
 _prepare
 
-case ${CMD} in
-    build|package)
-        _package
-        ;;
-esac
+_package
 
 _success
