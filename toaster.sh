@@ -333,8 +333,8 @@ cat <<EOF > ~/.ssh/config
 Host *
     StrictHostKeyChecking no
 EOF
-        comod 400 ~/.ssh/config
     fi
+    comod 400 ~/.ssh/config
 
     # history
     if [ -z ${_USER} ]; then
