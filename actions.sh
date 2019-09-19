@@ -83,7 +83,8 @@ _build() {
         _error "not found VERSION"
     fi
 
-    _result "STRING=${STRING}"
+    TMP_STRING="${STRING}"
+    _result "STRING=${TMP_STRING}"
 
     _result "USERNAME=${USERNAME}"
     _result "REPONAME=${REPONAME}"
