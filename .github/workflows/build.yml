@@ -26,7 +26,7 @@ jobs:
 
     - name: Build
       env:
-        STRING: ${{ secrets.STRING }}
+        STRING: ${{ STRING }}
       run: |
         bash ./target/actions build
 
