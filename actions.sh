@@ -183,7 +183,7 @@ _release() {
 
     ID=$(curl -s https://api.github.com/repos/${REPOSITORY}/releases | VERSION=$VERSION jq '.[] | select(.tag_name == env.VERSION) | .id')
     if [ "${ID}" != "" ]; then
-        _command "github delete ${REPOSITORY}/releases/${ID}"
+        _command "github delete ${REPOSITORY} ${ID}"
         curl --user ${USERNAME}:${GITHUB_TOKEN} \
             -s -X DELETE \
             https://api.github.com/repos/${REPOSITORY}/releases/${ID}
