@@ -185,7 +185,7 @@ _release() {
     if [ "${ID}" != "" ]; then
         _command "github delete ${REPOSITORY}/releases/${ID}"
         curl --user ${USERNAME}:${GITHUB_TOKEN} \
-            -X DELETE \
+            -s -X DELETE \
             https://api.github.com/repos/${REPOSITORY}/releases/${ID}
     fi
 
@@ -195,9 +195,9 @@ _release() {
         PRERELEASE="false"
     fi
 
-    _command "github create ${REPOSITORY} ${VERSION}"
+    _command "github create ${REPOSITORY} ${VERSION} ${PRERELEASE}"
     curl --user ${USERNAME}:${GITHUB_TOKEN} \
-        -X POST \
+        -s -X POST \
         --data @- \
         https://api.github.com/repos/${REPOSITORY}/releases <<END
 {
