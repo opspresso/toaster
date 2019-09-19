@@ -277,7 +277,7 @@ _slack() {
 _prepare
 
 case ${CMD} in
-    build)
+    build|package)
         _build
         ;;
     publish)
