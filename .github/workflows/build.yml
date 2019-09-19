@@ -41,7 +41,6 @@ jobs:
         bash ./target/actions publish
 
     - name: Release
-      uses: docker://golang
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       run: |

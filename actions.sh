@@ -177,23 +177,51 @@ _release() {
 
     printf "${VERSION}" > ${RUN_PATH}/target/release/${VERSION}
 
-    if [ -f ${RUN_PATH}/target/PR ]; then
-        GHR_PARAM="-delete -prerelease"
-    else
-        GHR_PARAM="-delete"
+    # POST   /repos/${USERNAME}/${REPONAME}/releases
+    # GET    /repos/${USERNAME}/${REPONAME}/releases/:release_id
+    # DELETE /repos/${USERNAME}/${REPONAME}/releases/:release_id
+
+    ID=$(curl -s https://api.github.com/repos/${USERNAME}/${REPONAME}/releases | VERSION=$VERSION jq '.[] | select(.tag_name == env.VERSION) | .id')
+    if [ "${ID}" != "" ]; then
+        curl -X DELETE https://api.github.com/repos/${USERNAME}/${REPONAME}/releases/${ID}
     fi
 
-    _command "go get github.com/tcnksm/ghr"
-    go get github.com/tcnksm/ghr
+    if [ -f ${RUN_PATH}/target/PR ]; then
+        PRERELEASE="true"
+    else
+        PRERELEASE="false"
+    fi
 
-    # github release
-    _command "ghr ${VERSION} ${RUN_PATH}/target/release/"
-    ghr -t ${GITHUB_TOKEN:-EMPTY} \
-        -u ${USERNAME} \
-        -r ${REPONAME} \
-        -c ${CIRCLE_SHA1} \
-        ${GHR_PARAM} \
-        ${VERSION} ${RUN_PATH}/target/release/
+    curl --user ${USERNAME}:${GITHUB_TOKEN} \
+        --request POST \
+        --silent \
+        --data @- \
+        https://api.github.com/repos/${USERNAME}/${REPONAME}/releases <<END
+{
+ "tag_name": "$VERSION",
+ "target_commitish": "master",
+ "name": "$VERSION",
+ "prerelease": $PRERELEASE
+}
+END
+
+    # if [ -f ${RUN_PATH}/target/PR ]; then
+    #     GHR_PARAM="-delete -prerelease"
+    # else
+    #     GHR_PARAM="-delete"
+    # fi
+
+    # _command "go get github.com/tcnksm/ghr"
+    # go get github.com/tcnksm/ghr
+
+    # # github release
+    # _command "ghr ${VERSION} ${RUN_PATH}/target/release/"
+    # ghr -t ${GITHUB_TOKEN:-EMPTY} \
+    #     -u ${USERNAME} \
+    #     -r ${REPONAME} \
+    #     -c ${CIRCLE_SHA1} \
+    #     ${GHR_PARAM} \
+    #     ${VERSION} ${RUN_PATH}/target/release/
 }
 
 _docker() {
