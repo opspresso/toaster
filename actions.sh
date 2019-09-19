@@ -197,7 +197,7 @@ _release() {
 
     _command "github create ${REPOSITORY} ${VERSION}"
     curl --user ${USERNAME}:${GITHUB_TOKEN} \
-        --request POST \
+        -X POST \
         --data @- \
         https://api.github.com/repos/${REPOSITORY}/releases <<END
 {
