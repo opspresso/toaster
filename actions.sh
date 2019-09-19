@@ -183,7 +183,9 @@ _release() {
 
     ID=$(curl -s https://api.github.com/repos/${USERNAME}/${REPONAME}/releases | VERSION=$VERSION jq '.[] | select(.tag_name == env.VERSION) | .id')
     if [ "${ID}" != "" ]; then
-        curl -X DELETE https://api.github.com/repos/${USERNAME}/${REPONAME}/releases/${ID}
+        curl -H "Authorization: token ${GITHUB_TOKEN}" \
+            -X DELETE \
+            https://api.github.com/repos/${USERNAME}/${REPONAME}/releases/${ID}
     fi
 
     if [ -f ${RUN_PATH}/target/PR ]; then
@@ -192,9 +194,8 @@ _release() {
         PRERELEASE="false"
     fi
 
-    curl --user ${USERNAME}:${GITHUB_TOKEN} \
-        --request POST \
-        --silent \
+    curl -H "Authorization: token ${GITHUB_TOKEN}" \
+        -x POST \
         --data @- \
         https://api.github.com/repos/${USERNAME}/${REPONAME}/releases <<END
 {
