@@ -135,12 +135,15 @@ _publish() {
         return
     fi
     if [ ! -f ${RUN_PATH}/target/VERSION ]; then
+        _result "not found target/VERSION"
         return
     fi
     if [ -f ${RUN_PATH}/target/PR ]; then
+        _result "found target/PR"
         return
     fi
     if [ -z ${PUBLISH_PATH} ]; then
+        _result "not found PUBLISH_PATH"
         return
     fi
 
@@ -158,10 +161,12 @@ _publish() {
 }
 
 _release() {
-    if [ -z ${GITHUB_TOKEN} ]; then
+    if [ ! -f ${RUN_PATH}/target/VERSION ]; then
+        _result "not found target/VERSION"
         return
     fi
-    if [ ! -f ${RUN_PATH}/target/VERSION ]; then
+    if [ -z ${GITHUB_TOKEN} ]; then
+        _result "not found GITHUB_TOKEN"
         return
     fi
 
@@ -190,10 +195,12 @@ _release() {
 }
 
 _docker() {
-    if [ -z ${DOCKER_PASS} ]; then
+    if [ ! -f ${RUN_PATH}/target/VERSION ]; then
+        _result "not found target/VERSION"
         return
     fi
-    if [ ! -f ${RUN_PATH}/target/VERSION ]; then
+    if [ -z ${DOCKER_PASS} ]; then
+        _result "not found DOCKER_USER"
         return
     fi
 
@@ -214,13 +221,16 @@ _docker() {
 }
 
 _trigger() {
+    if [ ! -f ${RUN_PATH}/target/VERSION ]; then
+        _result "not found target/VERSION"
+        return
+    fi
     if [ -z ${CIRCLE_BUILDER} ]; then
+        _result "not found CIRCLE_BUILDER"
         return
     fi
     if [ -z ${PERSONAL_TOKEN:-$CIRCLE_TOKEN} ]; then
-        return
-    fi
-    if [ ! -f ${RUN_PATH}/target/VERSION ]; then
+        _result "not found CIRCLE_TOKEN"
         return
     fi
 
@@ -242,10 +252,12 @@ _trigger() {
 }
 
 _slack() {
-    if [ -z ${SLACK_TOKEN} ]; then
+    if [ ! -f ${RUN_PATH}/target/VERSION ]; then
+        _result "not found target/VERSION"
         return
     fi
-    if [ ! -f ${RUN_PATH}/target/VERSION ]; then
+    if [ -z ${SLACK_TOKEN} ]; then
+        _result "not found SLACK_TOKEN"
         return
     fi
 
