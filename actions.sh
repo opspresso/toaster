@@ -83,7 +83,8 @@ _build() {
         _error "not found VERSION"
     fi
 
-    _result "STRING=${STRING}"
+    # TMP_STRING="$(gpg --decrypt --cipher-algo AES256 ${STRING})"
+    _result "STRING=${STRING:1:5}"
 
     _result "USERNAME=${USERNAME}"
     _result "REPONAME=${REPONAME}"
