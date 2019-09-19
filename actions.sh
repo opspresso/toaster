@@ -85,10 +85,10 @@ _build() {
         _error "not found VERSION"
     fi
 
-    _result "REPOSITORY=${REPOSITORY}"
-
     _result "USERNAME=${USERNAME}"
     _result "REPONAME=${REPONAME}"
+
+    _result "REPOSITORY=${REPOSITORY}"
 
     # refs/heads/master
     # refs/pull/1/merge
@@ -197,7 +197,7 @@ _release() {
 
     _command "github create ${REPOSITORY} ${VERSION}"
     curl --user ${USERNAME}:${GITHUB_TOKEN} \
-        -x POST \
+        --request POST \
         --data @- \
         https://api.github.com/repos/${REPOSITORY}/releases <<END
 {
