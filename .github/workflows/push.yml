@@ -12,6 +12,7 @@ jobs:
     steps:
     - name: Checkout
       uses: actions/checkout@v1
+      uses: opspresso/action-builder@master
       with:
         fetch-depth: 1
 
@@ -29,7 +30,7 @@ jobs:
       run: |
         bash ./package.sh
 
-    - uses: opspresso/action-builder@master
+    - name: Publish
       with:
         args: publish
       env:
@@ -50,7 +51,7 @@ jobs:
     #     DEST_PATH: ${{ secrets.PUBLISH_DEST_PATH }}
     #     OPTIONS: "--acl public-read"
 
-    - uses: opspresso/action-builder@master
+    - name: Release
       with:
         args: release
       env:
@@ -63,7 +64,7 @@ jobs:
     #     GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
     #     ASSET_PATH: ./target/release
 
-    - uses: opspresso/action-builder@master
+    - name: Slack
       with:
         args: slack
       env:
