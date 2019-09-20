@@ -172,8 +172,6 @@ _release_id() {
 }
 
 _release_assets() {
-    sleep 3
-
     LIST=/tmp/release-list
     ls ${RUN_PATH}/target/release/ | sort > ${LIST}
 
@@ -186,7 +184,7 @@ _release_assets() {
         CONTENT_LENGTH_HEADER="Content-Length: ${FILESIZE}"
 
         _command "github releases assets ${REPOSITORY} ${RELEASE_ID} ${FILENAME} ${FILETYPE} ${FILESIZE}"
-        URL="https://api.github.com/repos/${REPOSITORY}/releases/${RELEASE_ID}/assets?name=${FILENAME}"
+        URL="https://uploads.github.com/repos/${REPOSITORY}/releases/${RELEASE_ID}/assets?name=${FILENAME}"
         curl \
             -sSL \
             -X POST \
