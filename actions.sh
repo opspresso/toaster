@@ -191,7 +191,7 @@ _release_assets() {
             -H "${AUTH_HEADER}" \
             -H "${CONTENT_TYPE_HEADER}" \
             -H "${CONTENT_LENGTH_HEADER}" \
-            -d @${FILEPATH} \
+            --data-binary @${FILEPATH} \
             ${URL}
     done < ${LIST}
 }
@@ -236,7 +236,7 @@ _release() {
         -sSL \
         -X POST \
         -H "${AUTH_HEADER}" \
-        -d @- \
+        --data @- \
         ${URL} <<END
 {
  "tag_name": "${VERSION}",
