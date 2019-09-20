@@ -43,10 +43,10 @@ jobs:
         DEST_PATH: ${{ secrets.PUBLISH_DEST_PATH }}
 
     - name: Release
+    - uses: opspresso/action-release@v0.0.1
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      run: |
-        bash ./target/actions release
+        TAG_NAME: "$(cat ./target/VERSION | xargs)"
 
     - name: Slack
       env:
