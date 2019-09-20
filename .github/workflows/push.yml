@@ -50,3 +50,10 @@ jobs:
     #     SLACK_TOKEN: ${{ secrets.SLACK_TOKEN }}
     #   run: |
     #     bash ./target/actions slack
+
+    - name: Slack
+      uses: pullreminders/slack-action@master
+      env:
+        SLACK_BOT_TOKEN: ${{ secrets.SLACK_TOKEN }}
+      with:
+        args: '{\"text\":\"Hello world\"}'
