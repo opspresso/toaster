@@ -66,11 +66,11 @@ _prepare() {
 ################################################################################
 
 _package() {
-    if [ ! -f ${RUN_PATH}/target/VERSION ]; then
+    if [ ! -f ${RUN_PATH}/VERSION ]; then
         _error
     fi
 
-    VERSION=$(cat ${RUN_PATH}/target/VERSION | xargs)
+    VERSION=$(cat ${RUN_PATH}/VERSION | xargs)
     _result "VERSION=${VERSION}"
 
     # release
