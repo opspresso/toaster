@@ -1,10 +1,7 @@
-name: Build
+name: Build-Push
 
 on:
   push:
-    branches:
-    - master
-  pull_request:
     branches:
     - master
 
@@ -40,7 +37,7 @@ jobs:
         AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
         AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
         AWS_REGION: "ap-northeast-2"
-        DEST_PATH: "s3://www.toast.sh/temp"
+        DEST_PATH: ${{ secrets.PUBLISH_DEST_PATH }}
         FROM_PATH: "./target/publish"
 
     - name: Release
