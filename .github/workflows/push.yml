@@ -32,7 +32,7 @@ jobs:
     - name: Publish
       uses: opspresso/action-builder@master
       with:
-        args: --cmd publish
+        args: --run publish
       env:
         AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
         AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
