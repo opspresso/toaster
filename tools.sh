@@ -17,17 +17,11 @@ curl -sL ${REPO}/kubectl | bash
 # helm
 curl -sL ${REPO}/helm | bash
 
-# # kops
-# curl -sL ${REPO}/kops | bash
-
-# # draft
-# curl -sL ${REPO}/draft | bash
-
 # terraform
 curl -sL ${REPO}/terraform | bash
 
 # nodejs
-curl -sL ${REPO}/nodejs | bash -s "10"
+curl -sL ${REPO}/nodejs | bash -s "12"
 
 # # java
 # curl -sL ${REPO}/java | bash -s "1.8.0"

@@ -29,15 +29,15 @@ jobs:
       run: |
         bash ./package.sh
 
-    - name: Release
-      uses: opspresso/action-release@master
-      env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        PRERELEASE: "true"
-        ASSET_PATH: ./target/release
+    # - name: Release
+    #   uses: opspresso/action-release@master
+    #   env:
+    #     GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+    #     PRERELEASE: "true"
+    #     ASSET_PATH: ./target/release
 
     # - name: Slack
+    #   uses: opspresso/action-slack@master
     #   env:
     #     SLACK_TOKEN: ${{ secrets.SLACK_TOKEN }}
-    #   run: |
-    #     bash ./target/actions slack
+    #     JSON_PATH: ./target/slack_message.json
