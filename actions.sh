@@ -172,6 +172,7 @@ _release_id() {
 }
 
 _release_assets() {
+    LIST=/tmp/release-list
     ls ${RUN_PATH}/target/release/ | sort > ${LIST}
 
     while read FILENAME; do
