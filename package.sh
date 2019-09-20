@@ -55,9 +55,6 @@ _replace() {
 }
 
 _prepare() {
-    ls -al
-    ls -al ${RUN_PATH}/target
-
     # chmod 755
     find ./** | grep [.]sh | xargs chmod 755
 
