@@ -92,6 +92,9 @@ _package() {
     _replace "s/THIS_VERSION=.*/THIS_VERSION=${VERSION}/g" ${RUN_PATH}/target/release/toaster
     _replace "s/THIS_VERSION=.*/THIS_VERSION=${VERSION}/g" ${RUN_PATH}/target/publish/toaster
 
+    ls -al ${RUN_PATH}/target/release
+    ls -al ${RUN_PATH}/target/publish
+
     cat <<EOF > ${RUN_PATH}/target/slack_message.json
 {
     "username": "${USERNAME}",
