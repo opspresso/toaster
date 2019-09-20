@@ -6,33 +6,27 @@ on:
       - master
 
 jobs:
-  source:
+  build:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
         uses: actions/checkout@v1
         with:
           fetch-depth: 1
+
       - name: Prepare
         run: |
           mkdir -p target
 
-  build:
-    runs-on: ubuntu-latest
-    needs: source
-    steps:
       - name: Bump Version
         uses: opspresso/action-builder@master
         with:
           args: --version
+
       - name: Package
         run: |
           bash ./package.sh
 
-  publish:
-    runs-on: ubuntu-latest
-    needs: build
-    steps:
       - name: Publish
         uses: opspresso/action-builder@master
         with:
@@ -45,10 +39,6 @@ jobs:
           DEST_PATH: ${{ secrets.PUBLISH_DEST_PATH }}
           OPTIONS: "--acl public-read"
 
-  release:
-    runs-on: ubuntu-latest
-    needs: build
-    steps:
       - name: Release
         uses: opspresso/action-builder@master
         with:
@@ -57,10 +47,6 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           ASSET_PATH: ./target/release
 
-  slack:
-    runs-on: ubuntu-latest
-    needs: [publish, release]
-    steps:
       - name: Post to Slack
         uses: opspresso/action-builder@master
         with:
