@@ -15,16 +15,16 @@ jobs:
       with:
         fetch-depth: 1
 
-    # - name: Build
-    #   run: |
-    #     mkdir target
-    #     # curl -sLo target/actions toast.sh/actions
-    #     cp actions.sh target/actions
-    #     bash ./target/actions build
+    - name: Build
+      run: |
+        mkdir target
+        # curl -sLo target/actions toast.sh/actions
+        cp actions.sh target/actions
+        bash ./target/actions build
 
-    # - name: Package
-    #   run: |
-    #     bash ./package.sh
+    - name: Package
+      run: |
+        bash ./package.sh
 
     - name: Publish
       uses: opspresso/action-builder@master
