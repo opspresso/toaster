@@ -52,9 +52,9 @@ jobs:
         OPTIONS: "--acl public-read"
 
     - name: Release
-      uses: opspresso/action-builder@v0.0.2
-      # with:
-      #   args: release
+      uses: opspresso/action-builder@master
+      with:
+        args: --cmd release
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         ASSET_PATH: ./target/release
@@ -65,16 +65,16 @@ jobs:
     #     GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
     #     ASSET_PATH: ./target/release
 
-    # - name: Slack
-    #   uses: opspresso/action-builder@master
-    #   with:
-    #     args: slack
-    #   env:
-    #     SLACK_TOKEN: ${{ secrets.SLACK_TOKEN }}
-    #     JSON_PATH: ./target/slack_message.json
-
     - name: Slack
-      uses: opspresso/action-slack@master
+      uses: opspresso/action-builder@master
+      with:
+        args: --cmd slack
       env:
         SLACK_TOKEN: ${{ secrets.SLACK_TOKEN }}
         JSON_PATH: ./target/slack_message.json
+
+    # - name: Slack
+    #   uses: opspresso/action-slack@master
+    #   env:
+    #     SLACK_TOKEN: ${{ secrets.SLACK_TOKEN }}
+    #     JSON_PATH: ./target/slack_message.json
