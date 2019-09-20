@@ -58,12 +58,12 @@ _prepare() {
     ls -al
     ls -al ${RUN_PATH}/target
 
-    # target
+    # chmod 755
+    find ./** | grep [.]sh | xargs chmod 755
+
+    # mkdir target
     mkdir -p ${RUN_PATH}/target/publish
     mkdir -p ${RUN_PATH}/target/release
-
-    # 755
-    find ./** | grep [.]sh | xargs chmod 755
 }
 
 ################################################################################
