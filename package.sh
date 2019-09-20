@@ -97,10 +97,10 @@ _package() {
     "username": "${USERNAME}",
     "attachments": [{
         "color": "good",
-        "footer": "<https://github.com/${USERNAME}/${REPONAME}/releases/tag/${VERSION}|${USERNAME}/${REPONAME}>",
+        "footer": "<https://github.com/${REPOSITORY}/releases/tag/${VERSION}|${REPOSITORY}>",
         "footer_icon": "https://repo.opspresso.com/favicon/github.png",
         "title": "${REPONAME}",
-        "text": "`${VERSION}`"
+        "text": "${VERSION}"
     }]
 }
 EOF
