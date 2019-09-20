@@ -17,7 +17,7 @@ REPONAME=$(echo "${REPOSITORY}" | cut -d'/' -f2)
 BRANCH=${GITHUB_REF}
 
 # _publish
-PUBLISH_PATH=${PUBLISH_PATH}
+PUBLISH_PATH=${PUBLISH_PATH:-www.toast.sh}
 
 # _release
 GITHUB_TOKEN=${GITHUB_TOKEN}
