@@ -177,11 +177,12 @@ _release_assets() {
 
     while read FILENAME; do
         FILEPATH=${RUN_PATH}/target/release/${FILENAME}
+        FILESIZE=$(stat -c%s "${FILEPATH}")
 
         CONTENT_TYPE_HEADER="Content-Type: application/zip"
-        CONTENT_LENGTH_HEADER="Content-Length: $(stat -c%s "${FILEPATH}")"
+        CONTENT_LENGTH_HEADER="Content-Length: ${FILESIZE}"
 
-        _command "github releases assets ${REPOSITORY} ${RELEASE_ID} ${FILENAME}"
+        _command "github releases assets ${REPOSITORY} ${RELEASE_ID} ${FILENAME} ${FILESIZE}"
         URL="https://api.github.com/repos/${REPOSITORY}/releases/${RELEASE_ID}/assets?name=${FILENAME}"
         curl \
             -sSL \
@@ -189,7 +190,7 @@ _release_assets() {
             -H "${AUTH_HEADER}" \
             -H "${CONTENT_TYPE_HEADER}" \
             -H "${CONTENT_LENGTH_HEADER}" \
-            --upload-file "${FILEPATH}" \
+            -F "file1=@${FILEPATH}" \
             ${URL}
     done < ${LIST}
 }
