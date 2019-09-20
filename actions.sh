@@ -8,8 +8,10 @@ RUN_PATH="."
 
 CMD=${1}
 
+REPOSITORY=${GITHUB_REPOSITORY}
+
 USERNAME=${GITHUB_ACTOR}
-REPONAME=$(echo "${GITHUB_REPOSITORY}" | cut -d'/' -f2)
+REPONAME=$(echo "${REPOSITORY}" | cut -d'/' -f2)
 
 # _build
 BRANCH=${GITHUB_REF}
@@ -83,11 +85,10 @@ _build() {
         _error "not found VERSION"
     fi
 
-    TMP_STRING="$(gpg --decrypt --cipher-algo AES256 ${STRING})"
-    _result "STRING=${TMP_STRING}"
-
     _result "USERNAME=${USERNAME}"
     _result "REPONAME=${REPONAME}"
+
+    _result "REPOSITORY=${REPOSITORY}"
 
     # refs/heads/master
     # refs/pull/1/merge
@@ -103,7 +104,7 @@ _build() {
         printf "${VERSION}" > ${RUN_PATH}/target/VERSION
     else
         # latest versions
-        URL="https://api.github.com/repos/${USERNAME}/${REPONAME}/releases"
+        URL="https://api.github.com/repos/${REPOSITORY}/releases"
         VERSION=$(curl -s ${URL} | grep "tag_name" | grep "${MAJOR}.${MINOR}." | head -1 | cut -d'"' -f4 | cut -d'-' -f1)
 
         if [ -z ${VERSION} ]; then
@@ -165,6 +166,36 @@ _publish() {
     fi
 }
 
+_release_id() {
+    URL="https://api.github.com/repos/${REPOSITORY}/releases"
+    RELEASE_ID=$(curl -s ${URL} | VERSION=${VERSION} jq '.[] | select(.tag_name == env.VERSION) | .id')
+}
+
+_release_assets() {
+    LIST=/tmp/release-list
+    ls ${RUN_PATH}/target/release/ | sort > ${LIST}
+
+    while read FILENAME; do
+        FILEPATH=${RUN_PATH}/target/release/${FILENAME}
+        FILETYPE=$(file -b --mime-type "${FILEPATH}")
+        FILESIZE=$(stat -c%s "${FILEPATH}")
+
+        CONTENT_TYPE_HEADER="Content-Type: ${FILETYPE}"
+        CONTENT_LENGTH_HEADER="Content-Length: ${FILESIZE}"
+
+        _command "github releases assets ${REPOSITORY} ${RELEASE_ID} ${FILENAME} ${FILETYPE} ${FILESIZE}"
+        URL="https://uploads.github.com/repos/${REPOSITORY}/releases/${RELEASE_ID}/assets?name=${FILENAME}"
+        curl \
+            -sSL \
+            -X POST \
+            -H "${AUTH_HEADER}" \
+            -H "${CONTENT_TYPE_HEADER}" \
+            -H "${CONTENT_LENGTH_HEADER}" \
+            --data-binary @${FILEPATH} \
+            ${URL}
+    done < ${LIST}
+}
+
 _release() {
     if [ ! -f ${RUN_PATH}/target/VERSION ]; then
         _result "not found target/VERSION"
@@ -180,23 +211,47 @@ _release() {
 
     printf "${VERSION}" > ${RUN_PATH}/target/release/${VERSION}
 
-    if [ -f ${RUN_PATH}/target/PR ]; then
-        GHR_PARAM="-delete -prerelease"
-    else
-        GHR_PARAM="-delete"
+    AUTH_HEADER="Authorization: token ${GITHUB_TOKEN}"
+
+    _release_id
+    if [ "${RELEASE_ID}" != "" ]; then
+        _command "github releases delete ${REPOSITORY} ${RELEASE_ID}"
+        URL="https://api.github.com/repos/${REPOSITORY}/releases/${RELEASE_ID}"
+        curl \
+            -sSL \
+            -X DELETE \
+            -H "${AUTH_HEADER}" \
+            ${URL}
     fi
 
-    _command "go get github.com/tcnksm/ghr"
-    go get github.com/tcnksm/ghr
+    if [ -f ${RUN_PATH}/target/PR ]; then
+        PRERELEASE="true"
+    else
+        PRERELEASE="false"
+    fi
 
-    # github release
-    _command "ghr ${VERSION} ${RUN_PATH}/target/release/"
-    ghr -t ${GITHUB_TOKEN:-EMPTY} \
-        -u ${USERNAME} \
-        -r ${REPONAME} \
-        -c ${CIRCLE_SHA1} \
-        ${GHR_PARAM} \
-        ${VERSION} ${RUN_PATH}/target/release/
+    _command "github releases create ${REPOSITORY} ${VERSION} ${PRERELEASE}"
+    URL="https://api.github.com/repos/${REPOSITORY}/releases"
+    curl \
+        -sSL \
+        -X POST \
+        -H "${AUTH_HEADER}" \
+        --data @- \
+        ${URL} <<END
+{
+ "tag_name": "${VERSION}",
+ "target_commitish": "master",
+ "name": "${VERSION}",
+ "prerelease": ${PRERELEASE}
+}
+END
+
+    _release_id
+    if [ "${RELEASE_ID}" == "" ]; then
+        _error "not found RELEASE_ID"
+    fi
+
+    _release_assets
 }
 
 _docker() {
@@ -241,7 +296,7 @@ _slack() {
     # send slack
     curl -sL opspresso.com/tools/slack | bash -s -- \
         --token="${SLACK_TOKEN}" --username="${USERNAME}" \
-        --footer="<https://github.com/${USERNAME}/${REPONAME}/releases/tag/${VERSION}|${USERNAME}/${REPONAME}>" \
+        --footer="<https://github.com/${REPOSITORY}/releases/tag/${VERSION}|${REPOSITORY}>" \
         --footer_icon="https://repo.opspresso.com/favicon/github.png" \
         --color="good" --title="${REPONAME}" "\`${VERSION}\`"
 }
