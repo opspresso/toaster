@@ -14,9 +14,10 @@ jobs:
       uses: actions/checkout@v1
       with:
         fetch-depth: 1
+
+    - name: Prepare
       run: |
-        mkdir -p target/publish
-        mkdir -p target/release
+        mkdir -p target
 
     - name: Bump Version
       uses: opspresso/action-builder@master
