@@ -12,7 +12,6 @@ jobs:
     steps:
     - name: Checkout
       uses: actions/checkout@v1
-      uses: opspresso/action-builder@master
       with:
         fetch-depth: 1
 
@@ -31,6 +30,7 @@ jobs:
         bash ./package.sh
 
     - name: Publish
+      uses: opspresso/action-builder@master
       with:
         args: publish
       env:
@@ -52,6 +52,7 @@ jobs:
     #     OPTIONS: "--acl public-read"
 
     - name: Release
+      uses: opspresso/action-builder@master
       with:
         args: release
       env:
@@ -65,6 +66,7 @@ jobs:
     #     ASSET_PATH: ./target/release
 
     - name: Slack
+      uses: opspresso/action-builder@master
       with:
         args: slack
       env:
