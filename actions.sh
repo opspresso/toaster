@@ -190,7 +190,7 @@ _release_assets() {
             -H "${AUTH_HEADER}" \
             -H "${CONTENT_TYPE_HEADER}" \
             -H "${CONTENT_LENGTH_HEADER}" \
-            --data-binary @"${FILEPATH}" \
+            --upload-file ${FILEPATH} \
             ${URL}
     done < ${LIST}
 }
