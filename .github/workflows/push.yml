@@ -57,7 +57,7 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           ASSET_PATH: ./target/release
 
-  build:
+  slack:
     runs-on: ubuntu-latest
     needs: [publish, release]
     steps:
