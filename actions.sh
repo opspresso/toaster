@@ -183,7 +183,7 @@ _release_assets() {
         CONTENT_TYPE_HEADER="Content-Type: ${FILETYPE}"
         CONTENT_LENGTH_HEADER="Content-Length: ${FILESIZE}"
 
-        _command "github releases assets ${REPOSITORY} ${RELEASE_ID} ${FILENAME} ${FILESIZE}"
+        _command "github releases assets ${REPOSITORY} ${RELEASE_ID} ${FILENAME} ${FILETYPE} ${FILESIZE}"
         URL="https://api.github.com/repos/${REPOSITORY}/releases/${RELEASE_ID}/assets?name=${FILENAME}"
         curl \
             -sSL \
@@ -191,7 +191,7 @@ _release_assets() {
             -H "${AUTH_HEADER}" \
             -H "${CONTENT_TYPE_HEADER}" \
             -H "${CONTENT_LENGTH_HEADER}" \
-            --upload-file ${FILEPATH} \
+            -d @${FILEPATH} \
             ${URL}
     done < ${LIST}
 }
@@ -236,7 +236,7 @@ _release() {
         -sSL \
         -X POST \
         -H "${AUTH_HEADER}" \
-        --data @- \
+        -d @- \
         ${URL} <<END
 {
  "tag_name": "${VERSION}",
