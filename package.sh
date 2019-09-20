@@ -55,6 +55,9 @@ _replace() {
 }
 
 _prepare() {
+    ls -al
+    ls -al ${RUN_PATH}/target
+
     # target
     mkdir -p ${RUN_PATH}/target/publish
     mkdir -p ${RUN_PATH}/target/release

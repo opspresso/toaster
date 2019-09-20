@@ -15,13 +15,6 @@ jobs:
       with:
         fetch-depth: 1
 
-    # - name: Build
-    #   run: |
-    #     mkdir target
-    #     # curl -sLo target/actions toast.sh/actions
-    #     cp actions.sh target/actions
-    #     bash ./target/actions build
-
     - name: Bump Version
       uses: opspresso/action-builder@master
       with:
