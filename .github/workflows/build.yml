@@ -35,10 +35,13 @@ jobs:
         bash ./package.sh
 
     - name: Publish
+      uses: opspresso/action-s3-sync@v0.0.3
       env:
-        PUBLISH_PATH: ${{ secrets.PUBLISH_PATH }}
-      run: |
-        bash ./target/actions publish
+        AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+        AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+        AWS_REGION: "ap-northeast-2"
+        DEST_PATH: "s3://www.toast.sh/temp"
+        FROM_PATH: "./target/publish"
 
     - name: Release
       env:
