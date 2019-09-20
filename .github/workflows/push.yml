@@ -22,8 +22,6 @@ jobs:
         cp actions.sh target/actions
 
     - name: Build
-      env:
-        STRING: ${{ secrets.STRING }}
       run: |
         bash ./target/actions build
 
@@ -47,8 +45,8 @@ jobs:
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
-    - name: Slack
-      env:
-        SLACK_TOKEN: ${{ secrets.SLACK_TOKEN }}
-      run: |
-        bash ./target/actions slack
+    # - name: Slack
+    #   env:
+    #     SLACK_TOKEN: ${{ secrets.SLACK_TOKEN }}
+    #   run: |
+    #     bash ./target/actions slack
