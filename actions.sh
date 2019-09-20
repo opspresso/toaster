@@ -172,6 +172,8 @@ _release_id() {
 }
 
 _release_assets() {
+    sleep 3
+
     LIST=/tmp/release-list
     ls ${RUN_PATH}/target/release/ | sort > ${LIST}
 
