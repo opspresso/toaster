@@ -32,7 +32,7 @@ jobs:
         bash ./package.sh
 
     - name: Release
-      uses: opspresso/action-release@v0.0.1
+      uses: opspresso/action-release@master
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         TAG_NAME: "$(cat ./target/VERSION | xargs)"
