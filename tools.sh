@@ -17,12 +17,6 @@ curl -sL ${REPO}/kubectl | bash
 # helm
 curl -sL ${REPO}/helm | bash
 
-# # kops
-# curl -sL ${REPO}/kops | bash
-
-# # draft
-# curl -sL ${REPO}/draft | bash
-
 # terraform
 curl -sL ${REPO}/terraform | bash
 
