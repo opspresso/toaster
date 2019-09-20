@@ -14,10 +14,6 @@ jobs:
         with:
           fetch-depth: 1
 
-      - name: Prepare
-        run: |
-          mkdir -p target
-
       - name: Bump Version
         uses: opspresso/action-builder@master
         with:
