@@ -17,37 +17,41 @@ jobs:
 
     - name: Prepare
       run: |
-        mkdir target
-        # curl -sLo target/actions toast.sh/actions
-        cp actions.sh target/actions
+        mkdir -p target
 
-    - name: Build
-      run: |
-        bash ./target/actions build
+    - name: Bump Version
+      uses: opspresso/action-builder@master
+      with:
+        args: --version
 
     - name: Package
       run: |
         bash ./package.sh
 
     - name: Publish
-      uses: opspresso/action-s3-sync@master
+      uses: opspresso/action-builder@master
       with:
-        args: --acl public-read
+        args: --publish
       env:
         AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
         AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
         AWS_REGION: "ap-northeast-2"
         FROM_PATH: "./target/publish"
         DEST_PATH: ${{ secrets.PUBLISH_DEST_PATH }}
+        OPTIONS: "--acl public-read"
 
     - name: Release
-      uses: opspresso/action-release@master
+      uses: opspresso/action-builder@master
+      with:
+        args: --release
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         ASSET_PATH: ./target/release
 
-    - name: Slack
-      uses: opspresso/action-slack@master
+    - name: Post to Slack
+      uses: opspresso/action-builder@master
+      with:
+        args: --slack
       env:
         SLACK_TOKEN: ${{ secrets.SLACK_TOKEN }}
         JSON_PATH: ./target/slack_message.json
