@@ -6,6 +6,11 @@ SHELL_DIR=$(dirname $0)
 
 RUN_PATH=${SHELL_DIR}
 
+REPOSITORY=${GITHUB_REPOSITORY}
+
+USERNAME=${GITHUB_ACTOR}
+REPONAME=$(echo "${REPOSITORY}" | cut -d'/' -f2)
+
 ################################################################################
 
 # command -v tput > /dev/null && TPUT=true
@@ -86,7 +91,19 @@ _package() {
     # replace
     _replace "s/THIS_VERSION=.*/THIS_VERSION=${VERSION}/g" ${RUN_PATH}/target/release/toaster
     _replace "s/THIS_VERSION=.*/THIS_VERSION=${VERSION}/g" ${RUN_PATH}/target/publish/toaster
+
+    cat <<EOF > ${RUN_PATH}/target/slack_message.json
+{
+    "username": "${USERNAME}",
+    "attachments": [{
+        "color": "good",
+        "footer": "<https://github.com/${USERNAME}/${REPONAME}/releases/tag/${VERSION}|${USERNAME}/${REPONAME}>",
+        "footer_icon": "https://repo.opspresso.com/favicon/github.png",
+        "title": "${REPONAME}",
+        "text": "`${VERSION}`"
+    }]
 }
+EOF
 
 ################################################################################
 
