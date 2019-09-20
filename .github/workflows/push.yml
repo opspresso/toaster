@@ -44,7 +44,7 @@ jobs:
       uses: opspresso/action-release@master
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        RELEASE_PATH: ./target/release
+        ASSET_PATH: ./target/release
 
     # - name: Slack
     #   uses: opspresso/action-slack@master

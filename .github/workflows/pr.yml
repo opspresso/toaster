@@ -34,6 +34,7 @@ jobs:
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         PRERELEASE: "true"
+        ASSET_PATH: ./target/release
 
     # - name: Slack
     #   env:
