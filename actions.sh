@@ -245,6 +245,7 @@ _release() {
  "prerelease": ${PRERELEASE}
 }
 END
+    sleep 1
 
     _release_id
     if [ "${RELEASE_ID}" == "" ]; then
