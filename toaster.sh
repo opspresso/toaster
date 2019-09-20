@@ -909,7 +909,7 @@ git_commit() {
     git add --all
 
     _command "git commit -m ${MSG}"
-    git commit -m "${MSG}"
+    git commit -a --allow-empty-message -m "${MSG}"
 }
 
 git_pull() {
