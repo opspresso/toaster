@@ -166,6 +166,31 @@ _publish() {
     fi
 }
 
+_release_id() {
+    URL="https://api.github.com/repos/${REPOSITORY}/releases"
+    RELEASE_ID=$(curl -s ${URL} | VERSION=${VERSION} jq '.[] | select(.tag_name == env.VERSION) | .id')
+}
+
+_release_assets() {
+    ls ${RUN_PATH}/target/release/ | sort > ${LIST}
+
+    while read FILENAME; do
+        FILEPATH=${RUN_PATH}/target/release/${FILENAME}
+        CONTENT_TYPE_HEADER="Content-Type: application/zip"
+        CONTENT_LENGTH_HEADER="Content-Length: $(stat -c%s "${FILEPATH}")"
+
+        URL="https://api.github.com/repos/${REPOSITORY}/releases/${RELEASE_ID}/assets?name=${FILENAME}"
+        curl \
+            -sSL \
+            -XPOST \
+            -H "${AUTH_HEADER}" \
+            -H "${CONTENT_TYPE_HEADER}" \
+            -H "${CONTENT_LENGTH_HEADER}" \
+            --upload-file "${FILEPATH}" \
+            ${URL}
+    done < ${LIST}
+}
+
 _release() {
     if [ ! -f ${RUN_PATH}/target/VERSION ]; then
         _result "not found target/VERSION"
@@ -181,12 +206,12 @@ _release() {
 
     printf "${VERSION}" > ${RUN_PATH}/target/release/${VERSION}
 
-    ID=$(curl -s https://api.github.com/repos/${REPOSITORY}/releases | VERSION=$VERSION jq '.[] | select(.tag_name == env.VERSION) | .id')
-    if [ "${ID}" != "" ]; then
-        _command "github delete ${REPOSITORY} ${ID}"
+    _release_id
+    if [ "${RELEASE_ID}" != "" ]; then
+        _command "github delete ${REPOSITORY} ${RELEASE_ID}"
         curl --user ${USERNAME}:${GITHUB_TOKEN} \
             -s -X DELETE \
-            https://api.github.com/repos/${REPOSITORY}/releases/${ID}
+            https://api.github.com/repos/${REPOSITORY}/releases/${RELEASE_ID}
     fi
 
     if [ -f ${RUN_PATH}/target/PR ]; then
@@ -195,11 +220,16 @@ _release() {
         PRERELEASE="false"
     fi
 
+    AUTH_HEADER="Authorization: token ${GITHUB_TOKEN}"
+
     _command "github create ${REPOSITORY} ${VERSION} ${PRERELEASE}"
-    curl --user ${USERNAME}:${GITHUB_TOKEN} \
-        -s -X POST \
+    URL="https://api.github.com/repos/${REPOSITORY}/releases"
+    curl \
+        -sSL \
+        -XPOST \
+        -H "${AUTH_HEADER}" \
         --data @- \
-        https://api.github.com/repos/${REPOSITORY}/releases <<END
+        ${URL} <<END
 {
  "tag_name": "${VERSION}",
  "target_commitish": "master",
@@ -207,6 +237,13 @@ _release() {
  "prerelease": ${PRERELEASE}
 }
 END
+
+    _release_id
+    if [ "${RELEASE_ID}" == "" ]; then
+        _error "not found RELEASE_ID"
+    fi
+
+    URL="https://api.github.com/repos/${REPOSITORY}/releases/${RELEASE_ID}/assets"
 }
 
 _docker() {
