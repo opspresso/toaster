@@ -181,10 +181,11 @@ _release_assets() {
         CONTENT_TYPE_HEADER="Content-Type: application/zip"
         CONTENT_LENGTH_HEADER="Content-Length: $(stat -c%s "${FILEPATH}")"
 
+        _command "github releases assets ${REPOSITORY} ${RELEASE_ID} ${FILENAME}"
         URL="https://api.github.com/repos/${REPOSITORY}/releases/${RELEASE_ID}/assets?name=${FILENAME}"
         curl \
             -sSL \
-            -XPOST \
+            -X POST \
             -H "${AUTH_HEADER}" \
             -H "${CONTENT_TYPE_HEADER}" \
             -H "${CONTENT_LENGTH_HEADER}" \
@@ -208,12 +209,17 @@ _release() {
 
     printf "${VERSION}" > ${RUN_PATH}/target/release/${VERSION}
 
+    AUTH_HEADER="Authorization: token ${GITHUB_TOKEN}"
+
     _release_id
     if [ "${RELEASE_ID}" != "" ]; then
-        _command "github delete ${REPOSITORY} ${RELEASE_ID}"
-        curl --user ${USERNAME}:${GITHUB_TOKEN} \
-            -s -X DELETE \
-            https://api.github.com/repos/${REPOSITORY}/releases/${RELEASE_ID}
+        _command "github releases delete ${REPOSITORY} ${RELEASE_ID}"
+        URL="https://api.github.com/repos/${REPOSITORY}/releases/${RELEASE_ID}"
+        curl \
+            -sSL \
+            -X DELETE \
+            -H "${AUTH_HEADER}" \
+            ${URL}
     fi
 
     if [ -f ${RUN_PATH}/target/PR ]; then
@@ -222,13 +228,11 @@ _release() {
         PRERELEASE="false"
     fi
 
-    AUTH_HEADER="Authorization: token ${GITHUB_TOKEN}"
-
-    _command "github create ${REPOSITORY} ${VERSION} ${PRERELEASE}"
+    _command "github releases create ${REPOSITORY} ${VERSION} ${PRERELEASE}"
     URL="https://api.github.com/repos/${REPOSITORY}/releases"
     curl \
         -sSL \
-        -XPOST \
+        -X POST \
         -H "${AUTH_HEADER}" \
         --data @- \
         ${URL} <<END
