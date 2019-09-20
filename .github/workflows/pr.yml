@@ -17,13 +17,12 @@ jobs:
 
     - name: Prepare
       run: |
-        mkdir target
-        # curl -sLo target/actions toast.sh/actions
-        cp actions.sh target/actions
+        mkdir -p target
 
-    - name: Build
-      run: |
-        bash ./target/actions build
+    - name: Bump Version
+      uses: opspresso/action-builder@master
+      with:
+        args: --version
 
     - name: Package
       run: |
