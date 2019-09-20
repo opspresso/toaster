@@ -29,20 +29,10 @@ jobs:
       run: |
         bash ./package.sh
 
-    - name: Publish
-      uses: opspresso/action-builder@master
-      with:
-        args: publish
-      env:
-        AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
-        AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-        AWS_REGION: "ap-northeast-2"
-        FROM_PATH: "./target/publish"
-        DEST_PATH: ${{ secrets.PUBLISH_DEST_PATH }}
-        OPTIONS: "--acl public-read"
-
     # - name: Publish
-    #   uses: opspresso/action-s3-sync@master
+    #   uses: opspresso/action-builder@master
+    #   with:
+    #     args: publish
     #   env:
     #     AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
     #     AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
@@ -51,19 +41,29 @@ jobs:
     #     DEST_PATH: ${{ secrets.PUBLISH_DEST_PATH }}
     #     OPTIONS: "--acl public-read"
 
-    # - name: Release
-    #   uses: opspresso/action-builder@master
-    #   with:
-    #     args: release
-    #   env:
-    #     GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-    #     ASSET_PATH: ./target/release
+    - name: Publish
+      uses: opspresso/action-s3-sync@master
+      env:
+        AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+        AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+        AWS_REGION: "ap-northeast-2"
+        FROM_PATH: "./target/publish"
+        DEST_PATH: ${{ secrets.PUBLISH_DEST_PATH }}
+        OPTIONS: "--acl public-read"
 
     - name: Release
-      uses: opspresso/action-release@master
+      uses: opspresso/action-builder@v0.0.2
+      with:
+        args: release
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         ASSET_PATH: ./target/release
+
+    # - name: Release
+    #   uses: opspresso/action-release@master
+    #   env:
+    #     GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+    #     ASSET_PATH: ./target/release
 
     # - name: Slack
     #   uses: opspresso/action-builder@master
