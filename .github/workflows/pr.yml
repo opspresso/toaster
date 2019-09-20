@@ -35,7 +35,6 @@ jobs:
       uses: opspresso/action-release@master
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        TAG_NAME: "$(cat ./target/VERSION | xargs)"
         PRERELEASE: "true"
 
     - name: Slack
