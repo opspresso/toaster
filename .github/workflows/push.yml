@@ -46,14 +46,7 @@ jobs:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
     # - name: Slack
+    #   uses: opspresso/action-slack@master
     #   env:
     #     SLACK_TOKEN: ${{ secrets.SLACK_TOKEN }}
-    #   run: |
-    #     bash ./target/actions slack
-
-    - name: Slack
-      uses: pullreminders/slack-action@master
-      env:
-        SLACK_BOT_TOKEN: ${{ secrets.SLACK_TOKEN }}
-      with:
-        args: '{\"text\":\"Hello world\"}'
+    #     JSON: ./target/slack_message.json
