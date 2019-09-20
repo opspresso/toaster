@@ -100,7 +100,7 @@ _package() {
         "footer": "<https://github.com/${REPOSITORY}/releases/tag/${VERSION}|${REPOSITORY}>",
         "footer_icon": "https://repo.opspresso.com/favicon/github.png",
         "title": "${REPONAME}",
-        "text": "${VERSION}"
+        "text": "`${VERSION}`"
     }]
 }
 EOF
