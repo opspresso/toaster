@@ -53,9 +53,8 @@ jobs:
 
     - name: Release
       uses: opspresso/action-builder@v0.0.2
-      with:
-        args:
-          - 'release'
+      # with:
+      #   args: release
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         ASSET_PATH: ./target/release
