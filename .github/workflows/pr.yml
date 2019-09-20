@@ -22,8 +22,6 @@ jobs:
         cp actions.sh target/actions
 
     - name: Build
-      env:
-        STRING: ${{ secrets.STRING }}
       run: |
         bash ./target/actions build
 
@@ -32,13 +30,14 @@ jobs:
         bash ./package.sh
 
     - name: Release
+      uses: opspresso/action-release@master
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      run: |
-        bash ./target/actions release
+        PRERELEASE: "true"
+        ASSET_PATH: ./target/release
 
-    - name: Slack
-      env:
-        SLACK_TOKEN: ${{ secrets.SLACK_TOKEN }}
-      run: |
-        bash ./target/actions slack
+    # - name: Slack
+    #   env:
+    #     SLACK_TOKEN: ${{ secrets.SLACK_TOKEN }}
+    #   run: |
+    #     bash ./target/actions slack

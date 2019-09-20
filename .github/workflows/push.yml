@@ -22,8 +22,6 @@ jobs:
         cp actions.sh target/actions
 
     - name: Build
-      env:
-        STRING: ${{ secrets.STRING }}
       run: |
         bash ./target/actions build
 
@@ -32,7 +30,7 @@ jobs:
         bash ./package.sh
 
     - name: Publish
-      uses: opspresso/action-s3-sync@v0.0.3
+      uses: opspresso/action-s3-sync@master
       with:
         args: --acl public-read
       env:
@@ -43,13 +41,13 @@ jobs:
         DEST_PATH: ${{ secrets.PUBLISH_DEST_PATH }}
 
     - name: Release
+      uses: opspresso/action-release@master
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      run: |
-        bash ./target/actions release
+        ASSET_PATH: ./target/release
 
-    - name: Slack
-      env:
-        SLACK_TOKEN: ${{ secrets.SLACK_TOKEN }}
-      run: |
-        bash ./target/actions slack
+    # - name: Slack
+    #   uses: opspresso/action-slack@master
+    #   env:
+    #     SLACK_TOKEN: ${{ secrets.SLACK_TOKEN }}
+    #     JSON: ./target/slack_message.json
