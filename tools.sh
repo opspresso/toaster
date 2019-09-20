@@ -27,7 +27,7 @@ curl -sL ${REPO}/helm | bash
 curl -sL ${REPO}/terraform | bash
 
 # nodejs
-curl -sL ${REPO}/nodejs | bash -s "10"
+curl -sL ${REPO}/nodejs | bash -s "12"
 
 # # java
 # curl -sL ${REPO}/java | bash -s "1.8.0"
