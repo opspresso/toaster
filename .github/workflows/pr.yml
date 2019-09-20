@@ -3,27 +3,26 @@ name: Build-PR
 on:
   pull_request:
     branches:
-    - master
+      - master
 
 jobs:
   build:
     runs-on: ubuntu-latest
-
     steps:
-    - name: Checkout
-      uses: actions/checkout@v1
-      with:
-        fetch-depth: 1
+      - name: Checkout
+        uses: actions/checkout@v1
+        with:
+          fetch-depth: 1
 
-    - name: Prepare
-      run: |
-        mkdir -p target
+      - name: Prepare
+        run: |
+          mkdir -p target
 
-    - name: Bump Version
-      uses: opspresso/action-builder@master
-      with:
-        args: --version
+      - name: Bump Version
+        uses: opspresso/action-builder@master
+        with:
+          args: --version
 
-    - name: Package
-      run: |
-        bash ./package.sh
+      - name: Package
+        run: |
+          bash ./package.sh
