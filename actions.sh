@@ -176,6 +176,7 @@ _release_assets() {
 
     while read FILENAME; do
         FILEPATH=${RUN_PATH}/target/release/${FILENAME}
+
         CONTENT_TYPE_HEADER="Content-Type: application/zip"
         CONTENT_LENGTH_HEADER="Content-Length: $(stat -c%s "${FILEPATH}")"
 
@@ -243,7 +244,7 @@ END
         _error "not found RELEASE_ID"
     fi
 
-    URL="https://api.github.com/repos/${REPOSITORY}/releases/${RELEASE_ID}/assets"
+    _release_assets
 }
 
 _docker() {
