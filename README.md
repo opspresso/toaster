@@ -1,6 +1,7 @@
 # toaster
 
-[![GitHub release](https://img.shields.io/github/release/opspresso/toaster.svg)](https://github.com/opspresso/toaster/releases)
+[![GitHub Actions status](https://github.com/opspresso/toaster/workflows/Build-Push/badge.svg)](https://github.com/opspresso/toaster/actions)
+[![GitHub Releases](https://img.shields.io/github/release/opspresso/toaster.svg)](https://github.com/opspresso/toaster/releases)
 
 <https://toast.sh>
 
