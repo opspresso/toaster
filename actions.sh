@@ -177,9 +177,10 @@ _release_assets() {
 
     while read FILENAME; do
         FILEPATH=${RUN_PATH}/target/release/${FILENAME}
+        FILETYPE=$(file -b --mime-type "${FILEPATH}")
         FILESIZE=$(stat -c%s "${FILEPATH}")
 
-        CONTENT_TYPE_HEADER="Content-Type: application/zip"
+        CONTENT_TYPE_HEADER="Content-Type: ${FILETYPE}"
         CONTENT_LENGTH_HEADER="Content-Length: ${FILESIZE}"
 
         _command "github releases assets ${REPOSITORY} ${RELEASE_ID} ${FILENAME} ${FILESIZE}"
