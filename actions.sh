@@ -115,7 +115,7 @@ _build() {
 
         # new version
         if [ "${BRANCH}" == "refs/heads/master" ]; then
-            VERSION=$(echo ${VERSION} | perl -pe 's/^(([v\d]+\.)*)(\d+)(.*)$/$1.($3+1).$4/e')
+            VERVERSION=$(echo ${VERSION} | awk -F. '{$NF = $NF + 1;} 1' | sed 's/ /./g')
         else
             if [ "${BRANCH}" != "" ]; then
                 # refs/pull/1/merge

@@ -108,7 +108,7 @@ _build() {
 
         # new version
         if [ "${BRANCH}" == "master" ]; then
-            VERSION=$(echo ${VERSION} | perl -pe 's/^(([v\d]+\.)*)(\d+)(.*)$/$1.($3+1).$4/e')
+            VERSION=$(echo ${VERSION} | awk -F. '{$NF = $NF + 1;} 1' | sed 's/ /./g')
         else
             if [ "${CIRCLE_PULL_REQUEST}" != "" ]; then
                 PR_NUM=$(echo "${CIRCLE_PULL_REQUEST}" | cut -d'/' -f7)
