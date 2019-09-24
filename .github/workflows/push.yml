@@ -23,7 +23,7 @@ jobs:
         run: |
           bash ./package.sh
 
-      - name: Publish
+      - name: Publish to AWS S3
         uses: opspresso/action-builder@master
         with:
           args: --publish
@@ -35,7 +35,7 @@ jobs:
           DEST_PATH: ${{ secrets.PUBLISH_DEST_PATH }}
           OPTIONS: "--acl public-read"
 
-      - name: Release
+      - name: Release to GitHub
         uses: opspresso/action-builder@master
         with:
           args: --release
