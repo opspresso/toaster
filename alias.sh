@@ -38,5 +38,7 @@ alias tfc="rm -rf .terraform && tf init"
 # alias p="reveal-md -w --port 8888 --theme https://raw.githubusercontent.com/nalbam/docs/master/.theme/black.css"
 alias p="reveal-md -w --port 8888"
 
+alias chrome="/Applications/Google\\ \\Chrome.app/Contents/MacOS/Google\\ \\Chrome"
+
 export GOPATH=$HOME/work
 export PATH=$PATH:$GOPATH/bin
