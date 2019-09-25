@@ -25,6 +25,7 @@ _brew() {
 }
 
 _compare() {
+    touch ${CONFIG}/${NAME}
     NOW=$(cat ${CONFIG}/${NAME} | xargs)
 
     if [ "${VERSION}" != "" ]; then
