@@ -59,11 +59,23 @@ _prepare() {
     find ./** | grep [.]sh | xargs chmod 755
 
     # mkdir target
-    mkdir -p ${RUN_PATH}/target/publish
+    mkdir -p ${RUN_PATH}/target/publish/tools
     mkdir -p ${RUN_PATH}/target/release
 }
 
 ################################################################################
+
+_package_sh() {
+    TARGET_PATH=$1
+
+    LIST=/tmp/list
+    ls ${TARGET_PATH} | grep '[.]sh' | sort > ${LIST}
+
+    while read FILENAME; do
+        DESTNAME=$(echo "${FILENAME}" | cut -d'.' -f1)
+        cp ${TARGET_PATH}/${FILENAME} ${SHELL_DIR}/target/${DESTNAME}
+    done < ${LIST}
+}
 
 _package() {
     if [ ! -f ${RUN_PATH}/VERSION ]; then
@@ -77,13 +89,9 @@ _package() {
     cp -rf ${RUN_PATH}/alias.sh   ${RUN_PATH}/target/release/alias
     cp -rf ${RUN_PATH}/toaster.sh ${RUN_PATH}/target/release/toaster
 
-    # publish
-    cp -rf ${RUN_PATH}/actions.sh ${RUN_PATH}/target/publish/actions
-    cp -rf ${RUN_PATH}/alias.sh   ${RUN_PATH}/target/publish/alias
-    cp -rf ${RUN_PATH}/builder.sh ${RUN_PATH}/target/publish/builder
-    cp -rf ${RUN_PATH}/install.sh ${RUN_PATH}/target/publish/install
-    cp -rf ${RUN_PATH}/toaster.sh ${RUN_PATH}/target/publish/toaster
-    cp -rf ${RUN_PATH}/tools.sh   ${RUN_PATH}/target/publish/tools
+    # publish sh
+    _package_sh ${RUN_PATH} ${RUN_PATH}/target/publish
+    _package_sh ${RUN_PATH}/tools ${RUN_PATH}/target/publish/tools
 
     # publish web
     cp -rf ${RUN_PATH}/web/* ${RUN_PATH}/target/publish/
