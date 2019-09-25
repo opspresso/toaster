@@ -66,14 +66,15 @@ _prepare() {
 ################################################################################
 
 _package_sh() {
-    TARGET_PATH=$1
+    FROM_PATH=$1
+    DEST_PATH=$2
 
     LIST=/tmp/list
-    ls ${TARGET_PATH} | grep '[.]sh' | sort > ${LIST}
+    ls ${FROM_PATH} | grep '[.]sh' | sort > ${LIST}
 
     while read FILENAME; do
         DESTNAME=$(echo "${FILENAME}" | cut -d'.' -f1)
-        cp ${TARGET_PATH}/${FILENAME} ${SHELL_DIR}/target/${DESTNAME}
+        cp ${FROM_PATH}/${FILENAME} ${DEST_PATH}/${DESTNAME}
     done < ${LIST}
 }
 
@@ -90,7 +91,7 @@ _package() {
     cp -rf ${RUN_PATH}/toaster.sh ${RUN_PATH}/target/release/toaster
 
     # publish sh
-    _package_sh ${RUN_PATH} ${RUN_PATH}/target/publish
+    _package_sh ${RUN_PATH}       ${RUN_PATH}/target/publish
     _package_sh ${RUN_PATH}/tools ${RUN_PATH}/target/publish/tools
 
     # publish web
