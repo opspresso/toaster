@@ -2,7 +2,7 @@
 
 # curl -sL toast.sh/tools | bash
 
-REPO="opspresso.com/tools"
+REPO="toast.sh/pkgs"
 
 # update
 curl -sL ${REPO}/base | bash
@@ -11,14 +11,14 @@ curl -sL ${REPO}/base | bash
 # awscli
 curl -sL ${REPO}/awscli | bash
 
+# terraform
+curl -sL ${REPO}/terraform | bash
+
 # kubectl
 curl -sL ${REPO}/kubectl | bash
 
 # helm
 curl -sL ${REPO}/helm | bash
-
-# terraform
-curl -sL ${REPO}/terraform | bash
 
 # nodejs
 curl -sL ${REPO}/nodejs | bash -s "12"

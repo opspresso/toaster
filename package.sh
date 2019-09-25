@@ -59,7 +59,7 @@ _prepare() {
     find ./** | grep [.]sh | xargs chmod 755
 
     # mkdir target
-    mkdir -p ${RUN_PATH}/target/publish/tools
+    mkdir -p ${RUN_PATH}/target/publish/pkgs
     mkdir -p ${RUN_PATH}/target/release
 }
 
@@ -91,8 +91,8 @@ _package() {
     cp -rf ${RUN_PATH}/toaster.sh ${RUN_PATH}/target/release/toaster
 
     # publish sh
-    _package_sh ${RUN_PATH}       ${RUN_PATH}/target/publish
-    _package_sh ${RUN_PATH}/tools ${RUN_PATH}/target/publish/tools
+    _package_sh ${RUN_PATH}      ${RUN_PATH}/target/publish
+    _package_sh ${RUN_PATH}/pkgs ${RUN_PATH}/target/publish/pkgs
 
     # publish web
     cp -rf ${RUN_PATH}/web/* ${RUN_PATH}/target/publish/
