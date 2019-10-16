@@ -86,24 +86,33 @@ _package() {
     VERSION=$(cat ${RUN_PATH}/VERSION | xargs)
     _result "VERSION=${VERSION}"
 
-    # release
-    cp -rf ${RUN_PATH}/alias.sh   ${RUN_PATH}/target/release/alias
-    cp -rf ${RUN_PATH}/toaster.sh ${RUN_PATH}/target/release/toaster
-
     # publish sh
     _package_sh ${RUN_PATH}      ${RUN_PATH}/target/publish
     _package_sh ${RUN_PATH}/pkgs ${RUN_PATH}/target/publish/pkgs
 
-    # publish web
-    cp -rf ${RUN_PATH}/web/* ${RUN_PATH}/target/publish/
+    # release
+    cp -rf ${RUN_PATH}/alias.sh   ${RUN_PATH}/target/release/alias
+    cp -rf ${RUN_PATH}/toaster.sh ${RUN_PATH}/target/release/toaster
+
+    # charts
+    cp -rf ${RUN_PATH}/charts ${RUN_PATH}/target/
 
     # replace
     _replace "s/THIS_VERSION=.*/THIS_VERSION=${VERSION}/g" ${RUN_PATH}/target/release/toaster
     _replace "s/THIS_VERSION=.*/THIS_VERSION=${VERSION}/g" ${RUN_PATH}/target/publish/toaster
+    _replace "s/appVersion: .*/appVersion: ${VERSION}/g" ${RUN_PATH}/target/charts/acme/Chart.yaml
 
-    ls -al ${RUN_PATH}/target/release
+    # tar charts
+    cp -rf ${RUN_PATH}/charts ${RUN_PATH}/target/
+    pushd ${RUN_PATH}/target/charts
+    tar cvzpf ../release/acme-${VERSION}.tgz acme
+    popd
+
     ls -al ${RUN_PATH}/target/publish
+    ls -al ${RUN_PATH}/target/release
+}
 
+_message() {
     cat <<EOF > ${RUN_PATH}/target/slack_message.json
 {
     "username": "${USERNAME}",
@@ -123,5 +132,6 @@ EOF
 _prepare
 
 _package
+_message
 
 _success
