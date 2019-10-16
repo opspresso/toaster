@@ -90,9 +90,6 @@ _package() {
     _package_sh ${RUN_PATH}      ${RUN_PATH}/target/publish
     _package_sh ${RUN_PATH}/pkgs ${RUN_PATH}/target/publish/pkgs
 
-    # publish web
-    cp -rf ${RUN_PATH}/web/* ${RUN_PATH}/target/publish/
-
     # release
     cp -rf ${RUN_PATH}/alias.sh   ${RUN_PATH}/target/release/alias
     cp -rf ${RUN_PATH}/toaster.sh ${RUN_PATH}/target/release/toaster
