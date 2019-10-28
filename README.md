@@ -28,3 +28,17 @@ Usage: toaster {cdw|env|ctx|ssh|update|tools}
 ```
 
 <!-- usage end -->
+
+## tools
+
+```bash
+curl -sL toast.sh/tools | bash
+```
+
+* git, jq, pip, telnet
+* awscli
+* terraform
+* kubectl
+* helm
+* nodejs
+* aws-iam-authenticator
