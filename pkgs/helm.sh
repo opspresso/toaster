@@ -61,4 +61,4 @@ if [ "${VERSION}" != "" ]; then
     printf "${VERSION}" > ${CONFIG}/${NAME}
 fi
 
-helm version --client --short | xargs | awk '{print $2}' | cut -d'+' -f1
+helm version --client --short | xargs | cut -d'+' -f1
