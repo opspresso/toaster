@@ -103,13 +103,14 @@ _package() {
 
     # tar toaster
     pushd ${RUN_PATH}/target/release
-    tar cvzpf toaster-${VERSION}.tar.gz toaster
+    tar cvzpf alias-${VERSION}.tar.gz ./alias
+    tar cvzpf toaster-${VERSION}.tar.gz ./toaster
     popd
 
     # tar charts
     cp -rf ${RUN_PATH}/charts ${RUN_PATH}/target/
     pushd ${RUN_PATH}/target/charts
-    tar cvzpf ../release/charts-${VERSION}.tgz acme
+    tar cvzpf ../release/charts-${VERSION}.tgz ./acme
     popd
 
     ls -al ${RUN_PATH}/target/publish
