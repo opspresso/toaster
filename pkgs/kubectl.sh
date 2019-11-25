@@ -61,4 +61,4 @@ if [ "${VERSION}" != "" ]; then
     printf "${VERSION}" > ${CONFIG}/${NAME}
 fi
 
-kubectl version --client --short | xargs | awk '{print $3}'
+kubectl version --client --short | xargs
