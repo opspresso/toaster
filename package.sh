@@ -103,7 +103,7 @@ _package() {
 
     # tar toaster
     pushd ${RUN_PATH}/target/release
-    tar cvzpf toaster-${VERSION}.tgz toaster
+    tar cvzpf toaster-${VERSION}.tar.gz toaster
     popd
 
     # tar charts
