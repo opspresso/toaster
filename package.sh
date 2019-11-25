@@ -59,7 +59,7 @@ _prepare() {
     find ./** | grep [.]sh | xargs chmod 755
 
     # mkdir target
-    mkdir -p ${RUN_PATH}/target/publish/pkgs
+    mkdir -p ${RUN_PATH}/target/publish
     mkdir -p ${RUN_PATH}/target/release
 }
 
@@ -87,8 +87,7 @@ _package() {
     _result "VERSION=${VERSION}"
 
     # publish sh
-    _package_sh ${RUN_PATH}      ${RUN_PATH}/target/publish
-    _package_sh ${RUN_PATH}/pkgs ${RUN_PATH}/target/publish/pkgs
+    _package_sh ${RUN_PATH} ${RUN_PATH}/target/publish
 
     # release
     cp -rf ${RUN_PATH}/alias.sh   ${RUN_PATH}/target/release/alias
@@ -105,7 +104,7 @@ _package() {
     # tar charts
     cp -rf ${RUN_PATH}/charts ${RUN_PATH}/target/
     pushd ${RUN_PATH}/target/charts
-    tar cvzpf ../release/acme-${VERSION}.tgz acme
+    tar cvzpf ../release/charts-${VERSION}.tgz acme
     popd
 
     ls -al ${RUN_PATH}/target/publish

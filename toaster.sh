@@ -616,7 +616,7 @@ _update() {
 }
 
 _tools() {
-    curl -sL toast.sh/tools | bash
+    curl -sL opspresso.com/tools | bash
     exit 0
 }
 
