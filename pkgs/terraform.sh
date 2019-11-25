@@ -62,4 +62,4 @@ if [ "${VERSION}" != "" ]; then
     printf "${VERSION}" > ${CONFIG}/${NAME}
 fi
 
-terraform version | xargs | awk '{print $2}'
+terraform version | xargs
