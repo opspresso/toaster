@@ -101,6 +101,11 @@ _package() {
     _replace "s/THIS_VERSION=.*/THIS_VERSION=${VERSION}/g" ${RUN_PATH}/target/publish/toaster
     _replace "s/appVersion: .*/appVersion: ${VERSION}/g" ${RUN_PATH}/target/charts/acme/Chart.yaml
 
+    # tar toaster
+    pushd ${RUN_PATH}/target/release
+    tar cvzpf toaster-${VERSION}.tar.gz toaster
+    popd
+
     # tar charts
     cp -rf ${RUN_PATH}/charts ${RUN_PATH}/target/
     pushd ${RUN_PATH}/target/charts

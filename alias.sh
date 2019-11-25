@@ -17,6 +17,7 @@ alias s='toaster ssh'
 alias x='toaster ctx'
 alias v='toaster code'
 
+alias a='aws'
 alias k='kubectl'
 alias h='helm'
 
