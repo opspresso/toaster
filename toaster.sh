@@ -502,6 +502,7 @@ _ctx() {
         _error
     fi
 
+    _command "kubectl config use-context ${_NAME}"
     kubectl config use-context ${_NAME}
 }
 
