@@ -216,6 +216,14 @@ _docker() {
     _command "docker push ${USERNAME}/${REPONAME}:${VERSION}"
     docker push ${USERNAME}/${REPONAME}:${VERSION}
 
+    if [ "${PARAM}" == "latest" ]; then
+        _command "sudo docker tag ${USERNAME}/${REPONAME}:${VERSION} ${USERNAME}/${REPONAME}:latest"
+        sudo docker tag ${USERNAME}/${REPONAME}:${VERSION} ${USERNAME}/${REPONAME}:latest
+
+        _command "docker push ${USERNAME}/${REPONAME}:latest"
+        docker push ${USERNAME}/${REPONAME}:latest
+    fi
+
     _command "docker logout"
     docker logout
 }
