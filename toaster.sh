@@ -303,10 +303,10 @@ _env() {
     ACCESS_KEY="$(sed -n 1p ${ENV_DIR}/${_NAME})"
     SECRET_KEY="$(sed -n 2p ${ENV_DIR}/${_NAME})"
 
-    if [ "${LC}" == "3" ]; then
+    if [ ${LC} -gt 2 ]; then
         _REGION="$(sed -n 3p ${ENV_DIR}/${_NAME})"
     fi
-    if [ "${LC}" == "4" ]; then
+    if [ ${LC} -gt 3 ]; then
         _OUTPUT="$(sed -n 4p ${ENV_DIR}/${_NAME})"
     fi
 
