@@ -271,9 +271,13 @@ _code() {
 _env() {
     _env_dir
 
+    command -v aws > /dev/null || AWSCLI=false
+
+    if [ ! -z ${AWSCLI} ]; then
+        _error "Please install awscli."
+    fi
+
     _NAME=${PARAM1}
-    _REGION=${PARAM2:-ap-northeast-2}
-    _OUTPUT=${PARAM3:-json}
 
     if [ -z ${_NAME} ]; then
         ls ${ENV_DIR} > ${LIST}
@@ -290,21 +294,27 @@ _env() {
         _error
     fi
 
-    command -v aws > /dev/null || AWSCLI=false
-
-    if [ ! -z ${AWSCLI} ]; then
-        _error "Please install awscli."
-    fi
-
     mkdir -p ~/.aws
 
-    aws configure set default.region ${_REGION}
-    aws configure set default.output ${_OUTPUT}
+    LC=$(cat ${ENV_DIR}/${_NAME} | wc -l | xargs)
 
     # cp -f ${ENV_DIR}/${_NAME} ~/.aws/credentials
 
     ACCESS_KEY="$(sed -n 1p ${ENV_DIR}/${_NAME})"
     SECRET_KEY="$(sed -n 2p ${ENV_DIR}/${_NAME})"
+
+    if [ "${LC}" == "3" ]; then
+        _REGION="$(sed -n 3p ${ENV_DIR}/${_NAME})"
+    fi
+    if [ "${LC}" == "4" ]; then
+        _OUTPUT="$(sed -n 4p ${ENV_DIR}/${_NAME})"
+    fi
+
+    _REGION=${PARAM2:-$_REGION}
+    _OUTPUT=${PARAM3:-$_OUTPUT}
+
+    aws configure set default.region ${_REGION}
+    aws configure set default.output ${_OUTPUT}
 
     echo "[default]" > ~/.aws/credentials
     echo "aws_access_key_id=${ACCESS_KEY}" >> ~/.aws/credentials
@@ -315,6 +325,61 @@ _env() {
     _result "${_NAME}"
     _result "${ACCESS_KEY}"
     _result "**********${SECRET_KEY:30}"
+}
+
+_ctx() {
+    _NAME=${PARAM1}
+
+    if [ -z ${_NAME} ]; then
+        kubectl config view -o json | jq '.contexts[].name' -r | sort > ${LIST}
+        echo "[New...]" >> ${LIST}
+        echo "[Del...]" >> ${LIST}
+
+        _select_one
+
+        _NAME="${SELECTED}"
+    fi
+
+    if [ -z ${_NAME} ]; then
+        _error
+    fi
+
+    if [ "${_NAME}" == "[New...]" ]; then
+        aws eks list-clusters | jq '.clusters[]' -r | sort > ${LIST}
+
+        _select_one
+
+        _NAME="${SELECTED}"
+
+        if [ -z ${_NAME} ]; then
+            _error
+        fi
+
+        _command "aws eks update-kubeconfig --name ${_NAME} --alias ${_NAME}"
+        aws eks update-kubeconfig --name ${_NAME} --alias ${_NAME}
+
+        return
+    fi
+
+    if [ "${_NAME}" == "[Del...]" ]; then
+        kubectl config view -o json | jq '.contexts[].name' -r | sort > ${LIST}
+
+        _select_one
+
+        _NAME="${SELECTED}"
+
+        if [ -z ${_NAME} ]; then
+            _error
+        fi
+
+        _command "kubectl config delete-context ${_NAME}"
+        kubectl config delete-context ${_NAME}
+
+        return
+    fi
+
+    _command "kubectl config use-context ${_NAME}"
+    kubectl config use-context ${_NAME}
 }
 
 _ssh() {
@@ -485,25 +550,6 @@ _aws_sts_token() {
     _result "${USERNAME}"
     _result "${ACCESS_KEY}"
     _result "**********${SECRET_KEY:30}"
-}
-
-_ctx() {
-    _NAME=${PARAM1}
-
-    if [ -z ${_NAME} ]; then
-        echo "$(kubectl config view -o json | jq '.contexts[].name' -r)" > ${LIST}
-
-        _select_one
-
-        _NAME="${SELECTED}"
-    fi
-
-    if [ -z ${_NAME} ]; then
-        _error
-    fi
-
-    _command "kubectl config use-context ${_NAME}"
-    kubectl config use-context ${_NAME}
 }
 
 _mtu() {
