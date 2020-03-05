@@ -338,6 +338,7 @@ _env() {
     _result "${_NAME}"
     _result "${ACCESS_KEY}"
     _result "**********${SECRET_KEY:30}"
+    _result "${_REGION}"
 }
 
 _ctx() {
