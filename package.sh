@@ -86,6 +86,8 @@ _package() {
     VERSION=$(cat ${RUN_PATH}/VERSION | xargs)
     _result "VERSION=${VERSION}"
 
+    echo "${VERSION}" > ${RUN_PATH}/target/publish/VERSION
+
     # publish sh
     _package_sh ${RUN_PATH} ${RUN_PATH}/target/publish
 
@@ -93,24 +95,14 @@ _package() {
     cp -rf ${RUN_PATH}/alias.sh   ${RUN_PATH}/target/release/alias
     cp -rf ${RUN_PATH}/toaster.sh ${RUN_PATH}/target/release/toaster
 
-    # charts
-    cp -rf ${RUN_PATH}/charts ${RUN_PATH}/target/
-
     # replace
     _replace "s/THIS_VERSION=.*/THIS_VERSION=${VERSION}/g" ${RUN_PATH}/target/release/toaster
     _replace "s/THIS_VERSION=.*/THIS_VERSION=${VERSION}/g" ${RUN_PATH}/target/publish/toaster
-    _replace "s/appVersion: .*/appVersion: ${VERSION}/g" ${RUN_PATH}/target/charts/acme/Chart.yaml
 
     # tar toaster
     pushd ${RUN_PATH}/target/release
     tar cvzpf alias-${VERSION}.tar.gz ./alias
     tar cvzpf toaster-${VERSION}.tar.gz ./toaster
-    popd
-
-    # tar charts
-    cp -rf ${RUN_PATH}/charts ${RUN_PATH}/target/
-    pushd ${RUN_PATH}/target/charts
-    tar cvzpf ../release/charts-${VERSION}.tgz ./acme
     popd
 
     ls -al ${RUN_PATH}/target/publish
