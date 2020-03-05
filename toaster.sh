@@ -319,7 +319,10 @@ _env() {
     echo "[default]" > ~/.aws/credentials
     echo "aws_access_key_id=${ACCESS_KEY}" >> ~/.aws/credentials
     echo "aws_secret_access_key=${SECRET_KEY}" >> ~/.aws/credentials
-    echo "# ${_NAME}" >> ~/.aws/credentials
+    echo "" >> ~/.aws/credentials
+    echo "[${_NAME}]" > ~/.aws/credentials
+    echo "aws_access_key_id=${ACCESS_KEY}" >> ~/.aws/credentials
+    echo "aws_secret_access_key=${SECRET_KEY}" >> ~/.aws/credentials
 
     chmod 600 ~/.aws/credentials
 
