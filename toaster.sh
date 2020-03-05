@@ -319,16 +319,26 @@ _env() {
     echo "[default]" > ~/.aws/credentials
     echo "aws_access_key_id=${ACCESS_KEY}" >> ~/.aws/credentials
     echo "aws_secret_access_key=${SECRET_KEY}" >> ~/.aws/credentials
-    echo "" >> ~/.aws/credentials
-    echo "[${_NAME}]" > ~/.aws/credentials
-    echo "aws_access_key_id=${ACCESS_KEY}" >> ~/.aws/credentials
-    echo "aws_secret_access_key=${SECRET_KEY}" >> ~/.aws/credentials
+
+    # all profile
+    ls ${ENV_DIR} > ${LIST}
+
+    for ENV in ${LIST}; do
+        ACCESS_KEY="$(sed -n 1p ${ENV_DIR}/${ENV})"
+        SECRET_KEY="$(sed -n 2p ${ENV_DIR}/${ENV})"
+
+        echo "" >> ~/.aws/credentials
+        echo "[${ENV}]" >> ~/.aws/credentials
+        echo "aws_access_key_id=${ACCESS_KEY}" >> ~/.aws/credentials
+        echo "aws_secret_access_key=${SECRET_KEY}" >> ~/.aws/credentials
+    done
 
     chmod 600 ~/.aws/credentials
 
     _result "${_NAME}"
     _result "${ACCESS_KEY}"
     _result "**********${SECRET_KEY:30}"
+    _result "${_REGION}"
 }
 
 _ctx() {
