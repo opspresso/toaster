@@ -328,15 +328,15 @@ _env() {
     # all profile
     ls ${ENV_DIR} > ${LIST}
 
-    for V in ${LIST}; do
-        ACCESS_KEY="$(sed -n 1p ${ENV_DIR}/${V})"
-        SECRET_KEY="$(sed -n 2p ${ENV_DIR}/${V})"
+    while read VAL; do
+        ACCESS_KEY="$(sed -n 1p ${ENV_DIR}/${VAL})"
+        SECRET_KEY="$(sed -n 2p ${ENV_DIR}/${VAL})"
 
         echo "" >> ~/.aws/credentials
-        echo "[${V}]" >> ~/.aws/credentials
+        echo "[${VAL}]" >> ~/.aws/credentials
         echo "aws_access_key_id=${ACCESS_KEY}" >> ~/.aws/credentials
         echo "aws_secret_access_key=${SECRET_KEY}" >> ~/.aws/credentials
-    done
+    done < ${LIST}
 
     chmod 600 ~/.aws/credentials
 }
