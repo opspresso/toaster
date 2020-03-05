@@ -86,6 +86,8 @@ _package() {
     VERSION=$(cat ${RUN_PATH}/VERSION | xargs)
     _result "VERSION=${VERSION}"
 
+    echo "${VERSION}" > ${RUN_PATH}/target/publish/VERSION
+
     # publish sh
     _package_sh ${RUN_PATH} ${RUN_PATH}/target/publish
 
