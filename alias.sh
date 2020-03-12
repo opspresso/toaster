@@ -21,6 +21,8 @@ alias a='aws'
 alias k='kubectl'
 alias h='helm'
 
+alias hf='helmfile'
+
 alias tf='terraform'
 alias tfp='tf init && tf plan'
 alias tfa='tf init && tf apply'
@@ -29,6 +31,9 @@ alias tff='tf fmt'
 alias tfg='tf graph'
 alias tfo='tf output'
 alias tfc='rm -rf .terraform && tf init'
+
+alias py='python'
+alias py3='python3'
 
 # alias p='reveal-md -w --port 8888 --theme https://raw.githubusercontent.com/nalbam/docs/master/.theme/black.css'
 alias p='reveal-md -w --port 8888 --theme night'
