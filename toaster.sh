@@ -677,7 +677,8 @@ _update() {
 }
 
 _tools() {
-    curl -sL opspresso.com/install | bash
+    # curl -sL opspresso.com/install | bash
+    curl -sL opspresso.github.io/tools/install.sh | bash
     exit 0
 }
 
