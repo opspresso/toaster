@@ -116,7 +116,7 @@ _message() {
     "attachments": [{
         "color": "good",
         "footer": "<https://github.com/${REPOSITORY}/releases/tag/${VERSION}|${REPOSITORY}>",
-        "footer_icon": "https://repo.opspresso.com/favicon/github.png",
+        "footer_icon": "https://opspresso.github.io/tools/favicon/github.png",
         "title": "${REPONAME}",
         "text": "\`${VERSION}\`"
     }]
