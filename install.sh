@@ -51,15 +51,15 @@ _version() {
     if [ -z ${VERSION} ]; then
         VERSION=$(curl -s https://api.github.com/repos/${USERNAME}/${REPONAME}/releases/latest | grep tag_name | cut -d'"' -f4)
 
-        if [ -z ${VERSION} ]; then
-            VERSION=$(curl -sL toast.sh/VERSION | xargs)
-        fi
+        # if [ -z ${VERSION} ]; then
+        #     VERSION=$(curl -sL toast.sh/VERSION | xargs)
+        # fi
     fi
 
     _result "version: ${VERSION}"
 
     if [ -z ${VERSION} ]; then
-        _error
+        _error "Version not Found."
     fi
 }
 
