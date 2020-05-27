@@ -8,7 +8,7 @@
 ## install
 
 ```bash
-curl -sL toast.sh/install | bash
+curl -sL opspresso.github.io/toaster/install.sh | bash
 ```
 
 ## usage
@@ -32,7 +32,7 @@ Usage: toaster {cdw|env|ctx|ssh|update|tools}
 ## tools
 
 ```bash
-curl -sL toast.sh/tools | bash
+curl -sL opspresso.github.io/tools/install.sh | bash
 ```
 
 * git, jq, pip, telnet
