@@ -273,7 +273,7 @@ _slack() {
     _result "VERSION=${VERSION}"
 
     # send slack
-    curl -sL opspresso.com/tools/slack | bash -s -- \
+    curl -sL opspresso.github.io/tools/slack.sh | bash -s -- \
         --token="${SLACK_TOKEN}" --username="${USERNAME}" \
         --footer="<https://github.com/${USERNAME}/${REPONAME}/releases/tag/${VERSION}|${USERNAME}/${REPONAME}>" \
         --footer_icon="https://opspresso.github.io/tools/favicon/github.png" \
