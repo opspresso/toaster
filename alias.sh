@@ -40,7 +40,7 @@ alias p='reveal-md -w --port 8888 --theme night'
 
 alias chrome="/Applications/Google\\ \\Chrome.app/Contents/MacOS/Google\\ \\Chrome"
 
-export GOPATH=$HOME/work
-export PATH=$PATH:$GOPATH/bin
+# export GOPATH=$HOME/work
+# export PATH=$PATH:$GOPATH/bin
 
 [[ /usr/local/bin/kubectl ]] && source <(kubectl completion zsh)
