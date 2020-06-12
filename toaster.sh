@@ -890,6 +890,7 @@ git_config() {
 
     git config --global user.email "${USEREMAIL}"
 
+    _command "git config --list"
     git config --list
 
     _success
