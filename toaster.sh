@@ -344,11 +344,17 @@ _env() {
 _ctx() {
     _NAME=${PARAM1}
 
+    CONTEXT="$(kubectl config view -o json | jq '.contexts' -r)"
+
     if [ -z "${_NAME}" ]; then
-        kubectl config view -o json | jq '.contexts[].name' -r | sort > ${LIST}
+        if [ "${CONTEXT}" == "null" ]; then
+            LIST=
+        else
+            kubectl config view -o json | jq '.contexts[].name' -r | sort > ${LIST}
+        fi
+
         echo "[New...]" >> ${LIST}
         echo "[Del...]" >> ${LIST}
-        echo "[Del All...]" >> ${LIST}
 
         _select_one
 
@@ -377,7 +383,13 @@ _ctx() {
     fi
 
     if [ "${_NAME}" == "[Del...]" ]; then
-        kubectl config view -o json | jq '.contexts[].name' -r | sort > ${LIST}
+        if [ "${CONTEXT}" == "null" ]; then
+            LIST=
+        else
+            kubectl config view -o json | jq '.contexts[].name' -r | sort > ${LIST}
+        fi
+
+        echo "[All...]" >> ${LIST}
 
         _select_one
 
@@ -387,15 +399,13 @@ _ctx() {
             _error
         fi
 
-        _command "kubectl config delete-context ${_NAME}"
-        kubectl config delete-context ${_NAME}
-
-        return
-    fi
-
-    if [ "${_NAME}" == "[Del All...]" ]; then
-        _command "rm -rf ~/.kube"
-        rm -rf ~/.kube
+        if [ "${_NAME}" == "[All...]" ]; then
+            _command "rm -rf ~/.kube"
+            rm -rf ~/.kube
+        else
+            _command "kubectl config delete-context ${_NAME}"
+            kubectl config delete-context ${_NAME}
+        fi
 
         return
     fi
