@@ -348,6 +348,7 @@ _ctx() {
         kubectl config view -o json | jq '.contexts[].name' -r | sort > ${LIST}
         echo "[New...]" >> ${LIST}
         echo "[Del...]" >> ${LIST}
+        echo "[Del All...]" >> ${LIST}
 
         _select_one
 
@@ -388,6 +389,13 @@ _ctx() {
 
         _command "kubectl config delete-context ${_NAME}"
         kubectl config delete-context ${_NAME}
+
+        return
+    fi
+
+    if [ "${_NAME}" == "[Del All...]" ]; then
+        _command "rm -rf ~/.kube"
+        rm -rf ~/.kube
 
         return
     fi
