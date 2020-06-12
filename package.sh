@@ -92,7 +92,7 @@ _package() {
     _package_sh ${RUN_PATH} ${RUN_PATH}/target/publish
 
     # release
-    cp -rf ${RUN_PATH}/alias.sh   ${RUN_PATH}/target/release/alias
+    cp -rf ${RUN_PATH}/aliases.sh ${RUN_PATH}/target/release/aliases
     cp -rf ${RUN_PATH}/toaster.sh ${RUN_PATH}/target/release/toaster
 
     # replace
@@ -101,7 +101,7 @@ _package() {
 
     # tar toaster
     pushd ${RUN_PATH}/target/release
-    tar cvzpf alias-${VERSION}.tar.gz ./alias
+    tar cvzpf aliases-${VERSION}.tar.gz ./aliases
     tar cvzpf toaster-${VERSION}.tar.gz ./toaster
     popd
 

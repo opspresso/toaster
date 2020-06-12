@@ -737,7 +737,7 @@ docker_clean() {
 }
 
 _git() {
-    _git_prepare
+    git_prepare
 
     case ${CMD} in
         cl|clone)
@@ -779,13 +779,17 @@ _git() {
     esac
 }
 
-_git_prepare() {
+git_prepare() {
     APP=$(echo "$PARAM1" | sed -e "s/\///g")
     CMD=$PARAM2
     MSG=$PARAM3
     TAG=$PARAM4
 
-    if [ -z ${CMD} ]; then
+    if [ -z "${CMD}" ]; then
+        if [ "${APP}" == "config" ]; then
+            git_config
+        fi
+
         _error
     fi
 
@@ -859,6 +863,36 @@ _git_prepare() {
             git_dir
             ;;
     esac
+}
+
+git_config() {
+    COUNT=$(git config --list | wc -l | xargs)
+
+    git config --global core.autocrlf input
+    git config --global core.precomposeunicode true
+    git config --global core.quotepath false
+    git config --global pager.branch false
+    git config --global pager.config false
+    git config --global pager.tag false
+    git config --global pull.ff only
+
+    USERNAME=$(git config user.name)
+    DEFAULT=${USERNAME:-"nalbam"}
+    _read "Please input ssh user [${DEFAULT}]: "
+    USERNAME="${ANSWER:-${DEFAULT}}"
+
+    git config --global user.name "${USERNAME}"
+
+    USEREMAIL=$(git config user.email)
+    DEFAULT=${USEREMAIL:-"me@nalbam.com"}
+    _read "Please input ssh user [${DEFAULT}]: "
+    USEREMAIL="${ANSWER:-${DEFAULT}}"
+
+    git config --global user.email "${USEREMAIL}"
+
+    git config --list
+
+    _success
 }
 
 git_dir() {
