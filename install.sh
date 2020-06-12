@@ -93,7 +93,7 @@ _aliases() {
 
     ALIASES="${HOME}/.toast_aliases"
 
-    curl -sL -o ${ALIASES} https://github.com/${USERNAME}/${REPONAME}/releases/download/${VERSION}/alias
+    curl -sL -o ${ALIASES} https://github.com/${USERNAME}/${REPONAME}/releases/download/${VERSION}/aliases
 
     if [ -f "${ALIASES}" ]; then
         touch ${TARGET}
