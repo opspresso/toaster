@@ -37,7 +37,7 @@ _prepare() {
     mkdir -p ~/.aws
     mkdir -p ~/.ssh
 
-    # config
+    # ssh config
     if [ ! -f ~/.ssh/config ]; then
 cat <<EOF > ~/.ssh/config
 Host *
@@ -47,7 +47,7 @@ EOF
     chmod 400 ~/.ssh/config
 }
 
-_version() {
+_install() {
     if [ -z ${VERSION} ]; then
         VERSION=$(curl -s https://api.github.com/repos/${USERNAME}/${REPONAME}/releases/latest | grep tag_name | cut -d'"' -f4)
 
@@ -58,12 +58,10 @@ _version() {
 
     _result "version: ${VERSION}"
 
-    if [ -z ${VERSION} ]; then
+    if [ -z "${VERSION}" ]; then
         _error "Version not Found."
     fi
-}
 
-_download() {
     # toaster
     DIST=/tmp/toaster-${VERSION}
     rm -rf ${DIST}
@@ -74,7 +72,7 @@ _download() {
 
     # copy
     COPY_PATH=/usr/local/bin
-    if [ ! -z $HOME ]; then
+    if [ ! -z "$HOME" ]; then
         COUNT=$(echo "$PATH" | grep "$HOME/.local/bin" | wc -l | xargs)
         if [ "x${COUNT}" != "x0" ]; then
             COPY_PATH=$HOME/.local/bin
@@ -90,14 +88,14 @@ _download() {
     mv -f ${DIST} ${COPY_PATH}/toaster
 }
 
-_alias() {
+_aliases() {
     TARGET=${HOME}/${1}
 
-    ALIAS="${HOME}/.toast_aliases"
+    ALIASES="${HOME}/.toast_aliases"
 
-    curl -sL -o ${ALIAS} https://github.com/${USERNAME}/${REPONAME}/releases/download/${VERSION}/alias
+    curl -sL -o ${ALIASES} https://github.com/${USERNAME}/${REPONAME}/releases/download/${VERSION}/alias
 
-    if [ -f ${ALIAS} ]; then
+    if [ -f "${ALIASES}" ]; then
         touch ${TARGET}
         HAS_ALIAS="$(cat ${TARGET} | grep toast_aliases | wc -l | xargs)"
 
@@ -107,7 +105,7 @@ _alias() {
             echo "fi" >> ${TARGET}
         fi
 
-        source ${ALIAS}
+        source ${ALIASES}
     fi
 }
 
@@ -115,9 +113,7 @@ _alias() {
 
 _prepare
 
-_version
+_install
 
-_download
-
-_alias ".bashrc"
-_alias ".zshrc"
+_aliases ".bashrc"
+_aliases ".zshrc"
