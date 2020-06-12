@@ -399,7 +399,7 @@ _ctx() {
             _error
         fi
 
-        if [ "${_NAME}" == "[New...]" ]; then
+        if [ "${_NAME}" == "[All...]" ]; then
             _command "rm -rf ~/.kube"
             rm -rf ~/.kube
         else
