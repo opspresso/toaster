@@ -344,7 +344,7 @@ _env() {
 _ctx() {
     _NAME=${PARAM1}
 
-    if [ -z ${_NAME} ]; then
+    if [ -z "${_NAME}" ]; then
         kubectl config view -o json | jq '.contexts[].name' -r | sort > ${LIST}
         echo "[New...]" >> ${LIST}
         echo "[Del...]" >> ${LIST}
@@ -355,7 +355,7 @@ _ctx() {
         _NAME="${SELECTED}"
     fi
 
-    if [ -z ${_NAME} ]; then
+    if [ -z "${_NAME}" ]; then
         _error
     fi
 
@@ -366,7 +366,7 @@ _ctx() {
 
         _NAME="${SELECTED}"
 
-        if [ -z ${_NAME} ]; then
+        if [ -z "${_NAME}" ]; then
             _error
         fi
 
@@ -383,7 +383,7 @@ _ctx() {
 
         _NAME="${SELECTED}"
 
-        if [ -z ${_NAME} ]; then
+        if [ -z "${_NAME}" ]; then
             _error
         fi
 
