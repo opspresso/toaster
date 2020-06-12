@@ -345,7 +345,14 @@ _ctx() {
     _NAME=${PARAM1}
 
     if [ -z "${_NAME}" ]; then
-        kubectl config view -o json | jq '.contexts[].name' -r | sort > ${LIST}
+        CONTEXT="$(kubectl config view -o json | jq '.contexts' -r)"
+
+        if [ "${CONTEXT}" == "null" ]; then
+            LIST=
+        else
+            kubectl config view -o json | jq '.contexts[].name' -r | sort > ${LIST}
+        fi
+
         echo "[New...]" >> ${LIST}
         echo "[Del...]" >> ${LIST}
         echo "[Del All...]" >> ${LIST}
