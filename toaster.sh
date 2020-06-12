@@ -348,7 +348,7 @@ _ctx() {
 
     if [ -z "${_NAME}" ]; then
         if [ "${CONTEXT}" == "null" ]; then
-            LIST=
+            rm -rf ${LIST} && touch ${LIST}
         else
             kubectl config view -o json | jq '.contexts[].name' -r | sort > ${LIST}
         fi
@@ -384,7 +384,7 @@ _ctx() {
 
     if [ "${_NAME}" == "[Del...]" ]; then
         if [ "${CONTEXT}" == "null" ]; then
-            LIST=
+            rm -rf ${LIST} && touch ${LIST}
         else
             kubectl config view -o json | jq '.contexts[].name' -r | sort > ${LIST}
         fi
