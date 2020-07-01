@@ -79,9 +79,17 @@ _error() {
 
 _replace() {
     if [ "${OS_NAME}" == "darwin" ]; then
-        sed -i "" -e "$1" $2
+        sed -i "" -e "$1" "$2"
     else
-        sed -i -e "$1" $2
+        sed -i -e "$1" "$2"
+    fi
+}
+
+_find_replace() {
+    if [ "${OS_NAME}" == "darwin" ]; then
+        find . -name "$2" -exec sed -i "" -e "$1" {} \;
+    else
+        find . -name "$2" -exec sed -i -e "$1" {} \;
     fi
 }
 
