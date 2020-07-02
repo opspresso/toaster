@@ -42,5 +42,3 @@ alias chrome="/Applications/Google\\ \\Chrome.app/Contents/MacOS/Google\\ \\Chro
 
 # export GOPATH=$HOME/work
 # export PATH=$PATH:$GOPATH/bin
-
-[[ /usr/local/bin/kubectl ]] && source <(kubectl completion zsh)
