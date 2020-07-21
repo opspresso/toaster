@@ -238,15 +238,17 @@ _trigger() {
         return
     fi
     if [ -z ${PERSONAL_TOKEN:-$CIRCLE_TOKEN} ]; then
-        _result "not found CIRCLE_TOKEN"
+        _result "not found PERSONAL_TOKEN"
         return
     fi
 
     VERSION=$(cat ${RUN_PATH}/target/VERSION | xargs)
     _result "VERSION=${VERSION}"
 
+    PERSONAL_TOKEN=${PERSONAL_TOKEN:-$CIRCLE_TOKEN}
+
     # CIRCLE_API="https://circleci.com/api/v1.1/project/github/${CIRCLE_BUILDER}"
-    # CIRCLE_URL="${CIRCLE_API}?circle-token=${PERSONAL_TOKEN:-$CIRCLE_TOKEN}"
+    # CIRCLE_URL="${CIRCLE_API}?circle-token=${PERSONAL_TOKEN}"
 
     # https://circleci.com/docs/api/v2/#get-a-pipeline-39-s-workflows
     CIRCLE_API="https://circleci.com/api/v2/project/gh/${CIRCLE_BUILDER}/pipeline"
