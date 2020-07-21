@@ -245,18 +245,24 @@ _trigger() {
     VERSION=$(cat ${RUN_PATH}/target/VERSION | xargs)
     _result "VERSION=${VERSION}"
 
-    CIRCLE_API="https://circleci.com/api/v1.1/project/github/${CIRCLE_BUILDER}"
-    CIRCLE_URL="${CIRCLE_API}?circle-token=${PERSONAL_TOKEN:-$CIRCLE_TOKEN}"
+    # CIRCLE_API="https://circleci.com/api/v1.1/project/github/${CIRCLE_BUILDER}"
+    # CIRCLE_URL="${CIRCLE_API}?circle-token=${PERSONAL_TOKEN:-$CIRCLE_TOKEN}"
 
-    PAYLOAD="{\"build_parameters\":{"
-    PAYLOAD="${PAYLOAD}\"TG_USERNAME\":\"${USERNAME}\","
-    PAYLOAD="${PAYLOAD}\"TG_PROJECT\":\"${REPONAME}\","
-    PAYLOAD="${PAYLOAD}\"TG_VERSION\":\"${VERSION}\""
+    # https://circleci.com/docs/api/v2/#get-a-pipeline-39-s-workflows
+    CIRCLE_API="https://circleci.com/api/v2/project/gh/${USERNAME}/${REPONAME}/pipeline"
+    CIRCLE_URL="${CIRCLE_API}?circle-token=${PERSONAL_TOKEN}"
+
+    # build_parameters
+    PAYLOAD="{\"parameters\":{"
+    PAYLOAD="${PAYLOAD}\"username\":\"${USERNAME}\","
+    PAYLOAD="${PAYLOAD}\"project\":\"${REPONAME}\","
+    PAYLOAD="${PAYLOAD}\"version\":\"${VERSION}\""
     PAYLOAD="${PAYLOAD}}}"
 
     curl -X POST \
+        -u ${PERSONAL_TOKEN}: \
         -H "Content-Type: application/json" \
-        -d "${PAYLOAD}" "${CIRCLE_URL}"
+        -d "${PAYLOAD}" "${CIRCLE_API}"
 }
 
 _slack() {
