@@ -249,7 +249,7 @@ _trigger() {
     # CIRCLE_URL="${CIRCLE_API}?circle-token=${PERSONAL_TOKEN:-$CIRCLE_TOKEN}"
 
     # https://circleci.com/docs/api/v2/#get-a-pipeline-39-s-workflows
-    CIRCLE_API="https://circleci.com/api/v2/project/gh/${USERNAME}/${REPONAME}/pipeline"
+    CIRCLE_API="https://circleci.com/api/v2/project/gh/${CIRCLE_BUILDER}/pipeline"
     CIRCLE_URL="${CIRCLE_API}?circle-token=${PERSONAL_TOKEN}"
 
     # build_parameters
