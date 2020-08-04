@@ -344,7 +344,7 @@ _env() {
         #     echo "aws_secret_access_key=${SECRET_KEY}" >> ~/.aws/credentials
         # done < ${LIST}
 
-        chmod 600 ~/.aws/credentials
+        # chmod 600 ~/.aws/credentials
     fi
 }
 
@@ -549,14 +549,6 @@ _mfa() {
     _read "TOKEN_CODE : "
     TOKEN_CODE=${ANSWER}
 
-    _aws_sts_token "${ACCOUNT_ID}" "${USERNAME}" "${TOKEN_CODE}"
-}
-
-_aws_sts_token() {
-    ACCOUNT_ID=${1}
-    USERNAME=${2}
-    TOKEN_CODE=${3}
-
     TMP=/tmp/sts-result
 
     if [ "${TOKEN_CODE}" == "" ]; then
@@ -586,7 +578,6 @@ _aws_sts_token() {
 
     chmod 600 ~/.aws/credentials
 
-    _result "${USERNAME}"
     _result "${ACCESS_KEY}"
     _result "**********${SECRET_KEY:30}"
 }
