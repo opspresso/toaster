@@ -578,8 +578,13 @@ _mfa() {
 
     chmod 600 ~/.aws/credentials
 
+    if [ "${_REGION}" == "" ]; then
+        _REGION=$(aws configure get default.region)
+    fi
+
     _result "${ACCESS_KEY}"
     _result "**********${SECRET_KEY:30}"
+    _result "${_REGION}"
 }
 
 _mtu() {
