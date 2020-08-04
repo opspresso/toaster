@@ -908,7 +908,7 @@ git_dir() {
     cd ${NOW_DIR}/${PROJECT}
 
     # selected branch
-    BRANCH=$(git branch | grep \* | cut -d' ' -f2)
+    BRANCH=$(git branch | grep \* | xargs | cut -d' ' -f2)
 
     if [ -z ${BRANCH} ]; then
         BRANCH="master"
@@ -943,9 +943,17 @@ git_rm() {
     rm -rf ${NOW_DIR}/${PROJECT}
 }
 
+git_default() {
+    DEFAULT=$(git branch -a | grep 'HEAD' | xargs | cut -d' ' -f3 | cut -d'/' -f2)
+
+    if [ -z ${DEFAULT} ]; then
+        DEFAULT="master"
+    fi
+}
+
 git_remote() {
     _command "git remote"
-    git remote
+    git remote -v
 
     if [ -z ${MSG} ]; then
         _error
@@ -960,11 +968,13 @@ git_remote() {
         fi
     done < ${REMOTES}
 
-    _command "git remote add --track master ${MSG} ${GIT_URL}${MSG}/${APP}.git"
-    git remote add --track master ${MSG} ${GIT_URL}${MSG}/${APP}.git
+    git_default
+
+    _command "git remote add --track ${DEFAULT} ${MSG} ${GIT_URL}${MSG}/${APP}.git"
+    git remote add --track ${DEFAULT} ${MSG} ${GIT_URL}${MSG}/${APP}.git
 
     _command "git remote"
-    git remote
+    git remote -v
 }
 
 git_branch() {
