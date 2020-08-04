@@ -302,24 +302,17 @@ _env() {
         _error
     fi
 
-    mkdir -p ~/.aws
-
-    LC=$(cat ${ENV_DIR}/${_NAME} | wc -l | xargs)
-
-    # cp -f ${ENV_DIR}/${_NAME} ~/.aws/credentials
+    # LC=$(cat ${ENV_DIR}/${_NAME} | wc -l | xargs)
 
     ACCESS_KEY="$(sed -n 1p ${ENV_DIR}/${_NAME})"
     SECRET_KEY="$(sed -n 2p ${ENV_DIR}/${_NAME})"
+    _REGION="$(sed -n 3p ${ENV_DIR}/${_NAME})"
+    _OUTPUT="$(sed -n 4p ${ENV_DIR}/${_NAME})"
+    _MFA="$(sed -n 5p ${ENV_DIR}/${_NAME})"
 
-    if [ ${LC} -gt 2 ]; then
-        _REGION="$(sed -n 3p ${ENV_DIR}/${_NAME})"
-    fi
-    if [ ${LC} -gt 3 ]; then
-        _OUTPUT="$(sed -n 4p ${ENV_DIR}/${_NAME})"
-    fi
-
-    _REGION=${PARAM2:-$_REGION}
-    _OUTPUT=${PARAM3:-$_OUTPUT}
+    # _REGION=${PARAM2:-$_REGION}
+    # _OUTPUT=${PARAM3:-$_OUTPUT}
+    # _MFA=${PARAM4:-$_MFA}
 
     aws configure set default.region ${_REGION}
     aws configure set default.output ${_OUTPUT}
@@ -328,25 +321,31 @@ _env() {
     echo "aws_access_key_id=${ACCESS_KEY}" >> ~/.aws/credentials
     echo "aws_secret_access_key=${SECRET_KEY}" >> ~/.aws/credentials
 
-    _result "${_NAME}"
-    _result "${ACCESS_KEY}"
-    _result "**********${SECRET_KEY:30}"
-    _result "${_REGION}"
-
-    # all profile
-    ls ${ENV_DIR} > ${LIST}
-
-    while read VAL; do
-        ACCESS_KEY="$(sed -n 1p ${ENV_DIR}/${VAL})"
-        SECRET_KEY="$(sed -n 2p ${ENV_DIR}/${VAL})"
-
-        echo "" >> ~/.aws/credentials
-        echo "[${VAL}]" >> ~/.aws/credentials
-        echo "aws_access_key_id=${ACCESS_KEY}" >> ~/.aws/credentials
-        echo "aws_secret_access_key=${SECRET_KEY}" >> ~/.aws/credentials
-    done < ${LIST}
-
     chmod 600 ~/.aws/credentials
+
+    if [ "${_MFA}" == "mfa" ]; then
+        _mfa
+    else
+        _result "${_NAME}"
+        _result "${ACCESS_KEY}"
+        _result "**********${SECRET_KEY:30}"
+        _result "${_REGION}"
+
+        # # all profile
+        # ls ${ENV_DIR} > ${LIST}
+
+        # while read VAL; do
+        #     ACCESS_KEY="$(sed -n 1p ${ENV_DIR}/${VAL})"
+        #     SECRET_KEY="$(sed -n 2p ${ENV_DIR}/${VAL})"
+
+        #     echo "" >> ~/.aws/credentials
+        #     echo "[${VAL}]" >> ~/.aws/credentials
+        #     echo "aws_access_key_id=${ACCESS_KEY}" >> ~/.aws/credentials
+        #     echo "aws_secret_access_key=${SECRET_KEY}" >> ~/.aws/credentials
+        # done < ${LIST}
+
+        chmod 600 ~/.aws/credentials
+    fi
 }
 
 _ctx() {
@@ -952,7 +951,7 @@ git_default() {
 }
 
 git_remote() {
-    _command "git remote"
+    _command "git remote -v"
     git remote -v
 
     if [ -z ${MSG} ]; then
@@ -973,7 +972,7 @@ git_remote() {
     _command "git remote add --track ${DEFAULT} ${MSG} ${GIT_URL}${MSG}/${APP}.git"
     git remote add --track ${DEFAULT} ${MSG} ${GIT_URL}${MSG}/${APP}.git
 
-    _command "git remote"
+    _command "git remote -v"
     git remote -v
 }
 
