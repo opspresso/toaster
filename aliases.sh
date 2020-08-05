@@ -21,7 +21,7 @@ alias a='aws'
 alias k='kubectl'
 alias h='helm'
 
-alias hf='helmfile'
+alias av='aws-vault'
 
 alias tf='terraform'
 alias tfp='tf init && tf plan'
