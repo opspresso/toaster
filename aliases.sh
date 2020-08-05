@@ -15,7 +15,7 @@ alias e='toaster env'
 alias n='toaster git'
 alias s='toaster ssh'
 alias x='toaster ctx'
-alias v='toaster code'
+alias v='toaster vsc'
 
 alias a='aws'
 alias k='kubectl'

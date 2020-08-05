@@ -244,7 +244,7 @@ _cdw() {
     _command "cd ${_DIR}"
 }
 
-_code() {
+_vsc() {
     _src_dir
 
     _DIR=${PARAM1}
@@ -1102,8 +1102,8 @@ _toast() {
         x|ctx)
             _ctx
             ;;
-        v|code)
-            _code
+        v|vsc)
+            _vsc
             ;;
         m|mtu)
             _mtu
