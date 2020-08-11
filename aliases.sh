@@ -24,6 +24,7 @@ alias h='helm'
 alias av='aws-vault'
 
 alias tf='terraform'
+alias tfe='tfenv'
 alias tfp='tf init && tf plan'
 alias tfa='tf init && tf apply'
 alias tfd='tf init && tf destroy'
