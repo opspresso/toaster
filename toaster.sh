@@ -905,13 +905,13 @@ git_clone() {
 
     git_dir
 
-    # https://github.com/awslabs/git-secrets
+    # # https://github.com/awslabs/git-secrets
 
-    _command "git secrets --install"
-    git secrets --install
+    # _command "git secrets --install"
+    # git secrets --install
 
-    _command "git secrets --register-aws"
-    git secrets --register-aws
+    # _command "git secrets --register-aws"
+    # git secrets --register-aws
 
     _command "git branch -v"
     git branch -v
