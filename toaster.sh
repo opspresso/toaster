@@ -302,6 +302,8 @@ _env() {
         _error
     fi
 
+    _result "${_NAME}"
+
     # LC=$(cat ${ENV_DIR}/${_NAME} | wc -l | xargs)
 
     ACCESS_KEY="$(sed -n 1p ${ENV_DIR}/${_NAME})"
@@ -310,9 +312,8 @@ _env() {
     _OUTPUT="$(sed -n 4p ${ENV_DIR}/${_NAME})"
     _MFA="$(sed -n 5p ${ENV_DIR}/${_NAME})"
 
-    # _REGION=${PARAM2:-$_REGION}
-    # _OUTPUT=${PARAM3:-$_OUTPUT}
-    # _MFA=${PARAM4:-$_MFA}
+    _REGION=${_REGION:-ap-northeast-2}
+    _OUTPUT=${_OUTPUT:-json}
 
     aws configure set default.region ${_REGION}
     aws configure set default.output ${_OUTPUT}
@@ -323,29 +324,23 @@ _env() {
 
     chmod 600 ~/.aws/credentials
 
+    ACCOUNT_ID=$(aws sts get-caller-identity | grep "Account" | cut -d'"' -f4)
+    _result "${ACCOUNT_ID}"
+
+    USERNAME=$(aws sts get-caller-identity | grep "Arn" | cut -d'"' -f 4 | cut -d'/' -f2)
+    _result "${USERNAME}"
+
+    if [ "${ACCOUNT_ID}" == "" ] || [ "${USERNAME}" == "" ]; then
+        _error
+    fi
+
     if [ "${_MFA}" == "mfa" ]; then
         _mfa
-    else
-        _result "${_NAME}"
-        _result "${ACCESS_KEY}"
-        _result "**********${SECRET_KEY:30}"
-        _result "${_REGION}"
-
-        # # all profile
-        # ls ${ENV_DIR} > ${LIST}
-
-        # while read VAL; do
-        #     ACCESS_KEY="$(sed -n 1p ${ENV_DIR}/${VAL})"
-        #     SECRET_KEY="$(sed -n 2p ${ENV_DIR}/${VAL})"
-
-        #     echo "" >> ~/.aws/credentials
-        #     echo "[${VAL}]" >> ~/.aws/credentials
-        #     echo "aws_access_key_id=${ACCESS_KEY}" >> ~/.aws/credentials
-        #     echo "aws_secret_access_key=${SECRET_KEY}" >> ~/.aws/credentials
-        # done < ${LIST}
-
-        # chmod 600 ~/.aws/credentials
     fi
+
+    _result "${ACCESS_KEY}"
+    _result "**********${SECRET_KEY:30}"
+    _result "${_REGION}"
 }
 
 _ctx() {
@@ -534,18 +529,6 @@ EOF
 }
 
 _mfa() {
-    ACCOUNT_ID=$(aws sts get-caller-identity | grep "Account" | cut -d'"' -f4)
-
-    _result "${ACCOUNT_ID}"
-
-    USERNAME=$(aws sts get-caller-identity | grep "Arn" | cut -d'"' -f 4 | cut -d'/' -f2)
-
-    _result "${USERNAME}"
-
-    if [ "${ACCOUNT_ID}" == "" ] || [ "${USERNAME}" == "" ]; then
-        _error
-    fi
-
     _read "TOKEN_CODE : "
     TOKEN_CODE=${ANSWER}
 
@@ -578,13 +561,13 @@ _mfa() {
 
     chmod 600 ~/.aws/credentials
 
-    if [ "${_REGION}" == "" ]; then
-        _REGION=$(aws configure get default.region)
-    fi
+    # if [ "${_REGION}" == "" ]; then
+    #     _REGION=$(aws configure get default.region)
+    # fi
 
-    _result "${ACCESS_KEY}"
-    _result "**********${SECRET_KEY:30}"
-    _result "${_REGION}"
+    # _result "${ACCESS_KEY}"
+    # _result "**********${SECRET_KEY:30}"
+    # _result "${_REGION}"
 }
 
 _mtu() {
