@@ -328,7 +328,7 @@ _env() {
     _result "${ACCOUNT_ID}"
 
     USERNAME=$(aws sts get-caller-identity | grep "Arn" | cut -d'"' -f 4 | cut -d'/' -f2)
-    _result "${USERNAME}"
+    _result "user/${USERNAME}"
 
     if [ "${ACCOUNT_ID}" == "" ] || [ "${USERNAME}" == "" ]; then
         _error
