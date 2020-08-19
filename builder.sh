@@ -261,6 +261,8 @@ _trigger() {
     PAYLOAD="${PAYLOAD}\"version\":\"${VERSION}\""
     PAYLOAD="${PAYLOAD}}}"
 
+    _result "PAYLOAD=${PAYLOAD}"
+
     curl -X POST \
         -u ${PERSONAL_TOKEN}: \
         -H "Content-Type: application/json" \
