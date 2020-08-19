@@ -256,9 +256,9 @@ _trigger() {
 
     # build_parameters
     PAYLOAD="{\"parameters\":{"
-    PAYLOAD="${PAYLOAD}\"username\":\"${USERNAME}\","
-    PAYLOAD="${PAYLOAD}\"project\":\"${REPONAME}\","
-    PAYLOAD="${PAYLOAD}\"version\":\"${VERSION}\""
+    PAYLOAD="${PAYLOAD}\"username\":\"${TG_USERNAME:-${USERNAME}}\","
+    PAYLOAD="${PAYLOAD}\"project\":\"${TG_PROJECT:-${REPONAME}}\","
+    PAYLOAD="${PAYLOAD}\"version\":\"${TG_VERSION:-${VERSION}}\""
     PAYLOAD="${PAYLOAD}}}"
 
     _result "PAYLOAD=${PAYLOAD}"
