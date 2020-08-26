@@ -312,6 +312,20 @@ _env() {
     _OUTPUT="$(sed -n 4p ${ENV_DIR}/${_NAME})"
     _MFA="$(sed -n 5p ${ENV_DIR}/${_NAME})"
 
+    ARR=(${_REGION})
+
+    if [ ! -z ${ARR[1]} ]; then
+        LIST=/tmp/regions && rm -rf ${LIST}
+
+        for V in ${ARR[@]}; do
+            echo ${V} >> ${LIST}
+        done
+
+        _select_one
+
+        _REGION=${SELECTED}
+    fi
+
     _REGION=${_REGION:-ap-northeast-2}
     _OUTPUT=${_OUTPUT:-json}
 
