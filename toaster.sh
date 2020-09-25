@@ -428,6 +428,8 @@ _ctx() {
 
     _command "kubectl config use-context ${_NAME}"
     kubectl config use-context ${_NAME}
+
+    chmod 600 ~/.kube/config
 }
 
 _ssh() {
@@ -447,7 +449,7 @@ Host *
     StrictHostKeyChecking no
 EOF
     fi
-    chmod 400 ~/.ssh/config
+    chmod 600 ~/.ssh/config
 
     # history
     if [ -z ${_USER} ]; then
