@@ -395,6 +395,8 @@ _ctx() {
         _command "aws eks update-kubeconfig --name ${_NAME} --alias ${_NAME}"
         aws eks update-kubeconfig --name ${_NAME} --alias ${_NAME}
 
+        chmod 600 ~/.kube/config
+
         return
     fi
 
@@ -422,6 +424,8 @@ _ctx() {
             _command "kubectl config delete-context ${_NAME}"
             kubectl config delete-context ${_NAME}
         fi
+
+        chmod 600 ~/.kube/config
 
         return
     fi
