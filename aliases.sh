@@ -33,6 +33,8 @@ alias tfg='tf graph'
 alias tfo='tf output'
 alias tfc='rm -rf .terraform && tf init'
 
+alias tfdoc="terraform-docs markdown"
+
 alias py='python'
 alias py3='python3'
 
