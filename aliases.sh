@@ -38,7 +38,7 @@ alias tfdoc="terraform-docs markdown"
 alias py='python'
 alias py3='python3'
 
-alias date='date -u +"%Y-%m-%dT%H:%M:%SZ"'
+alias dt='date -u +"%Y-%m-%dT%H:%M:%SZ"'
 
 # alias p='reveal-md -w --port 8888 --theme https://raw.githubusercontent.com/nalbam/docs/master/.theme/black.css'
 alias p='reveal-md -w --port 8888 --theme night'
