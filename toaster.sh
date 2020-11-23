@@ -364,11 +364,15 @@ _region() {
         _error "Please install awscli."
     fi
 
-    aws ec2 describe-regions --output text | cut -f4 | sort > ${LIST}
+    _REGION=${PARAM1}
 
-    _select_one
+    if [ -z "${_REGION}" ]; then
+      aws ec2 describe-regions --output text | cut -f4 | sort > ${LIST}
 
-    _REGION=${SELECTED:-ap-northeast-2}
+      _select_one
+
+      _REGION=${SELECTED:-ap-northeast-2}
+    fi
 
     aws configure set default.region ${_REGION}
 
