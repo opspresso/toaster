@@ -14,6 +14,7 @@ c() {
 alias e='toaster env'
 alias n='toaster git'
 alias s='toaster ssh'
+alias r='toaster region'
 alias x='toaster ctx'
 alias v='toaster vsc'
 

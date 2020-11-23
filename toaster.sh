@@ -357,6 +357,24 @@ _env() {
     _result "${_REGION}"
 }
 
+_region() {
+    command -v aws > /dev/null || AWSCLI=false
+
+    if [ ! -z ${AWSCLI} ]; then
+        _error "Please install awscli."
+    fi
+
+    aws ec2 describe-regions --output text | cut -f4 | sort > ${LIST}
+
+    _select_one
+
+    _REGION=${SELECTED:-ap-northeast-2}
+
+    aws configure set default.region ${_REGION}
+
+    _result "${_REGION}"
+}
+
 _ctx() {
     _NAME=${PARAM1}
 
@@ -1090,6 +1108,12 @@ _toast() {
         e|env)
             _env
             ;;
+        r|region)
+            _region
+            ;;
+        x|ctx)
+            _ctx
+            ;;
         g|git)
             _git
             ;;
@@ -1102,9 +1126,6 @@ _toast() {
         a|mfa)
             _mfa
             ;;
-        x|ctx)
-            _ctx
-            ;;
         v|vsc)
             _vsc
             ;;
@@ -1114,15 +1135,15 @@ _toast() {
         b|stress)
             _stress
             ;;
-        r|reset)
-            _reset
-            ;;
         u|update)
             _update
             ;;
         t|tools)
             _tools
             ;;
+        # r|reset)
+        #     _reset
+        #     ;;
         *)
             _usage
     esac
