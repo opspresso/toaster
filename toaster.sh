@@ -323,7 +323,7 @@ _env() {
 
         _select_one
 
-        _REGION=${SELECTED}
+        _REGION="${SELECTED}"
     fi
 
     _REGION=${_REGION:-ap-northeast-2}
@@ -371,7 +371,11 @@ _region() {
 
       _select_one
 
-      _REGION=${SELECTED:-ap-northeast-2}
+      _REGION="${SELECTED}"
+    fi
+
+    if [ -z "${_REGION}" ]; then
+        _error
     fi
 
     aws configure set default.region ${_REGION}
