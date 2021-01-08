@@ -26,13 +26,13 @@ alias av='aws-vault'
 
 alias tf='terraform'
 alias tfe='tfenv'
-alias tfp='tf init && tf plan'
-alias tfa='tf init && tf apply'
-alias tfd='tf init && tf destroy'
+alias tfc='rm -rf .terraform && tf init'
+alias tfp='tfc && tf plan'
+alias tfa='tfc && tf apply'
+alias tfd='tfc && tf destroy'
 alias tff='tf fmt'
 alias tfg='tf graph'
 alias tfo='tf output'
-alias tfc='rm -rf .terraform && tf init'
 
 alias tfdoc="terraform-docs markdown"
 
