@@ -103,6 +103,10 @@ _aliases() {
             echo "if [ -f ~/.toast_aliases ]; then" >> ${TARGET}
             echo "  source ~/.toast_aliases" >> ${TARGET}
             echo "fi" >> ${TARGET}
+            echo "" >> ${TARGET}
+            echo "if [ -d /opt/homebrew/bin ]; then" >> ${TARGET}
+            echo "  export PATH=\"/opt/homebrew/bin:$PATH\"" >> ${TARGET}
+            echo "fi" >> ${TARGET}
         fi
 
         source ${ALIASES}

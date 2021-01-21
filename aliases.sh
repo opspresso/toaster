@@ -11,6 +11,10 @@ c() {
     fi
 }
 
+ibrew() {
+  arch --x86_64 /usr/local/bin/brew $@
+}
+
 alias e='toaster env'
 alias n='toaster git'
 alias s='toaster ssh'
