@@ -451,7 +451,7 @@ _ctx() {
             kubectl config delete-context ${_NAME}
         fi
 
-        chmod 600 ~/.kube/config
+        # chmod 600 ~/.kube/config
 
         return
     fi
