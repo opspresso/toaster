@@ -658,7 +658,7 @@ _assume() {
     fi
 
     if [ "${_NAME}" == "[Restore...]" ]; then
-        cp ~/.aws/credentials.backup ~/.aws/credentials
+        mv ~/.aws/credentials.backup ~/.aws/credentials
 
         aws sts get-caller-identity | jq .
 
