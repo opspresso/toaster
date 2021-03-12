@@ -15,9 +15,10 @@ CONFIG_DIR="${HOME}/.toaster"
 
 CONFIG="${CONFIG_DIR}/$(basename $0)"
 
-SRC_DIR=
 ENV_DIR=
 PEM_DIR=
+ROLE_DIR=
+SRC_DIR=
 
 HEIGHT=15
 
@@ -226,9 +227,10 @@ _role_dir() {
 
 _save() {
     echo "# toaster" > ${CONFIG}
-    echo "SRC_DIR=${SRC_DIR}" >> ${CONFIG}
     echo "ENV_DIR=${ENV_DIR}" >> ${CONFIG}
     echo "PEM_DIR=${PEM_DIR}" >> ${CONFIG}
+    echo "ROLE_DIR=${ROLE_DIR}" >> ${CONFIG}
+    echo "SRC_DIR=${SRC_DIR}" >> ${CONFIG}
 }
 
 _reset() {
@@ -353,11 +355,13 @@ _env() {
 
     chmod 600 ~/.aws/credentials
 
-    ACCOUNT_ID=$(aws sts get-caller-identity | grep "Account" | cut -d'"' -f4)
-    _result "${ACCOUNT_ID}"
+    rm -rf ~/.aws/credentials.backup
 
-    USERNAME=$(aws sts get-caller-identity | grep "Arn" | cut -d'"' -f 4 | cut -d'/' -f2)
-    _result "user/${USERNAME}"
+    # ACCOUNT_ID=$(aws sts get-caller-identity | grep "Account" | cut -d'"' -f4)
+    # _result "${ACCOUNT_ID}"
+
+    # USERNAME=$(aws sts get-caller-identity | grep "Arn" | cut -d'"' -f 4 | cut -d'/' -f2)
+    # _result "user/${USERNAME}"
 
     if [ "${ACCOUNT_ID}" == "" ] || [ "${USERNAME}" == "" ]; then
         _error
@@ -637,6 +641,10 @@ _assume() {
     if [ -z ${_NAME} ]; then
         ls ${ROLE_DIR} > ${LIST}
 
+        if [ -f ~/.aws/credentials.backup ]; then
+            echo "[Restore...]" >> ${LIST}
+        fi
+
         _select_one
 
         if [ -z ${SELECTED} ] || [ ! -f ${ROLE_DIR}/${SELECTED} ]; then
@@ -648,6 +656,11 @@ _assume() {
     if [ -z ${_NAME} ]; then
         _error
     fi
+
+    if [ "${_NAME}" == "[Restore...]" ]; then
+        cp ~/.aws/credentials.backup ~/.aws/credentials
+    fi
+
     if [ ! -f "${ROLE_DIR}/${_NAME}" ]; then
         _error
     fi
@@ -674,19 +687,21 @@ _assume() {
 
     SESSION_TOKEN=$(cat ${TMP} | grep SessionToken | cut -d'"' -f4)
 
-    export AWS_ACCESS_KEY_ID="${ACCESS_KEY}"
-    export AWS_SECRET_ACCESS_KEY="${SECRET_KEY}"
-    export AWS_SESSION_TOKEN="${SESSION_TOKEN}"
+    if [ -f ~/.aws/credentials ]; then
+        cp ~/.aws/credentials ~/.aws/credentials.backup
 
-    # echo "[default]" > ~/.aws/credentials
-    # echo "aws_access_key_id=${ACCESS_KEY}" >> ~/.aws/credentials
-    # echo "aws_secret_access_key=${SECRET_KEY}" >> ~/.aws/credentials
+        _success
+    fi
 
-    # if [ "${SESSION_TOKEN}" != "" ]; then
-    #     echo "aws_session_token=${SESSION_TOKEN}" >> ~/.aws/credentials
-    # fi
+    echo "[default]" > ~/.aws/credentials
+    echo "aws_access_key_id=${ACCESS_KEY}" >> ~/.aws/credentials
+    echo "aws_secret_access_key=${SECRET_KEY}" >> ~/.aws/credentials
 
-    # chmod 600 ~/.aws/credentials
+    if [ "${SESSION_TOKEN}" != "" ]; then
+        echo "aws_session_token=${SESSION_TOKEN}" >> ~/.aws/credentials
+    fi
+
+    chmod 600 ~/.aws/credentials
 
     aws sts get-caller-identity | jq .
 }
