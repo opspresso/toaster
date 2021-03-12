@@ -659,6 +659,10 @@ _assume() {
 
     if [ "${_NAME}" == "[Restore...]" ]; then
         cp ~/.aws/credentials.backup ~/.aws/credentials
+
+        aws sts get-caller-identity | jq .
+
+        _success
     fi
 
     if [ ! -f "${ROLE_DIR}/${_NAME}" ]; then
@@ -689,8 +693,6 @@ _assume() {
 
     if [ -f ~/.aws/credentials ]; then
         cp ~/.aws/credentials ~/.aws/credentials.backup
-
-        _success
     fi
 
     echo "[default]" > ~/.aws/credentials
