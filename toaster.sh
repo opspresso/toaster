@@ -357,11 +357,11 @@ _env() {
 
     rm -rf ~/.aws/credentials.backup
 
-    # ACCOUNT_ID=$(aws sts get-caller-identity | grep "Account" | cut -d'"' -f4)
-    # _result "${ACCOUNT_ID}"
+    ACCOUNT_ID=$(aws sts get-caller-identity | grep "Account" | cut -d'"' -f4)
+    _result "${ACCOUNT_ID}"
 
-    # USERNAME=$(aws sts get-caller-identity | grep "Arn" | cut -d'"' -f 4 | cut -d'/' -f2)
-    # _result "user/${USERNAME}"
+    USERNAME=$(aws sts get-caller-identity | grep "Arn" | cut -d'"' -f 4 | cut -d'/' -f2)
+    _result "user/${USERNAME}"
 
     if [ "${ACCOUNT_ID}" == "" ] || [ "${USERNAME}" == "" ]; then
         _error
