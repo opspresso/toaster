@@ -209,6 +209,21 @@ _pem_dir() {
     fi
 }
 
+_role_dir() {
+    _src_dir
+
+    if [ -z ${ROLE_DIR} ] || [ ! -d ${ROLE_DIR} ]; then
+        DEFAULT="${SRC_DIR}/github.com/${USER}/keys/role"
+
+        _read "Please input role directory [${DEFAULT}]: "
+        ROLE_DIR=${ANSWER:-${DEFAULT}}
+    fi
+
+    if [ ! -d ${ROLE_DIR} ]; then
+        _error "[${ROLE_DIR}] is not directory."
+    fi
+}
+
 _save() {
     echo "# toaster" > ${CONFIG}
     echo "SRC_DIR=${SRC_DIR}" >> ${CONFIG}
@@ -352,9 +367,11 @@ _env() {
         _mfa
     fi
 
-    _result "${ACCESS_KEY}"
-    _result "**********${SECRET_KEY:30}"
-    _result "${_REGION}"
+    # _result "${ACCESS_KEY}"
+    # _result "**********${SECRET_KEY:30}"
+    # _result "${_REGION}"
+
+    aws sts get-caller-identity | jq .
 }
 
 _region() {
@@ -607,13 +624,67 @@ _mfa() {
 
     chmod 600 ~/.aws/credentials
 
-    # if [ "${_REGION}" == "" ]; then
-    #     _REGION=$(aws configure get default.region)
-    # fi
+    # aws sts get-caller-identity | jq .
+}
 
-    # _result "${ACCESS_KEY}"
-    # _result "**********${SECRET_KEY:30}"
-    # _result "${_REGION}"
+_assume() {
+    _role_dir
+
+    _NAME=${PARAM1}
+    _ROLE=${PARAM2}
+
+    # role
+    if [ -z ${_NAME} ]; then
+        ls ${ROLE_DIR} > ${LIST}
+
+        _select_one
+
+        if [ -z ${SELECTED} ] || [ ! -f ${PEM_DIR}/${SELECTED} ]; then
+            _error
+        fi
+
+        _NAME="${SELECTED}"
+    fi
+    if [ -z ${_NAME} ]; then
+        _error
+    fi
+    if [ ! -f "${ROLE_DIR}/${_NAME}" ]; then
+        _error
+    fi
+
+    if [ -z ${_ROLE} ]; then
+        _ROLE="$(sed -n 1p ${ROLE_DIR}/${_NAME})"
+    fi
+    if [ -z ${_ROLE} ]; then
+        _error
+    fi
+
+    TMP=/tmp/sts-result
+
+    aws sts assume-role \
+        --role-arn ${_ROLE} \
+        --role-session-name ${_NAME} > ${TMP}
+
+    ACCESS_KEY=$(cat ${TMP} | grep AccessKeyId | cut -d'"' -f4)
+    SECRET_KEY=$(cat ${TMP} | grep SecretAccessKey | cut -d'"' -f4)
+
+    if [ "${ACCESS_KEY}" == "" ] || [ "${SECRET_KEY}" == "" ]; then
+        _error "Cannot call GetSessionToken."
+    fi
+
+    SESSION_TOKEN=$(cat ${TMP} | grep SessionToken | cut -d'"' -f4)
+
+    echo "[default]" > ~/.aws/credentials
+    echo "aws_access_key_id=${ACCESS_KEY}" >> ~/.aws/credentials
+    echo "aws_secret_access_key=${SECRET_KEY}" >> ~/.aws/credentials
+
+    if [ "${SESSION_TOKEN}" != "" ]; then
+        echo "aws_session_token=${SESSION_TOKEN}" >> ~/.aws/credentials
+    fi
+
+    chmod 600 ~/.aws/credentials
+
+    aws sts get-caller-identity | jq .
 }
 
 _mtu() {
@@ -1131,8 +1202,8 @@ _toast() {
         s|ssh)
             _ssh
             ;;
-        a|mfa)
-            _mfa
+        q|assume)
+            _assume
             ;;
         v|vsc)
             _vsc
