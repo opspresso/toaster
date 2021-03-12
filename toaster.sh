@@ -639,7 +639,7 @@ _assume() {
 
         _select_one
 
-        if [ -z ${SELECTED} ] || [ ! -f ${PEM_DIR}/${SELECTED} ]; then
+        if [ -z ${SELECTED} ] || [ ! -f ${ROLE_DIR}/${SELECTED} ]; then
             _error
         fi
 
