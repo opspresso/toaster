@@ -107,7 +107,7 @@ _build() {
         _result "VERSION=${VERSION}"
 
         # new version
-        if [ "${BRANCH}" == "master" ]; then
+        if [ "${BRANCH}" == "main" ] || [ "${BRANCH}" == "master" ]; then
             VERSION=$(echo ${VERSION} | awk -F. '{$NF = $NF + 1;} 1' | sed 's/ /./g')
         else
             if [ "${CIRCLE_PULL_REQUEST}" != "" ]; then
@@ -131,7 +131,7 @@ _build() {
 }
 
 _publish() {
-    if [ "${BRANCH}" != "master" ]; then
+    if [ "${BRANCH}" != "main" ] && [ "${BRANCH}" != "master" ]; then
         return
     fi
     if [ ! -f ${RUN_PATH}/target/VERSION ]; then
