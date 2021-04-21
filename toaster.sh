@@ -349,6 +349,8 @@ _env() {
     aws configure set default.region ${_REGION}
     aws configure set default.output ${_OUTPUT}
 
+    export AWS_REGION="${_REGION}"
+
     echo "[default]" > ~/.aws/credentials
     echo "aws_access_key_id=${ACCESS_KEY}" >> ~/.aws/credentials
     echo "aws_secret_access_key=${SECRET_KEY}" >> ~/.aws/credentials
@@ -366,6 +368,8 @@ _env() {
     if [ "${ACCOUNT_ID}" == "" ] || [ "${USERNAME}" == "" ]; then
         _error
     fi
+
+    export AWS_ACCOUNT_ID="${ACCOUNT_ID}"
 
     if [ "${_MFA}" == "mfa" ]; then
         _mfa
@@ -400,6 +404,8 @@ _region() {
     fi
 
     aws configure set default.region ${_REGION}
+
+    export AWS_REGION="${_REGION}"
 
     _result "${_REGION}"
 }
