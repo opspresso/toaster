@@ -489,6 +489,25 @@ _ctx() {
     chmod 600 ~/.kube/config
 }
 
+_ctx_ns() {
+    _NAME=${PARAM1}
+
+    if [ -z "${_NAME}" ]; then
+        kubectl get ns | grep Active | cut -d' ' -f1 > ${LIST}
+
+        _select_one
+
+        _NAME="${SELECTED}"
+    fi
+
+    if [ -z "${_NAME}" ]; then
+        _error
+    fi
+
+    _command "kubectl config set-context --current --namespace=${_NAME}"
+    kubectl config set-context --current --namespace=${_NAME}
+}
+
 _ssh() {
     _pem_dir
 
@@ -1214,11 +1233,17 @@ _toast() {
         e|env)
             _env
             ;;
+        q|assume)
+            _assume
+            ;;
         r|region)
             _region
             ;;
         x|ctx)
             _ctx
+            ;;
+        z|ns)
+            _ctx_ns
             ;;
         g|git)
             _git
@@ -1228,9 +1253,6 @@ _toast() {
             ;;
         s|ssh)
             _ssh
-            ;;
-        q|assume)
-            _assume
             ;;
         v|vsc)
             _vsc

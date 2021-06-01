@@ -22,6 +22,7 @@ alias r='toaster region'
 alias s='toaster ssh'
 alias v='toaster vsc'
 alias x='toaster ctx'
+alias z='toaster ns'
 
 alias a='aws'
 alias k='kubectl'
