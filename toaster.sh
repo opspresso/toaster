@@ -382,6 +382,127 @@ _env() {
     aws sts get-caller-identity | jq .
 }
 
+_mfa() {
+    _read "TOKEN_CODE : "
+    TOKEN_CODE=${ANSWER}
+
+    TMP=/tmp/sts-result
+
+    if [ "${TOKEN_CODE}" == "" ]; then
+        aws sts get-session-token > ${TMP}
+    else
+        aws sts get-session-token \
+            --serial-number arn:aws:iam::${ACCOUNT_ID}:mfa/${USERNAME} \
+            --token-code ${TOKEN_CODE} > ${TMP}
+    fi
+
+    ACCESS_KEY=$(cat ${TMP} | grep AccessKeyId | cut -d'"' -f4)
+    SECRET_KEY=$(cat ${TMP} | grep SecretAccessKey | cut -d'"' -f4)
+
+    if [ "${ACCESS_KEY}" == "" ] || [ "${SECRET_KEY}" == "" ]; then
+        _error "Cannot call GetSessionToken."
+    fi
+
+    SESSION_TOKEN=$(cat ${TMP} | grep SessionToken | cut -d'"' -f4)
+
+    echo "[default]" > ~/.aws/credentials
+    echo "aws_access_key_id=${ACCESS_KEY}" >> ~/.aws/credentials
+    echo "aws_secret_access_key=${SECRET_KEY}" >> ~/.aws/credentials
+
+    if [ "${SESSION_TOKEN}" != "" ]; then
+        echo "aws_session_token=${SESSION_TOKEN}" >> ~/.aws/credentials
+    fi
+
+    export AWS_ACCESS_KEY_ID=${ACCESS_KEY}
+    export AWS_SECRET_ACCESS_KEY=${SECRET_KEY}
+    export AWS_SESSION_TOKEN=${SESSION_TOKEN}
+
+    chmod 600 ~/.aws/credentials
+
+    # aws sts get-caller-identity | jq .
+}
+
+_assume() {
+    _role_dir
+
+    _NAME=${PARAM1}
+    _ROLE=${PARAM2}
+
+    # role
+    if [ -z ${_NAME} ]; then
+        ls ${ROLE_DIR} > ${LIST}
+
+        if [ -f ~/.aws/credentials.backup ]; then
+            echo "[Restore...]" >> ${LIST}
+        fi
+
+        _select_one
+
+        if [ -z ${SELECTED} ]; then
+            _error
+        fi
+
+        _NAME="${SELECTED}"
+    fi
+    if [ -z ${_NAME} ]; then
+        _error
+    fi
+
+    if [ "${_NAME}" == "[Restore...]" ]; then
+        mv ~/.aws/credentials.backup ~/.aws/credentials
+
+        aws sts get-caller-identity | jq .
+
+        _success
+    fi
+
+    if [ ! -f "${ROLE_DIR}/${_NAME}" ]; then
+        _error
+    fi
+
+    if [ -z ${_ROLE} ]; then
+        _ROLE="$(sed -n 1p ${ROLE_DIR}/${_NAME})"
+    fi
+    if [ -z ${_ROLE} ]; then
+        _error
+    fi
+
+    TMP=/tmp/sts-result
+
+    aws sts assume-role \
+        --role-arn ${_ROLE} \
+        --role-session-name ${_NAME} > ${TMP}
+
+    ACCESS_KEY=$(cat ${TMP} | grep AccessKeyId | cut -d'"' -f4)
+    SECRET_KEY=$(cat ${TMP} | grep SecretAccessKey | cut -d'"' -f4)
+
+    if [ "${ACCESS_KEY}" == "" ] || [ "${SECRET_KEY}" == "" ]; then
+        _error "Cannot call GetSessionToken."
+    fi
+
+    SESSION_TOKEN=$(cat ${TMP} | grep SessionToken | cut -d'"' -f4)
+
+    if [ -f ~/.aws/credentials ]; then
+        cp ~/.aws/credentials ~/.aws/credentials.backup
+    fi
+
+    echo "[default]" > ~/.aws/credentials
+    echo "aws_access_key_id=${ACCESS_KEY}" >> ~/.aws/credentials
+    echo "aws_secret_access_key=${SECRET_KEY}" >> ~/.aws/credentials
+
+    if [ "${SESSION_TOKEN}" != "" ]; then
+        echo "aws_session_token=${SESSION_TOKEN}" >> ~/.aws/credentials
+    fi
+
+    export AWS_ACCESS_KEY_ID=${ACCESS_KEY}
+    export AWS_SECRET_ACCESS_KEY=${SECRET_KEY}
+    export AWS_SESSION_TOKEN=${SESSION_TOKEN}
+
+    chmod 600 ~/.aws/credentials
+
+    aws sts get-caller-identity | jq .
+}
+
 _region() {
     command -v aws > /dev/null || AWSCLI=false
 
@@ -618,119 +739,6 @@ EOF
 
     _command "ssh -i ${PEM_DIR}/${_PEMS} ${_USER}@${_HOST}"
     ssh -i ${PEM_DIR}/${_PEMS} ${_USER}@${_HOST}
-}
-
-_mfa() {
-    _read "TOKEN_CODE : "
-    TOKEN_CODE=${ANSWER}
-
-    TMP=/tmp/sts-result
-
-    if [ "${TOKEN_CODE}" == "" ]; then
-        aws sts get-session-token > ${TMP}
-    else
-        aws sts get-session-token \
-            --serial-number arn:aws:iam::${ACCOUNT_ID}:mfa/${USERNAME} \
-            --token-code ${TOKEN_CODE} > ${TMP}
-    fi
-
-    ACCESS_KEY=$(cat ${TMP} | grep AccessKeyId | cut -d'"' -f4)
-    SECRET_KEY=$(cat ${TMP} | grep SecretAccessKey | cut -d'"' -f4)
-
-    if [ "${ACCESS_KEY}" == "" ] || [ "${SECRET_KEY}" == "" ]; then
-        _error "Cannot call GetSessionToken."
-    fi
-
-    SESSION_TOKEN=$(cat ${TMP} | grep SessionToken | cut -d'"' -f4)
-
-    echo "[default]" > ~/.aws/credentials
-    echo "aws_access_key_id=${ACCESS_KEY}" >> ~/.aws/credentials
-    echo "aws_secret_access_key=${SECRET_KEY}" >> ~/.aws/credentials
-
-    if [ "${SESSION_TOKEN}" != "" ]; then
-        echo "aws_session_token=${SESSION_TOKEN}" >> ~/.aws/credentials
-    fi
-
-    chmod 600 ~/.aws/credentials
-
-    # aws sts get-caller-identity | jq .
-}
-
-_assume() {
-    _role_dir
-
-    _NAME=${PARAM1}
-    _ROLE=${PARAM2}
-
-    # role
-    if [ -z ${_NAME} ]; then
-        ls ${ROLE_DIR} > ${LIST}
-
-        if [ -f ~/.aws/credentials.backup ]; then
-            echo "[Restore...]" >> ${LIST}
-        fi
-
-        _select_one
-
-        if [ -z ${SELECTED} ]; then
-            _error
-        fi
-
-        _NAME="${SELECTED}"
-    fi
-    if [ -z ${_NAME} ]; then
-        _error
-    fi
-
-    if [ "${_NAME}" == "[Restore...]" ]; then
-        mv ~/.aws/credentials.backup ~/.aws/credentials
-
-        aws sts get-caller-identity | jq .
-
-        _success
-    fi
-
-    if [ ! -f "${ROLE_DIR}/${_NAME}" ]; then
-        _error
-    fi
-
-    if [ -z ${_ROLE} ]; then
-        _ROLE="$(sed -n 1p ${ROLE_DIR}/${_NAME})"
-    fi
-    if [ -z ${_ROLE} ]; then
-        _error
-    fi
-
-    TMP=/tmp/sts-result
-
-    aws sts assume-role \
-        --role-arn ${_ROLE} \
-        --role-session-name ${_NAME} > ${TMP}
-
-    ACCESS_KEY=$(cat ${TMP} | grep AccessKeyId | cut -d'"' -f4)
-    SECRET_KEY=$(cat ${TMP} | grep SecretAccessKey | cut -d'"' -f4)
-
-    if [ "${ACCESS_KEY}" == "" ] || [ "${SECRET_KEY}" == "" ]; then
-        _error "Cannot call GetSessionToken."
-    fi
-
-    SESSION_TOKEN=$(cat ${TMP} | grep SessionToken | cut -d'"' -f4)
-
-    if [ -f ~/.aws/credentials ]; then
-        cp ~/.aws/credentials ~/.aws/credentials.backup
-    fi
-
-    echo "[default]" > ~/.aws/credentials
-    echo "aws_access_key_id=${ACCESS_KEY}" >> ~/.aws/credentials
-    echo "aws_secret_access_key=${SECRET_KEY}" >> ~/.aws/credentials
-
-    if [ "${SESSION_TOKEN}" != "" ]; then
-        echo "aws_session_token=${SESSION_TOKEN}" >> ~/.aws/credentials
-    fi
-
-    chmod 600 ~/.aws/credentials
-
-    aws sts get-caller-identity | jq .
 }
 
 _mtu() {
