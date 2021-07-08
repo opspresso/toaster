@@ -355,6 +355,10 @@ _env() {
     echo "aws_access_key_id=${ACCESS_KEY}" >> ~/.aws/credentials
     echo "aws_secret_access_key=${SECRET_KEY}" >> ~/.aws/credentials
 
+    export AWS_ACCESS_KEY_ID=${ACCESS_KEY}
+    export AWS_SECRET_ACCESS_KEY=${SECRET_KEY}
+    export AWS_SESSION_TOKEN=
+
     chmod 600 ~/.aws/credentials
 
     rm -rf ~/.aws/credentials.backup
