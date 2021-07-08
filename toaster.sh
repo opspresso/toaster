@@ -355,10 +355,6 @@ _env() {
     echo "aws_access_key_id=${ACCESS_KEY}" >> ~/.aws/credentials
     echo "aws_secret_access_key=${SECRET_KEY}" >> ~/.aws/credentials
 
-    export AWS_ACCESS_KEY_ID=${ACCESS_KEY}
-    export AWS_SECRET_ACCESS_KEY=${SECRET_KEY}
-    export AWS_SESSION_TOKEN=
-
     chmod 600 ~/.aws/credentials
 
     rm -rf ~/.aws/credentials.backup
@@ -416,10 +412,6 @@ _mfa() {
     if [ "${SESSION_TOKEN}" != "" ]; then
         echo "aws_session_token=${SESSION_TOKEN}" >> ~/.aws/credentials
     fi
-
-    export AWS_ACCESS_KEY_ID=${ACCESS_KEY}
-    export AWS_SECRET_ACCESS_KEY=${SECRET_KEY}
-    export AWS_SESSION_TOKEN=${SESSION_TOKEN}
 
     chmod 600 ~/.aws/credentials
 
@@ -486,23 +478,27 @@ _assume() {
 
     SESSION_TOKEN=$(cat ${TMP} | grep SessionToken | cut -d'"' -f4)
 
-    if [ -f ~/.aws/credentials ]; then
-        cp ~/.aws/credentials ~/.aws/credentials.backup
-    fi
+    # if [ -f ~/.aws/credentials ]; then
+    #     cp ~/.aws/credentials ~/.aws/credentials.backup
+    # fi
 
-    echo "[default]" > ~/.aws/credentials
-    echo "aws_access_key_id=${ACCESS_KEY}" >> ~/.aws/credentials
-    echo "aws_secret_access_key=${SECRET_KEY}" >> ~/.aws/credentials
+    # echo "[default]" > ~/.aws/credentials
+    # echo "aws_access_key_id=${ACCESS_KEY}" >> ~/.aws/credentials
+    # echo "aws_secret_access_key=${SECRET_KEY}" >> ~/.aws/credentials
 
-    if [ "${SESSION_TOKEN}" != "" ]; then
-        echo "aws_session_token=${SESSION_TOKEN}" >> ~/.aws/credentials
-    fi
+    # if [ "${SESSION_TOKEN}" != "" ]; then
+    #     echo "aws_session_token=${SESSION_TOKEN}" >> ~/.aws/credentials
+    # fi
+
+    # chmod 600 ~/.aws/credentials
+
+    echo "export AWS_ACCESS_KEY_ID=${ACCESS_KEY}"
+    echo "export AWS_SECRET_ACCESS_KEY=${SECRET_KEY}"
+    echo "export AWS_SESSION_TOKEN=${SESSION_TOKEN}"
 
     export AWS_ACCESS_KEY_ID=${ACCESS_KEY}
     export AWS_SECRET_ACCESS_KEY=${SECRET_KEY}
     export AWS_SESSION_TOKEN=${SESSION_TOKEN}
-
-    chmod 600 ~/.aws/credentials
 
     aws sts get-caller-identity | jq .
 }
