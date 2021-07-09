@@ -30,11 +30,9 @@ alias h='helm'
 
 alias av='aws-vault'
 
-alias sso='aws configure sso'
-
-alias da='export AWS_PROFILE="daangn/alpha" && aws configure sso'
-alias dp='export AWS_PROFILE="daangn/prod" && aws configure sso'
-alias dn='export AWS_PROFILE="nalbam" && aws configure sso'
+alias da='export AWS_PROFILE="daangn/alpha" && aws configure sso && aws sts get-caller-identity | jq .'
+alias dp='export AWS_PROFILE="daangn/prod" && aws configure sso && aws sts get-caller-identity | jq .'
+alias dn='export AWS_PROFILE="nalbam" && aws configure sso && aws sts get-caller-identity | jq .'
 
 alias tf='terraform'
 alias tfe='tfenv'
