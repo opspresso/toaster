@@ -31,8 +31,7 @@ alias h='helm'
 alias am='aws sts get-caller-identity | jq .'
 
 alias av='aws-vault'
-alias ave='aws-vault exec'
-
+alias ave='export AWS_VAULT= && av exec'
 alias ava='export AWS_VAULT= && av exec daangn/alpha --'
 alias avp='export AWS_VAULT= && av exec daangn/prod --'
 alias avb='export AWS_VAULT= && av exec daangn/bruce --'
