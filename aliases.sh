@@ -35,15 +35,14 @@ alias dp='export AWS_PROFILE="daangn/prod" && aws configure sso && aws sts get-c
 alias dn='export AWS_PROFILE="nalbam" && aws configure sso && aws sts get-caller-identity | jq .'
 
 alias tf='terraform'
-alias tfe='tfenv'
 alias tfc='rm -rf .terraform && rm -rf .terraform.*'
 alias tfi='tf init'
-alias tfp='tfi && tf plan'
-alias tfa='tfi && tf apply'
-alias tfd='tfi && tf destroy'
-alias tff='tfi && tf fmt'
-alias tfg='tfi && tf graph'
-alias tfo='tfi && tf output'
+alias tfp='tf init && tf plan'
+alias tfa='tf init && tf apply'
+alias tfd='tf init && tf destroy'
+alias tff='tf init && tf fmt'
+alias tfg='tf init && tf graph'
+alias tfo='tf init && tf output'
 
 alias tfdoc="terraform-docs markdown"
 
