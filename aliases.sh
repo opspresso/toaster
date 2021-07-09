@@ -29,11 +29,12 @@ alias k='kubectl'
 alias h='helm'
 
 alias av='aws-vault'
-alias da='aws-vault exec daangn/alpha -- '
-alias dp='aws-vault exec daangn/prod -- '
-alias dn='aws-vault exec nalbam -- '
 
 alias sso='aws configure sso'
+
+alias da='export AWS_PROFILE="daangn/alpha" && aws configure sso'
+alias dp='export AWS_PROFILE="daangn/prod" && aws configure sso'
+alias dn='export AWS_PROFILE="nalbam" && aws configure sso'
 
 alias tf='terraform'
 alias tfe='tfenv'
