@@ -31,12 +31,15 @@ alias h='helm'
 alias am='aws sts get-caller-identity | jq .'
 
 alias av='aws-vault'
+alias ave='aws-vault exec'
 
-alias da='export AWS_VAULT= && av exec daangn/alpha'
-alias dp='export AWS_VAULT= && av exec daangn/prod'
+alias ava='export AWS_VAULT= && av exec daangn/alpha --'
+alias avp='export AWS_VAULT= && av exec daangn/prod --'
+alias avb='export AWS_VAULT= && av exec daangn/bruce --'
 
-# alias da='export AWS_PROFILE="daangn/alpha" && aws configure sso && aws sts get-caller-identity | jq .'
-# alias dp='export AWS_PROFILE="daangn/prod" && aws configure sso && aws sts get-caller-identity | jq .'
+alias ssoa='export AWS_PROFILE="daangn/alpha" && aws configure sso && aws sts get-caller-identity | jq .'
+alias ssop='export AWS_PROFILE="daangn/prod" && aws configure sso && aws sts get-caller-identity | jq .'
+alias ssob='export AWS_PROFILE="daangn/bruce" && aws configure sso && aws sts get-caller-identity | jq .'
 
 alias tf='terraform'
 alias tfc='rm -rf .terraform && rm -rf .terraform.*'
