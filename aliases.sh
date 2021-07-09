@@ -28,11 +28,15 @@ alias a='aws'
 alias k='kubectl'
 alias h='helm'
 
+alias iam='aws sts get-caller-identity | jq .'
+
 alias av='aws-vault'
 
-alias da='export AWS_PROFILE="daangn/alpha" && aws configure sso && aws sts get-caller-identity | jq .'
-alias dp='export AWS_PROFILE="daangn/prod" && aws configure sso && aws sts get-caller-identity | jq .'
-alias dn='export AWS_PROFILE="nalbam" && aws configure sso && aws sts get-caller-identity | jq .'
+alias da='export AWS_VAULT= && av exec daangn/alpha'
+alias dp='export AWS_VAULT= && av exec daangn/prod'
+
+# alias da='export AWS_PROFILE="daangn/alpha" && aws configure sso && aws sts get-caller-identity | jq .'
+# alias dp='export AWS_PROFILE="daangn/prod" && aws configure sso && aws sts get-caller-identity | jq .'
 
 alias tf='terraform'
 alias tfc='rm -rf .terraform && rm -rf .terraform.*'
