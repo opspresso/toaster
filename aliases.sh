@@ -39,7 +39,7 @@ alias avn='export AWS_VAULT= && av exec nalbam --'
 
 alias ssoa='export AWS_PROFILE="daangn/alpha" && aws configure sso && aws sts get-caller-identity | jq .'
 alias ssop='export AWS_PROFILE="daangn/prod" && aws configure sso && aws sts get-caller-identity | jq .'
-# alias ssob='export AWS_PROFILE="daangn/bruce" && aws configure sso && aws sts get-caller-identity | jq .'
+alias ssob='export AWS_PROFILE="daangn/bruce" && aws configure sso && aws sts get-caller-identity | jq .'
 alias sson='export AWS_PROFILE="nalbam" && aws configure sso && aws sts get-caller-identity | jq .'
 
 alias tf='terraform'
