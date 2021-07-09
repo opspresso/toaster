@@ -29,6 +29,9 @@ alias k='kubectl'
 alias h='helm'
 
 alias av='aws-vault'
+alias da='aws-vault exec daangn/alpha -- '
+alias dp='aws-vault exec daangn/prod -- '
+alias dn='aws-vault exec nalbam -- '
 
 alias tf='terraform'
 alias tfe='tfenv'
