@@ -33,6 +33,8 @@ alias da='aws-vault exec daangn/alpha -- '
 alias dp='aws-vault exec daangn/prod -- '
 alias dn='aws-vault exec nalbam -- '
 
+alias sso='aws configure sso'
+
 alias tf='terraform'
 alias tfe='tfenv'
 alias tfc='rm -rf .terraform && rm -rf .terraform.*'
