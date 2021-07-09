@@ -28,7 +28,7 @@ alias a='aws'
 alias k='kubectl'
 alias h='helm'
 
-alias iam='aws sts get-caller-identity | jq .'
+alias am='aws sts get-caller-identity | jq .'
 
 alias av='aws-vault'
 
