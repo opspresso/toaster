@@ -43,7 +43,7 @@ alias ssob='export AWS_PROFILE="daangn/bruce" && aws configure sso && aws sts ge
 alias sson='export AWS_PROFILE="nalbam" && aws configure sso && aws sts get-caller-identity | jq .'
 
 alias tf='terraform'
-alias tfc='rm -rf .terraform && rm -rf .terraform.*'
+alias tfc='rm -rf .terraform && rm -rf .terraform.lock.hcl'
 alias tfi='tf init'
 alias tfp='tf init && tf plan'
 alias tfa='tf init && tf apply'
