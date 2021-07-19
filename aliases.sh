@@ -53,6 +53,10 @@ alias tff='tf init && tf fmt'
 alias tfg='tf init && tf graph'
 alias tfo='tf init && tf output'
 
+alias tfsl='tf state list'
+alias tfss='tf state show'
+alias tfsr='tf state rm'
+
 alias tfdoc="terraform-docs markdown"
 
 alias py='python'
