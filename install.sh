@@ -113,6 +113,12 @@ _aliases() {
     fi
 }
 
+_vimrc() {
+    VIMRC="${HOME}/.vimrc"
+
+    curl -sL -o ${VIMRC} https://github.com/${USERNAME}/${REPONAME}/releases/download/${VERSION}/vimrc
+}
+
 ################################################################################
 
 _prepare
@@ -121,3 +127,5 @@ _install
 
 _aliases ".bashrc"
 _aliases ".zshrc"
+
+_vimrc

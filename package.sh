@@ -94,6 +94,7 @@ _package() {
     # release
     cp -rf ${RUN_PATH}/aliases.sh ${RUN_PATH}/target/release/aliases
     cp -rf ${RUN_PATH}/toaster.sh ${RUN_PATH}/target/release/toaster
+    cp -rf ${RUN_PATH}/vimrc.sh ${RUN_PATH}/target/release/vimrc
 
     # replace
     _replace "s/THIS_VERSION=.*/THIS_VERSION=${VERSION}/g" ${RUN_PATH}/target/release/toaster
@@ -103,6 +104,7 @@ _package() {
     pushd ${RUN_PATH}/target/release
     tar cvzpf aliases-${VERSION}.tar.gz ./aliases
     tar cvzpf toaster-${VERSION}.tar.gz ./toaster
+    tar cvzpf vimrc-${VERSION}.tar.gz ./vimrc
     popd
 
     ls -al ${RUN_PATH}/target/publish
