@@ -100,12 +100,12 @@ _package() {
     _replace "s/THIS_VERSION=.*/THIS_VERSION=${VERSION}/g" ${RUN_PATH}/target/release/toaster
     _replace "s/THIS_VERSION=.*/THIS_VERSION=${VERSION}/g" ${RUN_PATH}/target/publish/toaster
 
-    # tar toaster
-    pushd ${RUN_PATH}/target/release
-    tar cvzpf aliases-${VERSION}.tar.gz ./aliases
-    tar cvzpf toaster-${VERSION}.tar.gz ./toaster
-    tar cvzpf vimrc-${VERSION}.tar.gz ./vimrc
-    popd
+    # # tar toaster
+    # pushd ${RUN_PATH}/target/release
+    # tar cvzpf aliases-${VERSION}.tar.gz ./aliases
+    # tar cvzpf toaster-${VERSION}.tar.gz ./toaster
+    # tar cvzpf vimrc-${VERSION}.tar.gz ./vimrc
+    # popd
 
     ls -al ${RUN_PATH}/target/publish
     ls -al ${RUN_PATH}/target/release
