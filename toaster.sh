@@ -261,38 +261,6 @@ _cdw() {
     _command "cd ${_DIR}"
 }
 
-_vsc() {
-    _src_dir
-
-    _DIR=${PARAM1}
-
-    if [ -z ${_DIR} ]; then
-        find ${SRC_DIR} -maxdepth 2 -type d -exec ls -d "{}" \; | sort > ${LIST}
-
-        _select_one
-
-        _DIR=${SELECTED}
-    fi
-
-    if [ -z ${_DIR} ] || [ ! -d ${_DIR} ]; then
-        _error
-    fi
-
-    printf "${_DIR}" > ${TEMP}
-
-    _result "${_DIR}"
-
-    if [ "${OS_NAME}" == "linux" ]; then
-        /usr/bin/code ${_DIR}
-    elif [ "${OS_NAME}" == "darwin" ]; then
-        /Applications/Visual\ Studio\ Code.app/Contents/Resources/app/bin/code ${_DIR}
-    elif [ "${OS_NAME}" == "mingw64_nt-10.0" ]; then
-        /c/Users/${USER:-$(whoami)}/AppData/Local/Programs/Microsoft\ VS\ Code/Code.exe ${_DIR}
-    else
-        _error
-    fi
-}
-
 _env() {
     _env_dir
 
@@ -845,6 +813,11 @@ _stress() {
     ab -n ${_REQ} -c ${_CON} ${_URL}
 }
 
+_version() {
+    _echo "# version: ${THIS_VERSION}" 3
+    exit 0
+}
+
 _update() {
     _echo "# version: ${THIS_VERSION}" 3
     curl -sL toast.sh/install | bash -s ${PARAM1}
@@ -1262,9 +1235,6 @@ _toast() {
         s|ssh)
             _ssh
             ;;
-        v|vsc)
-            _vsc
-            ;;
         m|mtu)
             _mtu
             ;;
@@ -1276,6 +1246,9 @@ _toast() {
             ;;
         t|tools)
             _tools
+            ;;
+        v|version)
+            _version
             ;;
         # r|reset)
         #     _reset
