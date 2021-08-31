@@ -250,8 +250,8 @@ _buildx() {
     _command "docker login -u $DOCKER_USER"
     docker login -u $DOCKER_USER -p $DOCKER_PASS
 
-    _command "docker buildx build --push -t ${USERNAME}/${REPONAME}:${VERSION} ."
-    docker buildx build -f ${PARAM:-Dockerfile} \
+    _command "docker buildx build -t ${USERNAME}/${REPONAME}:${VERSION} ."
+    docker buildx build --push -f ${PARAM:-Dockerfile} \
       --platform linux/arm/v7,linux/arm64/v8,linux/amd64 \
       -t ${USERNAME}/${REPONAME}:${VERSION} .
 
