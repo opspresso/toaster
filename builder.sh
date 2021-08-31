@@ -231,6 +231,45 @@ _docker() {
     docker logout
 }
 
+_buildx() {
+    if [ ! -f ${RUN_PATH}/target/VERSION ]; then
+        _result "not found target/VERSION"
+        return
+    fi
+    if [ -z ${DOCKER_PASS} ]; then
+        _result "not found DOCKER_USER"
+        return
+    fi
+
+    VERSION=$(cat ${RUN_PATH}/target/VERSION | xargs)
+    _result "VERSION=${VERSION}"
+
+    _command "docker buildx version"
+    docker buildx version
+
+    _command "docker login -u $DOCKER_USER"
+    docker login -u $DOCKER_USER -p $DOCKER_PASS
+
+    _command "docker buildx build -t ${USERNAME}/${REPONAME}:${VERSION} ."
+    docker buildx build -f ${PARAM:-Dockerfile} \
+      --platform linux/arm/v7,linux/arm64/v8,linux/amd64 \
+      -t ${USERNAME}/${REPONAME}:${VERSION} .
+
+    _command "docker push ${USERNAME}/${REPONAME}:${VERSION}"
+    docker push ${USERNAME}/${REPONAME}:${VERSION}
+
+    if [ "${PARAM}" == "latest" ]; then
+        _command "sudo docker tag ${USERNAME}/${REPONAME}:${VERSION} ${USERNAME}/${REPONAME}:latest"
+        sudo docker tag ${USERNAME}/${REPONAME}:${VERSION} ${USERNAME}/${REPONAME}:latest
+
+        _command "docker push ${USERNAME}/${REPONAME}:latest"
+        docker push ${USERNAME}/${REPONAME}:latest
+    fi
+
+    _command "docker logout"
+    docker logout
+}
+
 _trigger() {
     if [ ! -f ${RUN_PATH}/target/VERSION ]; then
         _result "not found target/VERSION"
@@ -309,6 +348,9 @@ case ${CMD} in
         ;;
     docker)
         _docker
+        ;;
+    buildx)
+        _buildx
         ;;
     trigger)
         _trigger
