@@ -241,6 +241,13 @@ _buildx() {
     VERSION=$(cat ${RUN_PATH}/target/VERSION | xargs)
     _result "VERSION=${VERSION}"
 
+    if [ ! -f ~/.docker/cli-plugins/docker-buildx ]; then
+        mkdir -p ~/.docker/cli-plugins
+        url="https://github.com/docker/buildx/releases/download/v0.5.1/buildx-v0.5.1.linux-amd64"
+        curl -sSL -o ~/.docker/cli-plugins/docker-buildx ${url}
+        chmod a+x ~/.docker/cli-plugins/docker-buildx
+    fi
+
     _command "docker buildx version"
     docker buildx version
 
