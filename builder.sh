@@ -207,6 +207,9 @@ _docker() {
     VERSION=$(cat ${RUN_PATH}/target/VERSION | xargs)
     _result "VERSION=${VERSION}"
 
+    _command "docker version"
+    docker version
+
     _command "docker login -u $DOCKER_USER"
     docker login -u $DOCKER_USER -p $DOCKER_PASS
 
