@@ -173,25 +173,28 @@ _release() {
     VERSION=$(cat ${RUN_PATH}/target/VERSION | xargs)
     _result "VERSION=${VERSION}"
 
-    printf "${VERSION}" > ${RUN_PATH}/target/release/${VERSION}
+    # printf "${VERSION}" > ${RUN_PATH}/target/release/${VERSION}
 
-    if [ -f ${RUN_PATH}/target/PR ]; then
-        GHR_PARAM="-delete -prerelease"
-    else
-        GHR_PARAM="-delete"
-    fi
+    # if [ -f ${RUN_PATH}/target/PR ]; then
+    #     GHR_PARAM="-delete -prerelease"
+    # else
+    #     GHR_PARAM="-delete"
+    # fi
 
-    _command "go get github.com/tcnksm/ghr"
-    go get github.com/tcnksm/ghr
+    # _command "go get github.com/tcnksm/ghr"
+    # go get github.com/tcnksm/ghr
 
-    # github release
-    _command "ghr ${VERSION} ${RUN_PATH}/target/release/"
-    ghr -t ${GITHUB_TOKEN:-EMPTY} \
-        -u ${USERNAME} \
-        -r ${REPONAME} \
-        -c ${CIRCLE_SHA1} \
-        ${GHR_PARAM} \
-        ${VERSION} ${RUN_PATH}/target/release/
+    # # github release
+    # _command "ghr ${VERSION} ${RUN_PATH}/target/release/"
+    # ghr -t ${GITHUB_TOKEN:-EMPTY} \
+    #     -u ${USERNAME} \
+    #     -r ${REPONAME} \
+    #     -c ${CIRCLE_SHA1} \
+    #     ${GHR_PARAM} \
+    #     ${VERSION} ${RUN_PATH}/target/release/
+
+    _command "hub release create ${VERSION}"
+    hub release create ${VERSION}
 }
 
 _docker() {
