@@ -244,6 +244,9 @@ _buildx() {
     VERSION=$(cat ${RUN_PATH}/target/VERSION | xargs)
     _result "VERSION=${VERSION}"
 
+    _command "docker version"
+    docker version
+
     _command "docker buildx version"
     docker buildx version
 
