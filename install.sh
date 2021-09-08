@@ -33,20 +33,6 @@ _error() {
 
 ################################################################################
 
-_prepare() {
-    mkdir -p ~/.aws
-    mkdir -p ~/.ssh
-
-    # ssh config
-    if [ ! -f ~/.ssh/config ]; then
-cat <<EOF > ~/.ssh/config
-Host *
-    StrictHostKeyChecking no
-EOF
-    fi
-    chmod 400 ~/.ssh/config
-}
-
 _install() {
     if [ -z ${VERSION} ]; then
         VERSION=$(curl -s https://api.github.com/repos/${USERNAME}/${REPONAME}/releases/latest | grep tag_name | cut -d'"' -f4)
@@ -88,44 +74,6 @@ _install() {
     mv -f ${DIST} ${COPY_PATH}/toaster
 }
 
-_aliases() {
-    TARGET=${HOME}/${1}
-
-    ALIASES="${HOME}/.toast_aliases"
-
-    curl -sL -o ${ALIASES} https://github.com/${USERNAME}/${REPONAME}/releases/download/${VERSION}/aliases
-
-    if [ -f "${ALIASES}" ]; then
-        touch ${TARGET}
-        HAS_ALIAS="$(cat ${TARGET} | grep toast_aliases | wc -l | xargs)"
-
-        if [ "x${HAS_ALIAS}" == "x0" ]; then
-            echo "if [ -f ~/.toast_aliases ]; then" >> ${TARGET}
-            echo "  source ~/.toast_aliases" >> ${TARGET}
-            echo "fi" >> ${TARGET}
-            echo "" >> ${TARGET}
-            echo "if [ -d /opt/homebrew/bin ]; then" >> ${TARGET}
-            echo "  export PATH=\"/opt/homebrew/bin:$PATH\"" >> ${TARGET}
-            echo "fi" >> ${TARGET}
-        fi
-
-        source ${ALIASES}
-    fi
-}
-
-_vimrc() {
-    VIMRC="${HOME}/.vimrc"
-
-    curl -sL -o ${VIMRC} https://github.com/${USERNAME}/${REPONAME}/releases/download/${VERSION}/vimrc
-}
-
 ################################################################################
 
-_prepare
-
 _install
-
-_aliases ".bashrc"
-_aliases ".zshrc"
-
-_vimrc
