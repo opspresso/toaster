@@ -487,6 +487,8 @@ _region() {
     _REGION=${PARAM1}
 
     if [ -z "${_REGION}" ]; then
+      _result "$(aws configure get default.region)"
+
       aws ec2 describe-regions --output text | cut -f4 | sort > ${LIST}
 
       _select_one
