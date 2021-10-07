@@ -317,7 +317,8 @@ _env() {
     aws configure set default.region ${_REGION}
     aws configure set default.output ${_OUTPUT}
 
-    export AWS_REGION="${_REGION}"
+    _command "export AWS_REGION=${_REGION}"
+    export AWS_REGION=${_REGION}
 
     echo "[default]" > ~/.aws/credentials
     echo "aws_access_key_id=${ACCESS_KEY}" >> ~/.aws/credentials
@@ -337,7 +338,8 @@ _env() {
         _error
     fi
 
-    export AWS_ACCOUNT_ID="${ACCOUNT_ID}"
+    _command "export AWS_ACCOUNT_ID=${ACCOUNT_ID}"
+    export AWS_ACCOUNT_ID=${ACCOUNT_ID}
 
     if [ "${_MFA}" == "mfa" ]; then
         _mfa
@@ -347,6 +349,7 @@ _env() {
     # _result "**********${SECRET_KEY:30}"
     # _result "${_REGION}"
 
+    _command "aws sts get-caller-identity"
     aws sts get-caller-identity | jq .
 }
 
@@ -383,6 +386,7 @@ _mfa() {
 
     chmod 600 ~/.aws/credentials
 
+    # _command "aws sts get-caller-identity"
     # aws sts get-caller-identity | jq .
 }
 
@@ -415,6 +419,7 @@ _assume() {
     if [ "${_NAME}" == "[Restore...]" ]; then
         mv ~/.aws/credentials.backup ~/.aws/credentials
 
+        _command "aws sts get-caller-identity"
         aws sts get-caller-identity | jq .
 
         _success
@@ -468,6 +473,7 @@ _assume() {
     # export AWS_SECRET_ACCESS_KEY=${SECRET_KEY}
     # export AWS_SESSION_TOKEN=${SESSION_TOKEN}
 
+    _command "aws sts get-caller-identity"
     aws sts get-caller-identity | jq .
 }
 
@@ -492,11 +498,13 @@ _region() {
         _error
     fi
 
+    _command "aws configure set default.region ${_REGION}"
     aws configure set default.region ${_REGION}
 
-    export AWS_REGION="${_REGION}"
+    _command "export AWS_REGION=${_REGION}"
+    export AWS_REGION=${_REGION}
 
-    _result "${_REGION}"
+    # _result "${_REGION}"
 }
 
 _ctx() {
