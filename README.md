@@ -8,7 +8,7 @@
 ## install
 
 ```bash
-curl -sL opspresso.github.io/toaster/install.sh | bash
+bash -c "$(curl -fsSL opspresso.github.io/toaster/install.sh)"
 ```
 
 ## usage
