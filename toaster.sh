@@ -1019,14 +1019,14 @@ git_config() {
 
     USERNAME=$(git config user.name)
     DEFAULT=${USERNAME:-"nalbam"}
-    _read "Please input ssh user [${DEFAULT}]: "
+    _read "Please input git user name [${DEFAULT}]: "
     USERNAME="${ANSWER:-${DEFAULT}}"
 
     git config --global user.name "${USERNAME}"
 
     USEREMAIL=$(git config user.email)
     DEFAULT=${USEREMAIL:-"me@nalbam.com"}
-    _read "Please input ssh user [${DEFAULT}]: "
+    _read "Please input git user email [${DEFAULT}]: "
     USEREMAIL="${ANSWER:-${DEFAULT}}"
 
     git config --global user.email "${USEREMAIL}"
