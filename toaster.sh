@@ -828,7 +828,8 @@ _update() {
 _tools() {
   # curl -sL opspresso.com/install | bash
   # curl -sL opspresso.github.io/tools/install.sh | bash
-  curl -sL nalbam.github.io/dotfiles/run.sh | bash
+  # curl -sL nalbam.github.io/dotfiles/run.sh | bash
+  /bin/bash -c "$(curl -fsSL nalbam.github.io/dotfiles/run.sh)"
   exit 0
 }
 
