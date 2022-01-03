@@ -28,17 +28,3 @@ Usage: toaster {cdw|env|ctx|ssh|update|tools}
 ```
 
 <!-- usage end -->
-
-## tools
-
-```bash
-curl -sL opspresso.github.io/tools/install.sh | bash
-```
-
-* git, jq, pip, telnet
-* awscli
-* terraform
-* kubectl
-* helm
-* nodejs
-* aws-iam-authenticator
