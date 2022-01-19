@@ -491,11 +491,11 @@ _region() {
     _error
   fi
 
-  _command "aws configure set default.region ${_REGION}"
-  aws configure set default.region ${_REGION}
-
   _command "export AWS_REGION=${_REGION}"
   export AWS_REGION=${_REGION}
+
+  _command "aws configure set default.region ${_REGION}"
+  aws configure set default.region ${_REGION}
 
   printf "${_REGION}" > ${TEMP}
 
