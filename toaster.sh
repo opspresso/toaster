@@ -497,6 +497,8 @@ _region() {
   _command "export AWS_REGION=${_REGION}"
   export AWS_REGION=${_REGION}
 
+  printf "${_REGION}" > ${TEMP}
+
   # _result "${_REGION}"
 }
 
@@ -573,6 +575,8 @@ _ctx() {
     return
   fi
 
+  printf "${_NAME}" > ${TEMP}
+
   _command "kubectl config use-context ${_NAME}"
   kubectl config use-context ${_NAME}
 
@@ -593,6 +597,8 @@ _ctx_ns() {
   if [ -z "${_NAME}" ]; then
     _error
   fi
+
+  printf "${_NAME}" > ${TEMP}
 
   _command "kubectl config set-context --current --namespace=${_NAME}"
   kubectl config set-context --current --namespace=${_NAME}
@@ -821,14 +827,11 @@ _version() {
 
 _update() {
   _echo "# version: ${THIS_VERSION}" 3
-  curl -sL toast.sh/install | bash -s ${PARAM1}
+  curl -fsSL toast.sh/install | bash -s ${PARAM1}
   exit 0
 }
 
 _tools() {
-  # curl -sL opspresso.com/install | bash
-  # curl -sL opspresso.github.io/tools/install.sh | bash
-  # curl -sL nalbam.github.io/dotfiles/run.sh | bash
   /bin/bash -c "$(curl -fsSL nalbam.github.io/dotfiles/run.sh)"
   exit 0
 }
