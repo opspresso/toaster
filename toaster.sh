@@ -1135,8 +1135,14 @@ git_branch() {
     git branch ${MSG} ${TAG}
   fi
 
-  _command "git checkout ${MSG}"
-  git checkout ${MSG}
+  # _command "git checkout ${MSG}"
+  # git checkout ${MSG}
+
+  _command "git switch ${MSG}"
+  git switch ${MSG}
+
+  _command "git restore"
+  git restore
 
   if [ "${HAS}" == "true" ]; then
     _command "git pull origin ${MSG}"
