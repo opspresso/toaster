@@ -47,7 +47,7 @@ _install() {
     # fi
   fi
 
-  _result "version: ${VERSION}"
+  # _result "version: ${VERSION}"
 
   if [ -z "${VERSION}" ]; then
     _error "Version not Found."
