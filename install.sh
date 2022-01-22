@@ -34,6 +34,11 @@ _error() {
 ################################################################################
 
 _install() {
+  command -v toaster > /dev/null && TOASTER=true
+  if [ "${TOASTER}" != "" ]; then
+    toaster version
+  fi
+
   if [ -z ${VERSION} ]; then
     VERSION=$(curl -s https://api.github.com/repos/${USERNAME}/${REPONAME}/releases/latest | grep tag_name | cut -d'"' -f4)
 
@@ -72,6 +77,8 @@ _install() {
 
   mkdir -p ${COPY_PATH}
   mv -f ${DIST} ${COPY_PATH}/toaster
+
+  toaster version
 }
 
 ################################################################################
