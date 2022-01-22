@@ -40,10 +40,10 @@ _install() {
   fi
 
   if [ -z ${VERSION} ]; then
-    VERSION=$(curl -s https://api.github.com/repos/${USERNAME}/${REPONAME}/releases/latest | grep tag_name | cut -d'"' -f4)
+    VERSION=$(curl -fsSL https://api.github.com/repos/${USERNAME}/${REPONAME}/releases/latest | grep tag_name | cut -d'"' -f4)
 
     # if [ -z ${VERSION} ]; then
-    #   VERSION=$(curl -sL toast.sh/VERSION | xargs)
+    #   VERSION=$(curl -fsSL toast.sh/VERSION | xargs)
     # fi
   fi
 
@@ -58,7 +58,7 @@ _install() {
   rm -rf ${DIST}
 
   # download
-  curl -sL -o ${DIST} https://github.com/${USERNAME}/${REPONAME}/releases/download/${VERSION}/toaster
+  curl -fsSL -o -o ${DIST} https://github.com/${USERNAME}/${REPONAME}/releases/download/${VERSION}/toaster
   chmod +x ${DIST}
 
   # copy
