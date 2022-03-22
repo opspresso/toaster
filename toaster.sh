@@ -1039,7 +1039,7 @@ git_dir() {
   BRANCH=$(git branch | grep \* | xargs | cut -d' ' -f2)
 
   if [ -z ${BRANCH} ]; then
-    BRANCH="master"
+    BRANCH="main"
   fi
 
   _result "${BRANCH}"
@@ -1075,7 +1075,7 @@ git_default() {
   DEFAULT=$(git branch -a | grep 'HEAD' | xargs | cut -d' ' -f3 | cut -d'/' -f2)
 
   if [ -z ${DEFAULT} ]; then
-    DEFAULT="master"
+    DEFAULT="main"
   fi
 }
 
