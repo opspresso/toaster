@@ -75,9 +75,13 @@ _install() {
     fi
   fi
 
-  mkdir -p ${COPY_PATH}
-  mv -f ${DIST} ${COPY_PATH}/toaster
-
+  if [ "${COPY_PATH}" == "/usr/local/bin" ]; then
+    sudo mv -f ${DIST} ${COPY_PATH}/toaster  
+  else
+    mkdir -p ${COPY_PATH}
+    mv -f ${DIST} ${COPY_PATH}/toaster
+  fi
+  
   toaster version
 }
 
