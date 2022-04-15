@@ -646,7 +646,7 @@ EOF
 
   # pem
   if [ -z ${_PEMS} ]; then
-    ls ${PEM_DIR} > ${LIST}
+    ls ${PEM_DIR} | grep '.pem' > ${LIST}
 
     _select_one
 
