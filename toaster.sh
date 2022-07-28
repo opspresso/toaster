@@ -158,7 +158,7 @@ _src_dir() {
   _prepare
 
   if [ -z ${SRC_DIR} ] || [ ! -d ${SRC_DIR} ]; then
-    DEFAULT="${HOME}/work/src"
+    DEFAULT="${HOME}/workspace"
 
     _read "Please input source directory [${DEFAULT}]: "
     SRC_DIR=${ANSWER:-${DEFAULT}}
@@ -943,7 +943,7 @@ git_prepare() {
       elif [ -z ${MY_ID} ]; then
         USERNAME="${V}"
       fi
-    elif [ "${V}" == "src" ]; then
+    elif [ "${V}" == "workspace" ]; then
       DETECT=true
     fi
   done
