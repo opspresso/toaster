@@ -33,7 +33,7 @@ jobs:
           AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           AWS_REGION: "ap-northeast-2"
           FROM_PATH: "./target/publish"
-          DEST_PATH: "s3://www.toast.sh"
+          DEST_PATH: "s3://www.toaster.run"
           OPTIONS: "--acl public-read"
 
       - name: Release to GitHub

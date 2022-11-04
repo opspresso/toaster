@@ -826,7 +826,7 @@ _version() {
 
 _update() {
   # _echo "# version: ${THIS_VERSION}" 3
-  curl -fsSL toast.sh/install | bash -s ${PARAM1}
+  curl -fsSL toaster.run/install | bash -s ${PARAM1}
   exit 0
 }
 

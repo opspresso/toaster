@@ -43,7 +43,7 @@ _install() {
     VERSION=$(curl -s https://api.github.com/repos/$USERNAME/$REPONAME/releases/latest | grep tag_name | cut -d'"' -f4)
 
     if [ -z ${VERSION} ]; then
-      VERSION=$(curl -fsSL toast.sh/VERSION | xargs)
+      VERSION=$(curl -fsSL toaster.run/VERSION | xargs)
     fi
   fi
 
@@ -76,12 +76,12 @@ _install() {
   fi
 
   if [ "${COPY_PATH}" == "/usr/local/bin" ]; then
-    sudo mv -f ${DIST} ${COPY_PATH}/toaster  
+    sudo mv -f ${DIST} ${COPY_PATH}/toaster
   else
     mkdir -p ${COPY_PATH}
     mv -f ${DIST} ${COPY_PATH}/toaster
   fi
-  
+
   toaster version
 }
 
