@@ -139,7 +139,16 @@ cat <<EOF
  | || (_) | (_| \__ \ ||  __/ |
   \__\___/ \__,_|___/\__\___|_|    ${THIS_VERSION}
 ================================================================================
- Usage: `basename $0` {cdw|env|ctx|ssh|update|tools}
+ Usage: `basename $0` {cdw|git|env|region|assume|ssh|ctx|ns|update|tools}
+
+ alias c='toaster cdw'
+ alias n='toaster git'
+ alias e='toaster env'
+ alias r='toaster region'
+ alias q='toaster assume'
+ alias s='toaster ssh'
+ alias x='toaster ctx'
+ alias z='toaster ns'
 ================================================================================
 EOF
 }
