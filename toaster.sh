@@ -533,7 +533,7 @@ _ctx() {
       rm -rf ${LIST} && touch ${LIST}
     else
       # kubectl config view -o json | jq '.contexts[].name' -r | sort > ${LIST}
-      kubectl config view -o json | jq '.contexts[].context.cluster' -r | tr '/' ':' | cut -d':' -f4 -f7 >${LIST}
+      kubectl config view -o json | jq '.contexts[].context.cluster' -r | tr '/' ':' | cut -d':' -f4 -f7 | sort >${LIST}
     fi
 
     echo "[New...]" >>${LIST}
