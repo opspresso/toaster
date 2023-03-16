@@ -27,8 +27,8 @@ TEMP=/tmp/toaster-temp-result
 
 ################################################################################
 
-command -v fzf > /dev/null && FZF=true
-command -v tput > /dev/null && TPUT=true
+command -v fzf >/dev/null && FZF=true
+command -v tput >/dev/null && TPUT=true
 
 _echo() {
   if [ "${TPUT}" != "" ] && [ "$2" != "" ]; then
@@ -105,9 +105,9 @@ _select_one() {
 
       IDX=0
       while read VAL; do
-        IDX=$(( ${IDX} + 1 ))
+        IDX=$((${IDX} + 1))
         printf "%3s. %s\n" "${IDX}" "${VAL}"
-      done < ${LIST}
+      done <${LIST}
 
       if [ "${CNT}" != "1" ]; then
         CNT="1-${CNT}"
@@ -131,7 +131,7 @@ _select_one() {
 
 _usage() {
   #figlet toaster
-cat <<EOF
+  cat <<EOF
 ================================================================================
   _                  _
  | |_ ___   __ _ ___| |_ ___ _ __
@@ -139,7 +139,7 @@ cat <<EOF
  | || (_) | (_| \__ \ ||  __/ |
   \__\___/ \__,_|___/\__\___|_|    ${THIS_VERSION}
 ================================================================================
- Usage: `basename $0` {cdw|git|env|region|assume|ssh|ctx|ns|update|tools}
+ Usage: $(basename $0) {cdw|git|env|region|assume|ssh|ctx|ns|update|tools}
 
  alias c='toaster cdw'
  alias n='toaster git'
@@ -226,11 +226,11 @@ _role_dir() {
 }
 
 _save() {
-  echo "# toaster" > ${CONFIG}
-  echo "ENV_DIR=${ENV_DIR}" >> ${CONFIG}
-  echo "PEM_DIR=${PEM_DIR}" >> ${CONFIG}
-  echo "ROLE_DIR=${ROLE_DIR}" >> ${CONFIG}
-  echo "SRC_DIR=${SRC_DIR}" >> ${CONFIG}
+  echo "# toaster" >${CONFIG}
+  echo "ENV_DIR=${ENV_DIR}" >>${CONFIG}
+  echo "PEM_DIR=${PEM_DIR}" >>${CONFIG}
+  echo "ROLE_DIR=${ROLE_DIR}" >>${CONFIG}
+  echo "SRC_DIR=${SRC_DIR}" >>${CONFIG}
 }
 
 _reset() {
@@ -245,7 +245,7 @@ _cdw() {
   _DIR=${PARAM1}
 
   if [ -z ${_DIR} ]; then
-    find ${SRC_DIR} -maxdepth 2 -type d -exec ls -d "{}" \; | sort > ${LIST}
+    find ${SRC_DIR} -maxdepth 2 -type d -exec ls -d "{}" \; | sort >${LIST}
 
     _select_one
 
@@ -256,7 +256,7 @@ _cdw() {
     _error
   fi
 
-  printf "${_DIR}" > ${TEMP}
+  printf "${_DIR}" >${TEMP}
 
   _command "cd ${_DIR}"
 }
@@ -264,7 +264,7 @@ _cdw() {
 _env() {
   _env_dir
 
-  command -v aws > /dev/null || AWSCLI=false
+  command -v aws >/dev/null || AWSCLI=false
 
   if [ ! -z ${AWSCLI} ]; then
     _error "Please install awscli."
@@ -273,7 +273,7 @@ _env() {
   _NAME=${PARAM1}
 
   if [ -z ${_NAME} ]; then
-    ls ${ENV_DIR} > ${LIST}
+    ls ${ENV_DIR} >${LIST}
 
     _select_one
 
@@ -303,7 +303,7 @@ _env() {
     LIST=/tmp/regions && rm -rf ${LIST}
 
     for V in ${ARR[@]}; do
-      echo ${V} >> ${LIST}
+      echo ${V} >>${LIST}
     done
 
     _select_one
@@ -320,9 +320,9 @@ _env() {
   _command "export AWS_REGION=${_REGION}"
   export AWS_REGION=${_REGION}
 
-  echo "[default]" > ~/.aws/credentials
-  echo "aws_access_key_id=${ACCESS_KEY}" >> ~/.aws/credentials
-  echo "aws_secret_access_key=${SECRET_KEY}" >> ~/.aws/credentials
+  echo "[default]" >~/.aws/credentials
+  echo "aws_access_key_id=${ACCESS_KEY}" >>~/.aws/credentials
+  echo "aws_secret_access_key=${SECRET_KEY}" >>~/.aws/credentials
 
   chmod 600 ~/.aws/credentials
 
@@ -331,7 +331,7 @@ _env() {
   ACCOUNT_ID=$(aws sts get-caller-identity | grep "Account" | cut -d'"' -f4)
   _result "${ACCOUNT_ID}"
 
-  USERNAME=$(aws sts get-caller-identity | grep "Arn" | cut -d'"' -f 4 | cut -d'/' -f2)
+  USERNAME=$(aws sts get-caller-identity | grep "Arn" | cut -d'"' -f4 | cut -d'/' -f2)
   _result "user/${USERNAME}"
 
   if [ "${ACCOUNT_ID}" == "" ] || [ "${USERNAME}" == "" ]; then
@@ -360,11 +360,11 @@ _mfa() {
   TMP=/tmp/sts-result
 
   if [ "${TOKEN_CODE}" == "" ]; then
-    aws sts get-session-token > ${TMP}
+    aws sts get-session-token >${TMP}
   else
     aws sts get-session-token \
       --serial-number arn:aws:iam::${ACCOUNT_ID}:mfa/${USERNAME} \
-      --token-code ${TOKEN_CODE} > ${TMP}
+      --token-code ${TOKEN_CODE} >${TMP}
   fi
 
   ACCESS_KEY=$(cat ${TMP} | grep AccessKeyId | cut -d'"' -f4)
@@ -376,12 +376,12 @@ _mfa() {
 
   SESSION_TOKEN=$(cat ${TMP} | grep SessionToken | cut -d'"' -f4)
 
-  echo "[default]" > ~/.aws/credentials
-  echo "aws_access_key_id=${ACCESS_KEY}" >> ~/.aws/credentials
-  echo "aws_secret_access_key=${SECRET_KEY}" >> ~/.aws/credentials
+  echo "[default]" >~/.aws/credentials
+  echo "aws_access_key_id=${ACCESS_KEY}" >>~/.aws/credentials
+  echo "aws_secret_access_key=${SECRET_KEY}" >>~/.aws/credentials
 
   if [ "${SESSION_TOKEN}" != "" ]; then
-    echo "aws_session_token=${SESSION_TOKEN}" >> ~/.aws/credentials
+    echo "aws_session_token=${SESSION_TOKEN}" >>~/.aws/credentials
   fi
 
   chmod 600 ~/.aws/credentials
@@ -398,10 +398,10 @@ _assume() {
 
   # role
   if [ -z ${_NAME} ]; then
-    ls ${ROLE_DIR} > ${LIST}
+    ls ${ROLE_DIR} >${LIST}
 
     if [ -f ~/.aws/credentials.backup ]; then
-      echo "[Restore...]" >> ${LIST}
+      echo "[Restore...]" >>${LIST}
     fi
 
     _select_one
@@ -440,7 +440,7 @@ _assume() {
 
   aws sts assume-role \
     --role-arn ${_ROLE} \
-    --role-session-name ${_NAME} > ${TMP}
+    --role-session-name ${_NAME} >${TMP}
 
   ACCESS_KEY=$(cat ${TMP} | grep AccessKeyId | cut -d'"' -f4)
   SECRET_KEY=$(cat ${TMP} | grep SecretAccessKey | cut -d'"' -f4)
@@ -455,12 +455,12 @@ _assume() {
     cp ~/.aws/credentials ~/.aws/credentials.backup
   fi
 
-  echo "[default]" > ~/.aws/credentials
-  echo "aws_access_key_id=${ACCESS_KEY}" >> ~/.aws/credentials
-  echo "aws_secret_access_key=${SECRET_KEY}" >> ~/.aws/credentials
+  echo "[default]" >~/.aws/credentials
+  echo "aws_access_key_id=${ACCESS_KEY}" >>~/.aws/credentials
+  echo "aws_secret_access_key=${SECRET_KEY}" >>~/.aws/credentials
 
   if [ "${SESSION_TOKEN}" != "" ]; then
-    echo "aws_session_token=${SESSION_TOKEN}" >> ~/.aws/credentials
+    echo "aws_session_token=${SESSION_TOKEN}" >>~/.aws/credentials
   fi
 
   chmod 600 ~/.aws/credentials
@@ -478,7 +478,7 @@ _assume() {
 }
 
 _region() {
-  command -v aws > /dev/null || AWSCLI=false
+  command -v aws >/dev/null || AWSCLI=false
 
   if [ ! -z ${AWSCLI} ]; then
     _error "Please install awscli."
@@ -489,7 +489,7 @@ _region() {
   if [ -z "${_REGION}" ]; then
     _result "$(aws configure get default.region)"
 
-    aws ec2 describe-regions --output text | cut -f4 | sort > ${LIST}
+    aws ec2 describe-regions --output text | cut -f4 | sort >${LIST}
 
     _select_one
 
@@ -500,15 +500,27 @@ _region() {
     _error
   fi
 
+  # _command "export AWS_REGION=${_REGION}"
+  # export AWS_REGION=${_REGION}
+
+  # _command "aws configure set default.region ${_REGION}"
+  # aws configure set default.region ${_REGION}
+
+  _set_region ${_REGION}
+
+  printf "${_REGION}" >${TEMP}
+
+  # _result "${_REGION}"
+}
+
+_set_region() {
+  _REGION=$1
+
   _command "export AWS_REGION=${_REGION}"
   export AWS_REGION=${_REGION}
 
   _command "aws configure set default.region ${_REGION}"
   aws configure set default.region ${_REGION}
-
-  printf "${_REGION}" > ${TEMP}
-
-  # _result "${_REGION}"
 }
 
 _ctx() {
@@ -520,15 +532,25 @@ _ctx() {
     if [ "${CONTEXT}" == "null" ]; then
       rm -rf ${LIST} && touch ${LIST}
     else
-      kubectl config view -o json | jq '.contexts[].name' -r | sort > ${LIST}
+      # kubectl config view -o json | jq '.contexts[].name' -r | sort > ${LIST}
+      kubectl config view -o json | jq '.contexts[].context.cluster' -r | tr '/' ':' | cut -d':' -f4 -f7 >${LIST}
     fi
 
-    echo "[New...]" >> ${LIST}
-    echo "[Del...]" >> ${LIST}
+    echo "[New...]" >>${LIST}
+    echo "[Del...]" >>${LIST}
 
     _select_one
 
-    _NAME="${SELECTED}"
+    # _NAME="${SELECTED}"
+
+    if [[ ${SELECTED} == *":"* ]]; then
+      _REGION="$(echo ${SELECTED} | cut -d':' -f1)"
+      _NAME="$(echo ${SELECTED} | cut -d':' -f2)"
+
+      _set_region ${_REGION}
+    else
+      _NAME="${SELECTED}"
+    fi
   fi
 
   if [ -z "${_NAME}" ]; then
@@ -536,7 +558,7 @@ _ctx() {
   fi
 
   if [ "${_NAME}" == "[New...]" ]; then
-    aws eks list-clusters | jq '.clusters[]' -r | sort > ${LIST}
+    aws eks list-clusters | jq '.clusters[]' -r | sort >${LIST}
 
     _select_one
 
@@ -558,10 +580,10 @@ _ctx() {
     if [ "${CONTEXT}" == "null" ]; then
       rm -rf ${LIST} && touch ${LIST}
     else
-      kubectl config view -o json | jq '.contexts[].name' -r | sort > ${LIST}
+      kubectl config view -o json | jq '.contexts[].name' -r | sort >${LIST}
     fi
 
-    echo "[All...]" >> ${LIST}
+    echo "[All...]" >>${LIST}
 
     _select_one
 
@@ -584,7 +606,7 @@ _ctx() {
     return
   fi
 
-  printf "${_NAME}" > ${TEMP}
+  printf "${_NAME}" >${TEMP}
 
   _command "kubectl config use-context ${_NAME}"
   kubectl config use-context ${_NAME}
@@ -596,7 +618,7 @@ _ctx_ns() {
   _NAME=${PARAM1}
 
   if [ -z "${_NAME}" ]; then
-    kubectl get ns | grep Active | cut -d' ' -f1 > ${LIST}
+    kubectl get ns | grep Active | cut -d' ' -f1 >${LIST}
 
     _select_one
 
@@ -607,7 +629,7 @@ _ctx_ns() {
     _error
   fi
 
-  printf "${_NAME}" > ${TEMP}
+  printf "${_NAME}" >${TEMP}
 
   _command "kubectl config set-context --current --namespace=${_NAME}"
   kubectl config set-context --current --namespace=${_NAME}
@@ -625,7 +647,7 @@ _ssh() {
 
   # config
   if [ ! -f ~/.ssh/config ]; then
-cat <<EOF > ~/.ssh/config
+    cat <<EOF >~/.ssh/config
 Host *
   StrictHostKeyChecking no
 EOF
@@ -637,7 +659,7 @@ EOF
     if [ -f ${HISTORY} ]; then
       _result "${HISTORY}"
 
-      cat ${HISTORY} | sort > ${LIST}
+      cat ${HISTORY} | sort >${LIST}
 
       _select_one
 
@@ -655,7 +677,7 @@ EOF
 
   # pem
   if [ -z ${_PEMS} ]; then
-    ls ${PEM_DIR} | grep '.pem' > ${LIST}
+    ls ${PEM_DIR} | grep '.pem' >${LIST}
 
     _select_one
 
@@ -674,7 +696,7 @@ EOF
     aws ec2 describe-instances \
       --filters "Name=tag:Type,Values=bastion" \
       --query "Reservations[].Instances[].{Name:Tags[?Key=='Name'] | [0].Value, Ip:PublicIpAddress}" \
-      --output=text > ${LIST}
+      --output=text >${LIST}
 
     _select_one
 
@@ -712,7 +734,7 @@ EOF
     COUNT=$(cat ${HISTORY} | grep "${_PEMS} ${_HOST} ${_USER}" | wc -l | xargs)
 
     if [ "x${COUNT}" == "x0" ]; then
-      echo "${_PEMS} ${_HOST} ${_USER}" >> ${HISTORY}
+      echo "${_PEMS} ${_HOST} ${_USER}" >>${HISTORY}
     fi
   fi
 
@@ -771,7 +793,7 @@ _stress() {
     if [ -f ${HISTORY} ]; then
       _result "${HISTORY}"
 
-      cat ${HISTORY} | sort > ${LIST}
+      cat ${HISTORY} | sort >${LIST}
 
       _select_one
 
@@ -820,7 +842,7 @@ _stress() {
     COUNT=$(cat ${HISTORY} | grep "${_REQ} ${_CON} ${_URL}" | wc -l | xargs)
 
     if [ "x${COUNT}" == "x0" ]; then
-      echo "${_REQ} ${_CON} ${_URL}" >> ${HISTORY}
+      echo "${_REQ} ${_CON} ${_URL}" >>${HISTORY}
     fi
   fi
 
@@ -848,9 +870,9 @@ _docker() {
   CMD=${PARAM1}
 
   case ${CMD} in
-    c|clean)
-      docker_clean
-      ;;
+  c | clean)
+    docker_clean
+    ;;
   esac
 }
 
@@ -884,39 +906,39 @@ _git() {
   git_prepare
 
   case ${CMD} in
-    cl|clone)
-      git_clone
-      ;;
-    rm|remove)
-      git_rm
-      ;;
-    r|remote)
-      git_remote
-      ;;
-    b|branch)
-      git_branch
-      ;;
-    t|tag)
-      git_tag
-      ;;
-    d|diff)
-      git_diff
-      ;;
-    c|commit)
-      git_pull
-      git_commit ${PARAMS}
-      git_push
-      ;;
-    p|pp)
-      git_pull
-      git_push
-      ;;
-    pl|pull)
-      git_pull
-      ;;
-    ph|push)
-      git_push
-      ;;
+  cl | clone)
+    git_clone
+    ;;
+  rm | remove)
+    git_rm
+    ;;
+  r | remote)
+    git_remote
+    ;;
+  b | branch)
+    git_branch
+    ;;
+  t | tag)
+    git_tag
+    ;;
+  d | diff)
+    git_diff
+    ;;
+  c | commit)
+    git_pull
+    git_commit ${PARAMS}
+    git_push
+    ;;
+  p | pp)
+    git_pull
+    git_push
+    ;;
+  pl | pull)
+    git_pull
+    ;;
+  ph | push)
+    git_push
+    ;;
     # *)
     #   git_usage
     #   ;;
@@ -975,37 +997,36 @@ git_prepare() {
         GIT_URL=${ANSWER}
 
         if [ ! -z ${GIT_URL} ]; then
-          echo "${GIT_URL}" > ${GIT_PWD}/.git_url
+          echo "${GIT_URL}" >${GIT_PWD}/.git_url
         fi
       fi
     fi
   fi
 
   case ${CMD} in
-    cl|clone)
-      if [ -z ${MSG} ]; then
-        PROJECT=${APP}
-      else
-        PROJECT=${MSG}
-      fi
-      if [ -d ${NOW_DIR}/${PROJECT} ]; then
-        _error "Source directory already exists. [${NOW_DIR}/${PROJECT}]"
-      fi
-      ;;
-    *)
+  cl | clone)
+    if [ -z ${MSG} ]; then
       PROJECT=${APP}
-      if [ ! -d ${NOW_DIR}/${PROJECT} ]; then
-        _error "Source directory doesn't exists. [${NOW_DIR}/${PROJECT}]"
-      fi
-      ;;
+    else
+      PROJECT=${MSG}
+    fi
+    if [ -d ${NOW_DIR}/${PROJECT} ]; then
+      _error "Source directory already exists. [${NOW_DIR}/${PROJECT}]"
+    fi
+    ;;
+  *)
+    PROJECT=${APP}
+    if [ ! -d ${NOW_DIR}/${PROJECT} ]; then
+      _error "Source directory doesn't exists. [${NOW_DIR}/${PROJECT}]"
+    fi
+    ;;
   esac
 
   case ${CMD} in
-    cl|clone|rm|remove)
-      ;;
-    *)
-      git_dir
-      ;;
+  cl | clone | rm | remove) ;;
+  *)
+    git_dir
+    ;;
   esac
 }
 
@@ -1096,13 +1117,13 @@ git_remote() {
   fi
 
   REMOTES="/tmp/${APP}-remote"
-  git remote > ${REMOTES}
+  git remote >${REMOTES}
 
   while read VAR; do
     if [ "${VAR}" == "${MSG}" ]; then
       _error "Remote '${MSG}' already exists."
     fi
-  done < ${REMOTES}
+  done <${REMOTES}
 
   git_default
 
@@ -1126,7 +1147,7 @@ git_branch() {
 
   HAS="false"
   BRANCHES="/tmp/${APP}-branch"
-  git branch -a > ${BRANCHES}
+  git branch -a >${BRANCHES}
 
   while read VAR; do
     ARR=(${VAR})
@@ -1139,7 +1160,7 @@ git_branch() {
         HAS="true"
       fi
     fi
-  done < ${BRANCHES}
+  done <${BRANCHES}
 
   if [ "${HAS}" != "true" ]; then
     _command "git branch ${MSG} ${TAG}"
@@ -1192,7 +1213,7 @@ git_pull() {
   git branch -v
 
   REMOTES="/tmp/${APP}-remote"
-  git remote > ${REMOTES}
+  git remote >${REMOTES}
 
   _command "git pull origin ${BRANCH}"
   git pull origin ${BRANCH}
@@ -1202,7 +1223,7 @@ git_pull() {
       _command "git pull ${REMOTE} ${BRANCH}"
       git pull ${REMOTE} ${BRANCH}
     fi
-  done < ${REMOTES}
+  done <${REMOTES}
 }
 
 git_push() {
@@ -1228,53 +1249,54 @@ _toast() {
   _prepare
 
   case ${CMD} in
-    c|cdw)
-      _cdw
-      ;;
-    e|env)
-      _env
-      ;;
-    q|assume)
-      _assume
-      ;;
-    r|region)
-      _region
-      ;;
-    x|ctx)
-      _ctx
-      ;;
-    z|ns)
-      _ctx_ns
-      ;;
-    g|git)
-      _git
-      ;;
-    d|docker)
-      _docker
-      ;;
-    s|ssh)
-      _ssh
-      ;;
-    m|mtu)
-      _mtu
-      ;;
-    b|stress)
-      _stress
-      ;;
-    u|update)
-      _update
-      ;;
-    t|tools)
-      _tools
-      ;;
-    v|version)
-      _version
-      ;;
-    # r|reset)
-    #   _reset
-    #   ;;
-    *)
-      _usage
+  c | cdw)
+    _cdw
+    ;;
+  e | env)
+    _env
+    ;;
+  q | assume)
+    _assume
+    ;;
+  r | region)
+    _region
+    ;;
+  x | ctx)
+    _ctx
+    ;;
+  z | ns)
+    _ctx_ns
+    ;;
+  g | git)
+    _git
+    ;;
+  d | docker)
+    _docker
+    ;;
+  s | ssh)
+    _ssh
+    ;;
+  m | mtu)
+    _mtu
+    ;;
+  b | stress)
+    _stress
+    ;;
+  u | update)
+    _update
+    ;;
+  t | tools)
+    _tools
+    ;;
+  v | version)
+    _version
+    ;;
+  # r|reset)
+  #   _reset
+  #   ;;
+  *)
+    _usage
+    ;;
   esac
 
   _save
