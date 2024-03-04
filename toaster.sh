@@ -60,13 +60,23 @@ _command() {
 _success() {
   echo
   _echo "+ $@" 2
-  exit 0
+
+  if [ "$@" == "" ]; then
+    exit 0
+  else
+    return "$@"
+  fi
 }
 
 _error() {
   echo
   _echo "- $@" 1
-  exit 1
+
+  if [ "$@" == "" ]; then
+    exit 1
+  else
+    return "$@"
+  fi
 }
 
 _replace() {
@@ -259,6 +269,8 @@ _cdw() {
   printf "${_DIR}" >${TEMP}
 
   _command "cd ${_DIR}"
+
+  _RESULT="${_DIR}"
 }
 
 _env() {
@@ -510,7 +522,7 @@ _region() {
 
   printf "${_REGION}" >${TEMP}
 
-  # _result "${_REGION}"
+  _RESULT="${_REGION}"
 }
 
 _set_region() {
@@ -1304,4 +1316,4 @@ _toast() {
 
 _toast
 
-_success
+_success "${_RESULT}"
