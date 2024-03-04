@@ -60,23 +60,13 @@ _command() {
 _success() {
   echo
   _echo "+ $@" 2
-
-  if [ "$@" == "" ]; then
-    exit 0
-  else
-    return "$@"
-  fi
+  exit 0
 }
 
 _error() {
   echo
   _echo "- $@" 1
-
-  if [ "$@" == "" ]; then
-    exit 1
-  else
-    return "$@"
-  fi
+  exit 1
 }
 
 _replace() {
@@ -1316,4 +1306,4 @@ _toast() {
 
 _toast
 
-_success "${_RESULT}"
+_success
