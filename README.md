@@ -6,7 +6,7 @@
 ## install
 
 ```bash
-bash -c "$(curl -fsSL opspresso.github.io/toaster/install.sh)"
+bash -c "$(curl -fsSL toast.sh/install)"
 ```
 
 ## usage

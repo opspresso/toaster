@@ -43,7 +43,7 @@ _install() {
     VERSION=$(curl -s https://api.github.com/repos/$USERNAME/$REPONAME/releases/latest | grep tag_name | cut -d'"' -f4)
 
     if [ -z ${VERSION} ]; then
-      VERSION=$(curl -fsSL toaster.run/VERSION | xargs)
+      VERSION=$(curl -fsSL toast.sh/VERSION | xargs)
     fi
   fi
 
