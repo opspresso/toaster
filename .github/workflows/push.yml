@@ -8,7 +8,8 @@ on:
 
 jobs:
   build:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
+
     steps:
       - name: Checkout 🛎️
         uses: actions/checkout@v4
@@ -17,7 +18,7 @@ jobs:
 
       - name: Bump Version 🏷️
         id: bump
-        uses: opspresso/action-builder@v0.6.6
+        uses: opspresso/action-builder@master
         with:
           args: --version
 
@@ -25,8 +26,8 @@ jobs:
         run: |
           bash ./package.sh
 
-      - name: Release to GitHub 🚀
-        uses: opspresso/action-builder@v0.6.6
+      - name: Release Version 🚀
+        uses: opspresso/action-builder@master
         with:
           args: --release
         env:
@@ -34,7 +35,7 @@ jobs:
           ASSET_PATH: ./target/release
 
       - name: Post to Slack 💬
-        uses: opspresso/action-builder@v0.6.6
+        uses: opspresso/action-builder@master
         with:
           args: --slack
         env:
