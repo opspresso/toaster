@@ -10,30 +10,31 @@ jobs:
   build:
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout
-        uses: actions/checkout@v3
+      - name: Checkout 🛎️
+        uses: actions/checkout@v4
         with:
-          fetch-depth: 1
+          fetch-depth: 0
 
-      - name: Bump Version
-        uses: opspresso/action-builder@master
+      - name: Bump Version 🏷️
+        id: bump
+        uses: opspresso/action-builder@v0.6.6
         with:
           args: --version
 
-      - name: Package
+      - name: Package 📦
         run: |
           bash ./package.sh
 
-      - name: Release to GitHub
-        uses: opspresso/action-builder@master
+      - name: Release to GitHub 🚀
+        uses: opspresso/action-builder@v0.6.6
         with:
           args: --release
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           ASSET_PATH: ./target/release
 
-      - name: Post to Slack
-        uses: opspresso/action-builder@master
+      - name: Post to Slack 💬
+        uses: opspresso/action-builder@v0.6.6
         with:
           args: --slack
         env:
