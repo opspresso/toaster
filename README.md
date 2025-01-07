@@ -1,7 +1,7 @@
 # toaster
 
-[![GitHub Actions status](https://github.com/opspresso/toaster/workflows/build/badge.svg)](https://github.com/opspresso/toaster/actions)
-[![GitHub Releases](https://img.shields.io/github/release/opspresso/toaster.svg)](https://github.com/opspresso/toaster/releases)
+[![build](https://img.shields.io/github/actions/workflow/status/opspresso/toaster/push.yml?branch=main&style=for-the-badge&logo=github)](https://github.com/opspresso/toaster/actions/workflows/push.yml)
+[![release](https://img.shields.io/github/v/release/opspresso/toaster?style=for-the-badge&logo=github)](https://github.com/opspresso/toaster/releases)
 
 ## install
 
