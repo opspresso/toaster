@@ -42,9 +42,9 @@ _install() {
   if [ -z ${VERSION} ]; then
     VERSION=$(curl -s https://api.github.com/repos/$USERNAME/$REPONAME/releases/latest | grep tag_name | cut -d'"' -f4)
 
-    if [ -z ${VERSION} ]; then
-      VERSION=$(curl -fsSL toast.sh/VERSION | xargs)
-    fi
+    # if [ -z ${VERSION} ]; then
+    #   VERSION=$(curl -fsSL toast.sh/VERSION | xargs)
+    # fi
   fi
 
   # _result "version: ${VERSION}"
