@@ -42,7 +42,7 @@ c() {
   fi
 }
 
-av() {
+v() {
   local profile="$(toast av $@)"
   if [ -n "$profile" ]; then
     export AWS_VAULT= && aws-vault exec $profile --
