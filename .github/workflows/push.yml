@@ -38,6 +38,7 @@ jobs:
         run: |
           git config --global user.email "bot@nalbam.com"
           git config --global user.name "nalbam-bot"
+          git checkout -- VERSION
           git checkout gh-page
           cp -rf ./target/build/* ./
           git add .
