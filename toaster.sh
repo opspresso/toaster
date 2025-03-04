@@ -309,11 +309,11 @@ _cdw() {
     _error
   fi
 
-  printf "${_DIR}" >${TEMP}
+  # printf "${_DIR}" >${TEMP}
 
-  _command "cd ${_DIR}"
-
-  _RESULT="${_DIR}"
+  # 선택된 디렉토리를 출력
+  echo "${_DIR}"
+  exit 0
 }
 
 _env() {
@@ -564,9 +564,11 @@ _region() {
 
   _set_region ${_REGION}
 
-  printf "${_REGION}" >${TEMP}
+  # printf "${_REGION}" >${TEMP}
 
-  _RESULT="${_REGION}"
+  # 선택된 리전을 출력
+  echo "${_REGION}"
+  exit 0
 }
 
 _set_region() {
