@@ -292,11 +292,6 @@ _reset() {
   PEM_DIR=
 }
 
-_am() {
-  _command "aws sts get-caller-identity"
-  aws sts get-caller-identity | jq .
-}
-
 _cdw() {
   _src_dir
 
@@ -538,6 +533,26 @@ _assume() {
   aws sts get-caller-identity | jq .
 }
 
+_am() {
+  _command "aws sts get-caller-identity"
+  aws sts get-caller-identity | jq .
+}
+
+_av() {
+  if [ ! -f ~/.aws/config ]; then
+    _error "~/.aws/config not found."
+  fi
+
+  cat ~/.aws/config | sed -n 's/\[profile \(.*\)\]/\1/p' >${LIST}
+
+  _select_one
+
+  export AWS_VAULT=${SELECTED}
+
+  _command "aws-vault exec ${SELECTED} --"
+  aws-vault exec ${SELECTED} --
+}
+
 _region() {
   command -v aws >/dev/null || AWSCLI=false
 
@@ -558,7 +573,7 @@ _region() {
   fi
 
   if [ -z "${_REGION}" ]; then
-    _error
+    _error "Region not found."
   fi
 
   _set_region ${_REGION}
@@ -1335,49 +1350,52 @@ _toast() {
 
   case ${CMD} in
   a | am)
-    _am
+    _am # iam
+    ;;
+  l | av)
+    _av # aws-vault
     ;;
   c | cdw)
-    _cdw
+    _cdw # cd workspace
     ;;
   e | env)
-    _env
+    _env # environment
     ;;
   q | assume)
-    _assume
+    _assume # assume role
     ;;
   r | region)
-    _region
+    _region # aws region
     ;;
   x | ctx)
-    _ctx
+    _ctx # kubectl context
     ;;
   z | ns)
-    _ctx_ns
+    _ctx_ns # kubectl namespace
     ;;
   g | git)
-    _git
+    _git # git
     ;;
   d | docker)
-    _docker
+    _docker # docker
     ;;
   s | ssh)
-    _ssh
+    _ssh # ssh
     ;;
   m | mtu)
-    _mtu
+    _mtu # aws mtu
     ;;
   b | stress)
-    _stress
+    _stress # stress test
     ;;
   u | update)
-    _update
+    _update # toast update
     ;;
   t | tools)
-    _tools
+    _tools # toast tools
     ;;
   v | version)
-    _version
+    _version # toast version
     ;;
   # r|reset)
   #   _reset
