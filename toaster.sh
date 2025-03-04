@@ -6,8 +6,8 @@ OS_DARWIN=false
 OS_LINUX=false
 
 case ${OS_NAME} in
-  darwin*) OS_DARWIN=true ;;
-  linux*)  OS_LINUX=true ;;
+darwin*) OS_DARWIN=true ;;
+linux*) OS_LINUX=true ;;
 esac
 
 # 크로스 플랫폼 명령어 래퍼 함수들
@@ -688,7 +688,7 @@ _ctx() {
   chmod 600 ~/.kube/config
 }
 
-_ctx_ns() {
+_ns() {
   _NAME=${PARAM1}
 
   if [ -z "${_NAME}" ]; then
@@ -938,42 +938,6 @@ _update() {
 _tools() {
   /bin/bash -c "$(curl -fsSL nalbam.github.io/dotfiles/run.sh)"
   exit 0
-}
-
-_docker() {
-  CMD=${PARAM1}
-
-  case ${CMD} in
-  c | clean)
-    docker_clean
-    ;;
-  esac
-}
-
-docker_clean() {
-  echo
-  echo "$ docker ps -a -f status=exited -f status=dead"
-
-  LIST="$(docker ps -a -q -f status=exited -f status=dead | xargs)"
-  if [ "${LIST}" != "" ]; then
-    docker rm ${LIST}
-  fi
-
-  echo
-  echo "$ docker images -f dangling=true"
-
-  LIST="$(docker images -q -f dangling=true | xargs)"
-  if [ "${LIST}" != "" ]; then
-    docker rmi ${LIST}
-  fi
-
-  echo
-  echo "$ docker volume ls -f dangling=true"
-
-  LIST="$(docker volume ls -q -f dangling=true | xargs)"
-  if [ "${LIST}" != "" ]; then
-    docker volume rm ${LIST}
-  fi
 }
 
 _git() {
@@ -1364,10 +1328,10 @@ _toast() {
     _cdw # cd workspace
     ;;
   e | env)
-    _env # environment
+    _env # aws profile
     ;;
   q | assume)
-    _assume # assume role
+    _assume # aws assume role
     ;;
   r | region)
     _region # aws region
@@ -1376,19 +1340,16 @@ _toast() {
     _ctx # kubectl context
     ;;
   z | ns)
-    _ctx_ns # kubectl namespace
+    _ns # kubectl namespace
     ;;
   g | git)
     _git # git
-    ;;
-  d | docker)
-    _docker # docker
     ;;
   s | ssh)
     _ssh # ssh
     ;;
   m | mtu)
-    _mtu # aws mtu
+    _mtu # mtu
     ;;
   b | stress)
     _stress # stress test
