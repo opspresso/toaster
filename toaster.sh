@@ -455,6 +455,7 @@ _assume() {
 
   if [ -f ~/.aws/credentials ]; then
     cp ~/.aws/credentials ~/.aws/credentials.backup
+    chmod 600 ~/.aws/credentials.backup
   fi
 
   echo "[default]" >~/.aws/credentials
@@ -520,6 +521,9 @@ _set_region() {
 
   _command "export AWS_REGION=${_REGION}"
   export AWS_REGION=${_REGION}
+
+  _command "export AWS_DEFAULT_REGION=${_REGION}"
+  export AWS_DEFAULT_REGION=${_REGION}
 
   _command "aws configure set default.region ${_REGION}"
   aws configure set default.region ${_REGION}
@@ -651,7 +655,7 @@ _ssh() {
   if [ ! -f ~/.ssh/config ]; then
     cat <<EOF >~/.ssh/config
 Host *
-  StrictHostKeyChecking no
+  StrictHostKeyChecking accept-new
 EOF
   fi
   chmod 600 ~/.ssh/config
