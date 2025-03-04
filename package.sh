@@ -86,15 +86,17 @@ _package() {
   VERSION=$(cat ${RUN_PATH}/VERSION | xargs)
   _result "VERSION=${VERSION}"
 
-  echo "${VERSION}" > ${RUN_PATH}/target/build/VERSION
-
-  # build sh
-  _package_sh ${RUN_PATH} ${RUN_PATH}/target/build
+  # build
+  cp ${RUN_PATH}/README.md ${RUN_PATH}/target/build/README.md
+  cp ${RUN_PATH}/install.sh ${RUN_PATH}/target/build/install
+  cp ${RUN_PATH}/toast.sh ${RUN_PATH}/target/build/toast
 
   # dist
-  cp -rf ${RUN_PATH}/toast.sh ${RUN_PATH}/target/dist/toast
+  cp ${RUN_PATH}/toast.sh ${RUN_PATH}/target/dist/toast
 
-  # replace
+  # version
+  echo "${VERSION}" > ${RUN_PATH}/target/build/VERSION
+
   _replace "s/TOAST_VERSION=.*/TOAST_VERSION=${VERSION}/g" ${RUN_PATH}/target/build/toast
   _replace "s/TOAST_VERSION=.*/TOAST_VERSION=${VERSION}/g" ${RUN_PATH}/target/dist/toast
 
