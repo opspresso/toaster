@@ -313,7 +313,8 @@ _av() {
   fi
 
   if [ -z ${_VAL} ]; then
-    _error
+    echo ""
+    exit 1
   fi
 
   echo "${_VAL}"
@@ -334,7 +335,8 @@ _cdw() {
   fi
 
   if [ -z ${_DIR} ] || [ ! -d ${_DIR} ]; then
-    _error
+    echo ""
+    exit 1
   fi
 
   echo "${_DIR}"
