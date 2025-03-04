@@ -36,8 +36,8 @@ jobs:
 
       - name: Publish to gh-page 🚀
         run: |
-          git clone https://github.com/opspresso/toast.sh.git
-          cd toast.sh
+          git clone https://github.com/opspresso/toast.sh.git gh-page
+          cd gh-page
           git checkout gh-page
           cp -rf ../target/publish/* ./
           git add .
