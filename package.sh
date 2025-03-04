@@ -59,8 +59,8 @@ _prepare() {
   find ./** | grep [.]sh | xargs chmod 755
 
   # mkdir target
-  mkdir -p ${RUN_PATH}/target/publish
-  mkdir -p ${RUN_PATH}/target/release
+  mkdir -p ${RUN_PATH}/target/build
+  mkdir -p ${RUN_PATH}/target/dist
 }
 
 ################################################################################
@@ -86,25 +86,20 @@ _package() {
   VERSION=$(cat ${RUN_PATH}/VERSION | xargs)
   _result "VERSION=${VERSION}"
 
-  echo "${VERSION}" > ${RUN_PATH}/target/publish/VERSION
+  echo "${VERSION}" > ${RUN_PATH}/target/build/VERSION
 
-  # publish sh
-  _package_sh ${RUN_PATH} ${RUN_PATH}/target/publish
+  # build sh
+  _package_sh ${RUN_PATH} ${RUN_PATH}/target/build
 
-  # release
-  cp -rf ${RUN_PATH}/toast.sh ${RUN_PATH}/target/release/toast
+  # dist
+  cp -rf ${RUN_PATH}/toast.sh ${RUN_PATH}/target/dist/toast
 
   # replace
-  _replace "s/TOAST_VERSION=.*/TOAST_VERSION=${VERSION}/g" ${RUN_PATH}/target/release/toast
-  _replace "s/TOAST_VERSION=.*/TOAST_VERSION=${VERSION}/g" ${RUN_PATH}/target/publish/toast
+  _replace "s/TOAST_VERSION=.*/TOAST_VERSION=${VERSION}/g" ${RUN_PATH}/target/build/toast
+  _replace "s/TOAST_VERSION=.*/TOAST_VERSION=${VERSION}/g" ${RUN_PATH}/target/dist/toast
 
-  # # tar toast
-  # pushd ${RUN_PATH}/target/release
-  # tar cvzpf toast-${VERSION}.tar.gz ./toast
-  # popd
-
-  ls -al ${RUN_PATH}/target/publish
-  ls -al ${RUN_PATH}/target/release
+  ls -al ${RUN_PATH}/target/build
+  ls -al ${RUN_PATH}/target/dist
 }
 
 _message() {

@@ -32,16 +32,14 @@ jobs:
           args: --release
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          ASSET_PATH: ./target/release
+          ASSET_PATH: ./target/dist
 
       - name: Publish to gh-page 🚀
         run: |
           git config --global user.email "bot@nalbam.com"
           git config --global user.name "nalbam-bot"
-          git clone https://github.com/opspresso/toast.sh.git gh-page
-          cd gh-page
           git checkout gh-page
-          cp -rf ../target/publish/* ./
+          cp -rf ./target/build/* ./
           git add .
           git commit -m "update"
           git push origin gh-page
