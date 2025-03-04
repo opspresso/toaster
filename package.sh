@@ -95,8 +95,8 @@ _package() {
   cp -rf ${RUN_PATH}/toaster.sh ${RUN_PATH}/target/release/toaster
 
   # replace
-  _replace "s/THIS_VERSION=.*/THIS_VERSION=${VERSION}/g" ${RUN_PATH}/target/release/toaster
-  _replace "s/THIS_VERSION=.*/THIS_VERSION=${VERSION}/g" ${RUN_PATH}/target/publish/toaster
+  _replace "s/TOAST_VERSION=.*/TOAST_VERSION=${VERSION}/g" ${RUN_PATH}/target/release/toaster
+  _replace "s/TOAST_VERSION=.*/TOAST_VERSION=${VERSION}/g" ${RUN_PATH}/target/publish/toaster
 
   # # tar toaster
   # pushd ${RUN_PATH}/target/release

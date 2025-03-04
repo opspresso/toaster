@@ -2,7 +2,7 @@
 
 OS_NAME="$(uname | awk '{print tolower($0)}')"
 
-THIS_VERSION=v0.0.0
+TOAST_VERSION=${TOAST_VERSION:-$(cat VERSION 2>/dev/null || echo "v0.0.0")}
 
 CMD=$1
 PARAM1=$2
@@ -22,8 +22,15 @@ SRC_DIR=
 
 HEIGHT=15
 
-LIST=/tmp/toaster-temp-list
-TEMP=/tmp/toaster-temp-result
+# 임시 파일들을 위한 유니크한 이름 생성
+LIST=$(mktemp /tmp/toaster-XXXXXX-list)
+TEMP=$(mktemp /tmp/toaster-XXXXXX-result)
+
+# 스크립트 종료 시 임시 파일 정리
+cleanup() {
+  rm -f ${LIST} ${TEMP} /tmp/sts-result /tmp/*-remote /tmp/*-branch
+}
+trap cleanup EXIT
 
 ################################################################################
 
@@ -137,7 +144,7 @@ _usage() {
  | |_ ___   __ _ ___| |_ ___ _ __
  | __/ _ \ / _' / __| __/ _ \ '__|
  | || (_) | (_| \__ \ ||  __/ |
-  \__\___/ \__,_|___/\__\___|_|    ${THIS_VERSION}
+  \__\___/ \__,_|___/\__\___|_|    ${TOAST_VERSION}
 ================================================================================
  Usage: $(basename $0) {cdw|git|env|region|assume|ssh|ctx|ns|update|tools}
 
@@ -359,7 +366,7 @@ _mfa() {
   _read "TOKEN_CODE : "
   TOKEN_CODE=${ANSWER}
 
-  TMP=/tmp/sts-result
+  TMP=$(mktemp /tmp/sts-XXXXXX-result)
 
   if [ "${TOKEN_CODE}" == "" ]; then
     aws sts get-session-token >${TMP}
@@ -857,7 +864,7 @@ _stress() {
 }
 
 _version() {
-  _echo "# version: ${THIS_VERSION}" 3
+  _echo "# version: ${TOAST_VERSION}" 3
   exit 0
 }
 
@@ -951,82 +958,113 @@ _git() {
   esac
 }
 
-git_prepare() {
-  APP=$(echo "$PARAM1" | sed -e "s/\///g")
-  CMD=$PARAM2
-  MSG=$PARAM3
-  TAG=$PARAM4
+# Git 관련 함수들을 더 작고 명확한 단위로 분리
+
+git_parse_params() {
+  local app=$1
+  local cmd=$2
+  local msg=$3
+  local tag=$4
+
+  APP=$(echo "$app" | sed -e "s/\///g")
+  CMD=$cmd
+  MSG=$msg
+  TAG=$tag
 
   if [ -z "${CMD}" ]; then
     if [ "${APP}" == "config" ]; then
       git_config
     fi
-
     _error
   fi
+}
 
-  NOW_DIR=$(pwd)
+git_get_provider() {
+  local now_dir=$1
+  local list=$(echo ${now_dir} | tr "/" " ")
+  local detect=false
+  local git_pwd=""
+  local provider=""
+  local username=""
 
-  LIST=$(echo ${NOW_DIR} | tr "/" " ")
-  DETECT=false
-
-  for V in ${LIST}; do
-    if [ -z ${PROVIDER} ]; then
-      GIT_PWD="${GIT_PWD}/${V}"
+  for V in ${list}; do
+    if [ -z ${provider} ]; then
+      git_pwd="${git_pwd}/${V}"
     fi
-    if [ "${DETECT}" == "true" ]; then
-      if [ -z ${PROVIDER} ]; then
-        PROVIDER="${V}"
-      elif [ -z ${MY_ID} ]; then
-        USERNAME="${V}"
+    if [ "${detect}" == "true" ]; then
+      if [ -z ${provider} ]; then
+        provider="${V}"
+      elif [ -z ${username} ]; then
+        username="${V}"
       fi
     elif [ "${V}" == "workspace" ]; then
-      DETECT=true
+      detect=true
     fi
   done
 
-  # git@github.com:
-  # ssh://git@8.8.8.8:88/
-  if [ ! -z ${PROVIDER} ]; then
-    if [ "${PROVIDER}" == "github.com" ]; then
-      GIT_URL="git@${PROVIDER}:"
-    elif [ "${PROVIDER}" == "gitlab.com" ]; then
-      GIT_URL="git@${PROVIDER}:"
-    elif [ "${PROVIDER}" == "keybase" ]; then
-      GIT_URL="${PROVIDER}://"
+  GIT_PWD=${git_pwd}
+  PROVIDER=${provider}
+  USERNAME=${username}
+}
+
+git_get_url() {
+  local provider=$1
+  local git_pwd=$2
+
+  if [ ! -z ${provider} ]; then
+    if [ "${provider}" == "github.com" ]; then
+      GIT_URL="git@${provider}:"
+    elif [ "${provider}" == "gitlab.com" ]; then
+      GIT_URL="git@${provider}:"
+    elif [ "${provider}" == "keybase" ]; then
+      GIT_URL="${provider}://"
     else
-      if [ -f ${GIT_PWD}/.git_url ]; then
-        GIT_URL=$(cat ${GIT_PWD}/.git_url)
+      if [ -f ${git_pwd}/.git_url ]; then
+        GIT_URL=$(cat ${git_pwd}/.git_url)
       else
         _read "Please input git url (ex: ssh://git@8.8.8.8:88/): "
-
         GIT_URL=${ANSWER}
-
         if [ ! -z ${GIT_URL} ]; then
-          echo "${GIT_URL}" >${GIT_PWD}/.git_url
+          echo "${GIT_URL}" >${git_pwd}/.git_url
         fi
       fi
     fi
   fi
+}
 
-  case ${CMD} in
+git_check_project() {
+  local cmd=$1
+  local app=$2
+  local msg=$3
+  local now_dir=$4
+
+  case ${cmd} in
   cl | clone)
-    if [ -z ${MSG} ]; then
-      PROJECT=${APP}
+    if [ -z ${msg} ]; then
+      PROJECT=${app}
     else
-      PROJECT=${MSG}
+      PROJECT=${msg}
     fi
-    if [ -d ${NOW_DIR}/${PROJECT} ]; then
-      _error "Source directory already exists. [${NOW_DIR}/${PROJECT}]"
+    if [ -d ${now_dir}/${PROJECT} ]; then
+      _error "Source directory already exists. [${now_dir}/${PROJECT}]"
     fi
     ;;
   *)
-    PROJECT=${APP}
-    if [ ! -d ${NOW_DIR}/${PROJECT} ]; then
-      _error "Source directory doesn't exists. [${NOW_DIR}/${PROJECT}]"
+    PROJECT=${app}
+    if [ ! -d ${now_dir}/${PROJECT} ]; then
+      _error "Source directory doesn't exists. [${now_dir}/${PROJECT}]"
     fi
     ;;
   esac
+}
+
+git_prepare() {
+  NOW_DIR=$(pwd)
+
+  git_parse_params "$PARAM1" "$PARAM2" "$PARAM3" "$PARAM4"
+  git_get_provider "${NOW_DIR}"
+  git_get_url "${PROVIDER}" "${GIT_PWD}"
+  git_check_project "${CMD}" "${APP}" "${MSG}" "${NOW_DIR}"
 
   case ${CMD} in
   cl | clone | rm | remove) ;;
@@ -1122,7 +1160,7 @@ git_remote() {
     _error
   fi
 
-  REMOTES="/tmp/${APP}-remote"
+  REMOTES=$(mktemp /tmp/${APP}-XXXXXX-remote)
   git remote >${REMOTES}
 
   while read VAR; do
@@ -1152,7 +1190,7 @@ git_branch() {
   fi
 
   HAS="false"
-  BRANCHES="/tmp/${APP}-branch"
+  BRANCHES=$(mktemp /tmp/${APP}-XXXXXX-branch)
   git branch -a >${BRANCHES}
 
   while read VAR; do
