@@ -34,15 +34,15 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           ASSET_PATH: ./target/release
 
-      - name: Publish 🚀
+      - name: Publish to gh-page 🚀
         run: |
           git clone https://github.com/opspresso/toast.sh.git
           cd toast.sh
-          git checkout gh-pages
+          git checkout gh-page
           cp -rf ../target/publish/* ./
           git add .
           git commit -m "update"
-          git push origin gh-pages
+          git push origin gh-page
 
       - name: Post to Slack 💬
         uses: opspresso/action-builder@master
