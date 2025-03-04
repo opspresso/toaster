@@ -292,6 +292,11 @@ _reset() {
   PEM_DIR=
 }
 
+_am() {
+  _command "aws sts get-caller-identity"
+  aws sts get-caller-identity | jq .
+}
+
 _cdw() {
   _src_dir
 
@@ -1329,6 +1334,9 @@ _toast() {
   _prepare
 
   case ${CMD} in
+  a | am)
+    _am
+    ;;
   c | cdw)
     _cdw
     ;;
