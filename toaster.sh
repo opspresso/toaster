@@ -433,8 +433,7 @@ _env() {
   # _result "**********${SECRET_KEY:30}"
   # _result "${_REGION}"
 
-  _command "aws sts get-caller-identity"
-  aws sts get-caller-identity | jq .
+  _am
 }
 
 _mfa() {
@@ -470,8 +469,7 @@ _mfa() {
 
   chmod 600 ~/.aws/credentials
 
-  # _command "aws sts get-caller-identity"
-  # aws sts get-caller-identity | jq .
+  # _am
 }
 
 _assume() {
@@ -503,8 +501,7 @@ _assume() {
   if [ "${_NAME}" == "[Restore...]" ]; then
     mv ~/.aws/credentials.backup ~/.aws/credentials
 
-    _command "aws sts get-caller-identity"
-    aws sts get-caller-identity | jq .
+    _am
 
     _success
   fi
@@ -558,8 +555,7 @@ _assume() {
   # export AWS_SECRET_ACCESS_KEY=${SECRET_KEY}
   # export AWS_SESSION_TOKEN=${SESSION_TOKEN}
 
-  _command "aws sts get-caller-identity"
-  aws sts get-caller-identity | jq .
+  _am
 }
 
 _region() {
