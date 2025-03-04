@@ -36,6 +36,8 @@ jobs:
 
       - name: Publish to gh-page 🚀
         run: |
+          git config --global user.email "bot@nalbam.com"
+          git config --global user.name "nalbam-bot"
           git clone https://github.com/opspresso/toast.sh.git gh-page
           cd gh-page
           git checkout gh-page
