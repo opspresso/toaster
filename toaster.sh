@@ -302,21 +302,21 @@ _av() {
     _error "~/.aws/config not found."
   fi
 
-  _AV=${PARAM1}
+  _VAL=${PARAM1}
 
-  if [ -z ${_AV} ]; then
+  if [ -z ${_VAL} ]; then
     cat ~/.aws/config | sed -n 's/\[profile \(.*\)\]/\1/p' >${LIST}
 
     _select_one
 
-    _AV=${SELECTED}
+    _VAL=${SELECTED}
   fi
 
-  if [ -z ${_AV} ]; then
+  if [ -z ${_VAL} ]; then
     _error
   fi
 
-  echo "${_AV}"
+  echo "${_VAL}"
   exit 0
 }
 
