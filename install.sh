@@ -1,7 +1,7 @@
 #!/bin/bash
 
 USERNAME="opspresso"
-REPONAME="toaster"
+REPONAME="toast.sh"
 
 VERSION=${1}
 
@@ -34,9 +34,9 @@ _error() {
 ################################################################################
 
 _install() {
-  command -v toaster > /dev/null && TOASTER=true
-  if [ "${TOASTER}" != "" ]; then
-    toaster version
+  command -v toast > /dev/null && TOAST=true
+  if [ "${TOAST}" != "" ]; then
+    toast version
   fi
 
   if [ -z ${VERSION} ]; then
@@ -53,12 +53,12 @@ _install() {
     _error "Version not Found."
   fi
 
-  # toaster
-  DIST=/tmp/toaster-${VERSION}
+  # toast
+  DIST=/tmp/toast-${VERSION}
   rm -rf ${DIST}
 
   # download
-  curl -fsSL -o ${DIST} https://github.com/$USERNAME/$REPONAME/releases/download/$VERSION/toaster
+  curl -fsSL -o ${DIST} https://github.com/$USERNAME/$REPONAME/releases/download/$VERSION/toast
   chmod +x ${DIST}
 
   # copy
@@ -76,13 +76,13 @@ _install() {
   fi
 
   if [ "${COPY_PATH}" == "/usr/local/bin" ]; then
-    sudo mv -f ${DIST} ${COPY_PATH}/toaster
+    sudo mv -f ${DIST} ${COPY_PATH}/toast
   else
     mkdir -p ${COPY_PATH}
-    mv -f ${DIST} ${COPY_PATH}/toaster
+    mv -f ${DIST} ${COPY_PATH}/toast
   fi
 
-  toaster version
+  toast version
 }
 
 ################################################################################

@@ -92,15 +92,15 @@ _package() {
   _package_sh ${RUN_PATH} ${RUN_PATH}/target/publish
 
   # release
-  cp -rf ${RUN_PATH}/toaster.sh ${RUN_PATH}/target/release/toaster
+  cp -rf ${RUN_PATH}/toast.sh ${RUN_PATH}/target/release/toast
 
   # replace
-  _replace "s/TOAST_VERSION=.*/TOAST_VERSION=${VERSION}/g" ${RUN_PATH}/target/release/toaster
-  _replace "s/TOAST_VERSION=.*/TOAST_VERSION=${VERSION}/g" ${RUN_PATH}/target/publish/toaster
+  _replace "s/TOAST_VERSION=.*/TOAST_VERSION=${VERSION}/g" ${RUN_PATH}/target/release/toast
+  _replace "s/TOAST_VERSION=.*/TOAST_VERSION=${VERSION}/g" ${RUN_PATH}/target/publish/toast
 
-  # # tar toaster
+  # # tar toast
   # pushd ${RUN_PATH}/target/release
-  # tar cvzpf toaster-${VERSION}.tar.gz ./toaster
+  # tar cvzpf toast-${VERSION}.tar.gz ./toast
   # popd
 
   ls -al ${RUN_PATH}/target/publish

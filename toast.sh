@@ -52,7 +52,7 @@ PARAM3=$4
 PARAM4=$5
 PARAMS=$*
 
-CONFIG_DIR="${HOME}/.toaster"
+CONFIG_DIR="${HOME}/.toast"
 
 CONFIG="${CONFIG_DIR}/$(basename $0)"
 
@@ -64,8 +64,8 @@ SRC_DIR=
 HEIGHT=15
 
 # 임시 파일들을 위한 유니크한 이름 생성
-LIST=$(mktemp /tmp/toaster-XXXXXX-list)
-TEMP=$(mktemp /tmp/toaster-XXXXXX-result)
+LIST=$(mktemp /tmp/toast-XXXXXX-list)
+TEMP=$(mktemp /tmp/toast-XXXXXX-result)
 
 # 스크립트 종료 시 임시 파일 정리
 cleanup() {
@@ -181,25 +181,25 @@ _select_one() {
 ################################################################################
 
 _usage() {
-  #figlet toaster
+  #figlet toast.sh
   cat <<EOF
 ================================================================================
-  _                  _
- | |_ ___   __ _ ___| |_ ___ _ __
- | __/ _ \ / _' / __| __/ _ \ '__|
- | || (_) | (_| \__ \ ||  __/ |
-  \__\___/ \__,_|___/\__\___|_|    ${TOAST_VERSION}
+ _                  _         _
+| |_ ___   __ _ ___| |_   ___| |__
+| __/ _ \ / _' / __| __| / __| '_ \
+| || (_) | (_| \__ \ |_ _\__ \ | | |
+ \__\___/ \__,_|___/\__(_)___/_| |_|   ${TOAST_VERSION}
 ================================================================================
  Usage: $(basename $0) {cdw|git|env|region|assume|ssh|ctx|ns|update|tools}
 
- alias c='toaster cdw'
- alias n='toaster git'
- alias e='toaster env'
- alias r='toaster region'
- alias q='toaster assume'
- alias s='toaster ssh'
- alias x='toaster ctx'
- alias z='toaster ns'
+ alias c='toast cdw'
+ alias n='toast git'
+ alias e='toast env'
+ alias r='toast region'
+ alias q='toast assume'
+ alias s='toast ssh'
+ alias x='toast ctx'
+ alias z='toast ns'
 ================================================================================
 EOF
 }
@@ -279,7 +279,7 @@ _role_dir() {
 }
 
 _save() {
-  echo "# toaster" >${CONFIG}
+  echo "# toast" >${CONFIG}
   echo "ENV_DIR=${ENV_DIR}" >>${CONFIG}
   echo "PEM_DIR=${PEM_DIR}" >>${CONFIG}
   echo "ROLE_DIR=${ROLE_DIR}" >>${CONFIG}
