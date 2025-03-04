@@ -190,25 +190,7 @@ _usage() {
 | || (_) | (_| \__ \ |_ _\__ \ | | |
  \__\___/ \__,_|___/\__(_)___/_| |_|   ${TOAST_VERSION}
 ================================================================================
-  Usage: $(basename $0) {cdw|am|env|git|ssh|region|ssh|ctx|ns|update}
-
-  alias t='toast'
-
-  c() {
-    local dir="$(toast cdw $@)"
-    if [ -n "$dir" ]; then
-      echo "$dir"
-      cd "$dir"
-    fi
-  }
-
-  alias m='toast am'
-  alias e='toast env'
-  alias n='toast git'
-  alias s='toast ssh'
-  alias r='toast region'
-  alias x='toast ctx'
-  alias z='toast ns'
+Usage: $(basename $0) {am|cdw|env|git|ssh|region|ssh|ctx|ns|update}
 ================================================================================
 EOF
 }
@@ -299,12 +281,6 @@ _save() {
   echo "PEM_DIR=${PEM_DIR}" >>${CONFIG}
   echo "ROLE_DIR=${ROLE_DIR}" >>${CONFIG}
   echo "SRC_DIR=${SRC_DIR}" >>${CONFIG}
-}
-
-_reset() {
-  SRC_DIR=
-  ENV_DIR=
-  PEM_DIR=
 }
 
 _am() {
@@ -1378,9 +1354,6 @@ _toast() {
   v | version)
     _version # toast version
     ;;
-  # r|reset)
-  #   _reset
-  #   ;;
   *)
     _usage
     ;;
