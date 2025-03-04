@@ -255,6 +255,8 @@ _env_dir() {
   if [ ! -d ${ENV_DIR} ]; then
     _error "[${ENV_DIR}] is not directory."
   fi
+
+  _save
 }
 
 _pem_dir() {
@@ -270,6 +272,8 @@ _pem_dir() {
   if [ ! -d ${PEM_DIR} ]; then
     _error "[${PEM_DIR}] is not directory."
   fi
+
+  _save
 }
 
 _role_dir() {
@@ -285,6 +289,8 @@ _role_dir() {
   if [ ! -d ${ROLE_DIR} ]; then
     _error "[${ROLE_DIR}] is not directory."
   fi
+
+  _save
 }
 
 _save() {
@@ -1380,7 +1386,7 @@ _toast() {
     ;;
   esac
 
-  _save
+  # _save
 }
 
 _toast
