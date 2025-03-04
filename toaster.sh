@@ -313,17 +313,14 @@ _av() {
   fi
 
   if [ -z ${_VAL} ]; then
-    _error "Profile not found."
-    # echo ""
-    # exit 1
+    echo ""
+    exit 1
   fi
 
-  export AWS_VAULT= && aws-vault exec ${_VAL} --
+  # export AWS_VAULT= && aws-vault exec ${_VAL} --
 
-  _am
-
-  # echo "${_VAL}"
-  # exit 0
+  echo "${_VAL}"
+  exit 0
 }
 
 _cdw() {
