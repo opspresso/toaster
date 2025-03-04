@@ -1,6 +1,47 @@
 #!/bin/bash
 
+# OS 관련 설정
 OS_NAME="$(uname | awk '{print tolower($0)}')"
+OS_DARWIN=false
+OS_LINUX=false
+
+case ${OS_NAME} in
+  darwin*) OS_DARWIN=true ;;
+  linux*)  OS_LINUX=true ;;
+esac
+
+# 크로스 플랫폼 명령어 래퍼 함수들
+_sed() {
+  if [ "${OS_DARWIN}" == "true" ]; then
+    sed -i "" "$@"
+  else
+    sed -i "$@"
+  fi
+}
+
+_grep() {
+  if [ "${OS_DARWIN}" == "true" ]; then
+    grep -E "$@"
+  else
+    grep -P "$@"
+  fi
+}
+
+_xargs() {
+  if [ "${OS_DARWIN}" == "true" ]; then
+    xargs "$@"
+  else
+    xargs -r "$@"
+  fi
+}
+
+_readlink() {
+  if [ "${OS_DARWIN}" == "true" ]; then
+    greadlink -f "$@"
+  else
+    readlink -f "$@"
+  fi
+}
 
 TOAST_VERSION=${TOAST_VERSION:-$(cat VERSION 2>/dev/null || echo "v0.0.0")}
 
@@ -77,18 +118,21 @@ _error() {
 }
 
 _replace() {
-  if [ "${OS_NAME}" == "darwin" ]; then
-    sed -i "" -e "$1" "$2"
-  else
-    sed -i -e "$1" "$2"
-  fi
+  _sed -e "$1" "$2"
 }
 
 _find_replace() {
-  if [ "${OS_NAME}" == "darwin" ]; then
+  if [ "${OS_DARWIN}" == "true" ]; then
     find . -name "$2" -exec sed -i "" -e "$1" {} \;
   else
     find . -name "$2" -exec sed -i -e "$1" {} \;
+  fi
+}
+
+# 크로스 플랫폼 명령어 체크
+_check_commands() {
+  if [ "${OS_DARWIN}" == "true" ]; then
+    command -v greadlink >/dev/null || brew install coreutils
   fi
 }
 
@@ -161,6 +205,8 @@ EOF
 }
 
 _prepare() {
+  _check_commands
+
   mkdir -p ~/.aws
   mkdir -p ~/.ssh
   mkdir -p ${CONFIG_DIR}
