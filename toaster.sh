@@ -556,19 +556,7 @@ _region() {
     _error
   fi
 
-  # _command "export AWS_REGION=${_REGION}"
-  # export AWS_REGION=${_REGION}
-
-  # _command "aws configure set default.region ${_REGION}"
-  # aws configure set default.region ${_REGION}
-
   _set_region ${_REGION}
-
-  # printf "${_REGION}" >${TEMP}
-
-  # 선택된 리전을 출력
-  echo "${_REGION}"
-  exit 0
 }
 
 _set_region() {
