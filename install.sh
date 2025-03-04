@@ -42,9 +42,9 @@ _install() {
   if [ -z ${VERSION} ]; then
     VERSION=$(curl -s https://api.github.com/repos/$USERNAME/$REPONAME/releases/latest | grep tag_name | cut -d'"' -f4)
 
-    # if [ -z ${VERSION} ]; then
-    #   VERSION=$(curl -fsSL toast.sh/VERSION | xargs)
-    # fi
+    if [ -z ${VERSION} ]; then
+      VERSION=$(curl -fsSL toast.sh/VERSION | xargs)
+    fi
   fi
 
   # _result "version: ${VERSION}"
@@ -61,7 +61,7 @@ _install() {
   curl -fsSL -o ${DIST} https://github.com/$USERNAME/$REPONAME/releases/download/$VERSION/toast
   chmod +x ${DIST}
 
-  # copy
+  # copy path
   COPY_PATH=/usr/local/bin
   if [ ! -z "$HOME" ]; then
     COUNT=$(echo "$PATH" | grep "$HOME/.local/bin" | wc -l | xargs)
@@ -77,9 +77,11 @@ _install() {
 
   if [ "${COPY_PATH}" == "/usr/local/bin" ]; then
     sudo mv -f ${DIST} ${COPY_PATH}/toast
+    sudo chmod +x ${COPY_PATH}/toast
   else
     mkdir -p ${COPY_PATH}
     mv -f ${DIST} ${COPY_PATH}/toast
+    chmod +x ${COPY_PATH}/toast
   fi
 
   toast version
