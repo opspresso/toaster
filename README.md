@@ -6,7 +6,7 @@
 ## install
 
 ```bash
-bash -c "$(curl -fsSL toast.sh/install.sh)"
+bash -c "$(curl -fsSL toast.sh/install)"
 ```
 
 ## usage
@@ -31,7 +31,7 @@ Usage: $(basename $0) {am|cdw|env|git|ssh|region|ssh|ctx|ns|update}
 
 ```bash
 alias t='toast'
-alias tu='bash -c "$(curl -fsSL toast.sh/install.sh)"'
+alias tu='bash -c "$(curl -fsSL toast.sh/install)"'
 alias tt='bash -c "$(curl -fsSL nalbam.github.io/dotfiles/run.sh)"'
 
 c() {
