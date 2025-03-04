@@ -292,6 +292,24 @@ _reset() {
   PEM_DIR=
 }
 
+_am() {
+  _command "aws sts get-caller-identity"
+  aws sts get-caller-identity | jq .
+}
+
+_av() {
+  if [ ! -f ~/.aws/config ]; then
+    _error "~/.aws/config not found."
+  fi
+
+  cat ~/.aws/config | sed -n 's/\[profile \(.*\)\]/\1/p' >${LIST}
+
+  _select_one
+
+  echo "${SELECTED}"
+  exit 0
+}
+
 _cdw() {
   _src_dir
 
@@ -309,9 +327,6 @@ _cdw() {
     _error
   fi
 
-  # printf "${_DIR}" >${TEMP}
-
-  # 선택된 디렉토리를 출력
   echo "${_DIR}"
   exit 0
 }
@@ -531,26 +546,6 @@ _assume() {
 
   _command "aws sts get-caller-identity"
   aws sts get-caller-identity | jq .
-}
-
-_am() {
-  _command "aws sts get-caller-identity"
-  aws sts get-caller-identity | jq .
-}
-
-_av() {
-  if [ ! -f ~/.aws/config ]; then
-    _error "~/.aws/config not found."
-  fi
-
-  cat ~/.aws/config | sed -n 's/\[profile \(.*\)\]/\1/p' >${LIST}
-
-  _select_one
-
-  export AWS_VAULT=${SELECTED}
-
-  _command "aws-vault exec ${SELECTED} --"
-  aws-vault exec ${SELECTED} --
 }
 
 _region() {
