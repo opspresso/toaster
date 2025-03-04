@@ -12,6 +12,7 @@ bash -c "$(curl -fsSL opspresso.github.io/toast.sh/install.sh)"
 ## usage
 
 <!-- usage start -->
+
 ```
 ================================================================================
  _                  _         _
@@ -20,7 +21,8 @@ bash -c "$(curl -fsSL opspresso.github.io/toast.sh/install.sh)"
 | || (_) | (_| \__ \ |_ _\__ \ | | |
  \__\___/ \__,_|___/\__(_)___/_| |_|
 ================================================================================
-Usage: toast {cdw|env|ctx|ssh|update|tools}
+Usage: toast {cdw|av|env|ctx|git|ssh}
 ================================================================================
 ```
+
 <!-- usage end -->
