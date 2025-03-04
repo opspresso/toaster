@@ -43,7 +43,7 @@ _readlink() {
   fi
 }
 
-TOAST_VERSION=v2.1.9
+TOAST_VERSION=v2.1.13
 
 CMD=$1
 PARAM1=$2
@@ -922,7 +922,7 @@ _version() {
 
 _update() {
   # _echo "# version: ${THIS_VERSION}" 3
-  curl -fsSL toast.sh/install.sh | bash -s ${PARAM1}
+  curl -fsSL toast.sh/install | bash -s ${PARAM1}
   exit 0
 }
 
