@@ -186,20 +186,29 @@ _usage() {
 ================================================================================
  _                  _         _
 | |_ ___   __ _ ___| |_   ___| |__
-| __/ _ \ / _' / __| __| / __| '_ \
+| __/ _ \ / _' / __| __| / __| '_ \\
 | || (_) | (_| \__ \ |_ _\__ \ | | |
  \__\___/ \__,_|___/\__(_)___/_| |_|   ${TOAST_VERSION}
 ================================================================================
- Usage: $(basename $0) {cdw|git|env|region|assume|ssh|ctx|ns|update|tools}
+  Usage: $(basename $0) {cdw|am|env|git|ssh|region|ssh|ctx|ns|update}
 
- alias c='toast cdw'
- alias n='toast git'
- alias e='toast env'
- alias r='toast region'
- alias q='toast assume'
- alias s='toast ssh'
- alias x='toast ctx'
- alias z='toast ns'
+  alias t='toast'
+
+  c() {
+    local dir="$(toast cdw $@)"
+    if [ -n "$dir" ]; then
+      echo "$dir"
+      cd "$dir"
+    fi
+  }
+
+  alias m='toast am'
+  alias e='toast env'
+  alias n='toast git'
+  alias s='toast ssh'
+  alias r='toast region'
+  alias x='toast ctx'
+  alias z='toast ns'
 ================================================================================
 EOF
 }
