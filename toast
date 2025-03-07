@@ -43,7 +43,7 @@ _readlink() {
   fi
 }
 
-TOAST_VERSION=v2.1.14
+TOAST_VERSION=v2.1.15
 
 CMD=$1
 PARAM1=$2
