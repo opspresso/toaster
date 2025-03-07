@@ -73,11 +73,11 @@ v() {
 }
 
 # Common Command Aliases
-alias m='toast am'      # Check AWS IAM info
+alias i='toast am'      # Check AWS IAM info
 alias e='toast env'     # Set AWS profile
+alias r='toast region'  # Set AWS region
 alias n='toast git'     # Git commands
 alias s='toast ssh'     # SSH connection
-alias r='toast region'  # Change AWS region
 alias x='toast ctx'     # Switch Kubernetes context
 alias z='toast ns'      # Switch Kubernetes namespace
 ```
