@@ -3,38 +3,38 @@
 [![build](https://img.shields.io/github/actions/workflow/status/opspresso/toast.sh/push.yml?branch=main&style=for-the-badge&logo=github)](https://github.com/opspresso/toast.sh/actions/workflows/push.yml)
 [![release](https://img.shields.io/github/v/release/opspresso/toast.sh?style=for-the-badge&logo=github)](https://github.com/opspresso/toast.sh/releases)
 
-toast.sh는 AWS, Kubernetes, Git 등의 CLI 도구들을 더 쉽게 사용할 수 있도록 도와주는 쉘 스크립트 도구입니다.
+toast.sh is a shell script utility that simplifies the use of CLI tools for AWS, Kubernetes, Git, and more.
 
-## 주요 기능
+## Key Features
 
-* AWS 관련 기능
-  - AWS 프로파일 관리 (`toast env`)
-  - AWS 리전 변경 (`toast region`)
-  - IAM 역할 전환 (`toast assume`)
-  - AWS Vault 지원 (`toast av`)
+* AWS Features
+  - AWS Profile Management (`toast env`)
+  - AWS Region Management (`toast region`)
+  - IAM Role Switching (`toast assume`)
+  - AWS Vault Support (`toast av`)
 
-* Kubernetes 관련 기능
-  - 컨텍스트 전환 (`toast ctx`)
-  - 네임스페이스 전환 (`toast ns`)
+* Kubernetes Features
+  - Context Switching (`toast ctx`)
+  - Namespace Switching (`toast ns`)
 
-* Git 관련 기능
-  - 저장소 클론 (`toast git clone`)
-  - 브랜치 관리 (`toast git branch`)
-  - 태그 관리 (`toast git tag`)
-  - 원격 저장소 관리 (`toast git remote`)
+* Git Features
+  - Repository Cloning (`toast git clone`)
+  - Branch Management (`toast git branch`)
+  - Tag Management (`toast git tag`)
+  - Remote Repository Management (`toast git remote`)
 
-* 기타 기능
-  - SSH 접속 관리 (`toast ssh`)
-  - MTU 설정 (`toast mtu`)
-  - 스트레스 테스트 (`toast stress`)
+* Other Utilities
+  - SSH Connection Management (`toast ssh`)
+  - MTU Configuration (`toast mtu`)
+  - Stress Testing (`toast stress`)
 
-## 설치 방법
+## Installation
 
 ```bash
 bash -c "$(curl -fsSL toast.sh/install)"
 ```
 
-## 사용 방법
+## Usage
 
 ```
 ================================================================================
@@ -48,14 +48,14 @@ Usage: toast {am|cdw|env|git|ssh|region|ssh|ctx|ns|update}
 ================================================================================
 ```
 
-## 단축 명령어
+## Aliases
 
 ```bash
 alias t='toast'
 alias tu='bash -c "$(curl -fsSL toast.sh/install)"'
 alias tt='bash -c "$(curl -fsSL nalbam.github.io/dotfiles/run.sh)"'
 
-# 디렉토리 이동
+# Directory Navigation
 c() {
   local dir="$(toast cdw $@)"
   if [ -n "$dir" ]; then
@@ -64,7 +64,7 @@ c() {
   fi
 }
 
-# AWS Vault 실행
+# AWS Vault Execution
 v() {
   local profile="$(toast av $@)"
   if [ -n "$profile" ]; then
@@ -72,20 +72,20 @@ v() {
   fi
 }
 
-# 자주 사용하는 명령어 별칭
-alias i='toast am'      # AWS IAM 정보 확인
-alias e='toast env'     # AWS 프로파일 설정
-alias n='toast git'     # Git 명령어
-alias s='toast ssh'     # SSH 접속
-alias r='toast region'  # AWS 리전 변경
-alias x='toast ctx'     # Kubernetes 컨텍스트 변경
-alias z='toast ns'      # Kubernetes 네임스페이스 변경
+# Common Command Aliases
+alias m='toast am'      # Check AWS IAM info
+alias e='toast env'     # Set AWS profile
+alias n='toast git'     # Git commands
+alias s='toast ssh'     # SSH connection
+alias r='toast region'  # Change AWS region
+alias x='toast ctx'     # Switch Kubernetes context
+alias z='toast ns'      # Switch Kubernetes namespace
 ```
 
-## 라이선스
+## License
 
-이 프로젝트는 [GNU General Public License v3.0](LICENSE)에 따라 라이선스가 부여됩니다.
+This project is licensed under the [GNU General Public License v3.0](LICENSE).
 
-## 기여하기
+## Contributing
 
-버그 리포트, 기능 요청, 풀 리퀘스트는 GitHub 저장소를 통해 환영합니다.
+Bug reports, feature requests, and pull requests are welcome through the GitHub repository.

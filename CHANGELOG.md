@@ -1,37 +1,38 @@
 # Changelog
 
-이 프로젝트의 모든 주요 변경 사항이 이 파일에 문서화됩니다.
+All notable changes to this project will be documented in this file.
 
-형식은 [Keep a Changelog](https://keepachangelog.com/ko/1.0.0/)를 기반으로 합니다.
+The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ## [Unreleased]
 
 ### Added
-- README.md 개선
-  - 프로젝트 설명 추가
-  - 주요 기능 목록 추가
-  - 라이선스 정보 추가
-  - 기여 방법 추가
-- CHANGELOG.md 파일 추가
+- Improved README.md
+  - Added project description
+  - Added key features list
+  - Added license information
+  - Added contribution guidelines
+- Added CHANGELOG.md file
+- Added ARCHITECTURE.md file with detailed system documentation
 
 ## [0.0.0] - 2019-01-01
 
 ### Added
-- 프로젝트 시작
-- AWS 관련 기능 추가
-  - AWS 프로파일 관리
-  - AWS 리전 변경
-  - IAM 역할 전환
-  - AWS Vault 지원
-- Kubernetes 관련 기능 추가
-  - 컨텍스트 전환
-  - 네임스페이스 전환
-- Git 관련 기능 추가
-  - 저장소 클론
-  - 브랜치 관리
-  - 태그 관리
-  - 원격 저장소 관리
-- 기타 기능 추가
-  - SSH 접속 관리
-  - MTU 설정
-  - 스트레스 테스트
+- Project initialization
+- Added AWS features
+  - AWS profile management
+  - AWS region management
+  - IAM role switching
+  - AWS Vault support
+- Added Kubernetes features
+  - Context switching
+  - Namespace switching
+- Added Git features
+  - Repository cloning
+  - Branch management
+  - Tag management
+  - Remote repository management
+- Added utility features
+  - SSH connection management
+  - MTU configuration
+  - Stress testing
