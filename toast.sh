@@ -864,7 +864,7 @@ _ssm_get() {
     _KEY="/toast/${_KEY}"
   fi
 
-  _command "aws ssm get-parameter --name ${_KEY} --with-decryption"
+  _command "aws ssm get-parameter --name ${_KEY}"
   aws ssm get-parameter --name ${_KEY} --with-decryption | jq .Parameter.Value -r
 }
 
@@ -872,8 +872,13 @@ _ssm_put() {
   _KEY=$1
   _VAL=$2
 
-  _command "aws ssm put-parameter --name /toast/${_KEY} --value "${_VAL}" --type SecureString --overwrite"
-  aws ssm put-parameter --name /toast/${_KEY} --value "${_VAL}" --type SecureString --overwrite | jq .Version -r
+  # 여러 줄 문자열을 JSON-safe하게 변환
+  _ENCODED_VAL=$(printf "%s" "${_VAL}" | jq -Rs .)
+  # # JSON 문자열에서 따옴표 제거
+  # _ENCODED_VAL=${_ENCODED_VAL:1:-1}
+
+  _command "aws ssm put-parameter --name /toast/${_KEY}"
+  aws ssm put-parameter --name /toast/${_KEY} --value \"${_ENCODED_VAL}\" --type SecureString --overwrite | jq .Version -r
 }
 
 _ssm() {
@@ -890,10 +895,7 @@ _ssm() {
     _ssm_get "${_KEY}"
     ;;
   p | put | save)
-    # 여러 줄 문자열을 JSON-safe하게 변환
-    _ENCODED_VAL=$(printf "%s" "${_VAL}" | jq -Rs .)
-
-    _ssm_put "${_KEY}" "${_ENCODED_VAL}"
+    _ssm_put "${_KEY}" "${_VAL}"
     ;;
   d | delete | rm | remove)
     _command "aws ssm delete-parameter --name /toast/${_KEY}"

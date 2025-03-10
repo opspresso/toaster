@@ -19,6 +19,7 @@ graph TD
     C --> C2[Region Management]
     C --> C3[IAM Roles]
     C --> C4[AWS Vault]
+    C --> C5[SSM Parameters]
 
     D --> D1[Context Management]
     D --> D2[Namespace Management]
@@ -49,6 +50,10 @@ graph TD
   * Role switching and temporary credential management
 - AWS Vault Support (`_av`)
   * AWS Vault integration
+- SSM Parameter Management (`_ssm`)
+  * Parameter listing, getting, and setting
+  * Secure string parameter support
+  * Multiline parameter value support with JSON-safe encoding
 
 ### 3. Kubernetes Features
 - Context Management (`_ctx`)
@@ -121,6 +126,7 @@ SRC_DIR=/path/to/src    # Source code directory
    - Credential file permissions (600)
    - MFA authentication support
    - AWS Vault integration
+   - SSM SecureString parameter type usage
 
 2. SSH Key Management
    - Key file permissions (600)
