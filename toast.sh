@@ -845,6 +845,37 @@ _mtu() {
   ifconfig | grep mtu | grep ${_MTU}
 }
 
+_ssm_list() {
+  echo "$(aws ssm describe-parameters | jq ".Parameters[].Name" -r | grep '^/toast/')"
+}
+
+_ssm_get() {
+  _KEY=$1
+
+  if [ -z ${_KEY} ]; then
+    SSM_LIST=$(_ssm_list)
+
+    echo "${SSM_LIST}" >${LIST}
+
+    _select_one
+
+    _KEY="${SELECTED}"
+  else
+    _KEY="/toast/${_KEY}"
+  fi
+
+  _command "aws ssm get-parameter --name ${_KEY} --with-decryption"
+  aws ssm get-parameter --name ${_KEY} --with-decryption | jq .Parameter.Value -r
+}
+
+_ssm_put() {
+  _KEY=$1
+  _VAL=$2
+
+  _command "aws ssm put-parameter --name /toast/${_KEY} --value "${_VAL}" --type SecureString --overwrite"
+  aws ssm put-parameter --name /toast/${_KEY} --value "${_VAL}" --type SecureString --overwrite | jq .Version -r
+}
+
 _ssm() {
   _CMD=${PARAM1}
   _KEY=${PARAM2}
@@ -856,22 +887,20 @@ _ssm() {
     aws ssm describe-parameters | jq ".Parameters[].Name" -r | grep '^/toast/'
     ;;
   g | get | load)
-    _command "aws ssm get-parameter --name /toast/${_KEY} --with-decryption"
-    aws ssm get-parameter --name /toast/${_KEY} --with-decryption | jq .Parameter.Value -r
+    _ssm_get "${_KEY}"
     ;;
   p | put | save)
     # 여러 줄 문자열을 JSON-safe하게 변환
     _ENCODED_VAL=$(printf "%s" "${_VAL}" | jq -Rs .)
 
-    _command "aws ssm put-parameter --name /toast/${_KEY} --value "${_ENCODED_VAL}" --type SecureString --overwrite"
-    aws ssm put-parameter --name /toast/${_KEY} --value "${_ENCODED_VAL}" --type SecureString --overwrite | jq .Version -r
+    _ssm_put "${_KEY}" "${_ENCODED_VAL}"
     ;;
   d | delete | rm | remove)
     _command "aws ssm delete-parameter --name /toast/${_KEY}"
     aws ssm delete-parameter --name /toast/${_KEY}
     ;;
   *)
-    _error
+    _ssm_get
     ;;
   esac
 }
