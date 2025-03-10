@@ -113,6 +113,9 @@ def run_region():
     except Exception as e:
         click.echo(f"Error fetching AWS regions: {e}")
 
+def run_ssm():
+    click.echo("Running SSM command")
+
 def run_update():
     click.echo("Updating CLI tool")
 
@@ -140,6 +143,10 @@ def region():
 @toast.command()
 def ctx():
     run_ctx()
+
+@toast.command()
+def ssm():
+    run_ssm()
 
 @toast.command()
 def update():
