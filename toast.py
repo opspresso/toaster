@@ -42,7 +42,7 @@ def run_ctx():
 
     contexts = sorted(result.stdout.splitlines())
     contexts.append("[New...]")
-    if contexts[:-1]:
+    if len(contexts) > 1:
         contexts.append("[Del...]")
 
     selected_ctx = select_from_list(contexts, "Select a Kubernetes context")
@@ -66,8 +66,9 @@ def run_ctx():
         else:
             click.echo("No cluster selected.")
     elif selected_ctx == "[Del...]":
-        contexts.append("[All...]")
-        selected_to_delete = select_from_list(contexts[:-2] + ["[All...]"] , "Select a context to delete")
+        delete_contexts = [ctx for ctx in contexts if ctx not in ("[New...]", "[Del...]")]
+        delete_contexts.append("[All...]")
+        selected_to_delete = select_from_list(delete_contexts, "Select a context to delete")
         if selected_to_delete == "[All...]":
             subprocess.run(["kubectl", "config", "unset", "contexts"])
             click.echo("Deleted all Kubernetes contexts.")
@@ -84,12 +85,6 @@ def run_ctx():
 
 def run_env(env_name):
     click.echo(f"Setting environment to {env_name}")
-
-def run_git():
-    click.echo("Running Git command")
-
-def run_ssh():
-    click.echo("Executing SSH command")
 
 def select_from_list(options, prompt="Select an option"):
     try:
@@ -118,9 +113,6 @@ def run_region():
     except Exception as e:
         click.echo(f"Error fetching AWS regions: {e}")
 
-def run_ns():
-    click.echo("Handling namespace operation")
-
 def run_update():
     click.echo("Updating CLI tool")
 
@@ -142,24 +134,12 @@ def env(env_name):
     run_env(env_name)
 
 @toast.command()
-def git():
-    run_git()
-
-@toast.command()
-def ssh():
-    run_ssh()
-
-@toast.command()
 def region():
     run_region()
 
 @toast.command()
 def ctx():
     run_ctx()
-
-@toast.command()
-def ns():
-    run_ns()
 
 @toast.command()
 def update():
