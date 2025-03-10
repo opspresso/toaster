@@ -2,52 +2,57 @@ import boto3
 import argparse
 import json
 import sys
+import subprocess
 
 def put_parameter(name, value):
     ssm = boto3.client('ssm')
     response = ssm.put_parameter(
-        Name=name,
+        Name=f"/toast/{name}",
         Value=value,
         Type='SecureString',
         Overwrite=True
     )
+    print("====================")
     print("Stored successfully.")
+    print("====================")
 
 def get_parameter(name):
     ssm = boto3.client('ssm')
     try:
         response = ssm.get_parameter(Name=name, WithDecryption=True)
+        print("====================")
         print(response['Parameter']['Value'])
+        print("====================")
     except ssm.exceptions.ParameterNotFound:
+        print("====================")
         print("Error: Parameter not found.")
+        print("====================")
 
 def list_parameters():
     ssm = boto3.client('ssm')
     response = ssm.describe_parameters(Filters=[{'Key': 'Name', 'Values': ['/toast/']}])
     parameters = [param['Name'] for param in response['Parameters']]
+    print("====================")
     for param in parameters:
         print(param)
+    print("====================")
 
 def select_command():
     commands = ['put', 'get', 'list']
-    print("Select a command:")
-    for i, cmd in enumerate(commands, start=1):
-        print(f"{i}. {cmd}")
-    choice = input("Enter choice: ")
-    return commands[int(choice) - 1] if choice.isdigit() and 1 <= int(choice) <= len(commands) else None
+    result = subprocess.run(['fzf', '--height=10', '--reverse'], input='\n'.join(commands), text=True, capture_output=True)
+    return result.stdout.strip() if result.returncode == 0 else None
 
 def select_parameter():
     ssm = boto3.client('ssm')
     response = ssm.describe_parameters(Filters=[{'Key': 'Name', 'Values': ['/toast/']}])
     parameters = [param['Name'] for param in response['Parameters']]
     if not parameters:
+        print("====================")
         print("No parameters found.")
+        print("====================")
         sys.exit(1)
-    print("Select a parameter:")
-    for i, param in enumerate(parameters, start=1):
-        print(f"{i}. {param}")
-    choice = input("Enter choice: ")
-    return parameters[int(choice) - 1] if choice.isdigit() and 1 <= int(choice) <= len(parameters) else None
+    result = subprocess.run(['fzf', '--height=10', '--reverse'], input='\n'.join(parameters), text=True, capture_output=True)
+    return result.stdout.strip() if result.returncode == 0 else None
 
 def main():
     parser = argparse.ArgumentParser(description="CLI Key Store using AWS SSM Parameter Store")
