@@ -2,8 +2,8 @@
 
 import click
 import subprocess
-from plugins.base_plugin import BasePlugin
-from plugins.utils import select_from_list
+from toast.plugins.base_plugin import BasePlugin
+from toast.plugins.utils import select_from_list
 
 class CtxPlugin(BasePlugin):
     """Plugin for 'ctx' command - manages Kubernetes contexts."""

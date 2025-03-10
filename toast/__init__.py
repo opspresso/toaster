@@ -7,10 +7,9 @@ import os
 import pkgutil
 import sys
 from typing import List, Type
+from toast.helpers import CustomHelpGroup
 
-from plugins.base_plugin import BasePlugin
-
-def discover_and_load_plugins(plugins_package_name: str = "plugins") -> List[Type[BasePlugin]]:
+def discover_and_load_plugins(plugins_package_name: str = "toast.plugins") -> List[Type]:
     """
     Dynamically discover and load all plugin classes from the plugins package.
 
@@ -20,6 +19,8 @@ def discover_and_load_plugins(plugins_package_name: str = "plugins") -> List[Typ
     Returns:
         List of plugin classes that extend BasePlugin
     """
+    from toast.plugins.base_plugin import BasePlugin
+
     discovered_plugins = []
 
     try:
@@ -52,8 +53,9 @@ def discover_and_load_plugins(plugins_package_name: str = "plugins") -> List[Typ
 
     return discovered_plugins
 
-@click.group()
-def toast():
+
+@click.group(cls=CustomHelpGroup)
+def toast_cli():
     """
     Toast command-line tool with dynamically loaded plugins.
     """
@@ -70,12 +72,12 @@ def main():
     # Register each plugin with the CLI
     for plugin_class in plugins:
         try:
-            plugin_class.register(toast)
+            plugin_class.register(toast_cli)
         except Exception as e:
             click.echo(f"Error registering plugin {plugin_class.__name__}: {e}", err=True)
 
     # Run the CLI
-    toast()
+    toast_cli()
 
 if __name__ == "__main__":
     main()

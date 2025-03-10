@@ -2,7 +2,7 @@
 
 import click
 import subprocess
-from plugins.base_plugin import BasePlugin
+from toast.plugins.base_plugin import BasePlugin
 
 class AmPlugin(BasePlugin):
     """Plugin for 'am' command - shows AWS caller identity."""

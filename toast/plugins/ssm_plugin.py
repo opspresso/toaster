@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 
 import click
-from plugins.base_plugin import BasePlugin
+from toast.plugins.base_plugin import BasePlugin
 
 class SsmPlugin(BasePlugin):
     """Plugin for 'ssm' command - runs SSM commands."""

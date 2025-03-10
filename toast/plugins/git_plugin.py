@@ -4,7 +4,7 @@ import click
 import os
 import subprocess
 import re
-from plugins.base_plugin import BasePlugin
+from toast.plugins.base_plugin import BasePlugin
 
 
 class GitPlugin(BasePlugin):

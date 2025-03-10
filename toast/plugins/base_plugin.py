@@ -14,7 +14,8 @@ class BasePlugin:
         if not cls.name:
             raise ValueError(f"Plugin {cls.__name__} must define a name")
 
-        @cli_group.command(name=cls.name, help=cls.help)
+        # Use regular Command class to avoid showing logo for subcommands
+        @cli_group.command(name=cls.name, help=cls.help, cls=click.Command)
         @cls.get_arguments
         def command(**kwargs):
             return cls.execute(**kwargs)

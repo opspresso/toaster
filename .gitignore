@@ -89,6 +89,7 @@ yarn-error.log*
 
 # Build
 target/
+backup/
 build/
 dist/
 

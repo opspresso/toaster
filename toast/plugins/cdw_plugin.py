@@ -3,8 +3,8 @@
 import click
 import subprocess
 import os
-from plugins.base_plugin import BasePlugin
-from plugins.utils import select_from_list
+from toast.plugins.base_plugin import BasePlugin
+from toast.plugins.utils import select_from_list
 
 class CdwPlugin(BasePlugin):
     """Plugin for 'cdw' command - helps navigate to workspace directories."""

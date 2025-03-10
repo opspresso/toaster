@@ -4,12 +4,42 @@
 
 Toast.sh is a Python-based CLI tool that provides various utility commands for AWS and Kubernetes management. The architecture follows a plugin-based design pattern, allowing for easy extension of functionality through the addition of new plugins.
 
+## Package Structure
+
+The project is organized as a Python package with the following structure:
+
+```
+toast-cli/
+  ├── setup.py            # Package setup script
+  ├── setup.cfg           # Package configuration
+  ├── pyproject.toml      # Build system requirements
+  ├── MANIFEST.in         # Additional files to include in the package
+  ├── VERSION             # Version information
+  ├── README.md           # Project documentation
+  ├── ARCHITECTURE.md     # Architecture documentation
+  ├── LICENSE             # License information
+  └── toast/              # Main package
+      ├── __init__.py     # Package initialization and CLI entry point
+      └── plugins/        # Plugin modules
+          ├── __init__.py
+          ├── base_plugin.py
+          ├── am_plugin.py
+          ├── cdw_plugin.py
+          ├── ctx_plugin.py
+          ├── env_plugin.py
+          ├── git_plugin.py
+          ├── region_plugin.py
+          ├── ssm_plugin.py
+          ├── update_plugin.py
+          └── utils.py
+```
+
 ## Components
 
-### Main Application (toast.py)
+### Main Application (toast/__init__.py)
 
 The main entry point of the application is responsible for:
-- Dynamically discovering and loading plugins from the `plugins` directory
+- Dynamically discovering and loading plugins from the `toast.plugins` package
 - Registering plugin commands with the CLI interface using Click
 - Running the CLI with all discovered commands
 
@@ -124,3 +154,55 @@ The plugin will be automatically discovered and loaded when the application star
 - **Extensibility**: New commands can be added without modifying existing code
 - **Maintainability**: Code is organized into logical components
 - **Testability**: Plugins can be tested independently
+
+## Packaging and Distribution
+
+The project is packaged using standard Python packaging tools. The following files enable packaging and distribution:
+
+1. **setup.py**: The main setup script that defines package metadata and dependencies
+2. **setup.cfg**: Configuration file for package metadata and entry points
+3. **pyproject.toml**: Defines build system requirements
+4. **MANIFEST.in**: Specifies additional files to include in the source distribution
+
+### Installation Methods
+
+The package can be installed using pip:
+
+```bash
+# Install from PyPI (once published)
+pip install toast-cli
+
+# Install from local directory in development mode
+pip install -e .
+
+# Install from GitHub
+pip install git+https://github.com/opspresso/toast.sh.git
+```
+
+### Building Distribution Packages
+
+To build distribution packages:
+
+```bash
+# Install build requirements
+pip install build
+
+# Build source and wheel distributions
+python -m build
+
+# This will create:
+# - dist/toast-cli-X.Y.Z.tar.gz (source distribution)
+# - dist/toast_cli-X.Y.Z-py3-none-any.whl (wheel distribution)
+```
+
+### Publishing to PyPI
+
+To publish the package to PyPI:
+
+```bash
+# Install twine
+pip install twine
+
+# Upload to PyPI
+twine upload dist/*
+```

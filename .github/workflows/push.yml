@@ -16,23 +16,23 @@ jobs:
         with:
           fetch-depth: 0
 
-      - name: Bump Version 🏷️
-        id: bump
-        uses: opspresso/action-builder@master
-        with:
-          args: --version
+      # - name: Bump Version 🏷️
+      #   id: bump
+      #   uses: opspresso/action-builder@master
+      #   with:
+      #     args: --version
 
-      - name: Package 📦
-        run: |
-          bash ./package.sh
+      # - name: Package 📦
+      #   run: |
+      #     bash ./package.sh
 
-      - name: Release Version 🚀
-        uses: opspresso/action-builder@master
-        with:
-          args: --release
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          ASSET_PATH: ./target/dist
+      # - name: Release Version 🚀
+      #   uses: opspresso/action-builder@master
+      #   with:
+      #     args: --release
+      #   env:
+      #     GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      #     ASSET_PATH: ./target/dist
 
       - name: Publish to gh-page 🚀
         run: |
@@ -45,10 +45,10 @@ jobs:
           git commit -m "update"
           git push origin gh-page
 
-      - name: Post to Slack 💬
-        uses: opspresso/action-builder@master
-        with:
-          args: --slack
-        env:
-          SLACK_TOKEN: ${{ secrets.SLACK_TOKEN }}
-          JSON_PATH: ./target/slack_message.json
+      # - name: Post to Slack 💬
+      #   uses: opspresso/action-builder@master
+      #   with:
+      #     args: --slack
+      #   env:
+      #     SLACK_TOKEN: ${{ secrets.SLACK_TOKEN }}
+      #     JSON_PATH: ./target/slack_message.json
