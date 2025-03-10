@@ -845,6 +845,37 @@ _mtu() {
   ifconfig | grep mtu | grep ${_MTU}
 }
 
+_ssm() {
+  _CMD=${PARAM1}
+  _KEY=${PARAM2}
+  _VAL=${PARAM3}
+
+  case ${_CMD} in
+  l | ls)
+    _command "aws ssm describe-parameters"
+    aws ssm describe-parameters | jq ".Parameters[].Name" -r | grep '^/toast/'
+    ;;
+  g | get | load)
+    _command "aws ssm get-parameter --name /toast/${_KEY} --with-decryption"
+    aws ssm get-parameter --name /toast/${_KEY} --with-decryption | jq .Parameter.Value -r
+    ;;
+  p | put | save)
+    # 여러 줄 문자열을 JSON-safe하게 변환
+    _ENCODED_VAL=$(printf "%s" "${_VAL}" | jq -Rs .)
+
+    _command "aws ssm put-parameter --name /toast/${_KEY} --value "${_ENCODED_VAL}" --type SecureString --overwrite"
+    aws ssm put-parameter --name /toast/${_KEY} --value "${_ENCODED_VAL}" --type SecureString --overwrite | jq .Version -r
+    ;;
+  d | delete | rm | remove)
+    _command "aws ssm delete-parameter --name /toast/${_KEY}"
+    aws ssm delete-parameter --name /toast/${_KEY}
+    ;;
+  *)
+    _error
+    ;;
+  esac
+}
+
 _stress() {
   _REQ=${PARAM1}
   _CON=${PARAM2}
@@ -1332,6 +1363,9 @@ _toast() {
     ;;
   z | ns)
     _ns # kubectl namespace
+    ;;
+  m | ssm)
+    _ssm # aws ssm
     ;;
   g | git)
     _git # git
