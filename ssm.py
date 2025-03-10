@@ -23,7 +23,7 @@ def get_parameter(name):
 
 def list_parameters():
     ssm = boto3.client('ssm')
-    response = ssm.describe_parameters(Filters=[{'Key': 'Name', 'Option': 'BeginsWith', 'Values': ['/toast/']}])
+    response = ssm.describe_parameters(Filters=[{'Key': 'Name', 'Values': ['/toast/']}])
     parameters = [param['Name'] for param in response['Parameters']]
     for param in parameters:
         print(param)
@@ -38,7 +38,7 @@ def select_command():
 
 def select_parameter():
     ssm = boto3.client('ssm')
-    response = ssm.describe_parameters(Filters=[{'Key': 'Name', 'Option': 'BeginsWith', 'Values': ['/toast/']}])
+    response = ssm.describe_parameters(Filters=[{'Key': 'Name', 'Values': ['/toast/']}])
     parameters = [param['Name'] for param in response['Parameters']]
     if not parameters:
         print("No parameters found.")
