@@ -19,7 +19,7 @@ setup(
     description="A Python-based CLI utility with a plugin architecture for AWS, Kubernetes, Git, and more",
     long_description=long_description,
     long_description_content_type="text/markdown",
-    url="https://github.com/opspresso/toast.sh",
+    url="https://github.com/opspresso/toast-cli",
     packages=find_packages(),
     include_package_data=True,
     python_requires=">=3.6",

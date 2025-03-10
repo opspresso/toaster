@@ -1,8 +1,8 @@
-# Toast.sh Architecture
+# Toast-cli Architecture
 
 ## Overview
 
-Toast.sh is a Python-based CLI tool that provides various utility commands for AWS and Kubernetes management. The architecture follows a plugin-based design pattern, allowing for easy extension of functionality through the addition of new plugins.
+Toast-cli is a Python-based CLI tool that provides various utility commands for AWS and Kubernetes management. The architecture follows a plugin-based design pattern, allowing for easy extension of functionality through the addition of new plugins.
 
 ## Package Structure
 
@@ -207,7 +207,7 @@ pip install toast-cli
 pip install -e .
 
 # Install from GitHub
-pip install git+https://github.com/opspresso/toast.sh.git
+pip install git+https://github.com/opspresso/toast-cli.git
 ```
 
 ### Building Distribution Packages

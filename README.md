@@ -1,15 +1,15 @@
-# toast.sh
+# toast-cli
 
 ```
- _                  _         _
-| |_ ___   __ _ ___| |_   ___| |__
-| __/ _ \ / _' / __| __| / __| '_ \
-| || (_) | (_| \__ \ |_ _\__ \ | | |
- \__\___/ \__,_|___/\__(-)___/_| |_|
+ _                  _           _ _
+| |_ ___   __ _ ___| |_     ___| (_)
+| __/ _ \ / _` / __| __|__ / __| | |
+| || (_) | (_| \__ \ ||___| (__| | |
+ \__\___/ \__,_|___/\__|   \___|_|_|
 ```
 
-[![build](https://img.shields.io/github/actions/workflow/status/opspresso/toast.sh/push.yml?branch=main&style=for-the-badge&logo=github)](https://github.com/opspresso/toast.sh/actions/workflows/push.yml)
-[![release](https://img.shields.io/github/v/release/opspresso/toast.sh?style=for-the-badge&logo=github)](https://github.com/opspresso/toast.sh/releases)
+[![build](https://img.shields.io/github/actions/workflow/status/opspresso/toast-cli/push.yml?branch=main&style=for-the-badge&logo=github)](https://github.com/opspresso/toast-cli/actions/workflows/push.yml)
+[![release](https://img.shields.io/github/v/release/opspresso/toast-cli?style=for-the-badge&logo=github)](https://github.com/opspresso/toast-cli/releases)
 
 Toast is a Python-based CLI utility with a plugin architecture that simplifies the use of CLI tools for AWS, Kubernetes, Git, and more.
 
@@ -65,11 +65,11 @@ pip install --upgrade toast-cli
 pip install toast-cli==3.0.0
 
 # Install development version from GitHub
-pip install git+https://github.com/opspresso/toast.sh.git
+pip install git+https://github.com/opspresso/toast-cli.git
 
 # Install in development mode from local clone
-git clone https://github.com/opspresso/toast.sh.git
-cd toast.sh
+git clone https://github.com/opspresso/toast-cli.git
+cd toast-cli
 pip install -e .
 ```
 

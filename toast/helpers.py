@@ -4,13 +4,13 @@ import click
 import os
 
 def display_logo():
-    """Display the toast.sh ASCII logo"""
+    """Display the toast-cli ASCII logo"""
     logo = """
- _                  _         _
-| |_ ___   __ _ ___| |_   ___| |__
-| __/ _ \ / _' / __| __| / __| '_ \\
-| || (_) | (_| \__ \ |_ _\__ \ | | |
- \__\___/ \__,_|___/\__(-)___/_| |_|   v{0}
+ _                  _           _ _
+| |_ ___   __ _ ___| |_     ___| (_)
+| __/ _ \ / _` / __| __|__ / __| | |
+| || (_) | (_| \__ \ ||___| (__| | |
+ \__\___/ \__,_|___/\__|   \___|_|_|   v{0}
 """.format(get_version())
     click.echo(logo)
     click.echo("=" * 80)
