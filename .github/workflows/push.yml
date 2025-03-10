@@ -16,15 +16,9 @@ jobs:
         with:
           fetch-depth: 0
 
-      - name: Bump Version 🏷️
-        id: bump
-        uses: opspresso/action-builder@master
-        with:
-          args: --version
-
       - name: Package 📦
         run: |
-          bash ./package.sh
+          python -m build
 
       - name: Release Version 🚀
         uses: opspresso/action-builder@master
@@ -32,23 +26,4 @@ jobs:
           args: --release
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          ASSET_PATH: ./target/dist
-
-      - name: Publish to gh-page 🚀
-        run: |
-          git config --global user.email "bot@nalbam.com"
-          git config --global user.name "nalbam-bot"
-          git checkout -- VERSION
-          git checkout gh-page
-          cp -rf ./target/build/* ./
-          git add .
-          git commit -m "update"
-          git push origin gh-page
-
-      - name: Post to Slack 💬
-        uses: opspresso/action-builder@master
-        with:
-          args: --slack
-        env:
-          SLACK_TOKEN: ${{ secrets.SLACK_TOKEN }}
-          JSON_PATH: ./target/slack_message.json
+          ASSET_PATH: ./dist

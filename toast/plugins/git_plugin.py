@@ -1,0 +1,92 @@
+#!/usr/bin/env python3
+
+import click
+import os
+import subprocess
+import re
+from toast.plugins.base_plugin import BasePlugin
+
+
+class GitPlugin(BasePlugin):
+    """Plugin for 'git' command - handles Git repository operations."""
+
+    name = "git"
+    help = "Manage Git repositories"
+
+    @classmethod
+    def get_arguments(cls, func):
+        func = click.argument("command", required=True)(func)
+        func = click.argument("repo_name", required=True)(func)
+        func = click.option(
+            "--target", "-t", help="Target directory name for clone operation"
+        )(func)
+        return func
+
+    @classmethod
+    def execute(cls, command, repo_name, target=None, **kwargs):
+        # Get the current path
+        current_path = os.getcwd()
+
+        # Check if the current path matches the expected pattern
+        pattern = r"^.*/workspace/github.com/([^/]+)$"
+        match = re.match(pattern, current_path)
+
+        if not match:
+            click.echo(
+                "Error: Current directory must be in ~/workspace/github.com/{username} format"
+            )
+            return
+
+        # Extract username from the path
+        username = match.group(1)
+
+        if command == "clone" or command == "cl":
+            # Determine the target directory name
+            target_dir = target if target else repo_name
+
+            # Construct the repository URL
+            repo_url = f"https://github.com/{username}/{repo_name}.git"
+
+            # Target path in the current directory
+            target_path = os.path.join(current_path, target_dir)
+
+            # Check if the target directory already exists
+            if os.path.exists(target_path):
+                click.echo(f"Error: Target directory '{target_dir}' already exists")
+                return
+
+            # Clone the repository
+            click.echo(f"Cloning {repo_url} into {target_path}...")
+            try:
+                result = subprocess.run(
+                    ["git", "clone", repo_url, target_path],
+                    capture_output=True,
+                    text=True,
+                )
+
+                if result.returncode == 0:
+                    click.echo(f"Successfully cloned {repo_name} to {target_path}")
+                else:
+                    click.echo(f"Error cloning repository: {result.stderr}")
+            except Exception as e:
+                click.echo(f"Error executing git command: {e}")
+
+        elif command == "rm":
+            # Path to the repository
+            repo_path = os.path.join(current_path, repo_name)
+
+            # Check if the repository exists
+            if not os.path.exists(repo_path):
+                click.echo(f"Error: Repository directory '{repo_name}' does not exist")
+                return
+
+            try:
+                # Remove the repository
+                subprocess.run(["rm", "-rf", repo_path], check=True)
+                click.echo(f"Successfully removed {repo_path}")
+            except Exception as e:
+                click.echo(f"Error removing repository: {e}")
+
+        else:
+            click.echo(f"Unknown command: {command}")
+            click.echo("Available commands: clone, rm")
