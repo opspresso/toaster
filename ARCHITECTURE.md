@@ -51,6 +51,7 @@ Each plugin follows a standard structure:
 | CdwPlugin | cdw | Navigate to workspace directories |
 | CtxPlugin | ctx | Manage Kubernetes contexts |
 | EnvPlugin | env | Set environment with AWS profile |
+| GitPlugin | git | Manage Git repositories |
 | RegionPlugin | region | Set AWS region |
 | SsmPlugin | ssm | Run AWS SSM commands |
 | UpdatePlugin | update | Update CLI tool |
@@ -73,11 +74,33 @@ The `env` command handles AWS environment profile management:
 
 3. **Authentication Verification**:
    - Verifies credentials by calling AWS STS get-caller-identity
+   - Uses jq to provide colorized JSON output of the AWS identity information
    - Displays AWS region if available
 
 4. **File Structure**:
    - Environment profiles are stored as files in the env directory
    - Each file contains key=value pairs for environment variables
+
+#### GitPlugin (git command)
+
+The `git` command handles Git repository operations:
+
+1. **Repository Path Validation**:
+   - Validates that the current directory is in the ~/workspace/github.com/{username} format
+   - Extracts username from the current path for repository operations
+
+2. **Repository Cloning**:
+   - Clones repositories from the user's GitHub account using the username extracted from path
+   - Supports cloning to a specified target directory name (optional)
+   - Format: `toast git repo_name clone` (기본) 또는 `toast git repo_name clone --target target_name` (대상 디렉토리 지정)
+
+3. **Repository Removal**:
+   - Safely removes repository directories with confirmation prompt
+   - Format: `toast git repo_name rm`
+
+4. **Path Management**:
+   - Automatically constructs GitHub repository URLs based on extracted username
+   - Manages repository paths within the workspace directory structure
 
 ## Dependencies
 
