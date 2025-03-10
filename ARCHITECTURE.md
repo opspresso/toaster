@@ -14,12 +14,14 @@ toast-cli/
   ├── setup.cfg           # Package configuration
   ├── pyproject.toml      # Build system requirements
   ├── MANIFEST.in         # Additional files to include in the package
-  ├── VERSION             # Version information
+  ├── VERSION             # Version information (current: 3.0.0)
   ├── README.md           # Project documentation
   ├── ARCHITECTURE.md     # Architecture documentation
   ├── LICENSE             # License information
   └── toast/              # Main package
       ├── __init__.py     # Package initialization and CLI entry point
+      ├── __main__.py     # Entry point for running as a module
+      ├── helpers.py      # Helper functions and custom UI elements
       └── plugins/        # Plugin modules
           ├── __init__.py
           ├── base_plugin.py
@@ -36,12 +38,25 @@ toast-cli/
 
 ## Components
 
-### Main Application (toast/__init__.py)
+### Main Application Components
+
+#### Main Entry Point (toast/__init__.py)
 
 The main entry point of the application is responsible for:
 - Dynamically discovering and loading plugins from the `toast.plugins` package
 - Registering plugin commands with the CLI interface using Click
 - Running the CLI with all discovered commands
+
+#### Module Entry Point (toast/__main__.py)
+
+Enables the application to be run as a module with `python -m toast`.
+
+#### Helper Utilities (toast/helpers.py)
+
+- Contains helper functions and custom UI elements
+- `display_logo()`: Renders the ASCII logo with version
+- `get_version()`: Retrieves version information from VERSION file
+- `CustomHelpCommand` & `CustomHelpGroup`: Custom Click classes for enhanced help display
 
 ### Plugin System
 
@@ -56,7 +71,7 @@ The plugin system is based on Python's `importlib` and `pkgutil` modules, which 
 
 2. **Utilities (`plugins/utils.py`)**
    - Common utility functions used by multiple plugins
-   - Examples include the `select_from_list` function for interactive selection
+   - `select_from_list()`: Interactive selection using fzf for better user experience
 
 ### Plugin Structure
 
@@ -137,6 +152,11 @@ The `git` command handles Git repository operations:
 The plugin system has the following external dependencies:
 - Click: Command-line interface creation
 - Python-Dotenv: Environment variable management from .env files
+- External tools used by various plugins:
+  - fzf: Interactive selection in terminal
+  - jq: JSON processing for formatted output
+  - aws-cli: AWS command line interface
+  - kubectl: Kubernetes command line tool
 
 ## Adding New Plugins
 
@@ -160,9 +180,20 @@ The plugin will be automatically discovered and loaded when the application star
 The project is packaged using standard Python packaging tools. The following files enable packaging and distribution:
 
 1. **setup.py**: The main setup script that defines package metadata and dependencies
+   - Current version: 3.0.0
+   - Author: nalbam <byforce@gmail.com>
+   - Main package requirements: click, python-dotenv
+
 2. **setup.cfg**: Configuration file for package metadata and entry points
+   - Organization: opspresso <info@opspresso.com>
+   - License: GNU General Public License v3.0
+   - Python compatibility: 3.6+
+
 3. **pyproject.toml**: Defines build system requirements
+   - Using setuptools and wheel
+
 4. **MANIFEST.in**: Specifies additional files to include in the source distribution
+   - Includes: README.md, LICENSE, VERSION, ARCHITECTURE.md, CNAME, favicon.ico, .mergify.yml
 
 ### Installation Methods
 

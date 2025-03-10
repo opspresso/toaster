@@ -45,20 +45,41 @@ See [ARCHITECTURE.md](ARCHITECTURE.md) for detailed information about the design
 
 * Python 3.6+
 * Click package
-* Other dependencies based on specific plugin requirements (AWS CLI, kubectl, etc.)
+* Python-dotenv package
+* External tools used by various plugins:
+  - fzf: Interactive selection in terminal
+  - jq: JSON processing for formatted output
+  - aws-cli: AWS command line interface
+  - kubectl: Kubernetes command line tool
 
-### Setup
+### Installation Methods
 
 ```bash
-# Clone the repository
+# Install from PyPI
+pip install toast-cli
+
+# Update to latest version
+pip install --upgrade toast-cli
+
+# Install specific version
+pip install toast-cli==3.0.0
+
+# Install development version from GitHub
+pip install git+https://github.com/opspresso/toast.sh.git
+
+# Install in development mode from local clone
 git clone https://github.com/opspresso/toast.sh.git
 cd toast.sh
+pip install -e .
+```
 
-# Make the script executable
-chmod +x toast.py
+### Creating Symbolic Link (Optional)
 
-# Optional: Create a symbolic link to make it available system-wide
-sudo ln -sf $(pwd)/toast.py /usr/local/bin/toast
+If toast command is not available in your PATH after installation:
+
+```bash
+# Create a symbolic link to make it available system-wide
+sudo ln -sf $(which toast) /usr/local/bin/toast
 ```
 
 ## Usage

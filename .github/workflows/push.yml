@@ -16,10 +16,31 @@ jobs:
         with:
           fetch-depth: 0
 
-      - name: Package 📦
+      - name: Bump Version 🏷️
+        id: bump
+        uses: opspresso/action-builder@master
+        with:
+          args: --version
+
+      - name: Set up Python 🐍
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.x'
+
+      - name: Install dependencies 📦
         run: |
-          pip install build
+          python -m pip install --upgrade pip
+          pip install build twine
+
+      - name: Build Package 📦
+        run: |
           python -m build
+
+      - name: Publish to PyPI
+        env:
+          TWINE_USERNAME: __token__
+          TWINE_PASSWORD: ${{ secrets.PYPI_API_TOKEN }}
+        run: twine upload dist/*
 
       - name: Release Version 🚀
         uses: opspresso/action-builder@master
