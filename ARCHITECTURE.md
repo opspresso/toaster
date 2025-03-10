@@ -98,7 +98,7 @@ Each plugin follows a standard structure:
 | EnvPlugin | env | Set environment with AWS profile |
 | GitPlugin | git | Manage Git repositories |
 | RegionPlugin | region | Set AWS region |
-| SsmPlugin | ssm | Run AWS SSM commands |
+| SsmPlugin | ssm | Manage AWS SSM parameters |
 | UpdatePlugin | update | Update CLI tool |
 
 ### Plugin Details
@@ -146,6 +146,32 @@ The `git` command handles Git repository operations:
 4. **Path Management**:
    - Automatically constructs GitHub repository URLs based on extracted username
    - Manages repository paths within the workspace directory structure
+
+#### SsmPlugin (ssm command)
+
+The `ssm` command manages AWS SSM Parameter Store operations:
+
+1. **Parameter Retrieval**:
+   - Lists and allows selection of parameters with the `/toast/` prefix
+   - Displays parameter value with automatic decryption for SecureString types
+   - Shows parameter type and last modified date
+   - Format: `toast ssm` (default action)
+
+2. **Parameter Creation/Update**:
+   - Adds `/toast/` prefix automatically to user-provided parameter names
+   - Supports multiline value input (ended with Ctrl+D)
+   - Stores parameters as SecureString type for sensitive information
+   - Format: `toast ssm put`
+
+3. **Parameter Removal**:
+   - Lists and allows selection of parameters with the `/toast/` prefix
+   - Confirms deletion before removing the parameter
+   - Format: `toast ssm rm` (or `toast ssm remove`)
+
+4. **User Interface**:
+   - Uses fzf for interactive parameter selection
+   - Provides confirmation prompts for destructive operations
+   - Shows clear success/error messages
 
 ## Dependencies
 
