@@ -1,0 +1,7 @@
+include README.md
+include LICENSE
+include VERSION
+include ARCHITECTURE.md
+include CNAME
+include favicon.ico
+include .mergify.yml
