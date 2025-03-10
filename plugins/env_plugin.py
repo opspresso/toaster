@@ -94,18 +94,67 @@ class EnvPlugin(BasePlugin):
                         click.echo("No profile selected.")
                         return
 
-                # Set the AWS_PROFILE environment variable
-                os.environ["AWS_PROFILE"] = env_name
-                click.echo(f"Set AWS_PROFILE={env_name}")
-
                 # Load the selected profile and environment variables
                 profile_path = os.path.join(env_path, env_name)
+                aws_access_key_id = None
+                aws_secret_access_key = None
+                aws_region = None
+
                 if os.path.exists(profile_path):
                     with open(profile_path, 'r') as f:
                         for line in f:
                             if '=' in line:
                                 key, value = line.strip().split('=', 1)
                                 os.environ[key] = value
+
+                                # Capture AWS credentials for config file
+                                if key == "AWS_ACCESS_KEY_ID":
+                                    aws_access_key_id = value
+                                elif key == "AWS_SECRET_ACCESS_KEY":
+                                    aws_secret_access_key = value
+                                elif key == "AWS_REGION":
+                                    aws_region = value
+
+                # Ensure AWS CLI config directory exists
+                aws_config_dir = os.path.expanduser("~/.aws")
+                if not os.path.exists(aws_config_dir):
+                    os.makedirs(aws_config_dir, exist_ok=True)
+
+                # Update AWS config and credentials files if we have the necessary info
+                if aws_access_key_id and aws_secret_access_key:
+                    # Update credentials file for both profile name and default
+                    credentials_file = os.path.join(aws_config_dir, "credentials")
+
+                    # Update the named profile
+                    cls._update_aws_file(credentials_file, env_name, {
+                        "aws_access_key_id": aws_access_key_id,
+                        "aws_secret_access_key": aws_secret_access_key
+                    })
+
+                    # Also update default profile with the same credentials
+                    cls._update_aws_file(credentials_file, "default", {
+                        "aws_access_key_id": aws_access_key_id,
+                        "aws_secret_access_key": aws_secret_access_key
+                    })
+
+                    click.echo(f"Updated default AWS profile with {env_name} credentials")
+
+                    # Update config file for both profile name and default
+                    config_file = os.path.join(aws_config_dir, "config")
+                    config_entries = {}
+                    if aws_region:
+                        config_entries["region"] = aws_region
+
+                    if config_entries:
+                        # Update the named profile
+                        cls._update_aws_file(config_file, f"profile {env_name}", config_entries)
+
+                        # Also update default profile
+                        cls._update_aws_file(config_file, "default", config_entries)
+
+                # Set the AWS_PROFILE environment variable
+                os.environ["AWS_PROFILE"] = env_name
+                click.echo(f"Set AWS_PROFILE={env_name}")
 
                 click.echo(f"Set environment to {env_name}")
 
@@ -123,3 +172,36 @@ class EnvPlugin(BasePlugin):
                 click.echo(f"Error setting environment: {e}")
         else:
             click.echo(f"Environment path does not exist: {env_path}")
+
+    @staticmethod
+    def _update_aws_file(file_path, section_name, entries):
+        """Update AWS credentials or config file with given section and entries"""
+        config_content = ""
+        section_exists = False
+
+        # Read existing content if file exists
+        if os.path.exists(file_path):
+            with open(file_path, 'r') as f:
+                config_content = f.read()
+
+        # Parse sections
+        sections = {}
+        current_section = None
+        for line in config_content.splitlines():
+            line = line.strip()
+            if line.startswith('[') and line.endswith(']'):
+                current_section = line[1:-1]
+                sections[current_section] = []
+            elif current_section is not None:
+                sections[current_section].append(line)
+
+        # Update or add section
+        sections[section_name] = [f"{key} = {value}" for key, value in entries.items()]
+
+        # Write updated content
+        with open(file_path, 'w') as f:
+            for section, lines in sections.items():
+                f.write(f"[{section}]\n")
+                for line in lines:
+                    f.write(f"{line}\n")
+                f.write("\n")  # Empty line between sections
