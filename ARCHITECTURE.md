@@ -30,11 +30,8 @@ toast-cli/
           ├── am_plugin.py
           ├── cdw_plugin.py
           ├── ctx_plugin.py
-          ├── env_plugin.py
           ├── git_plugin.py
           ├── region_plugin.py
-          ├── ssm_plugin.py
-          ├── update_plugin.py
           └── utils.py
 ```
 
@@ -97,44 +94,28 @@ Each plugin follows a standard structure:
 | AmPlugin | am | Show AWS caller identity |
 | CdwPlugin | cdw | Navigate to workspace directories |
 | CtxPlugin | ctx | Manage Kubernetes contexts |
-| EnvPlugin | env | Set environment with AWS profile |
+| EnvPlugin | env | Manage AWS profiles |
 | GitPlugin | git | Manage Git repositories |
 | RegionPlugin | region | Set AWS region |
-| SsmPlugin | ssm | Manage AWS SSM parameters |
-| UpdatePlugin | update | Update CLI tool |
 
 ### Plugin Details
 
 #### EnvPlugin (env command)
 
-The `env` command handles AWS environment profile management:
+The `env` command manages AWS profiles:
 
-1. **1Password Integration**:
-   - Automatically detects and uses 1Password CLI (op) if available
-   - Prompts user to signin to 1Password if not already signed in
-   - Always lists available vaults and lets user select one (vault selection is not saved)
-   - Retrieves AWS credentials from secure notes in the selected vault
+1. **Profile Discovery**:
+   - Reads profiles from the `~/.aws/credentials` file
+   - Shows list of available AWS profiles for selection
 
-2. **Traditional File-based Fallback**:
-   - Falls back to file-based profile management if 1Password CLI is not available
-   - Looks for AWS_ENV_PATH in the ~/.toast.json file (자동으로 생성됨)
-   - If ~/.toast.json doesn't exist, creates it with default settings
-   - If AWS_ENV_PATH not found, creates a path at ~/workspace/github.com/{username}/keys/env
-   - Uses whoami to get the default username, but allows customization
+2. **Profile Selection**:
+   - Uses interactive fzf selection for better user experience
+   - Allows users to select from all configured AWS profiles
 
-2. **Profile Management**:
-   - Lists and allows selection of profiles from the environment path
-   - Loads environment variables from the selected profile file
-   - Sets AWS_PROFILE environment variable
-
-3. **Authentication Verification**:
-   - Verifies credentials by calling AWS STS get-caller-identity
-   - Uses jq to provide colorized JSON output of the AWS identity information
-   - Displays AWS region if available
-
-4. **File Structure**:
-   - Environment profiles are stored as files in the env directory
-   - Each file contains key=value pairs for environment variables
+3. **Default Profile Management**:
+   - Sets the selected profile as the default AWS profile
+   - Preserves authentication information including access key, secret key, and session token
+   - Simplifies working with multiple AWS accounts
 
 #### GitPlugin (git command)
 
@@ -156,32 +137,6 @@ The `git` command handles Git repository operations:
 4. **Path Management**:
    - Automatically constructs GitHub repository URLs based on extracted username
    - Manages repository paths within the workspace directory structure
-
-#### SsmPlugin (ssm command)
-
-The `ssm` command manages AWS SSM Parameter Store operations:
-
-1. **Parameter Retrieval**:
-   - Lists and allows selection of parameters with the `/toast/` prefix
-   - Displays parameter value with automatic decryption for SecureString types
-   - Shows parameter type and last modified date
-   - Format: `toast ssm` (default action)
-
-2. **Parameter Creation/Update**:
-   - Adds `/toast/` prefix automatically to user-provided parameter names
-   - Supports multiline value input (ended with Ctrl+D)
-   - Stores parameters as SecureString type for sensitive information
-   - Format: `toast ssm put`
-
-3. **Parameter Removal**:
-   - Lists and allows selection of parameters with the `/toast/` prefix
-   - Confirms deletion before removing the parameter
-   - Format: `toast ssm rm` (or `toast ssm remove`)
-
-4. **User Interface**:
-   - Uses fzf for interactive parameter selection
-   - Provides confirmation prompts for destructive operations
-   - Shows clear success/error messages
 
 ## Dependencies
 

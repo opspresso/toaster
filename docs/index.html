@@ -53,9 +53,11 @@
                 <div class="terminal-content">
                     <pre><code>$ pip install toast-cli
 $ toast --help
-$ toast env     # Set environment with AWS profile
+$ toast cdw     # Navigate workspace directories
 $ toast ctx     # Manage Kubernetes contexts
-$ toast git     # Manage Git repositories</code></pre>
+$ toast env     # Manage AWS profiles
+$ toast git     # Manage Git repositories
+$ toast region  # Set AWS region</code></pre>
                 </div>
             </div>
         </div>
@@ -74,7 +76,7 @@ $ toast git     # Manage Git repositories</code></pre>
                 <div class="feature">
                     <div class="feature-icon">☁️</div>
                     <h3>AWS Integration</h3>
-                    <p>Seamlessly manage AWS profiles, regions, and SSM parameters.</p>
+                    <p>Seamlessly manage AWS regions and identity.</p>
                 </div>
                 <div class="feature">
                     <div class="feature-icon">⎈</div>
@@ -185,19 +187,6 @@ pip install -e .">Copy</button>
 
                 <div class="plugin-card">
                     <div class="plugin-header">
-                        <h3>env</h3>
-                        <span class="plugin-badge">AWS</span>
-                    </div>
-                    <div class="plugin-body">
-                        <p>Set environment with AWS profile</p>
-                        <div class="plugin-usage">
-                            <code>toast env</code>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="plugin-card">
-                    <div class="plugin-header">
                         <h3>git</h3>
                         <span class="plugin-badge">Git</span>
                     </div>
@@ -206,6 +195,19 @@ pip install -e .">Copy</button>
                         <div class="plugin-usage">
                             <code>toast git repo_name clone</code>
                             <code>toast git repo_name rm</code>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="plugin-card">
+                    <div class="plugin-header">
+                        <h3>env</h3>
+                        <span class="plugin-badge">AWS</span>
+                    </div>
+                    <div class="plugin-body">
+                        <p>Manage AWS profiles</p>
+                        <div class="plugin-usage">
+                            <code>toast env</code>
                         </div>
                     </div>
                 </div>
@@ -223,33 +225,6 @@ pip install -e .">Copy</button>
                     </div>
                 </div>
 
-                <div class="plugin-card">
-                    <div class="plugin-header">
-                        <h3>ssm</h3>
-                        <span class="plugin-badge">AWS</span>
-                    </div>
-                    <div class="plugin-body">
-                        <p>Manage AWS SSM parameters</p>
-                        <div class="plugin-usage">
-                            <code>toast ssm</code>
-                            <code>toast ssm put</code>
-                            <code>toast ssm rm</code>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="plugin-card">
-                    <div class="plugin-header">
-                        <h3>update</h3>
-                        <span class="plugin-badge">Tool</span>
-                    </div>
-                    <div class="plugin-body">
-                        <p>Update CLI tool</p>
-                        <div class="plugin-usage">
-                            <code>toast update</code>
-                        </div>
-                    </div>
-                </div>
             </div>
         </div>
     </section>
@@ -288,8 +263,6 @@ pip install -e .">Copy</button>
           ├── env_plugin.py
           ├── git_plugin.py
           ├── region_plugin.py
-          ├── ssm_plugin.py
-          ├── update_plugin.py
           └── utils.py</code></pre>
             </div>
 

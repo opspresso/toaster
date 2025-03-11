@@ -19,16 +19,13 @@ Toast is a Python-based CLI utility with a plugin architecture that simplifies t
 * Plugin-based architecture for easy extensibility
 * Dynamic command discovery and loading
 * AWS Features
-  - AWS Profile Management (`toast env`)
   - AWS Region Management (`toast region`)
+  - AWS Profile Management (`toast env`)
   - IAM Identity Checking (`toast am`)
 * Kubernetes Features
   - Context Switching (`toast ctx`)
 * Workspace Features
   - Directory Navigation (`toast cdw`)
-* Other Utilities
-  - System Update (`toast update`)
-  - AWS SSM Commands (`toast ssm`)
 
 ## Plugin Architecture
 
@@ -93,10 +90,8 @@ toast --help
 toast am           # Show AWS identity
 toast cdw          # Navigate workspace directories
 toast ctx          # Manage Kubernetes contexts
-toast env          # Set environment
+toast env          # Manage AWS profiles
 toast region       # Set AWS region
-toast ssm          # Run AWS SSM commands
-toast update       # Update CLI tool
 ```
 
 ## Extending with Plugins
@@ -135,7 +130,7 @@ c() {
 
 # Common Command Aliases
 alias i='toast am'      # Check AWS IAM info
-alias e='toast env'     # Set AWS profile
+alias e='toast env'     # Manage AWS profiles
 alias r='toast region'  # Set AWS region
 alias x='toast ctx'     # Switch Kubernetes context
 ```
