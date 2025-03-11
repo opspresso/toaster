@@ -175,9 +175,9 @@ The project is packaged using standard Python packaging tools. The following fil
    - Main package requirements: click
 
 2. **setup.cfg**: Configuration file for package metadata and entry points
-   - Organization: opspresso <info@opspresso.com>
    - License: GNU General Public License v3.0
    - Python compatibility: 3.6+
+   - Main package requirement: click
 
 3. **pyproject.toml**: Defines build system requirements
    - Using setuptools and wheel

@@ -43,7 +43,6 @@ See [ARCHITECTURE.md](ARCHITECTURE.md) for detailed information about the design
 
 * Python 3.6+
 * Click package
-* Python-dotenv package
 * External tools used by various plugins:
   - fzf: Interactive selection in terminal
   - jq: JSON processing for formatted output
