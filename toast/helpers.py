@@ -20,19 +20,24 @@ def get_version():
     """Get the version from the VERSION file"""
     try:
         # Try to get the version from the package resource
-        version = pkg_resources.resource_string("toast", "../VERSION").decode('utf-8').strip()
+        version = pkg_resources.resource_string("toast_cli", "VERSION").decode('utf-8').strip()
         return version
     except Exception:
         try:
-            # Fallback to the local file path for development
-            version_file = os.path.join(os.path.dirname(__file__), "..", "VERSION")
-            if os.path.exists(version_file):
-                with open(version_file, "r") as f:
-                    version = f.read().strip()
-                    return version
-            return "3.0.0.dev1"
+            # Try again with a different package name
+            version = pkg_resources.resource_string("toast", "../VERSION").decode('utf-8').strip()
+            return version
         except Exception:
-            return "3.0.0.dev2"
+            try:
+                # Fallback to the local file path for development
+                version_file = os.path.join(os.path.dirname(__file__), "..", "VERSION")
+                if os.path.exists(version_file):
+                    with open(version_file, "r") as f:
+                        version = f.read().strip()
+                        return version
+                return "v3.0.0.dev1"
+            except Exception:
+                return "v3.0.0.dev2"
 
 class CustomHelpCommand(click.Command):
     def get_help(self, ctx):

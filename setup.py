@@ -22,6 +22,10 @@ setup(
     url="https://github.com/opspresso/toast-cli",
     packages=find_packages(),
     include_package_data=True,
+    package_data={
+        "toast_cli": ["VERSION"],
+        "toast": ["../VERSION"],
+    },
     python_requires=">=3.6",
     install_requires=[
         "click",
