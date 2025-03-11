@@ -51,7 +51,7 @@ class GitPlugin(BasePlugin):
             target_dir = target if target else repo_name
 
             # Construct the repository URL
-            repo_url = f"https://github.com/{username}/{repo_name}.git"
+            repo_url = f"git@github.com:{username}/{repo_name}.git"
 
             # Target path in the current directory
             target_path = os.path.join(current_path, target_dir)
