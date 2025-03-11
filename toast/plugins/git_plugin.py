@@ -18,12 +18,15 @@ class GitPlugin(BasePlugin):
         func = click.argument("command", required=True)(func)
         func = click.argument("repo_name", required=True)(func)
         func = click.option(
+            "--branch", "-b", help="Branch name for branch operation"
+        )(func)
+        func = click.option(
             "--target", "-t", help="Target directory name for clone operation"
         )(func)
         return func
 
     @classmethod
-    def execute(cls, command, repo_name, target=None, **kwargs):
+    def execute(cls, command, repo_name, branch=None, target=None, **kwargs):
         # Get the current path
         current_path = os.getcwd()
 
@@ -87,6 +90,43 @@ class GitPlugin(BasePlugin):
             except Exception as e:
                 click.echo(f"Error removing repository: {e}")
 
+        elif command == "branch" or command == "b":
+            # Path to the repository
+            repo_path = os.path.join(current_path, repo_name)
+
+            # Check if the repository exists
+            if not os.path.exists(repo_path):
+                click.echo(f"Error: Repository directory '{repo_name}' does not exist")
+                return
+
+            # Check if branch name is provided
+            if not branch:
+                click.echo("Error: Branch name is required for branch command")
+                return
+
+            try:
+                # Change to the repository directory
+                os.chdir(repo_path)
+
+                # Create the new branch
+                result = subprocess.run(
+                    ["git", "checkout", "-b", branch],
+                    capture_output=True,
+                    text=True,
+                )
+
+                if result.returncode == 0:
+                    click.echo(f"Successfully created branch '{branch}' in {repo_name}")
+                else:
+                    click.echo(f"Error creating branch: {result.stderr}")
+
+                # Return to the original directory
+                os.chdir(current_path)
+            except Exception as e:
+                # Return to the original directory in case of error
+                os.chdir(current_path)
+                click.echo(f"Error executing git command: {e}")
+
         else:
             click.echo(f"Unknown command: {command}")
-            click.echo("Available commands: clone, rm")
+            click.echo("Available commands: clone, rm, branch")

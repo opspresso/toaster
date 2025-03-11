@@ -134,7 +134,12 @@ The `git` command handles Git repository operations:
    - Safely removes repository directories with confirmation prompt
    - Format: `toast git repo_name rm`
 
-4. **Path Management**:
+4. **Branch Creation**:
+   - Creates a new git branch in the specified repository
+   - Automatically changes to the new branch using git checkout -b
+   - Format: `toast git repo_name branch --branch branch_name` (기본) 또는 `toast git repo_name b -b branch_name` (단축 명령)
+
+5. **Path Management**:
    - Automatically constructs GitHub repository URLs based on extracted username
    - Manages repository paths within the workspace directory structure
 
