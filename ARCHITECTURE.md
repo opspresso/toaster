@@ -1,5 +1,7 @@
 # Toast-cli Architecture
 
+[![Website](https://img.shields.io/badge/Website-Visit-blue)](https://toast.sh/)
+
 ## Overview
 
 Toast-cli is a Python-based CLI tool that provides various utility commands for AWS and Kubernetes management. The architecture follows a plugin-based design pattern, allowing for easy extension of functionality through the addition of new plugins.

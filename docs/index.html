@@ -1,0 +1,357 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Toast-cli - Toast.sh AWS & Kubernetes Management CLI Tool</title>
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="icon" href="favicon.ico" type="image/x-icon">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <header>
+        <div class="container">
+            <nav>
+                <div class="logo">
+                    <h1>Toast-cli</h1>
+                </div>
+                <ul class="nav-links">
+                    <li><a href="#overview">Overview</a></li>
+                    <li><a href="#installation">Installation</a></li>
+                    <li><a href="#plugins">Plugins</a></li>
+                    <li><a href="#architecture">Architecture</a></li>
+                    <li><a href="https://github.com/opspresso/toast-cli" target="_blank" class="github-link">GitHub</a></li>
+                </ul>
+                <div class="hamburger">
+                    <span></span>
+                    <span></span>
+                    <span></span>
+                </div>
+            </nav>
+        </div>
+    </header>
+
+    <section class="hero">
+        <div class="container">
+            <div class="hero-content">
+                <h1>Simplify your AWS & Kubernetes workflow</h1>
+                <p>A powerful, plugin-based CLI tool designed for cloud engineers.</p>
+                <div class="cta-buttons">
+                    <a href="#installation" class="btn primary">Get Started</a>
+                    <a href="https://github.com/opspresso/toast-cli" target="_blank" class="btn secondary">View on GitHub</a>
+                </div>
+            </div>
+            <div class="terminal">
+                <div class="terminal-header">
+                    <span class="terminal-button red"></span>
+                    <span class="terminal-button yellow"></span>
+                    <span class="terminal-button green"></span>
+                </div>
+                <div class="terminal-content">
+                    <pre><code>$ pip install toast-cli
+$ toast --help
+$ toast env     # Set environment with AWS profile
+$ toast ctx     # Manage Kubernetes contexts
+$ toast git     # Manage Git repositories</code></pre>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section id="overview" class="overview">
+        <div class="container">
+            <h2>Overview</h2>
+            <p>Toast-cli is a Python-based CLI tool that provides various utility commands for AWS and Kubernetes management. The architecture follows a plugin-based design pattern, allowing for easy extension of functionality through the addition of new plugins.</p>
+            <div class="features">
+                <div class="feature">
+                    <div class="feature-icon">🔌</div>
+                    <h3>Plugin-based Architecture</h3>
+                    <p>Easily extend functionality by adding new plugins without modifying core code.</p>
+                </div>
+                <div class="feature">
+                    <div class="feature-icon">☁️</div>
+                    <h3>AWS Integration</h3>
+                    <p>Seamlessly manage AWS profiles, regions, and SSM parameters.</p>
+                </div>
+                <div class="feature">
+                    <div class="feature-icon">⎈</div>
+                    <h3>Kubernetes Management</h3>
+                    <p>Quickly switch between Kubernetes contexts and manage clusters.</p>
+                </div>
+                <div class="feature">
+                    <div class="feature-icon">🔄</div>
+                    <h3>Git Workflow</h3>
+                    <p>Simplify Git operations within your workspace structure.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section id="installation" class="installation">
+        <div class="container">
+            <h2>Installation</h2>
+            <div class="install-methods">
+                <div class="install-method">
+                    <h3>Install from PyPI</h3>
+                    <div class="code-block">
+                        <pre><code>pip install toast-cli</code></pre>
+                        <button class="copy-btn" data-clipboard-text="pip install toast-cli">Copy</button>
+                    </div>
+                </div>
+                <div class="install-method">
+                    <h3>Install from GitHub</h3>
+                    <div class="code-block">
+                        <pre><code>pip install git+https://github.com/opspresso/toast-cli.git</code></pre>
+                        <button class="copy-btn" data-clipboard-text="pip install git+https://github.com/opspresso/toast-cli.git">Copy</button>
+                    </div>
+                </div>
+                <div class="install-method">
+                    <h3>Development Mode</h3>
+                    <div class="code-block">
+                        <pre><code>git clone https://github.com/opspresso/toast-cli.git
+cd toast-cli
+pip install -e .</code></pre>
+                        <button class="copy-btn" data-clipboard-text="git clone https://github.com/opspresso/toast-cli.git
+cd toast-cli
+pip install -e .">Copy</button>
+                    </div>
+                </div>
+            </div>
+            <div class="requirements">
+                <h3>Dependencies</h3>
+                <ul>
+                    <li>Python 3.6+</li>
+                    <li>Click - Command-line interface creation</li>
+                    <li>Python-Dotenv - Environment variable management</li>
+                    <li>External tools:</li>
+                    <ul>
+                        <li>fzf - Interactive selection in terminal</li>
+                        <li>jq - JSON processing for formatted output</li>
+                        <li>aws-cli - AWS command line interface</li>
+                        <li>kubectl - Kubernetes command line tool</li>
+                    </ul>
+                </ul>
+            </div>
+        </div>
+    </section>
+
+    <section id="plugins" class="plugins">
+        <div class="container">
+            <h2>Plugins</h2>
+            <p>Toast-cli features a modular plugin architecture. Here are the available plugins:</p>
+
+            <div class="plugin-grid">
+                <div class="plugin-card">
+                    <div class="plugin-header">
+                        <h3>am</h3>
+                        <span class="plugin-badge">AWS</span>
+                    </div>
+                    <div class="plugin-body">
+                        <p>Show AWS caller identity information</p>
+                        <div class="plugin-usage">
+                            <code>toast am</code>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="plugin-card">
+                    <div class="plugin-header">
+                        <h3>cdw</h3>
+                        <span class="plugin-badge">Workspace</span>
+                    </div>
+                    <div class="plugin-body">
+                        <p>Navigate to workspace directories</p>
+                        <div class="plugin-usage">
+                            <code>toast cdw</code>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="plugin-card">
+                    <div class="plugin-header">
+                        <h3>ctx</h3>
+                        <span class="plugin-badge">Kubernetes</span>
+                    </div>
+                    <div class="plugin-body">
+                        <p>Manage Kubernetes contexts</p>
+                        <div class="plugin-usage">
+                            <code>toast ctx</code>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="plugin-card">
+                    <div class="plugin-header">
+                        <h3>env</h3>
+                        <span class="plugin-badge">AWS</span>
+                    </div>
+                    <div class="plugin-body">
+                        <p>Set environment with AWS profile</p>
+                        <div class="plugin-usage">
+                            <code>toast env</code>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="plugin-card">
+                    <div class="plugin-header">
+                        <h3>git</h3>
+                        <span class="plugin-badge">Git</span>
+                    </div>
+                    <div class="plugin-body">
+                        <p>Manage Git repositories</p>
+                        <div class="plugin-usage">
+                            <code>toast git repo_name clone</code>
+                            <code>toast git repo_name rm</code>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="plugin-card">
+                    <div class="plugin-header">
+                        <h3>region</h3>
+                        <span class="plugin-badge">AWS</span>
+                    </div>
+                    <div class="plugin-body">
+                        <p>Set AWS region</p>
+                        <div class="plugin-usage">
+                            <code>toast region</code>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="plugin-card">
+                    <div class="plugin-header">
+                        <h3>ssm</h3>
+                        <span class="plugin-badge">AWS</span>
+                    </div>
+                    <div class="plugin-body">
+                        <p>Manage AWS SSM parameters</p>
+                        <div class="plugin-usage">
+                            <code>toast ssm</code>
+                            <code>toast ssm put</code>
+                            <code>toast ssm rm</code>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="plugin-card">
+                    <div class="plugin-header">
+                        <h3>update</h3>
+                        <span class="plugin-badge">Tool</span>
+                    </div>
+                    <div class="plugin-body">
+                        <p>Update CLI tool</p>
+                        <div class="plugin-usage">
+                            <code>toast update</code>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section id="architecture" class="architecture">
+        <div class="container">
+            <h2>Architecture</h2>
+            <p>Toast-cli follows a plugin-based architecture that makes it easy to extend and maintain.</p>
+
+            <div class="architecture-diagram">
+                <img src="images/architecture-diagram.svg" alt="Toast-cli Architecture Diagram" class="placeholder-img">
+                <p class="caption">Toast-cli Plugin Architecture</p>
+            </div>
+
+            <div class="structure-details">
+                <h3>Package Structure</h3>
+                <pre><code>toast-cli/
+  ├── setup.py            # Package setup script
+  ├── setup.cfg           # Package configuration
+  ├── pyproject.toml      # Build system requirements
+  ├── MANIFEST.in         # Additional files to include
+  ├── VERSION             # Version information
+  ├── README.md           # Project documentation
+  ├── ARCHITECTURE.md     # Architecture documentation
+  ├── LICENSE             # License information
+  └── toast/              # Main package
+      ├── __init__.py     # Package initialization and CLI entry point
+      ├── __main__.py     # Entry point for running as a module
+      ├── helpers.py      # Helper functions and custom UI elements
+      └── plugins/        # Plugin modules
+          ├── __init__.py
+          ├── base_plugin.py
+          ├── am_plugin.py
+          ├── cdw_plugin.py
+          ├── ctx_plugin.py
+          ├── env_plugin.py
+          ├── git_plugin.py
+          ├── region_plugin.py
+          ├── ssm_plugin.py
+          ├── update_plugin.py
+          └── utils.py</code></pre>
+            </div>
+
+            <div class="adding-plugins">
+                <h3>Adding New Plugins</h3>
+                <p>To add a new plugin:</p>
+                <ol>
+                    <li>Create a new Python file in the <code>plugins</code> directory</li>
+                    <li>Define a class that extends <code>BasePlugin</code></li>
+                    <li>Implement the required methods (<code>execute</code> and optionally <code>get_arguments</code>)</li>
+                    <li>Set the <code>name</code> and <code>help</code> class variables</li>
+                </ol>
+                <p>The plugin will be automatically discovered and loaded when the application starts.</p>
+            </div>
+
+            <div class="architecture-benefits">
+                <h3>Benefits of the Plugin Architecture</h3>
+                <ul>
+                    <li><strong>Modularity:</strong> Each command is isolated in its own module</li>
+                    <li><strong>Extensibility:</strong> New commands can be added without modifying existing code</li>
+                    <li><strong>Maintainability:</strong> Code is organized into logical components</li>
+                    <li><strong>Testability:</strong> Plugins can be tested independently</li>
+                </ul>
+            </div>
+
+            <div class="learn-more">
+                <a href="https://github.com/opspresso/toast-cli/blob/main/ARCHITECTURE.md" target="_blank" class="btn secondary">Learn More</a>
+            </div>
+        </div>
+    </section>
+
+    <footer>
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-logo">
+                    <h2>Toast-cli</h2>
+                    <p>A Python-based CLI tool for AWS & Kubernetes management</p>
+                </div>
+                <div class="footer-links">
+                    <div class="link-column">
+                        <h3>Resources</h3>
+                        <ul>
+                            <li><a href="https://github.com/opspresso/toast-cli">GitHub Repository</a></li>
+                            <li><a href="https://github.com/opspresso/toast-cli/issues">Issue Tracker</a></li>
+                            <li><a href="https://github.com/opspresso/toast-cli/releases">Releases</a></li>
+                        </ul>
+                    </div>
+                    <div class="link-column">
+                        <h3>Community</h3>
+                        <ul>
+                            <li><a href="https://github.com/opspresso">Opspresso GitHub</a></li>
+                            <li><a href="https://github.com/opspresso/toast-cli/graphs/contributors">Contributors</a></li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+            <div class="copyright">
+                <p>&copy; 2025 Opspresso. Licensed under <a href="https://github.com/opspresso/toast-cli/blob/main/LICENSE">GNU General Public License v3.0</a></p>
+            </div>
+        </div>
+    </footer>
+
+    <script src="js/main.js"></script>
+</body>
+</html>
