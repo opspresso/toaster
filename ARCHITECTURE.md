@@ -125,6 +125,27 @@ The `env` command manages AWS profiles:
    - Preserves authentication information including access key, secret key, and session token
    - Simplifies working with multiple AWS accounts
 
+#### RegionPlugin (region command)
+
+The `region` command manages AWS regions:
+
+1. **Current Region Display**:
+   - Shows the currently configured AWS region before selection
+   - Provides clear feedback on the active region
+
+2. **Region Discovery**:
+   - Fetches available AWS regions using the AWS CLI
+   - Presents a sorted list of all available regions
+
+3. **Region Selection**:
+   - Uses interactive fzf selection for better user experience
+   - Allows users to select from all available AWS regions
+
+4. **Region Configuration**:
+   - Sets the selected region as the default AWS region
+   - Updates AWS CLI configuration with the selected region
+   - Sets JSON as the default output format
+
 #### GitPlugin (git command)
 
 The `git` command handles Git repository operations:
@@ -136,7 +157,7 @@ The `git` command handles Git repository operations:
 2. **Repository Cloning**:
    - Clones repositories from the user's GitHub account using the username extracted from path
    - Supports cloning to a specified target directory name (optional)
-   - Format: `toast git repo_name clone` (기본) 또는 `toast git repo_name clone --target target_name` (대상 디렉토리 지정)
+   - Format: `toast git repo_name clone` (default) or `toast git repo_name clone --target target_name` (specify target directory)
 
 3. **Repository Removal**:
    - Safely removes repository directories with confirmation prompt
@@ -145,7 +166,7 @@ The `git` command handles Git repository operations:
 4. **Branch Creation**:
    - Creates a new git branch in the specified repository
    - Automatically changes to the new branch using git checkout -b
-   - Format: `toast git repo_name branch --branch branch_name` (기본) 또는 `toast git repo_name b -b branch_name` (단축 명령)
+   - Format: `toast git repo_name branch --branch branch_name` (default) or `toast git repo_name b -b branch_name` (shortened command)
 
 5. **Path Management**:
    - Automatically constructs GitHub repository URLs based on extracted username

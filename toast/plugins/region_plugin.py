@@ -14,6 +14,15 @@ class RegionPlugin(BasePlugin):
     @classmethod
     def execute(cls, **kwargs):
         try:
+            # Check current AWS region setting
+            current_region_result = subprocess.run(["aws", "configure", "get", "default.region"], capture_output=True, text=True)
+            current_region = current_region_result.stdout.strip()
+            if current_region:
+                click.echo(f"Current AWS region: {current_region}")
+            else:
+                click.echo("No AWS region is currently set.")
+
+            # Get available region list
             result = subprocess.run(["aws", "ec2", "describe-regions", "--query", "Regions[].RegionName", "--output", "text"], capture_output=True, text=True)
             regions = sorted(result.stdout.split())
             if not regions:
