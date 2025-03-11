@@ -18,9 +18,6 @@ class GitPlugin(BasePlugin):
         func = click.argument("command", required=True)(func)
         func = click.argument("repo_name", required=True)(func)
         func = click.option(
-            "--rebase", "-r", help="Rebase the current branch"
-        )(func)
-        func = click.option(
             "--branch", "-b", help="Branch name for branch operation"
         )(func)
         func = click.option(
@@ -130,6 +127,39 @@ class GitPlugin(BasePlugin):
                 os.chdir(current_path)
                 click.echo(f"Error executing git command: {e}")
 
+        elif command == "pull" or command == "p":
+            # Path to the repository
+            repo_path = os.path.join(current_path, repo_name)
+
+            # Check if the repository exists
+            if not os.path.exists(repo_path):
+                click.echo(f"Error: Repository directory '{repo_name}' does not exist")
+                return
+
+            try:
+                # Change to the repository directory
+                os.chdir(repo_path)
+
+                # Execute git pull
+                click.echo(f"Pulling latest changes for {repo_name}...")
+                result = subprocess.run(
+                    ["git", "pull"],
+                    capture_output=True,
+                    text=True,
+                )
+
+                if result.returncode == 0:
+                    click.echo(f"Successfully pulled latest changes for {repo_name}")
+                else:
+                    click.echo(f"Error pulling repository: {result.stderr}")
+
+                # Return to the original directory
+                os.chdir(current_path)
+            except Exception as e:
+                # Return to the original directory in case of error
+                os.chdir(current_path)
+                click.echo(f"Error executing git command: {e}")
+
         else:
             click.echo(f"Unknown command: {command}")
-            click.echo("Available commands: clone, rm, branch")
+            click.echo("Available commands: clone, rm, branch, pull")

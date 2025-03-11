@@ -168,7 +168,12 @@ The `git` command handles Git repository operations:
    - Automatically changes to the new branch using git checkout -b
    - Format: `toast git repo_name branch --branch branch_name` (default) or `toast git repo_name b -b branch_name` (shortened command)
 
-5. **Path Management**:
+5. **Pull Repository Changes**:
+   - Pulls the latest changes from the remote repository
+   - Synchronizes the local repository with updates from the remote
+   - Format: `toast git repo_name pull` (default) or `toast git repo_name p` (shortened command)
+
+6. **Path Management**:
    - Automatically constructs GitHub repository URLs based on extracted username
    - Manages repository paths within the workspace directory structure
 
