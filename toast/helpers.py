@@ -2,6 +2,7 @@
 
 import click
 import os
+import pkg_resources
 
 def display_logo():
     """Display the toast-cli ASCII logo"""
@@ -18,14 +19,20 @@ def display_logo():
 def get_version():
     """Get the version from the VERSION file"""
     try:
-        version_file = os.path.join(os.path.dirname(__file__), "..", "VERSION")
-        if os.path.exists(version_file):
-            with open(version_file, "r") as f:
-                version = f.read().strip()
-                return version
-        return "3.0.0"
+        # Try to get the version from the package resource
+        version = pkg_resources.resource_string("toast", "../VERSION").decode('utf-8').strip()
+        return version
     except Exception:
-        return "3.0.0"
+        try:
+            # Fallback to the local file path for development
+            version_file = os.path.join(os.path.dirname(__file__), "..", "VERSION")
+            if os.path.exists(version_file):
+                with open(version_file, "r") as f:
+                    version = f.read().strip()
+                    return version
+            return "3.0.0"
+        except Exception:
+            return "3.0.0"
 
 class CustomHelpCommand(click.Command):
     def get_help(self, ctx):

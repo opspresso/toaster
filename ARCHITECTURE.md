@@ -56,6 +56,9 @@ Enables the application to be run as a module with `python -m toast`.
 - Contains helper functions and custom UI elements
 - `display_logo()`: Renders the ASCII logo with version
 - `get_version()`: Retrieves version information from VERSION file
+  - Uses `pkg_resources` to access VERSION file in packaged distributions
+  - Falls back to local file path for development environments
+  - Ensures version display works in both development and deployed environments
 - `CustomHelpCommand` & `CustomHelpGroup`: Custom Click classes for enhanced help display
 
 ### Plugin System
@@ -148,6 +151,7 @@ The `git` command handles Git repository operations:
 
 The plugin system has the following external dependencies:
 - Click: Command-line interface creation
+- pkg_resources: Resource access within Python packages (included in setuptools)
 - External tools used by various plugins:
   - fzf: Interactive selection in terminal
   - jq: JSON processing for formatted output
