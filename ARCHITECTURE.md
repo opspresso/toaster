@@ -109,7 +109,14 @@ Each plugin follows a standard structure:
 
 The `env` command handles AWS environment profile management:
 
-1. **Environment Path Discovery**:
+1. **1Password Integration**:
+   - Automatically detects and uses 1Password CLI (op) if available
+   - Prompts user to signin to 1Password if not already signed in
+   - Always lists available vaults and lets user select one (vault selection is not saved)
+   - Retrieves AWS credentials from secure notes in the selected vault
+
+2. **Traditional File-based Fallback**:
+   - Falls back to file-based profile management if 1Password CLI is not available
    - Looks for AWS_ENV_PATH in the ~/.toast.json file (자동으로 생성됨)
    - If ~/.toast.json doesn't exist, creates it with default settings
    - If AWS_ENV_PATH not found, creates a path at ~/workspace/github.com/{username}/keys/env
