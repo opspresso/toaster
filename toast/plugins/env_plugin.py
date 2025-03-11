@@ -3,7 +3,7 @@
 import click
 import subprocess
 import os
-import dotenv
+import json
 from pathlib import Path
 from toast.plugins.base_plugin import BasePlugin
 from toast.plugins.utils import select_from_list
@@ -21,13 +21,32 @@ class EnvPlugin(BasePlugin):
 
     @classmethod
     def execute(cls, env_name=None, **kwargs):
-        # Try to get AWS_ENV_PATH from .env file
-        dotenv_path = Path('.env')
+        # Try to get AWS_ENV_PATH from ~/.toast.json file
+        toast_json_path = Path(os.path.expanduser("~/.toast.json"))
         env_path = None
+        toast_config = {}
 
-        if dotenv_path.exists():
-            dotenv.load_dotenv(dotenv_path)
-            env_path = os.environ.get("AWS_ENV_PATH")
+        # Create ~/.toast.json if it doesn't exist
+        if not toast_json_path.exists():
+            # Create directory if it doesn't exist
+            toast_json_path.parent.mkdir(parents=True, exist_ok=True)
+            click.echo(f"Creating new configuration file: {toast_json_path}")
+            # Create empty JSON file
+            with open(toast_json_path, 'w') as json_file:
+                json.dump(toast_config, json_file, indent=2)
+        else:
+            try:
+                with open(toast_json_path, 'r') as json_file:
+                    toast_config = json.load(json_file)
+                    env_path = toast_config.get("AWS_ENV_PATH")
+            except json.JSONDecodeError:
+                click.echo("Error: ~/.toast.json is not a valid JSON file")
+                click.echo("Creating new configuration file")
+                # If JSON is invalid, create a new empty one
+                with open(toast_json_path, 'w') as json_file:
+                    json.dump(toast_config, json_file, indent=2)
+            except Exception as e:
+                click.echo(f"Error reading ~/.toast.json: {e}")
 
         # If AWS_ENV_PATH is not set, create it
         if not env_path:
@@ -65,14 +84,25 @@ class EnvPlugin(BasePlugin):
                 os.makedirs(env_dir, exist_ok=True)
                 click.echo(f"Created directory: {env_dir}")
 
-            # Update .env file
-            with open(dotenv_path, 'a+') as f:
-                f.seek(0)
-                content = f.read()
-                if "AWS_ENV_PATH" not in content:
-                    if content and not content.endswith('\n'):
-                        f.write('\n')
-                    f.write(f"AWS_ENV_PATH={env_path}\n")
+            # Update ~/.toast.json file
+            toast_config = {}
+            if toast_json_path.exists():
+                try:
+                    with open(toast_json_path, 'r') as json_file:
+                        toast_config = json.load(json_file)
+                except json.JSONDecodeError:
+                    click.echo("Warning: Existing ~/.toast.json is not valid, creating new file")
+                except Exception as e:
+                    click.echo(f"Warning: Error reading ~/.toast.json: {e}")
+
+            toast_config["AWS_ENV_PATH"] = env_path
+
+            # Create directory if it doesn't exist
+            toast_json_path.parent.mkdir(parents=True, exist_ok=True)
+
+            # Write updated config
+            with open(toast_json_path, 'w') as json_file:
+                json.dump(toast_config, json_file, indent=2)
 
             # Export the environment variable
             os.environ["AWS_ENV_PATH"] = env_path

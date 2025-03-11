@@ -25,7 +25,6 @@ setup(
     python_requires=">=3.6",
     install_requires=[
         "click",
-        "python-dotenv",
     ],
     entry_points={
         "console_scripts": [

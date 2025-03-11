@@ -110,8 +110,9 @@ Each plugin follows a standard structure:
 The `env` command handles AWS environment profile management:
 
 1. **Environment Path Discovery**:
-   - Looks for AWS_ENV_PATH in the .env file in the current directory
-   - If not found, creates a path at ~/workspace/github.com/{username}/keys/env
+   - Looks for AWS_ENV_PATH in the ~/.toast.json file (자동으로 생성됨)
+   - If ~/.toast.json doesn't exist, creates it with default settings
+   - If AWS_ENV_PATH not found, creates a path at ~/workspace/github.com/{username}/keys/env
    - Uses whoami to get the default username, but allows customization
 
 2. **Profile Management**:
@@ -179,7 +180,6 @@ The `ssm` command manages AWS SSM Parameter Store operations:
 
 The plugin system has the following external dependencies:
 - Click: Command-line interface creation
-- Python-Dotenv: Environment variable management from .env files
 - External tools used by various plugins:
   - fzf: Interactive selection in terminal
   - jq: JSON processing for formatted output
@@ -210,7 +210,7 @@ The project is packaged using standard Python packaging tools. The following fil
 1. **setup.py**: The main setup script that defines package metadata and dependencies
    - Current version: 3.0.0
    - Author: nalbam <byforce@gmail.com>
-   - Main package requirements: click, python-dotenv
+   - Main package requirements: click
 
 2. **setup.cfg**: Configuration file for package metadata and entry points
    - Organization: opspresso <info@opspresso.com>
