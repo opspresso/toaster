@@ -23,10 +23,13 @@ class GitPlugin(BasePlugin):
         func = click.option(
             "--target", "-t", help="Target directory name for clone operation"
         )(func)
+        func = click.option(
+            "--rebase", "-r", is_flag=True, help="Use rebase when pulling"
+        )(func)
         return func
 
     @classmethod
-    def execute(cls, command, repo_name, branch=None, target=None, **kwargs):
+    def execute(cls, command, repo_name, branch=None, target=None, rebase=False, **kwargs):
         # Get the current path
         current_path = os.getcwd()
 
@@ -140,16 +143,21 @@ class GitPlugin(BasePlugin):
                 # Change to the repository directory
                 os.chdir(repo_path)
 
-                # Execute git pull
+                # Execute git pull with or without rebase option
                 click.echo(f"Pulling latest changes for {repo_name}...")
+
+                # Set up command with or without --rebase flag
+                git_command = ["git", "pull", "--rebase"] if rebase else ["git", "pull"]
+
                 result = subprocess.run(
-                    ["git", "pull"],
+                    git_command,
                     capture_output=True,
                     text=True,
                 )
 
                 if result.returncode == 0:
-                    click.echo(f"Successfully pulled latest changes for {repo_name}")
+                    rebase_msg = "with rebase " if rebase else ""
+                    click.echo(f"Successfully pulled {rebase_msg}latest changes for {repo_name}")
                 else:
                     click.echo(f"Error pulling repository: {result.stderr}")
 

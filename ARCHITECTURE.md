@@ -171,7 +171,9 @@ The `git` command handles Git repository operations:
 5. **Pull Repository Changes**:
    - Pulls the latest changes from the remote repository
    - Synchronizes the local repository with updates from the remote
+   - Supports rebase option with `--rebase` or `-r` flag
    - Format: `toast git repo_name pull` (default) or `toast git repo_name p` (shortened command)
+   - With rebase: `toast git repo_name pull --rebase` or `toast git repo_name p -r`
 
 6. **Path Management**:
    - Automatically constructs GitHub repository URLs based on extracted username
