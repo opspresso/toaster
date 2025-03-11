@@ -61,6 +61,12 @@ def toast_cli():
     """
     pass
 
+@toast_cli.command()
+def version():
+    """Display the current version of toast-cli."""
+    from toast.helpers import get_version
+    click.echo(f"toast-cli version: {get_version()}")
+
 def main():
     # Discover and load all plugins
     plugins = discover_and_load_plugins()

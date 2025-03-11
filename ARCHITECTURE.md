@@ -46,6 +46,7 @@ The main entry point of the application is responsible for:
 - Dynamically discovering and loading plugins from the `toast.plugins` package
 - Registering plugin commands with the CLI interface using Click
 - Running the CLI with all discovered commands
+- Providing core commands like `version` to display the current version
 
 #### Module Entry Point (toast/__main__.py)
 
@@ -90,6 +91,12 @@ Each plugin follows a standard structure:
 2. Each module is imported and examined for classes that extend `BasePlugin`
 3. Valid plugin classes are instantiated and registered with the CLI
 4. Click handles argument parsing and command execution
+
+## Core Commands
+
+| Command | Description |
+|--------|-------------|
+| version | Display the current version of toast-cli |
 
 ## Current Plugins
 
