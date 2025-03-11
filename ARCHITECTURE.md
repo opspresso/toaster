@@ -1,6 +1,7 @@
 # Toast-cli Architecture
 
 [![Website](https://img.shields.io/badge/Website-Visit-blue)](https://toast.sh/)
+[![PyPI](https://img.shields.io/pypi/v/toast-cli)](https://pypi.org/project/toast-cli/)
 
 ## Overview
 
@@ -195,7 +196,7 @@ The project is packaged using standard Python packaging tools. The following fil
 The package can be installed using pip:
 
 ```bash
-# Install from PyPI (once published)
+# Install from PyPI
 pip install toast-cli
 
 # Install from local directory in development mode
@@ -204,6 +205,8 @@ pip install -e .
 # Install from GitHub
 pip install git+https://github.com/opspresso/toast-cli.git
 ```
+
+The package is available on PyPI at https://pypi.org/project/toast-cli/
 
 ### Building Distribution Packages
 
