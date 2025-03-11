@@ -76,6 +76,16 @@ class EnvPlugin(BasePlugin):
                     config.write(configfile)
 
                 click.echo(f"Set '{selected_profile}' as default profile.")
+
+                try:
+                    result = subprocess.run(["aws", "sts", "get-caller-identity"], capture_output=True, text=True)
+                    if result.returncode == 0:
+                        formatted_json = subprocess.run(["jq", "-C", "."], input=result.stdout, capture_output=True, text=True)
+                        click.echo(formatted_json.stdout)
+                    else:
+                        click.echo("Error fetching AWS caller identity.")
+                except Exception as e:
+                    click.echo(f"Error fetching AWS caller identity: {e}")
             else:
                 click.echo("No profile selected.")
         except Exception as e:

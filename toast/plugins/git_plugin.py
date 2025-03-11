@@ -18,6 +18,9 @@ class GitPlugin(BasePlugin):
         func = click.argument("command", required=True)(func)
         func = click.argument("repo_name", required=True)(func)
         func = click.option(
+            "--rebase", "-r", help="Rebase the current branch"
+        )(func)
+        func = click.option(
             "--branch", "-b", help="Branch name for branch operation"
         )(func)
         func = click.option(
