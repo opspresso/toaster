@@ -17,7 +17,7 @@ toast-cli/
   ├── setup.cfg           # Package configuration
   ├── pyproject.toml      # Build system requirements
   ├── MANIFEST.in         # Additional files to include in the package
-  ├── VERSION             # Version information (current: 3.0.0)
+  ├── VERSION             # Version information
   ├── README.md           # Project documentation
   ├── ARCHITECTURE.md     # Architecture documentation
   ├── LICENSE             # License information
@@ -57,9 +57,6 @@ Enables the application to be run as a module with `python -m toast`.
 - Contains helper functions and custom UI elements
 - `display_logo()`: Renders the ASCII logo with version
 - `get_version()`: Retrieves version information from VERSION file
-  - Uses `pkg_resources` to access VERSION file in packaged distributions
-  - Falls back to local file path for development environments
-  - Ensures version display works in both development and deployed environments
 - `CustomHelpCommand` & `CustomHelpGroup`: Custom Click classes for enhanced help display
 
 ### Plugin System
@@ -187,7 +184,6 @@ The plugin will be automatically discovered and loaded when the application star
 The project is packaged using standard Python packaging tools. The following files enable packaging and distribution:
 
 1. **setup.py**: The main setup script that defines package metadata and dependencies
-   - Current version: 3.0.0
    - Author: nalbam <byforce@gmail.com>
    - Main package requirements: click
 

@@ -30,9 +30,9 @@ def get_version():
                 with open(version_file, "r") as f:
                     version = f.read().strip()
                     return version
-            return "3.0.0"
+            return "3.0.0.dev1"
         except Exception:
-            return "3.0.0"
+            return "3.0.0.dev2"
 
 class CustomHelpCommand(click.Command):
     def get_help(self, ctx):
