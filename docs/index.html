@@ -57,6 +57,7 @@ $ toast cdw     # Navigate workspace directories
 $ toast ctx     # Manage Kubernetes contexts
 $ toast env     # Manage AWS profiles
 $ toast git     # Manage Git repositories
+$ toast local   # Manage .env.local files
 $ toast region  # Set AWS region</code></pre>
                 </div>
             </div>
@@ -225,6 +226,21 @@ pip install -e .">Copy</button>
                     </div>
                 </div>
 
+                <div class="plugin-card">
+                    <div class="plugin-header">
+                        <h3>local</h3>
+                        <span class="plugin-badge">Environment</span>
+                    </div>
+                    <div class="plugin-body">
+                        <p>Manage .env.local files with AWS SSM integration</p>
+                        <div class="plugin-usage">
+                            <code>toast local ls</code>
+                            <code>toast local up</code>
+                            <code>toast local down</code>
+                        </div>
+                    </div>
+                </div>
+
             </div>
         </div>
     </section>
@@ -262,6 +278,7 @@ pip install -e .">Copy</button>
           ├── ctx_plugin.py
           ├── env_plugin.py
           ├── git_plugin.py
+          ├── local_plugin.py
           ├── region_plugin.py
           └── utils.py</code></pre>
             </div>

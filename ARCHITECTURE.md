@@ -104,6 +104,7 @@ Each plugin follows a standard structure:
 | CtxPlugin | ctx | Manage Kubernetes contexts |
 | EnvPlugin | env | Manage AWS profiles |
 | GitPlugin | git | Manage Git repositories |
+| LocalPlugin | local | Manage .env.local files with AWS SSM integration |
 | RegionPlugin | region | Set AWS region |
 
 ### Plugin Details
