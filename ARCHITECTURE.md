@@ -102,9 +102,9 @@ Each plugin follows a standard structure:
 | AmPlugin | am | Show AWS caller identity |
 | CdwPlugin | cdw | Navigate to workspace directories |
 | CtxPlugin | ctx | Manage Kubernetes contexts |
+| DotPlugin | dot | Manage .env.local files with AWS SSM integration |
 | EnvPlugin | env | Manage AWS profiles |
 | GitPlugin | git | Manage Git repositories |
-| LocalPlugin | local | Manage .env.local files with AWS SSM integration |
 | RegionPlugin | region | Set AWS region |
 
 ### Plugin Details

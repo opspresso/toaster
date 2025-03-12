@@ -28,7 +28,7 @@ Toast is a Python-based CLI utility with a plugin architecture that simplifies t
 * Git Features
   - Git Repository Management (`toast git`)
 * Environment Management
-  - .env.local file management with AWS SSM integration (`toast local`)
+  - .env.local file management with AWS SSM integration (`toast dot`)
 * Workspace Features
   - Directory Navigation (`toast cdw`)
 
@@ -96,7 +96,7 @@ toast cdw          # Navigate workspace directories
 toast ctx          # Manage Kubernetes contexts
 toast env          # Manage AWS profiles
 toast git          # Manage Git repositories
-toast local        # Manage .env.local files
+toast dot          # Manage .env.local files
 toast region       # Set AWS region
 ```
 
@@ -140,7 +140,7 @@ alias e='toast env'     # Manage AWS profiles
 alias r='toast region'  # Set AWS region
 alias x='toast ctx'     # Switch Kubernetes context
 alias g='toast git'     # Git operations
-alias l='toast local'   # Manage .env.local files
+alias l='toast dot'     # Manage .env.local files
 ```
 
 ## License

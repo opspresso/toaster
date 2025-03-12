@@ -9,10 +9,10 @@ from datetime import datetime
 from toast.plugins.base_plugin import BasePlugin
 
 
-class LocalPlugin(BasePlugin):
-    """Plugin for 'local' command - manages .env.local files."""
+class DotPlugin(BasePlugin):
+    """Plugin for 'dot' command - manages .env.local files."""
 
-    name = "local"
+    name = "dot"
     help = "Manage .env.local files"
 
     @classmethod
@@ -202,7 +202,7 @@ class LocalPlugin(BasePlugin):
             # Default behavior without a command - suggest using subcommands
             if os.path.exists(local_env_path):
                 click.echo(f"Found .env.local in current directory: {local_env_path}")
-                click.echo("Use 'toast local up' to upload to AWS SSM")
+                click.echo("Use 'toast dot up' to upload to AWS SSM")
             else:
                 click.echo(".env.local not found in current directory.")
 
@@ -214,6 +214,6 @@ class LocalPlugin(BasePlugin):
 
                     # Create the SSM parameter path
                     ssm_path = f"/toast/local/{org_name}/{project_name}/env-local"
-                    click.echo(f"Use 'toast local down' to check if {ssm_path} exists in AWS SSM")
+                    click.echo(f"Use 'toast dot down' to check if {ssm_path} exists in AWS SSM")
                 else:
                     click.echo("Current directory is not in a recognized workspace structure.")
