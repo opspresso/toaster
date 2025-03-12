@@ -20,17 +20,17 @@ Toast is a Python-based CLI utility with a plugin architecture that simplifies t
 * Plugin-based architecture for easy extensibility
 * Dynamic command discovery and loading
 * AWS Features
-  - AWS Region Management (`toast region`)
-  - AWS Profile Management (`toast env`)
   - IAM Identity Checking (`toast am`)
+  - AWS Profile Management (`toast env`)
+  - AWS Region Management (`toast region`)
+* Workspace Features
+  - Directory Navigation (`toast cdw`)
+* Environment Management
+  - .env.local file management with AWS SSM integration (`toast dot`)
 * Kubernetes Features
   - Context Switching (`toast ctx`)
 * Git Features
   - Git Repository Management (`toast git`)
-* Environment Management
-  - .env.local file management with AWS SSM integration (`toast dot`)
-* Workspace Features
-  - Directory Navigation (`toast cdw`)
 
 ## Plugin Architecture
 
@@ -94,10 +94,10 @@ toast --help
 toast am           # Show AWS identity
 toast cdw          # Navigate workspace directories
 toast ctx          # Manage Kubernetes contexts
+toast dot          # Manage .env.local files
 toast env          # Manage AWS profiles
 toast git          # Manage Git repositories
-toast dot          # Manage .env.local files
-toast region       # Set AWS region
+toast region       # Manage AWS region
 ```
 
 ## Extending with Plugins
@@ -129,18 +129,18 @@ class MyPlugin(BasePlugin):
 ```bash
 alias t='toast'
 
-# Directory Navigation
+# Navigate workspace directories
 c() {
   cd "$(toast cdw)"
 }
 
 # Common Command Aliases
-alias i='toast am'      # Check AWS IAM info
-alias e='toast env'     # Manage AWS profiles
-alias r='toast region'  # Set AWS region
-alias x='toast ctx'     # Switch Kubernetes context
-alias g='toast git'     # Git operations
+alias i='toast am'      # Show AWS identity
+alias x='toast ctx'     # Manage Kubernetes contexts
 alias l='toast dot'     # Manage .env.local files
+alias e='toast env'     # Manage AWS profiles
+alias g='toast git'     # Manage Git repositories
+alias r='toast region'  # Manage AWS region
 ```
 
 ## License

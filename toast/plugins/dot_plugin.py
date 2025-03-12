@@ -144,7 +144,7 @@ class DotPlugin(BasePlugin):
             except Exception as e:
                 click.echo(f"Error: {e}")
 
-        elif command == "down":
+        elif command == "down" or command == "dn":
             # Download .env file from AWS SSM Parameter Store
             if not match:
                 click.echo("Error: Current directory is not in a recognized workspace structure.")
