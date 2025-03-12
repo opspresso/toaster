@@ -98,3 +98,7 @@ dist/
 *.tmp
 *.pid
 .cache/
+
+.env
+.env*.local
+.env*.production
