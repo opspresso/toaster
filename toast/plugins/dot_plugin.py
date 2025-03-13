@@ -102,12 +102,17 @@ class DotPlugin(BasePlugin):
             project_name = os.path.basename(project_root)
             org_name = os.path.basename(os.path.dirname(project_root))
 
+            # Create the SSM parameter path
+            ssm_path = f"/toast/local/{org_name}/{project_name}/env-local"
+            
+            # Ask for confirmation before proceeding
+            if not click.confirm(f"Upload .env.local to AWS SSM at {ssm_path}?"):
+                click.echo("Operation cancelled.")
+                return
+
             # Read the local .env file
             with open(local_env_path, 'r') as file:
                 content = file.read()
-
-            # Create the SSM parameter path
-            ssm_path = f"/toast/local/{org_name}/{project_name}/env-local"
 
             # Upload to SSM as SecureString
             try:
@@ -157,6 +162,12 @@ class DotPlugin(BasePlugin):
 
             # Create the SSM parameter path
             ssm_path = f"/toast/local/{org_name}/{project_name}/env-local"
+            
+            # Ask for confirmation before proceeding
+            overwrite_msg = " (will overwrite existing file)" if os.path.exists(local_env_path) else ""
+            if not click.confirm(f"Download .env.local from AWS SSM at {ssm_path}{overwrite_msg}?"):
+                click.echo("Operation cancelled.")
+                return
 
             # Download from SSM
             try:
